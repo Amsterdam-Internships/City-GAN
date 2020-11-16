@@ -1,4 +1,4 @@
-# A Very Fancy Project Name
+# CityGAN: Automatic addition and removal of objects
 
 Explain in short what this repository is. Mind the target audience.
 No need to go into too much technical details if you expect some people would just use it as end-users 
@@ -14,13 +14,10 @@ If applicable, you can also show an example of the final output.
 
 ## Project Folder Structure
 
-Explain a little bit what's where so people can find their way around. For exampole:
-
-There are the following folders in the structure:
+The project is structured as follows:
 
 1) [`src`](./src): Folder for all source files specific to this project
-1) [`media`](./media): Folder containing media files (icons, video)
-1) ...
+1) [`models`](./models): Folder containing all model classes
 
 ---
 
@@ -34,7 +31,7 @@ A person should be able to clone this repo, follow your instructions blindly, an
 
 1) Clone this repository:
     ```bash
-    git clone https://github.com/Amsterdam-Internships/InternshipAmsterdamGeneral
+    git clone https://github.com/Amsterdam-Internships/City-GAN
     ```
 
 2) Install all dependencies:
