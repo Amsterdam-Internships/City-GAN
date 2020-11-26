@@ -116,7 +116,7 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
     return net
 
 
-def define_G(input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
+def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
     """Create a generator
 
     Parameters:
@@ -155,14 +155,13 @@ def define_G(input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, in
     elif netG == 'unet_256':
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'copy':
-        # net = CopyGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
-        net = UnetGenerator(input_nc, output_nc, 4, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+        net = CopyGenerator(input_nc, output_nc,4, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
-def define_D(input_nc, ndf, netD, n_layers_D=3, norm='batch', init_type='normal', init_gain=0.02, gpu_ids=[]):
+def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='normal', init_gain=0.02, gpu_ids=[]):
     """Create a discriminator
 
     Parameters:
@@ -218,6 +217,7 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
+    # TODO: set real label to 0.95 instead of 1 to prevent overconfidence?
     def __init__(self, gan_mode, target_real_label=1.0, target_fake_label=0.0):
         """ Initialize the GANLoss class.
 
@@ -320,33 +320,168 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
 
 
 
-
-
 ######################################
 # COPYGAN GENERATOR AND DISCRIMINATOR
 ######################################
 
+
 class CopyGenerator(nn.Module):
     """
     Generator architecture that follows the paper from Arandjelovic et al. 2019
+    This implements the CopyPaste Generator architecture from the
+    implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, ngf, norm_layer, use_dropout):
+    def __init__(self, input_nc, output_nc, num_downs=5, ngf=64, norm_layer=nn.InstanceNorm2d, use_dropout=False):
+        """Construct a Unet generator
+        Parameters:
+            input_nc (int)  -- the number of channels in input images
+            output_nc (int) -- the number of channels in output images
+            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
+                                image of size 128x128 will become of size 1x1 # at the bottleneck
+            ngf (int)       -- the number of filters in the last conv layer
+            norm_layer      -- normalization layer
+
+        We construct the U-Net from the innermost layer to the outermost layer.
+        It is a recursive process.
+        """
         super(CopyGenerator, self).__init__()
 
-        self.model = UnetSkipConnectionBlock(outer_nc=1, inner_nc=512, input_nc=3)
+        # construct unet structure, starting with innermost layer
+        unet_block = CustomUnetBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)
 
+        # add intermediate layers with ngf * 8 filters
+        for i in range(num_downs - 5):
+            unet_block = CustomUnetBlock(ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer, use_dropout=use_dropout)
 
-        # self.model = nn.Sequential(*model)
+        # gradually reduce the number of filters from ngf * 8 to ngf
+        unet_block = CustomUnetBlock(ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = CustomUnetBlock(ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+        unet_block = CustomUnetBlock(ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
+
+        # add the outermost layer
+        self.model = CustomUnetBlock(output_nc, ngf, input_nc=input_nc, submodule=unet_block, outermost=True, norm_layer=norm_layer)
+
 
     def forward(self, input):
+        """Standard forward, returning encoder output and decoder output"""
+        # TODO: return output from encoder as well
+        # out_enc, out_dec = self.model(input)
+
+        # return out_enc, out_dec
+
         return self.model(input)
+
+
+
+
+class CustomUnetBlock(nn.Module):
+    """Defines the Unet submodule with skip connection.
+        X -------------------identity----------------------
+        |-- downsampling -- |submodule| -- upsampling --|
+    """
+
+    def __init__(self, outer_nc, inner_nc, kernel_size=3, padding=1, input_nc=None, submodule=None, outermost=False, innermost=False, norm_layer=nn.InstanceNorm2d, use_dropout=False, ReLU_slope=0.2):
+        """Construct a Unet submodule with skip connections.
+
+        Parameters:
+            outer_nc (int) -- the number of filters in the outer conv layer
+            inner_nc (int) -- the number of filters in the inner conv layer
+            input_nc (int) -- the number of channels in input images/features
+            submodule (UnetSkipConnectionBlock) -- previously defined submodules
+            outermost (bool)    -- if this module is the outermost module
+            innermost (bool)    -- if this module is the innermost module
+            norm_layer          -- normalization layer
+            use_dropout (bool)  -- if use dropout layers.
+        """
+        super(CustomUnetBlock, self).__init__()
+
+        self.outermost = outermost
+
+        # TODO: to be removed, only for debugging dimensions
+        self.innermost = innermost
+
+
+
+        # set the use of bias, only if instance normalization
+        use_bias = norm_layer == nn.InstanceNorm2d
+        stride = 1 if outermost else 2
+
+        if input_nc is None:
+            input_nc = outer_nc
+
+        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=kernel_size, stride=stride, padding=padding, bias=use_bias)
+        downrelu = nn.LeakyReLU(ReLU_slope, True)
+        downnorm = norm_layer(inner_nc)
+        uprelu = nn.LeakyReLU(ReLU_slope, True)
+        upnorm = norm_layer(outer_nc)
+
+        if outermost:
+
+
+            upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
+                                        kernel_size=kernel_size, stride=1,
+                                        padding=padding)
+            down = [downconv]
+            # TODO: add sigmoid to last layer of decoder (done, was Tanh)
+            up = [uprelu, upconv, nn.Sigmoid()]
+            model = down + [submodule] + up
+        elif innermost:
+            print("innermost params", inner_nc, outer_nc)
+            # upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
+            #                             kernel_size=kernel_size, stride=stride,
+            #                             padding=padding, bias=use_bias)
+
+            # # define average pooling for the encoder output
+            self.avg_pool = nn.AvgPool2d(3, stride=2)
+
+            # down = [downrelu, downconv]
+            # up = [uprelu, upconv, upnorm]
+            # model = down + up
+            model = [nn.Identity()]
+        else:
+            upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
+                                        kernel_size=kernel_size, stride=2,
+                                        padding=padding, bias=use_bias)
+            down = [downrelu, downconv, downnorm]
+            up = [uprelu, upconv, upnorm]
+
+            if use_dropout:
+                model = down + [submodule] + up + [nn.Dropout(0.5)]
+            else:
+                model = down + [submodule] + up
+
+        self.model = nn.Sequential(*model)
+
+
+    def forward(self, x):
+        # TODO: add code so that the encoder output is returned (if innermost:)
+
+        if self.outermost:
+            print(f"outermost {x.shape}")
+            return self.model(x)
+        elif self.innermost:
+            print(f"innermost: {x.shape}")
+            self.enc_out = self.avg_pool(x)
+            # breakpoint()
+            return self.model(x)
+        else:   # add skip connections
+            print(f"normal {x.shape}, {self.model}")
+            return torch.cat([x, self.model(x)], 1)
+
+
+
+
+
+
+
+
 
 
 
 class CopyDiscriminator(nn.Module):
     """
-    Generator architecture that follows the paper from Arandjelovic et al. 2019
+    Discriminator architecture following the paper from Arandjelovic et al. 2019
     """
 
     def __init__(self, input_nc, ndf, norm_layer):
@@ -357,6 +492,15 @@ class CopyDiscriminator(nn.Module):
 
     def forward(self, input):
         return self.model(input)
+
+
+
+
+
+
+######################################
+# COPYGAN LOSS FUNCTIONS
+######################################
 
 
 class Copyloss(nn.Module):
@@ -470,6 +614,7 @@ class MaskLoss(nn.Module):
         super(MaskLoss, self).__init__()
         self.register_buffer('real_label', torch.tensor(target_real_label))
         self.register_buffer('fake_label', torch.tensor(target_fake_label))
+
         # self.gan_mode = gan_mode
         # if gan_mode == 'lsgan':
         #     self.loss = nn.MSELoss()
