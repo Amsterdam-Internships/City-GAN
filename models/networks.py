@@ -155,7 +155,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     elif netG == 'unet_256':
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'copy':
-        net = CopyGenerator(input_nc, output_nc,4, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+        net = CopyGenerator(input_nc, output_nc,4, ngf, norm_layer=norm_layer, dropout=use_dropout)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -332,7 +332,7 @@ class CopyGenerator(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, num_downs=5, ngf=64, norm_layer=nn.InstanceNorm2d, use_dropout=False):
+    def __init__(self, input_nc, output_nc, num_downs=4, ngf=64, norm_layer=nn.InstanceNorm2d, dropout=False):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -347,129 +347,167 @@ class CopyGenerator(nn.Module):
         """
         super(CopyGenerator, self).__init__()
 
-        # construct unet structure, starting with innermost layer
-        unet_block = CustomUnetBlock(ngf * 8, ngf * 8, input_nc=None, submodule=None, norm_layer=norm_layer, innermost=True)
 
-        # add intermediate layers with ngf * 8 filters
-        for i in range(num_downs - 5):
-            unet_block = CustomUnetBlock(ngf * 8, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer, use_dropout=use_dropout)
+        self.encoder = UnetEncoder(input_nc=input_nc, num_downs=num_downs, norm_layer=norm_layer, dropout=dropout)
+        self.decoder = UnetDecoder()
 
-        # gradually reduce the number of filters from ngf * 8 to ngf
-        unet_block = CustomUnetBlock(ngf * 4, ngf * 8, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
-        unet_block = CustomUnetBlock(ngf * 2, ngf * 4, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
-        unet_block = CustomUnetBlock(ngf, ngf * 2, input_nc=None, submodule=unet_block, norm_layer=norm_layer)
-
-        # add the outermost layer
-        self.model = CustomUnetBlock(output_nc, ngf, input_nc=input_nc, submodule=unet_block, outermost=True, norm_layer=norm_layer)
+        self.avg_pool = nn.AvgPool2d(3, stride=2)
 
 
     def forward(self, input):
         """Standard forward, returning encoder output and decoder output"""
         # TODO: return output from encoder as well
-        # out_enc, out_dec = self.model(input)
 
-        # return out_enc, out_dec
+        enc_out = self.encoder(input)
+        enc_pooled = self.avg_pool(enc_out)
+
+        breakpoint()
+
+        dec_out = self.decoder(enc_out)
+
+        return enc_pooled, dec_out
+
+
+
+
+class UnetEncoder(nn.Module):
+    """
+    UnetEncoder
+    """
+
+    def __init__(self, input_nc=3, num_downs=4, ngf=64, norm_layer=nn.InstanceNorm2d, dropout=False):
+        """Construct a Unet generator
+        Parameters:
+            input_nc (int)  -- the number of channels in input images
+            output_nc (int) -- the number of channels in output images
+            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
+                                image of size 128x128 will become of size 1x1 # at the bottleneck
+            ngf (int)       -- the number of filters in the last conv layer
+            norm_layer      -- normalization layer
+
+        """
+        super(UnetEncoder, self).__init__()
+        # add first layer
+        model = [EncoderBlock(input_nc, ngf, stride=1, kernel=3, padding=1, norm_layer=norm_layer, slope=0.2, dropout=dropout, use_bias=False)]
+
+
+
+        for i in range(num_downs):
+            model.append(EncoderBlock(ngf, output_nc, stride=2, kernel=3, padding=1, norm_layer=norm_layer, slope=0.2, dropout=dropout, use_bias=False))
+            output_nc = input_nc
+            ngf *= 2
+
+        self.model = nn.Sequential(*model)
+
+
+    def forward(self, input):
+        """Standard forward, returning encoder output"""
 
         return self.model(input)
 
 
 
 
-class CustomUnetBlock(nn.Module):
-    """Defines the Unet submodule with skip connection.
-        X -------------------identity----------------------
-        |-- downsampling -- |submodule| -- upsampling --|
+class EncoderBlock(nn.Module):
+    """
+    UnetEncoder
     """
 
-    def __init__(self, outer_nc, inner_nc, kernel_size=3, padding=1, input_nc=None, submodule=None, outermost=False, innermost=False, norm_layer=nn.InstanceNorm2d, use_dropout=False, ReLU_slope=0.2):
-        """Construct a Unet submodule with skip connections.
-
+    def __init__(self, input_nc, output_nc, stride=2, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
+        """Construct a Unet generator
         Parameters:
-            outer_nc (int) -- the number of filters in the outer conv layer
-            inner_nc (int) -- the number of filters in the inner conv layer
-            input_nc (int) -- the number of channels in input images/features
-            submodule (UnetSkipConnectionBlock) -- previously defined submodules
-            outermost (bool)    -- if this module is the outermost module
-            innermost (bool)    -- if this module is the innermost module
-            norm_layer          -- normalization layer
-            use_dropout (bool)  -- if use dropout layers.
+            input_nc (int)  -- the number of channels in input images
+            output_nc (int) -- the number of channels in output images
+            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
+                                image of size 128x128 will become of size 1x1 # at the bottleneck
+            ngf (int)       -- the number of filters in the last conv layer
+            norm_layer      -- normalization layer
+
+        We construct the U-Net from the innermost layer to the outermost layer.
+        It is a recursive process.
         """
-        super(CustomUnetBlock, self).__init__()
+        super(EncoderBlock, self).__init__()
 
-        self.outermost = outermost
+        layers = [
+            nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
+            nn.LeakyReLU(slope, True),
+            norm_layer(output_nc)
+        ]
 
-        # TODO: to be removed, only for debugging dimensions
-        self.innermost = innermost
+        if dropout:
+            layers.append(nn.Dropout(0.5))
 
-
-
-        # set the use of bias, only if instance normalization
-        use_bias = norm_layer == nn.InstanceNorm2d
-        stride = 1 if outermost else 2
-
-        if input_nc is None:
-            input_nc = outer_nc
-
-        downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=kernel_size, stride=stride, padding=padding, bias=use_bias)
-        downrelu = nn.LeakyReLU(ReLU_slope, True)
-        downnorm = norm_layer(inner_nc)
-        uprelu = nn.LeakyReLU(ReLU_slope, True)
-        upnorm = norm_layer(outer_nc)
-
-        if outermost:
+        self.model = nn.Sequential(model)
 
 
-            upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
-                                        kernel_size=kernel_size, stride=1,
-                                        padding=padding)
-            down = [downconv]
-            # TODO: add sigmoid to last layer of decoder (done, was Tanh)
-            up = [uprelu, upconv, nn.Sigmoid()]
-            model = down + [submodule] + up
-        elif innermost:
-            print("innermost params", inner_nc, outer_nc)
-            # upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
-            #                             kernel_size=kernel_size, stride=stride,
-            #                             padding=padding, bias=use_bias)
 
-            # # define average pooling for the encoder output
-            self.avg_pool = nn.AvgPool2d(3, stride=2)
-
-            # down = [downrelu, downconv]
-            # up = [uprelu, upconv, upnorm]
-            # model = down + up
-            model = [nn.Identity()]
-        else:
-            upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
-                                        kernel_size=kernel_size, stride=2,
-                                        padding=padding, bias=use_bias)
-            down = [downrelu, downconv, downnorm]
-            up = [uprelu, upconv, upnorm]
-
-            if use_dropout:
-                model = down + [submodule] + up + [nn.Dropout(0.5)]
-            else:
-                model = down + [submodule] + up
-
-        self.model = nn.Sequential(*model)
+    def forward(self, input):
+        """Standard forward"""
+        print("encoder block forward, input shape", input.shape)
+        return self.model(input)
 
 
-    def forward(self, x):
-        # TODO: add code so that the encoder output is returned (if innermost:)
-
-        if self.outermost:
-            print(f"outermost {x.shape}")
-            return self.model(x)
-        elif self.innermost:
-            print(f"innermost: {x.shape}")
-            self.enc_out = self.avg_pool(x)
-            # breakpoint()
-            return self.model(x)
-        else:   # add skip connections
-            print(f"normal {x.shape}, {self.model}")
-            return torch.cat([x, self.model(x)], 1)
 
 
+
+
+class UnetDecoder(nn.Module):
+    """
+    UnetDecoder
+    """
+
+    def __init__(self, input_nc, output_nc, num_downs=5, ngf=64, norm_layer=nn.InstanceNorm2d, use_dropout=False):
+        """Construct a Unet generator
+        Parameters:
+            input_nc (int)  -- the number of channels in input images
+            output_nc (int) -- the number of channels in output images
+            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
+                                image of size 128x128 will become of size 1x1 # at the bottleneck
+            ngf (int)       -- the number of filters in the last conv layer
+            norm_layer      -- normalization layer
+
+        We construct the U-Net from the innermost layer to the outermost layer.
+        It is a recursive process.
+        """
+        super(UnetDecoder, self).__init__()
+
+
+
+    def forward(self, input):
+        """Standard forward, returning encoder output and decoder output"""
+        # TODO: return output from encoder as well
+        pass
+
+
+
+
+
+class DecoderBlock(nn.Module):
+    """
+    UnetEncoder
+    """
+
+    def __init__(self, input_nc, output_nc, num_downs=5, ngf=64, norm_layer=nn.InstanceNorm2d, use_dropout=False):
+        """Construct a Unet generator
+        Parameters:
+            input_nc (int)  -- the number of channels in input images
+            output_nc (int) -- the number of channels in output images
+            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
+                                image of size 128x128 will become of size 1x1 # at the bottleneck
+            ngf (int)       -- the number of filters in the last conv layer
+            norm_layer      -- normalization layer
+
+        We construct the U-Net from the innermost layer to the outermost layer.
+        It is a recursive process.
+        """
+        super(UnetEncoder, self).__init__()
+
+
+
+    def forward(self, input):
+        """Standard forward, returning encoder output and decoder output"""
+        # TODO: return output from encoder as well
+        pass
 
 
 
@@ -671,125 +709,7 @@ class MaskLoss(nn.Module):
 
 
 
-class ResnetGenerator(nn.Module):
-    """Resnet-based generator that consists of Resnet blocks between a few downsampling/upsampling operations.
 
-    We adapt Torch code and idea from Justin Johnson's neural style transfer project(https://github.com/jcjohnson/fast-neural-style)
-    """
-
-    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, padding_type='reflect'):
-        """Construct a Resnet-based generator
-
-        Parameters:
-            input_nc (int)      -- the number of channels in input images
-            output_nc (int)     -- the number of channels in output images
-            ngf (int)           -- the number of filters in the last conv layer
-            norm_layer          -- normalization layer
-            use_dropout (bool)  -- if use dropout layers
-            n_blocks (int)      -- the number of ResNet blocks
-            padding_type (str)  -- the name of padding layer in conv layers: reflect | replicate | zero
-        """
-        assert(n_blocks >= 0)
-        super(ResnetGenerator, self).__init__()
-        if type(norm_layer) == functools.partial:
-            use_bias = norm_layer.func == nn.InstanceNorm2d
-        else:
-            use_bias = norm_layer == nn.InstanceNorm2d
-
-        model = [nn.ReflectionPad2d(3),
-                 nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0, bias=use_bias),
-                 norm_layer(ngf),
-                 nn.ReLU(True)]
-
-        n_downsampling = 2
-        for i in range(n_downsampling):  # add downsampling layers
-            mult = 2 ** i
-            model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3, stride=2, padding=1, bias=use_bias),
-                      norm_layer(ngf * mult * 2),
-                      nn.ReLU(True)]
-
-        mult = 2 ** n_downsampling
-        for i in range(n_blocks):       # add ResNet blocks
-
-            model += [ResnetBlock(ngf * mult, padding_type=padding_type, norm_layer=norm_layer, use_dropout=use_dropout, use_bias=use_bias)]
-
-        for i in range(n_downsampling):  # add upsampling layers
-            mult = 2 ** (n_downsampling - i)
-            model += [nn.ConvTranspose2d(ngf * mult, int(ngf * mult / 2),
-                                         kernel_size=3, stride=2,
-                                         padding=1, output_padding=1,
-                                         bias=use_bias),
-                      norm_layer(int(ngf * mult / 2)),
-                      nn.ReLU(True)]
-        model += [nn.ReflectionPad2d(3)]
-        model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
-        model += [nn.Tanh()]
-
-        self.model = nn.Sequential(*model)
-
-    def forward(self, input):
-        """Standard forward"""
-        return self.model(input)
-
-
-class ResnetBlock(nn.Module):
-    """Define a Resnet block"""
-
-    def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
-        """Initialize the Resnet block
-
-        A resnet block is a conv block with skip connections
-        We construct a conv block with build_conv_block function,
-        and implement skip connections in <forward> function.
-        Original Resnet paper: https://arxiv.org/pdf/1512.03385.pdf
-        """
-        super(ResnetBlock, self).__init__()
-        self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
-
-    def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
-        """Construct a convolutional block.
-
-        Parameters:
-            dim (int)           -- the number of channels in the conv layer.
-            padding_type (str)  -- the name of padding layer: reflect | replicate | zero
-            norm_layer          -- normalization layer
-            use_dropout (bool)  -- if use dropout layers.
-            use_bias (bool)     -- if the conv layer uses bias or not
-
-        Returns a conv block (with a conv layer, a normalization layer, and a non-linearity layer (ReLU))
-        """
-        conv_block = []
-        p = 0
-        if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad2d(1)]
-        elif padding_type == 'replicate':
-            conv_block += [nn.ReplicationPad2d(1)]
-        elif padding_type == 'zero':
-            p = 1
-        else:
-            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
-
-        conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias), norm_layer(dim), nn.ReLU(True)]
-        if use_dropout:
-            conv_block += [nn.Dropout(0.5)]
-
-        p = 0
-        if padding_type == 'reflect':
-            conv_block += [nn.ReflectionPad2d(1)]
-        elif padding_type == 'replicate':
-            conv_block += [nn.ReplicationPad2d(1)]
-        elif padding_type == 'zero':
-            p = 1
-        else:
-            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
-        conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias), norm_layer(dim)]
-
-        return nn.Sequential(*conv_block)
-
-    def forward(self, x):
-        """Forward function (with skip connections)"""
-        out = x + self.conv_block(x)  # add skip connections
-        return out
 
 
 class UnetGenerator(nn.Module):
@@ -894,81 +814,3 @@ class UnetSkipConnectionBlock(nn.Module):
             return torch.cat([x, self.model(x)], 1)
 
 
-class NLayerDiscriminator(nn.Module):
-    """Defines a PatchGAN discriminator"""
-
-    def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d):
-        """Construct a PatchGAN discriminator
-
-        Parameters:
-            input_nc (int)  -- the number of channels in input images
-            ndf (int)       -- the number of filters in the last conv layer
-            n_layers (int)  -- the number of conv layers in the discriminator
-            norm_layer      -- normalization layer
-        """
-        super(NLayerDiscriminator, self).__init__()
-        if type(norm_layer) == functools.partial:  # no need to use bias as BatchNorm2d has affine parameters
-            use_bias = norm_layer.func == nn.InstanceNorm2d
-        else:
-            use_bias = norm_layer == nn.InstanceNorm2d
-
-        kw = 4
-        padw = 1
-        sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
-        nf_mult = 1
-        nf_mult_prev = 1
-        for n in range(1, n_layers):  # gradually increase the number of filters
-            nf_mult_prev = nf_mult
-            nf_mult = min(2 ** n, 8)
-            sequence += [
-                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=2, padding=padw, bias=use_bias),
-                norm_layer(ndf * nf_mult),
-                nn.LeakyReLU(0.2, True)
-            ]
-
-        nf_mult_prev = nf_mult
-        nf_mult = min(2 ** n_layers, 8)
-        sequence += [
-            nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=1, padding=padw, bias=use_bias),
-            norm_layer(ndf * nf_mult),
-            nn.LeakyReLU(0.2, True)
-        ]
-
-        sequence += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
-        self.model = nn.Sequential(*sequence)
-
-    def forward(self, input):
-        """Standard forward."""
-        return self.model(input)
-
-
-class PixelDiscriminator(nn.Module):
-    """Defines a 1x1 PatchGAN discriminator (pixelGAN)"""
-
-    def __init__(self, input_nc, ndf=64, norm_layer=nn.BatchNorm2d):
-        """Construct a 1x1 PatchGAN discriminator
-
-        Parameters:
-            input_nc (int)  -- the number of channels in input images
-            ndf (int)       -- the number of filters in the last conv layer
-            norm_layer      -- normalization layer
-        """
-        super(PixelDiscriminator, self).__init__()
-        if type(norm_layer) == functools.partial:  # no need to use bias as BatchNorm2d has affine parameters
-            use_bias = norm_layer.func == nn.InstanceNorm2d
-        else:
-            use_bias = norm_layer == nn.InstanceNorm2d
-
-        self.net = [
-            nn.Conv2d(input_nc, ndf, kernel_size=1, stride=1, padding=0),
-            nn.LeakyReLU(0.2, True),
-            nn.Conv2d(ndf, ndf * 2, kernel_size=1, stride=1, padding=0, bias=use_bias),
-            norm_layer(ndf * 2),
-            nn.LeakyReLU(0.2, True),
-            nn.Conv2d(ndf * 2, 1, kernel_size=1, stride=1, padding=0, bias=use_bias)]
-
-        self.net = nn.Sequential(*self.net)
-
-    def forward(self, input):
-        """Standard forward."""
-        return self.net(input)
