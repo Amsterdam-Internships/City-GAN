@@ -36,6 +36,7 @@ class CopyPasteGANModel(BaseModel):
         # comments for defaults:
         # images are resized to 64x64, hence load_size=64
         # batch size of 80 per GPU is used (and 4 GPUs)
+        # norm is instanc by default
 
         parser.set_defaults(dataset_mode='aligned', output_nc=1, load_size=70, crop_size= 64,batch_size=80, lr=1e-4, lr_policy="step", n_epochs=1, netG="copy", netD="copy", dataroot="datasets")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
@@ -63,11 +64,11 @@ class CopyPasteGANModel(BaseModel):
         # you can use opt.isTrain to specify different behaviors for training and test. For example, some networks will not be used during test, and you don't need to load them.
         self.model_names = ['G']
         # define networks; you can use opt.isTrain to specify different behaviors for training and test.
-        self.netG = networks.define_G(opt.input_nc, opt.output_nc, ngf=opt.ngf, netG=opt.netG, gpu_ids=self.gpu_ids)
+        self.netG = networks.define_G(opt.input_nc, opt.output_nc, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, gpu_ids=self.gpu_ids)
 
         if self.isTrain:
             # only define the Discriminator if in training phase
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, n_layers_D=3, norm='batch', init_type='normal', init_gain=0.02, gpu_ids=[])
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, n_layers_D=3, norm=opt.norm, init_type='normal', init_gain=0.02, gpu_ids=[])
             self.model_names.append("D")
 
         if self.isTrain:  # only defined during training time
@@ -98,8 +99,10 @@ class CopyPasteGANModel(BaseModel):
 
     def forward(self):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
-        print("Data_A", self.data_A.shape)
-        self.output = self.netG(self.data_A)  # generate output image given the input data_A
+        # print("Data_A", self.data_A.shape)
+
+         # generate output image given the input data_A
+        self.output = self.netG(self.data_A)
 
 
     def backward_G(self):
@@ -137,6 +140,8 @@ class CopyPasteGANModel(BaseModel):
 
         # perform forward step
         self.forward()
+
+        print("finished forward step")
 
         # clear existing gradients
         self.optimizer_G.zero_grad()
