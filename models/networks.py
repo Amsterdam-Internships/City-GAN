@@ -155,7 +155,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     elif netG == 'unet_256':
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'copy':
-        net = CopyGenerator(input_nc, output_nc,4, ngf, norm_layer=norm_layer, dropout=use_dropout)
+        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=use_dropout)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -201,7 +201,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
     elif netD == 'pixel':     # classify if each pixel is real or fake
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
-        net = CopyDiscriminator(input_nc, ndf, norm_layer=norm_layer)
+        net = CopyDiscriminator(input_nc, ndf, 4, norm_layer=norm_layer)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' % netD)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -325,14 +325,45 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
 ######################################
 
 
-class CopyGenerator(nn.Module):
+
+
+
+class CopyDiscriminator(nn.Module):
+    """
+    Discriminator architecture following the paper from Arandjelovic et al. 2019
+    """
+
+    def __init__(self, input_nc, ndf, num_downs, norm_layer):
+        super(CopyDiscriminator, self).__init__()
+
+
+        self.encoder = UnetEncoder(input_nc=input_nc, num_downs=num_downs, norm_layer=norm_layer, dropout=False)
+        # TODO: check if input_nc for decoder is sound
+        self.decoder = UnetDecoder(ndf * 2**(num_downs-1), output_nc=1)
+        self.avg_pool = nn.AvgPool2d(3, stride=2)
+
+
+    def forward(self, input):
+        """Standard forward, returning encoder output and decoder output"""
+        # TODO: return output from encoder as well
+
+        enc_out = self.encoder(input)
+        enc_pooled = self.avg_pool(enc_out)
+        dec_out = self.decoder(enc_out)
+
+        return enc_pooled, dec_out
+
+
+
+
+class CopyUNet(nn.Module):
     """
     Generator architecture that follows the paper from Arandjelovic et al. 2019
     This implements the CopyPaste Generator architecture from the
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, num_downs=4, ngf=64, norm_layer=nn.InstanceNorm2d, dropout=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, discriminator=False):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -345,65 +376,83 @@ class CopyGenerator(nn.Module):
         We construct the U-Net from the innermost layer to the outermost layer.
         It is a recursive process.
         """
-        super(CopyGenerator, self).__init__()
+        super(CopyUNet, self).__init__()
 
+        self.discriminator = discriminator
 
-        self.encoder = UnetEncoder(input_nc=input_nc, num_downs=num_downs, norm_layer=norm_layer, dropout=dropout)
-        self.decoder = UnetDecoder()
+        self.enc1 = EncoderBlock(input_nc, 64, stride=1)
+        self.enc2 = EncoderBlock(64, 128)
+        self.enc3 = EncoderBlock(128, 256)
+        self.enc4 = EncoderBlock(256, 512)
 
+        self.dec4 = DecoderBlock(512, 256)
+        self.dec3 = DecoderBlock(512, 128)
+        self.dec2 = DecoderBlock(256, 64)
+        self.dec1 = DecoderBlock(128, output_nc, last_layer=True)
+
+        self.sigmoid = nn.Sigmoid()
         self.avg_pool = nn.AvgPool2d(3, stride=2)
+
+        # self.encoder = UnetEncoder(input_nc=input_nc, num_downs=num_downs, norm_layer=norm_layer, dropout=dropout)
+        # # TODO: check if input_nc for decoder is sound
+        # self.decoder = UnetDecoder(ngf * 2**(num_downs-1), output_nc=output_nc)
 
 
     def forward(self, input):
         """Standard forward, returning encoder output and decoder output"""
         # TODO: return output from encoder as well
 
-        enc_out = self.encoder(input)
-        enc_pooled = self.avg_pool(enc_out)
+        enc1 = self.enc1(input)
+        enc2 = self.enc2(enc1)
+        enc3 = self.enc3(enc2)
+        enc4 = self.enc4(enc3)
+
+        dec4 = self.dec4(enc4)
+        print("enc4:", enc4.shape)
+        print("dec4:", dec4.shape)
+
+        dec3 = self.dec3(torch.cat([enc3, dec4], 1))
+        dec2 = self.dec2(torch.cat([enc2, dec3], 1))
+        dec1 = self.dec1(torch.cat([enc1, dec2], 1))
+
+        out = self.sigmoid(dec1)
+
+        if self.discriminator:
+            enc_out = self.avg_pool(enc4)
+            return out, enc_out
+
+        return out
+
+
+
+
+        enc_out_list = []
+        for i, layer in enumerate(self.encoder.model):
+            input = layer(input)
+            print(f"enc input shape: {input.shape}")
+            enc_out_list.append(input)
+
+        self.enc_out = input
+
+        dec_inp = input
 
         breakpoint()
 
-        dec_out = self.decoder(enc_out)
+        for j, layer in enumerate(self.decoder.model):
+            enc_inp = enc_out_list[-j]
+            print(f"dec input shape: {dec_inp.shape}")
+            dec_inp = layer(torch.cat([dec_inp, enc_inp], 1))
 
-        return enc_pooled, dec_out
-
-
-
-
-class UnetEncoder(nn.Module):
-    """
-    UnetEncoder
-    """
-
-    def __init__(self, input_nc=3, num_downs=4, ngf=64, norm_layer=nn.InstanceNorm2d, dropout=False):
-        """Construct a Unet generator
-        Parameters:
-            input_nc (int)  -- the number of channels in input images
-            output_nc (int) -- the number of channels in output images
-            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
-                                image of size 128x128 will become of size 1x1 # at the bottleneck
-            ngf (int)       -- the number of filters in the last conv layer
-            norm_layer      -- normalization layer
-
-        """
-        super(UnetEncoder, self).__init__()
-        # add first layer
-        model = [EncoderBlock(input_nc, ngf, stride=1, kernel=3, padding=1, norm_layer=norm_layer, slope=0.2, dropout=dropout, use_bias=False)]
+        dec_out = dec_inp
 
 
+        # enc_out = self.encoder(input)
+        # print(f"enc_out shape {enc_out.shape}")
+        # dec_out = self.decoder(enc_out)
 
-        for i in range(num_downs):
-            model.append(EncoderBlock(ngf, output_nc, stride=2, kernel=3, padding=1, norm_layer=norm_layer, slope=0.2, dropout=dropout, use_bias=False))
-            output_nc = input_nc
-            ngf *= 2
-
-        self.model = nn.Sequential(*model)
+        return dec_out
 
 
-    def forward(self, input):
-        """Standard forward, returning encoder output"""
-
-        return self.model(input)
 
 
 
@@ -430,14 +479,14 @@ class EncoderBlock(nn.Module):
 
         layers = [
             nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
-            nn.LeakyReLU(slope, True),
-            norm_layer(output_nc)
+            norm_layer(output_nc),
+            nn.LeakyReLU(slope, True)
         ]
 
         if dropout:
             layers.append(nn.Dropout(0.5))
 
-        self.model = nn.Sequential(model)
+        self.model = nn.Sequential(*layers)
 
 
 
@@ -450,44 +499,12 @@ class EncoderBlock(nn.Module):
 
 
 
-
-class UnetDecoder(nn.Module):
-    """
-    UnetDecoder
-    """
-
-    def __init__(self, input_nc, output_nc, num_downs=5, ngf=64, norm_layer=nn.InstanceNorm2d, use_dropout=False):
-        """Construct a Unet generator
-        Parameters:
-            input_nc (int)  -- the number of channels in input images
-            output_nc (int) -- the number of channels in output images
-            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
-                                image of size 128x128 will become of size 1x1 # at the bottleneck
-            ngf (int)       -- the number of filters in the last conv layer
-            norm_layer      -- normalization layer
-
-        We construct the U-Net from the innermost layer to the outermost layer.
-        It is a recursive process.
-        """
-        super(UnetDecoder, self).__init__()
-
-
-
-    def forward(self, input):
-        """Standard forward, returning encoder output and decoder output"""
-        # TODO: return output from encoder as well
-        pass
-
-
-
-
-
 class DecoderBlock(nn.Module):
     """
     UnetEncoder
     """
 
-    def __init__(self, input_nc, output_nc, num_downs=5, ngf=64, norm_layer=nn.InstanceNorm2d, use_dropout=False):
+    def __init__(self, input_nc, output_nc, stride=1, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -500,36 +517,33 @@ class DecoderBlock(nn.Module):
         We construct the U-Net from the innermost layer to the outermost layer.
         It is a recursive process.
         """
-        super(UnetEncoder, self).__init__()
+        super(DecoderBlock, self).__init__()
 
+        layers = []
+        # nn.ConvTranspose2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
+        if not last_layer:
+            layers += [nn.Upsample(scale_factor=2, mode='nearest'),
+                       nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding)]
+            layers += [norm_layer(output_nc), nn.LeakyReLU(slope, True)]
+        else:
+            layers.append(nn.Conv2d(input_nc, output_nc, stride=1, kernel_size=kernel, padding=padding))
+
+        if dropout:
+            layers.append(nn.Dropout(0.5))
+
+        self.model = nn.Sequential(*layers)
 
 
     def forward(self, input):
-        """Standard forward, returning encoder output and decoder output"""
-        # TODO: return output from encoder as well
-        pass
-
-
-
-
-
-
-
-
-
-class CopyDiscriminator(nn.Module):
-    """
-    Discriminator architecture following the paper from Arandjelovic et al. 2019
-    """
-
-    def __init__(self, input_nc, ndf, norm_layer):
-        super(CopyDiscriminator, self).__init__()
-        model = [nn.Linear(100, 200)]
-
-        self.model = nn.Sequential(*model)
-
-    def forward(self, input):
+        """Standard forward"""
+        print("Input shape decoder block:", input.shape)
         return self.model(input)
+
+
+
+
+
+
 
 
 
