@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
@@ -207,6 +208,33 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
+
+
+###############################################
+# HELPER FUNCTIONS
+###############################################
+
+def composite_image(src, tgt, mask=None):
+    """
+    Crop out the mask in the source image and paste on the tgt image
+    If no mask is given, A random polygon is generared to generate a
+    grounded fake
+    """
+
+    def get_polygon_mask():
+        pass
+
+    if not torch.is_tensor(mask):
+        mask = get_polygon_mask()
+
+    inv_mask = 1 - mask
+
+    # TODO: check if this yield a valid image
+    composite = torch.mul(src, mask) + torch.mul(tgt, inv_mask)
+
+    return composite
+
+
 ##############################################################################
 # Classes
 ##############################################################################
@@ -218,7 +246,7 @@ class GANLoss(nn.Module):
     """
 
     # TODO: set real label to 0.95 instead of 1 to prevent overconfidence?
-    def __init__(self, gan_mode, target_real_label=1.0, target_fake_label=0.0):
+    def __init__(self, gan_mode, target_real_label=0.9, target_fake_label=0.0):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -308,11 +336,11 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
             raise NotImplementedError('{} not implemented'.format(type))
         interpolatesv.requires_grad_(True)
         disc_interpolates = netD(interpolatesv)
-        gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolatesv,
-                                        grad_outputs=torch.ones(disc_interpolates.size()).to(device),
-                                        create_graph=True, retain_graph=True, only_inputs=True)
+
+        gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolatesv, grad_outputs=torch.ones(disc_interpolates.size()).to(device), create_graph=True, retain_graph=True, only_inputs=True)
         gradients = gradients[0].view(real_data.size(0), -1)  # flat the data
         gradient_penalty = (((gradients + 1e-16).norm(2, dim=1) - constant) ** 2).mean() * lambda_gp        # added eps
+
         return gradient_penalty, gradients
     else:
         return 0.0, None
@@ -321,13 +349,13 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
 
 
 ######################################
-# COPYGAN GENERATOR AND DISCRIMINATOR
+# COPYGAN UNET ARCHITECTURE
 ######################################
 
 class CopyUNet(nn.Module):
     """
     Generator architecture that follows the paper from Arandjelovic et al. 2019
-    This implements the CopyPaste Generator architecture from the
+    This implements the CopyPaste architecture from the
     implementation details in the paper
     """
 
@@ -336,13 +364,9 @@ class CopyUNet(nn.Module):
         Parameters:
             input_nc (int)  -- the number of channels in input images
             output_nc (int) -- the number of channels in output images
-            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
-                                image of size 128x128 will become of size 1x1 # at the bottleneck
-            ngf (int)       -- the number of filters in the last conv layer
             norm_layer      -- normalization layer
 
-        We construct the U-Net from the innermost layer to the outermost layer.
-        It is a recursive process.
+        The U-net is constructed from encoder and decoder building blocks
         """
         super(CopyUNet, self).__init__()
 
@@ -360,11 +384,16 @@ class CopyUNet(nn.Module):
 
         self.sigmoid = nn.Sigmoid()
         self.avg_pool = nn.AvgPool2d(3, stride=2)
+        self.fc = nn.Linear(512, 1)
+        self.relu = nn.ReLU()
+
+
+
 
 
     def forward(self, input):
-        """Standard forward, returning encoder output and decoder output"""
-        # TODO: return output from encoder as well
+        """Standard forward, return decoder output and encoder output if in
+        discriminator mode"""
 
         enc1 = self.enc1(input)
         enc2 = self.enc2(enc1)
@@ -372,20 +401,28 @@ class CopyUNet(nn.Module):
         enc4 = self.enc4(enc3)
 
         dec4 = self.dec4(enc4)
-        print("enc4:", enc4.shape)
-        print("dec4:", dec4.shape)
-
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
         dec1 = self.dec1(torch.cat([enc1, dec2], 1))
 
-        out = self.sigmoid(dec1)
+        # TODO: is this the correct way to get the binary mask?
+        copy_mask = self.relu(torch.sign(self.sigmoid(dec1) - 0.5))
+
 
         if self.discriminator:
             enc_out = self.avg_pool(enc4)
-            return out, enc_out
+            realness_score = self.fc(enc_out)
+            breakpoint()
+            out = [realness_score, copy_mask]
+        else:
+            out = copy_mask
 
         return out
+
+
+
+
+
 
 
 class EncoderBlock(nn.Module):
@@ -464,14 +501,6 @@ class DecoderBlock(nn.Module):
         """Standard forward"""
         print("Input shape decoder block:", input.shape)
         return self.model(input)
-
-
-
-
-
-
-
-
 
 
 
