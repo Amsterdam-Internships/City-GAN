@@ -201,7 +201,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
     elif netD == 'pixel':     # classify if each pixel is real or fake
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
-        net = CopyDiscriminator(input_nc, ndf, 4, norm_layer=norm_layer)
+        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' % netD)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -324,38 +324,6 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
 # COPYGAN GENERATOR AND DISCRIMINATOR
 ######################################
 
-
-
-
-
-class CopyDiscriminator(nn.Module):
-    """
-    Discriminator architecture following the paper from Arandjelovic et al. 2019
-    """
-
-    def __init__(self, input_nc, ndf, num_downs, norm_layer):
-        super(CopyDiscriminator, self).__init__()
-
-
-        self.encoder = UnetEncoder(input_nc=input_nc, num_downs=num_downs, norm_layer=norm_layer, dropout=False)
-        # TODO: check if input_nc for decoder is sound
-        self.decoder = UnetDecoder(ndf * 2**(num_downs-1), output_nc=1)
-        self.avg_pool = nn.AvgPool2d(3, stride=2)
-
-
-    def forward(self, input):
-        """Standard forward, returning encoder output and decoder output"""
-        # TODO: return output from encoder as well
-
-        enc_out = self.encoder(input)
-        enc_pooled = self.avg_pool(enc_out)
-        dec_out = self.decoder(enc_out)
-
-        return enc_pooled, dec_out
-
-
-
-
 class CopyUNet(nn.Module):
     """
     Generator architecture that follows the paper from Arandjelovic et al. 2019
@@ -393,10 +361,6 @@ class CopyUNet(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.avg_pool = nn.AvgPool2d(3, stride=2)
 
-        # self.encoder = UnetEncoder(input_nc=input_nc, num_downs=num_downs, norm_layer=norm_layer, dropout=dropout)
-        # # TODO: check if input_nc for decoder is sound
-        # self.decoder = UnetDecoder(ngf * 2**(num_downs-1), output_nc=output_nc)
-
 
     def forward(self, input):
         """Standard forward, returning encoder output and decoder output"""
@@ -422,39 +386,6 @@ class CopyUNet(nn.Module):
             return out, enc_out
 
         return out
-
-
-
-
-        enc_out_list = []
-        for i, layer in enumerate(self.encoder.model):
-            input = layer(input)
-            print(f"enc input shape: {input.shape}")
-            enc_out_list.append(input)
-
-        self.enc_out = input
-
-        dec_inp = input
-
-        breakpoint()
-
-        for j, layer in enumerate(self.decoder.model):
-            enc_inp = enc_out_list[-j]
-            print(f"dec input shape: {dec_inp.shape}")
-            dec_inp = layer(torch.cat([dec_inp, enc_inp], 1))
-
-        dec_out = dec_inp
-
-
-        # enc_out = self.encoder(input)
-        # print(f"enc_out shape {enc_out.shape}")
-        # dec_out = self.decoder(enc_out)
-
-        return dec_out
-
-
-
-
 
 
 class EncoderBlock(nn.Module):
@@ -488,15 +419,10 @@ class EncoderBlock(nn.Module):
 
         self.model = nn.Sequential(*layers)
 
-
-
     def forward(self, input):
         """Standard forward"""
-        print("encoder block forward, input shape", input.shape)
+        # print("encoder block forward, input shape", input.shape)
         return self.model(input)
-
-
-
 
 
 class DecoderBlock(nn.Module):
