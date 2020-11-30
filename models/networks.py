@@ -225,7 +225,7 @@ def composite_image(src, tgt, mask=None):
         # TODO: change this to real polygon
         for i in range(b):
             xy = (torch.rand(2) * 0.5 * torch.tensor([w, h])).int()
-            mask[i, 0, xy[0]:xy[0]+20, xy[1]:xy[1]+20] = 1
+            mask[i, 0, xy[0]:xy[0]+25, xy[1]:xy[1]+25] = 1
 
         return mask
 
@@ -385,7 +385,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
