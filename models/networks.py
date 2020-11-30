@@ -220,16 +220,28 @@ def composite_image(src, tgt, mask=None):
     If no mask is given, A random polygon is generared to generate a
     grounded fake
     """
+    def get_polygon_mask(w, h, b=1, coverage=0.1):
+        mask = torch.zeros((b, 1, w, h))
+        # TODO: change this to real polygon
+        for i in range(b):
+            mask[i, 0, 20:30, 20:30] = 1
 
-    def get_polygon_mask():
-        pass
+        return mask
+
+
+    assert src.shape == tgt.shape
 
     if not torch.is_tensor(mask):
-        mask = get_polygon_mask()
+        b, w, h = src.shape[0], src.shape[2], src.shape[3]
+        mask = get_polygon_mask(w, h, b)
 
+
+    # make sure the mask size corresponds to the image size
+    for i in [0, 2, 3]:
+        assert mask.shape[i] == src.shape[i]
+
+    # compute the composite image based on the mask and inverse mask
     inv_mask = 1 - mask
-
-    # TODO: check if this yield a valid image
     composite = torch.mul(src, mask) + torch.mul(tgt, inv_mask)
 
     return composite
@@ -367,6 +379,7 @@ class CopyUNet(nn.Module):
             norm_layer      -- normalization layer
 
         The U-net is constructed from encoder and decoder building blocks
+        Inspired from https://github.com/zijundeng/pytorch-semantic-segmentation/blob/master/models/u_net.py
         """
         super(CopyUNet, self).__init__()
 
@@ -383,7 +396,7 @@ class CopyUNet(nn.Module):
         self.dec1 = DecoderBlock(128, output_nc, last_layer=True)
 
         self.sigmoid = nn.Sigmoid()
-        self.avg_pool = nn.AvgPool2d(3, stride=2)
+        self.avg_pool = nn.AvgPool2d(8, stride=2)
         self.fc = nn.Linear(512, 1)
         self.relu = nn.ReLU()
 
@@ -406,22 +419,19 @@ class CopyUNet(nn.Module):
         dec1 = self.dec1(torch.cat([enc1, dec2], 1))
 
         # TODO: is this the correct way to get the binary mask?
-        copy_mask = self.relu(torch.sign(self.sigmoid(dec1) - 0.5))
+        # we cannot take a binary mask : backprop breaks
+        # copy_mask = self.relu(torch.sign(self.sigmoid(dec1) - 0.5))
 
+        copy_mask = dec1
 
         if self.discriminator:
-            enc_out = self.avg_pool(enc4)
+            enc_out = self.avg_pool(enc4).squeeze()
             realness_score = self.fc(enc_out)
-            breakpoint()
             out = [realness_score, copy_mask]
         else:
             out = copy_mask
 
         return out
-
-
-
-
 
 
 
@@ -499,7 +509,7 @@ class DecoderBlock(nn.Module):
 
     def forward(self, input):
         """Standard forward"""
-        print("Input shape decoder block:", input.shape)
+        # print("Input shape decoder block:", input.shape)
         return self.model(input)
 
 
