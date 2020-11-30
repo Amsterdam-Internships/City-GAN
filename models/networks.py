@@ -644,11 +644,11 @@ class MaskLoss(nn.Module):
 
         return total_loss
 
+
+
 ######################################
 # OTHER ARCHITECTURES
 ######################################
-
-
 
 
 class UnetGenerator(nn.Module):

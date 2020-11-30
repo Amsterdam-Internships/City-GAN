@@ -38,7 +38,7 @@ class CopyPasteGANModel(BaseModel):
         # batch size of 80 per GPU is used (and 4 GPUs)
         # norm is instanc by default
 
-        parser.set_defaults(dataset_mode='double', load_size=70, crop_size= 64,batch_size=80, lr=1e-4, lr_policy="step", n_epochs=1, netG="copy", netD="copy", dataroot="datasets")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='double', load_size=70, crop_size= 64,batch_size=80, lr=1e-4, lr_policy="step", n_epochs=1, netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')  # You can define new arguments for this model.
 
@@ -57,9 +57,9 @@ class CopyPasteGANModel(BaseModel):
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
-        self.loss_names = ['loss_G', "loss_D", "loss_AUX"]
+        self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G', 'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX", "loss_D"]
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
-        self.visual_names = ['composite', 'grounded_fake']
+        self.visual_names = ['src', 'tgt', 'g_mask', 'composite', 'grounded_fake', 'anti_sc', "D_mask_real", "D_mask_fake"]
 
         # define generator, output_nc is hardcoded to 1
         self.netG = networks.define_G(opt.input_nc, 1, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, gpu_ids=self.gpu_ids)
@@ -73,7 +73,6 @@ class CopyPasteGANModel(BaseModel):
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(gan_mode="vanilla").to(self.device)
-            self.criterionShortCut = networks.MaskLoss().to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
 
             # define optimizers
@@ -94,27 +93,24 @@ class CopyPasteGANModel(BaseModel):
         self.src = input['src'].to(self.device)  # get image data
         self.tgt = input['tgt'].to(self.device)
 
-        # TODO: set grounded fake, create something in dataloader
-        self.grounded_fake = networks.composite_image(self.src, self.tgt)
+        # create a grounded fake, the function samples a random polygon mask
+        self.grounded_fake, self.mask_gf = networks.composite_image(self.src, self.tgt)
 
 
 
     def forward(self):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
 
-        # TODO: in the dataloader, we want to have a grounded_fake,
-
-
         # generate output image given the input batch
         self.g_mask = self.netG(self.src)
 
         # create the composite mask from src and tgt images, and predicted mask
-        self.composite = networks.composite_image(self.src, self.tgt, self.g_mask)
+        self.composite, _ = networks.composite_image(self.src, self.tgt, self.g_mask)
 
         # TODO: is this sound to create anti shortcut?
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
-        self.anti_shortcut = networks.composite_image(torch.flip(self.src, [0, 1]), self.tgt, self.g_mask)
+        self.anti_sc, _ = networks.composite_image(torch.flip(self.src, [0, 1]), self.tgt, self.g_mask)
 
 
 
@@ -125,11 +121,14 @@ class CopyPasteGANModel(BaseModel):
         # calculate loss given the input and intermediate results
 
 
-        self.loss_G_composite = self.criterionGAN(self.composite, False)
-        self.loss_G_antishortcut = 0
+        # self.loss_G_comp = self.criterionGAN(self.composite, False)
+        self.loss_G_comp = -self.criterionGAN(self.pred_fake, False)
+
+        # self.loss_G_anti_sc = self.criterionGAN(self.anti_sc, False)
+        self.loss_G_anti_sc = self.criterionGAN(self.pred_anti_sc, False)
 
         # add up components and compute gradients
-        self.loss_G = self.loss_G_composite + self.loss_G_antishortcut
+        self.loss_G = self.loss_G_comp + self.loss_G_anti_sc
         self.loss_G.backward()
 
     def backward_D(self):
@@ -137,21 +136,23 @@ class CopyPasteGANModel(BaseModel):
         # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
 
 
-        pred_real = self.netD(self.tgt) # can also be source
-        pred_fake = self.netD(self.composite)
-        pred_groundedfake = self.netD(self.grounded_fake)
+        self.pred_real, self.D_mask_real = self.netD(self.tgt) # can also be source
+        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+        self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
+        self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
 
-        self.loss_D_real = self.criterionGAN(pred_real, True)
-        self.loss_D_fake = self.criterionGAN(pred_fake, False)
-        self.loss_D_groundedfake = self.criterionGAN(pred_groundedfake, False)
+        self.loss_D_real = self.criterionGAN(self.pred_real, True)
+        self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
+        self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
 
-        # TODO: create the auxiliary loss
-        self.loss_AUX = 0 # self.criterionMask()
+        # TODO: compute the auxiliary loss
+        self.loss_AUX = self.criterionMask(self.D_mask_real, self.D_mask_fake, self.D_mask_antisc, self.D_mask_grfake, self.g_mask, self.mask_gf)
 
-        self.loss_D = self.loss_D_real + self.loss_D_fake + loss_D_groundedfake + self.opt.lambda_aux * self.loss_AUX
+        # sum the losses
+        self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.opt.lambda_aux * self.loss_AUX
 
         # Calculate gradients of discriminator
-        self.loss_D.backward()
+        self.loss_D.backward(retain_graph=True)
 
 
     def optimize_parameters(self):
@@ -159,21 +160,18 @@ class CopyPasteGANModel(BaseModel):
 
         # perform forward step
         self.forward()
-        print("generated shape:", self.composite.shape)
 
-        print("finished Generator forward step")
-
-        # clear existing gradients
-        self.optimizer_G.zero_grad()
+        # compute gradients and update discriminator
         self.optimizer_D.zero_grad()
-
-        # compute gradients
-        self.backward_G()
         self.backward_D()
-
-        # update the networks
-        self.optimizer_G.step()
         self.optimizer_D.step()
+
+        # compute gradients and update generator
+        self.optimizer_G.zero_grad()
+        self.backward_G()
+        self.optimizer_G.step()
+
+
 
 
 
