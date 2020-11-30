@@ -224,7 +224,8 @@ def composite_image(src, tgt, mask=None):
         mask = torch.zeros((b, 1, w, h))
         # TODO: change this to real polygon
         for i in range(b):
-            mask[i, 0, 20:40, 20:40] = 1
+            xy = (torch.rand(2) * 0.5 * torch.tensor([w, h])).int()
+            mask[i, 0, xy[0]:xy[0]+20, xy[1]:xy[1]+20] = 1
 
         return mask
 
@@ -247,9 +248,22 @@ def composite_image(src, tgt, mask=None):
     return composite, mask
 
 
+def mask_to_binary(mask):
+    """
+    Convert a mask in [0, 1] to binary ( in {0, 1})
+    """
+
+    assert (mask.min().item() >= 0) and (mask.max().item() <= 1)
+    bin_mask = F.relu(torch.sign(mask - 0.5))
+
+    return bin_mask
+
+
+
 ##############################################################################
 # Classes
 ##############################################################################
+
 class GANLoss(nn.Module):
     """Define different GAN objectives.
 
@@ -258,7 +272,7 @@ class GANLoss(nn.Module):
     """
 
     # TODO: set real label to 0.95 instead of 1 to prevent overconfidence?
-    def __init__(self, gan_mode, target_real_label=0.9, target_fake_label=0.0):
+    def __init__(self, gan_mode, target_real_label=0.95, target_fake_label=0.0):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -371,7 +385,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, discriminator=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -384,6 +398,7 @@ class CopyUNet(nn.Module):
         super(CopyUNet, self).__init__()
 
         self.discriminator = discriminator
+        self.border_zeroing = border_zeroing
 
         self.enc1 = EncoderBlock(input_nc, 64, stride=1)
         self.enc2 = EncoderBlock(64, 128)
@@ -418,12 +433,16 @@ class CopyUNet(nn.Module):
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
         dec1 = self.dec1(torch.cat([enc1, dec2], 1))
 
-        # TODO: is this the correct way to get the binary mask?
-        # we cannot take a binary mask : backprop breaks
-        # copy_mask = self.relu(torch.sign(self.sigmoid(dec1) - 0.5))
-
         copy_mask = self.sigmoid(dec1)
 
+        # clamp the borders of the copy mask to 0
+        if self.border_zeroing:
+            copy_mask[:, 0, 0, :] = 0
+            copy_mask[:, 0, -1, :] = 0
+            copy_mask[:, 0, :, 0] = 0
+            copy_mask[:, 0, :, -1] = 0
+
+        # return the encoder output if in discriminator mode
         if self.discriminator:
             enc_out = self.avg_pool(enc4).squeeze()
             realness_score = self.sigmoid(self.fc(enc_out))
