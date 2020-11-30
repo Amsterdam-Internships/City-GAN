@@ -224,7 +224,7 @@ def composite_image(src, tgt, mask=None):
         mask = torch.zeros((b, 1, w, h))
         # TODO: change this to real polygon
         for i in range(b):
-            mask[i, 0, 20:30, 20:30] = 1
+            mask[i, 0, 20:40, 20:40] = 1
 
         return mask
 
@@ -244,7 +244,7 @@ def composite_image(src, tgt, mask=None):
     inv_mask = 1 - mask
     composite = torch.mul(src, mask) + torch.mul(tgt, inv_mask)
 
-    return composite
+    return composite, mask
 
 
 ##############################################################################
@@ -422,11 +422,11 @@ class CopyUNet(nn.Module):
         # we cannot take a binary mask : backprop breaks
         # copy_mask = self.relu(torch.sign(self.sigmoid(dec1) - 0.5))
 
-        copy_mask = dec1
+        copy_mask = self.sigmoid(dec1)
 
         if self.discriminator:
             enc_out = self.avg_pool(enc4).squeeze()
-            realness_score = self.fc(enc_out)
+            realness_score = self.sigmoid(self.fc(enc_out))
             out = [realness_score, copy_mask]
         else:
             out = copy_mask
@@ -571,16 +571,6 @@ class Copyloss(nn.Module):
         return target_tensor.expand_as(prediction)
 
 
-    def get_aux_loss(self, source_im, target):
-        # Aux loss is sum of L_mask_real, L_mask_fake, L_mask_antishortcut, L_mask_grounded_fake
-        pass
-
-
-
-
-
-
-
     def __call__(self, prediction, target_is_real):
         """Calculate loss given Discriminator's output and grount truth labels.
 
@@ -618,75 +608,45 @@ class MaskLoss(nn.Module):
     """
 
     def __init__(self, target_real_label=1.0, target_fake_label=0.0):
-        """ Initialize the GANLoss class.
-
-        Parameters:
-            gan_mode (str) - - the type of GAN objective. It currently supports vanilla, lsgan, and wgangp.
-            target_real_label (bool) - - label for a real image
-            target_fake_label (bool) - - label of a fake image
-
-        Note: Do not use sigmoid as the last layer of Discriminator.
-        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
+        """
+        Initialize MaskLoss class
         """
         super(MaskLoss, self).__init__()
-        self.register_buffer('real_label', torch.tensor(target_real_label))
-        self.register_buffer('fake_label', torch.tensor(target_fake_label))
 
-        # self.gan_mode = gan_mode
-        # if gan_mode == 'lsgan':
-        #     self.loss = nn.MSELoss()
-        # elif gan_mode == 'vanilla':
-        #     self.loss = nn.BCEWithLogitsLoss()
-        # elif gan_mode in ['wgangp']:
-        #     self.loss = None
-        # else:
-        #     raise NotImplementedError('gan mode %s not implemented' % gan_mode)
+        self.MSE_loss = nn.MSELoss(reduction='mean')
+
+    def get_mask_loss(self, pred_mask, mask):
+
+        # compute average pixel-wise loss between two images
+        loss = torch.min(self.MSE_loss(pred_mask, mask), self.MSE_loss(pred_mask, 1-mask))
 
 
-    def get_target_tensor(self, prediction, target_is_real):
-        """Create label tensors with the same size as the input.
-
-        Parameters:
-            prediction (tensor) - - tpyically the prediction from a discriminator
-            target_is_real (bool) - - if the ground truth label is for real images or fake images
-
-        Returns:
-            A label tensor filled with ground truth label, and with the size of the input
-        """
-
-        if target_is_real:
-            target_tensor = self.real_label
-        else:
-            target_tensor = self.fake_label
-        return target_tensor.expand_as(prediction)
-
-
-    def __call__(self, prediction, target_is_real):
-        """Calculate loss given Discriminator's output and grount truth labels.
-
-        Parameters:
-            prediction (tensor) - - tpyically the prediction output from a discriminator
-            target_is_real (bool) - - if the ground truth label is for real images or fake images
-
-        Returns:
-            the calculated loss.
-        """
-        if self.gan_mode in ['lsgan', 'vanilla']:
-            target_tensor = self.get_target_tensor(prediction, target_is_real)
-            loss = self.loss(prediction, target_tensor)
-        elif self.gan_mode == 'wgangp':
-            if target_is_real:
-                loss = -prediction.mean()
-            else:
-                loss = prediction.mean()
         return loss
 
+
+    def __call__(self, mask_real, mask_fake, mask_anti_sc, mask_gr_fake, g_mask, mask_gf):
+        """Calculate loss given Discriminator's output and ground truth labels.
+
+        Parameters:
+            - predicted masks by the discriminator for every input image
+            - real generator masks on normal input and grounded fake
+
+        Returns:
+            the calculated auxilliary loss.
+        """
+
+        L_real = self.get_mask_loss(mask_real, torch.zeros_like(mask_real))
+        L_fake = self.get_mask_loss(mask_fake, g_mask)
+        L_anti_sc = self.get_mask_loss(mask_anti_sc, g_mask)
+        L_gr_fake = self.get_mask_loss(mask_gr_fake, mask_gf)
+
+        total_loss = L_real + L_fake + L_anti_sc + L_gr_fake
+
+        return total_loss
 
 ######################################
 # OTHER ARCHITECTURES
 ######################################
-
-
 
 
 
