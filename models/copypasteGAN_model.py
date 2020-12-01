@@ -122,7 +122,7 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
-        self.composite, _ = networks.composite_image(self.src, self.tgt, self.g_mask)
+        self.composite, _ = networks.composite_image(self.src, self.tgt, self.g_mask, self.device)
 
         # TODO: is this sound to create anti shortcut?
         # apply the masks on different source images, should be labeled false

@@ -215,7 +215,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
 # HELPER FUNCTIONS
 ###############################################
 
-def composite_image(src, tgt, mask=None):
+def composite_image(src, tgt, mask=None, device='cpu'):
     """
     Crop out the mask in the source image and paste on the tgt image
     If no mask is given, A random polygon is generared to generate a
@@ -235,7 +235,7 @@ def composite_image(src, tgt, mask=None):
 
     if not torch.is_tensor(mask):
         b, w, h = src.shape[0], src.shape[2], src.shape[3]
-        mask = get_polygon_mask(w, h, b)
+        mask = get_polygon_mask(w, h, b).to(device)
 
 
     # make sure the mask size corresponds to the image size
