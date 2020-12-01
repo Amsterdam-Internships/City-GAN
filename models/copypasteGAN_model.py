@@ -20,7 +20,6 @@ import torch.nn.functional as F
 from models.base_model import BaseModel
 import models.networks as networks
 
-
 class CopyPasteGANModel(BaseModel):
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
@@ -35,13 +34,20 @@ class CopyPasteGANModel(BaseModel):
         """
 
         # comments for defaults:
-        # images are resized to 64x64, hence load_size=64
+        # images are resized to 64x64, hence load_size=70, crop_size=64
         # batch size of 80 per GPU is used (and 4 GPUs)
-        # norm is instanc by default
+        # norm is instance by default (as in paper)
+        # do not flip the images
 
-        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, lr_policy="step", n_epochs=1, netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        # set default options for this model
+        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)
+
+        # define new arguments for this model
         if is_train:
-            parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')  # You can define new arguments for this model.
+            parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
+            parser.add_argument('--confidence_weight', type=float, default=0.1, help='weight for the confidence loss for generator')
+            parser.add_argument('--nr_obj_classes', type=int, default=3, help='Number of object classes in images, used for multiple masks')
+
 
         return parser
 
@@ -60,25 +66,27 @@ class CopyPasteGANModel(BaseModel):
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
-            "loss_D"]
+            "loss_D", "loss_G_conf", "loss_G_distinct"]
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
         self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
             'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
             'anti_sc_src', 'anti_sc', "D_mask_antisc", "D_mask_real"]
 
-        # define generator, output_nc is hardcoded to 1
-        self.netG = networks.define_G(opt.input_nc, 1, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, gpu_ids=self.gpu_ids)
+        # define generator, output_nc is set to nr of object classes
+        self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size)
         # specify which models to save to disk
         self.model_names = ['G']
 
         if self.isTrain:
             # only define the Discriminator if in training phase
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, n_layers_D=3, norm=opt.norm, init_type='normal', init_gain=0.02, gpu_ids=[])
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size)
             self.model_names.append("D")
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(gan_mode="vanilla").to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
+            self.criterionConf = networks.ConfidenceLoss().to(self.device)
+            self.criterionDist = networks.DistinctMaskLoss(opt.nr_obj_classes).to(self.device)
 
             # define optimizers
             self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
@@ -107,7 +115,8 @@ class CopyPasteGANModel(BaseModel):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
 
         # generate output image given the input batch
-        self.g_mask = self.netG(self.src)
+        self.g_mask_layered = self.netG(self.src)
+        self.g_mask = torch.max(self.g_mask_layered, dim=1, keepdim=True)[0]
 
         # binary mask for visualization
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
@@ -122,23 +131,22 @@ class CopyPasteGANModel(BaseModel):
         self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt, self.g_mask)
 
 
-
-
     def backward_G(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
         # calculate loss given the input and intermediate results
 
-
-        # self.loss_G_comp = self.criterionGAN(self.composite, False)
         self.loss_G_comp = -self.criterionGAN(self.pred_fake, False)
-
-        # self.loss_G_anti_sc = self.criterionGAN(self.anti_sc, False)
         self.loss_G_anti_sc = self.criterionGAN(self.pred_anti_sc, False)
+        self.loss_G_conf = self.criterionConf(self.g_mask)
+        self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
 
         # add up components and compute gradients
-        self.loss_G = self.loss_G_comp + self.loss_G_anti_sc
+        self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + \
+            self.opt.confidence_weight * self.loss_G_conf + \
+            self.loss_G_distinct
         self.loss_G.backward()
+
 
     def backward_D(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""

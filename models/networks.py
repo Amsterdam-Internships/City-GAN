@@ -272,8 +272,8 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    # TODO: set real label to 0.95 instead of 1 to prevent overconfidence?
-    def __init__(self, gan_mode, target_real_label=0.95, target_fake_label=0.0):
+    # TODO: set real label to 0.95/0.7 (in the paper) instead of 1 to prevent overconfidence?
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -598,6 +598,34 @@ class ConfidenceLoss(nn.Module):
         return loss
 
 
+class DistinctMaskLoss(nn.Module):
+    """Defines the confidence loss, inspired from https://github.com/FLoosli/CP_GAN/blob/master/CP_GAN_models.py
+
+     Penalizes values that are not close to zero or one.
+    """
+    def __init__(self, nr_obj_classes=3):
+        super(DistinctMaskLoss, self).__init__()
+
+        self.nr_obj_classes = nr_obj_classes
+        # self.criterion = nn.MSELoss()
+
+    def __call__(self, pred_mask):
+        """
+        Calculate the overlap between the mask channels
+        """
+        assert pred_mask.shape[1] == self.nr_obj_classes, "There are not \
+            enough masks for all object classes"
+
+        summed_mask = torch.sum(pred_mask, dim=1)
+
+        # get total number of elements in mask and compute fraction over 1
+        size = summed_mask.numel()
+        fraction_over_one = summed_mask[summed_mask > 1].numel() / size
+
+        return fraction_over_one
+
+
+
 
 class MaskLoss(nn.Module):
     """Define different GAN objectives.
@@ -613,11 +641,13 @@ class MaskLoss(nn.Module):
         super(MaskLoss, self).__init__()
 
         self.MSE_loss = nn.MSELoss(reduction='mean')
+        self.criterion = nn.CrossEntropyLoss()
 
     def get_mask_loss(self, pred_mask, mask):
 
+        # TODO: should be cross entropy loss, but unofficial github uses MSE
         # compute average pixel-wise loss between two images
-        loss = torch.min(self.MSE_loss(pred_mask, mask), self.MSE_loss(pred_mask, 1-mask))
+        loss = torch.min(self.MSE_loss(pred_mask, mask), self.MSE_loss(pred_mask, (1-mask)))
 
 
         return loss
