@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
+from math import log
 
 
 ###############################################################################
@@ -117,7 +118,7 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
     return net
 
 
-def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
+def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64):
     """Create a generator
 
     Parameters:
@@ -156,13 +157,13 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     elif netG == 'unet_256':
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'copy':
-        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=use_dropout)
+        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=use_dropout, img_dim=img_dim)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
-def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='normal', init_gain=0.02, gpu_ids=[]):
+def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64):
     """Create a discriminator
 
     Parameters:
@@ -202,7 +203,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
     elif netD == 'pixel':     # classify if each pixel is real or fake
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
-        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True)
+        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True, img_dim=img_dim)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' % netD)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -335,6 +336,9 @@ class GANLoss(nn.Module):
 
 
 
+
+
+
 def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', constant=1.0, lambda_gp=10.0):
     """Calculate the gradient penalty loss, used in WGAN-GP paper https://arxiv.org/abs/1704.00028
 
@@ -385,12 +389,17 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False, img_dim=64):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
             output_nc (int) -- the number of channels in output images
             norm_layer      -- normalization layer
+            dropout         -- Use dropout or not
+            border_zeroing  -- Set borders of mask to 0
+            discriminator   -- in Discriminator mode, score and predicted copy
+                                mask are returned
+            double_size     -- To handle 128x128 images
 
         The U-net is constructed from encoder and decoder building blocks
         Inspired from https://github.com/zijundeng/pytorch-semantic-segmentation/blob/master/models/u_net.py
@@ -399,6 +408,26 @@ class CopyUNet(nn.Module):
 
         self.discriminator = discriminator
         self.border_zeroing = border_zeroing
+        self.img_dim = img_dim
+
+        self.downscale = []
+        self.upscale = []
+
+        # if the input size differs from default 64, create down- and
+        # upscaling layers before the encoder and after the decoder
+        if self.img_dim != 64:
+            assert log(self.img_dim, 2).is_integer(), "Image size should be power of 2"
+
+            nr_scale_ops = int(log(self.img_dim, 2) - 6)
+
+            for i in range(nr_scale_ops):
+                self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
+                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1))
+
+            self.downscale = nn.Sequential(*self.downscale)
+            self.upscale = nn.Sequential(*self.upscale)
+
+
 
         self.enc1 = EncoderBlock(input_nc, 64, stride=1)
         self.enc2 = EncoderBlock(64, 128)
@@ -420,6 +449,9 @@ class CopyUNet(nn.Module):
     def forward(self, input):
         """Standard forward, return decoder output and encoder output if in
         discriminator mode"""
+        if self.downscale:
+            for layer in self.downscale:
+                input = layer(input)
 
         enc1 = self.enc1(input)
         enc2 = self.enc2(enc1)
@@ -430,6 +462,10 @@ class CopyUNet(nn.Module):
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
         dec1 = self.dec1(torch.cat([enc1, dec2], 1))
+
+        if self.upscale:
+            for layer in self.upscale:
+                dec1 = layer(dec1)
 
         copy_mask = self.sigmoid(dec1)
 
@@ -449,6 +485,7 @@ class CopyUNet(nn.Module):
             out = [realness_score, copy_mask]
         else:
             out = copy_mask
+
 
         return out
 
@@ -539,83 +576,26 @@ class DecoderBlock(nn.Module):
 ######################################
 
 
-class Copyloss(nn.Module):
-    """Defines the loss used for the copy-paste GAN.
+class ConfidenceLoss(nn.Module):
+    """Defines the confidence loss, inspired from https://github.com/FLoosli/CP_GAN/blob/master/CP_GAN_models.py
 
-    The Copyloss class abstracts away the need to create the target label
-    tensor that has the same size as the input.
+     Penalizes values that are not close to zero or one.
     """
+    def __init__(self):
+        super(ConfidenceLoss, self).__init__()
 
-    def __init__(self, gan_mode, target_real_label=1.0, target_fake_label=0.0):
-        """ Initialize the GANLoss class.
-
-        Parameters:
-            gan_mode (str) - - the type of GAN objective. It currently supports vanilla, lsgan, and wgangp.
-            target_real_label (bool) - - label for a real image
-            target_fake_label (bool) - - label of a fake image
-
-        Note: Do not use sigmoid as the last layer of Discriminator.
-        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
-        """
-        super(GANLoss, self).__init__()
-        self.register_buffer('real_label', torch.tensor(target_real_label))
-        self.register_buffer('fake_label', torch.tensor(target_fake_label))
-        self.gan_mode = gan_mode
-        if gan_mode == 'lsgan':
-            self.loss = nn.MSELoss()
-        elif gan_mode == 'vanilla':
-            self.loss = nn.BCEWithLogitsLoss()
-        elif gan_mode in ['wgangp']:
-            self.loss = None
-        else:
-            raise NotImplementedError('gan mode %s not implemented' % gan_mode)
-
-
-
-    def get_target_tensor(self, prediction, target_is_real):
-        """Create label tensors with the same size as the input.
+    def __call__(self, pred_mask):
+        """Calculate loss given mask.
 
         Parameters:
-            prediction (tensor) - - tpyically the prediction from a discriminator
-            target_is_real (bool) - - if the ground truth label is for real images or fake images
-
-        Returns:
-            A label tensor filled with ground truth label, and with the size of the input
-        """
-
-        if target_is_real:
-            target_tensor = self.real_label
-        else:
-            target_tensor = self.fake_label
-        return target_tensor.expand_as(prediction)
-
-
-    def __call__(self, prediction, target_is_real):
-        """Calculate loss given Discriminator's output and grount truth labels.
-
-        Parameters:
-            prediction (tensor) - - tpyically the prediction output from a discriminator
-            target_is_real (bool) - - if the ground truth label is for real images or fake images
-
+            predicted mask (tensor) - predicted mask by generator
         Returns:
             the calculated loss.
         """
 
-        # should be L_G = L_G_fake + L_G_anti_shortcut
+        loss = torch.mean(torch.min(pred_mask, 1-pred_mask))
 
-        # where should the Discriminator loss be?
-
-
-        if self.gan_mode in ['lsgan', 'vanilla']:
-            target_tensor = self.get_target_tensor(prediction, target_is_real)
-            loss = self.loss(prediction, target_tensor)
-        elif self.gan_mode == 'wgangp':
-            if target_is_real:
-                loss = -prediction.mean()
-            else:
-                loss = prediction.mean()
         return loss
-
 
 
 
