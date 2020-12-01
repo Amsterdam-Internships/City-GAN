@@ -385,7 +385,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -417,8 +417,6 @@ class CopyUNet(nn.Module):
 
 
 
-
-
     def forward(self, input):
         """Standard forward, return decoder output and encoder output if in
         discriminator mode"""
@@ -436,11 +434,13 @@ class CopyUNet(nn.Module):
         copy_mask = self.sigmoid(dec1)
 
         # clamp the borders of the copy mask to 0
-        if self.border_zeroing:
-            copy_mask[:, 0, 0, :] = 0
-            copy_mask[:, 0, -1, :] = 0
-            copy_mask[:, 0, :, 0] = 0
-            copy_mask[:, 0, :, -1] = 0
+        if self.border_zeroing and not self.discriminator:
+            border_array = torch.ones_like(copy_mask)
+            border_array[:, 0, 0, :] = 0
+            border_array[:, 0, -1, :] = 0
+            border_array[:, 0, :, 0] = 0
+            border_array[:, 0, :, -1] = 0
+            copy_mask = copy_mask * border_array
 
         # return the encoder output if in discriminator mode
         if self.discriminator:
