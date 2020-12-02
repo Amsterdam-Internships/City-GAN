@@ -151,7 +151,7 @@ class CopyPasteGANModel(BaseModel):
     def backward_D(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
-
+        torch.autograd.set_detect_anomaly(True)
         # get predictions from discriminators for all images
         self.pred_real, self.D_mask_real = self.netD(self.tgt) # can also be source
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
@@ -174,7 +174,9 @@ class CopyPasteGANModel(BaseModel):
 
 
     def optimize_parameters(self):
-        """Update network weights; it will be called in every training iteration."""
+        """Update network weights; it will be called in every training iteration.
+        only perform steps after all backward operations, torch1.5 gives an error, see 
+        https://github.com/pytorch/pytorch/issues/39141"""
 
         # perform forward step
         self.forward()
@@ -182,13 +184,13 @@ class CopyPasteGANModel(BaseModel):
         # compute gradients and update discriminator
         self.optimizer_D.zero_grad()
         self.backward_D()
-        self.optimizer_D.step()
-
+       
         # compute gradients and update generator
         self.optimizer_G.zero_grad()
         self.backward_G()
-        self.optimizer_G.step()
 
+        self.optimizer_G.step()
+        self.optimizer_D.step()
 
 
 
