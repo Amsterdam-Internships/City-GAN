@@ -28,7 +28,10 @@ if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.
-    print('The number of training images = %d' % dataset_size)
+    print(f'The number of training images = {dataset_size}')
+    total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
+    print(f'The number of epochs to run = {total_nr_epochs}')
+
 
     model = create_model(opt)      # create a model given opt.model and other options
     model.setup(opt)               # regular setup: load and print networks; create schedulers
@@ -79,3 +82,5 @@ if __name__ == '__main__':
         model.update_learning_rate()
 
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
+
+    print("Finished training")
