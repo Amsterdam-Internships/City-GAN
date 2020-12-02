@@ -40,7 +40,7 @@ class CopyPasteGANModel(BaseModel):
         # do not flip the images
 
         # set default options for this model
-        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)
+        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, n_epochs_decay= 1,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)
 
         # define new arguments for this model
         if is_train:
@@ -107,7 +107,7 @@ class CopyPasteGANModel(BaseModel):
         self.tgt = input['tgt'].to(self.device)
 
         # create a grounded fake, the function samples a random polygon mask
-        self.grounded_fake, self.mask_gf = networks.composite_image(self.src, self.tgt)
+        self.grounded_fake, self.mask_gf = networks.composite_image(self.src, self.tgt, device=self.device)
 
 
 
@@ -122,7 +122,7 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
-        self.composite, _ = networks.composite_image(self.src, self.tgt, self.g_mask, self.device)
+        self.composite, _ = networks.composite_image(self.src, self.tgt, self.g_mask, device=self.device)
 
         # TODO: is this sound to create anti shortcut?
         # apply the masks on different source images, should be labeled false
