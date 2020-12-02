@@ -338,7 +338,6 @@ class GANLoss(nn.Module):
 
 
 
-
 def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', constant=1.0, lambda_gp=10.0):
     """Calculate the gradient penalty loss, used in WGAN-GP paper https://arxiv.org/abs/1704.00028
 
@@ -481,7 +480,8 @@ class CopyUNet(nn.Module):
         # return the encoder output if in discriminator mode
         if self.discriminator:
             enc_out = self.avg_pool(enc4).squeeze()
-            realness_score = self.sigmoid(self.fc(enc_out))
+            linear_out = self.fc(enc_out)
+            realness_score = self.sigmoid(linear_out)
             out = [realness_score, copy_mask]
         else:
             out = copy_mask
