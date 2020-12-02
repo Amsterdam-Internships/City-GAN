@@ -8,7 +8,7 @@
 #SBATCH --mail-user=tom.lotze@gmail.com
 
 #Loading modules
-module load python
+module load Python
 
 
 
@@ -20,7 +20,7 @@ mkdir "$TMPDIR"/datasets/CLEVR_default
 cp -r $HOME/City-GAN/datasets/CLEVR_default/images "$TMPDIR"/datasets/CLEVR_default/
 
 #Execute a Python program located in $HOME, that takes an input file and output directory as arguments.
-python $HOME/train.py --model copypasteGAN --dataroot "$TMPDIR"/datasets/CLEVR_default/images --batch_size 80 --n_epochs 3 --save_epoch_freq 1
+python $HOME/City-GAN/train.py --model copypasteGAN --dataroot "$TMPDIR"/datasets/CLEVR_default/images --batch_size 80 --n_epochs 3 --save_epoch_freq 1
 
 
 #Copy output directory from scratch to home
