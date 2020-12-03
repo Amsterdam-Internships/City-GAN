@@ -627,6 +627,42 @@ class DistinctMaskLoss(nn.Module):
 
 
 
+class FeatureMatchingLoss(nn.Module):
+    """Define different GAN objectives.
+
+    The FeatureMatchingLoss class abstracts away the need to create the target label tensor
+    that has the same size as the input.
+    """
+
+    # TODO: set real label to 0.95/0.7 (in the paper) instead of 1 to prevent overconfidence?
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
+        """ Initialize the FeatureMatchingLoss class.
+
+        Parameters:
+            gan_mode (str) - - the type of GAN objective. It currently supports vanilla, lsgan, and wgangp.
+            target_real_label (bool) - - label for a real image
+            target_fake_label (bool) - - label of a fake image
+
+        Note: Do not use sigmoid as the last layer of Discriminator.
+        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
+        """
+        super(FeatureMatchingLoss, self).__init__()
+
+
+    def __call__(self, prediction, target_is_real):
+        """
+
+        Parameters:
+
+        Returns:
+            the calculated loss.
+        """
+        loss = 0
+
+        return loss
+
+
+
 class MaskLoss(nn.Module):
     """Define different GAN objectives.
 
