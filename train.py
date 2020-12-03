@@ -28,6 +28,7 @@ if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.
+    opt.dataset_size = dataset_size
     print(f'The number of training images = {dataset_size}')
     total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
     print(f'The number of epochs to run = {total_nr_epochs}')
@@ -59,7 +60,7 @@ if __name__ == '__main__':
             #     model.compute_visuals()
             #     visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
 
-            if total_iters % opt.update_html_freq == 0:   # display images on visdo and save images to a HTML file
+            if total_iters % opt.update_html_freq == 0:   # display images on visdom and save images to a HTML file
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, True, epoch_iter=epoch_iter)
 
