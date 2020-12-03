@@ -162,18 +162,20 @@ class Visualizer():
                 util.save_image(image_numpy, img_path)
 
             # update website
-            webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=1)
+            webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
             for n in range(epoch, 0, -1):
-                webpage.add_header('epoch [%d]' % n)
-                ims, txts, links = [], [], []
+                # TODO make this foulproof
+                for i in range(70000, 0, -self.opt.update_html_freq):
+                    webpage.add_header('epoch [%d], iter [%d]' % (n, i))
+                    ims, txts, links = [], [], []
 
-                for label, image_numpy in visuals.items():
-                    image_numpy = util.tensor2im(image)
-                    img_path = 'epoch%.3d_%s.png' % (n, label)
-                    ims.append(img_path)
-                    txts.append(label)
-                    links.append(img_path)
-                webpage.add_images(ims, txts, links, width=self.win_size)
+                    for label, image_numpy in visuals.items():
+                        image_numpy = util.tensor2im(image)
+                        img_path = 'epoch%.3d_%d_%s.png' % (n, i, label)
+                        ims.append(img_path)
+                        txts.append(label)
+                        links.append(img_path)
+                    webpage.add_images(ims, txts, links, width=self.win_size)
             webpage.save()
 
     def plot_current_losses(self, epoch, counter_ratio, losses):

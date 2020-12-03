@@ -59,7 +59,7 @@ if __name__ == '__main__':
             #     model.compute_visuals()
             #     visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
 
-            if total_iters % opt.update_html == 0:   # display images on visdo and save images to a HTML file
+            if total_iters % opt.update_html_freq == 0:   # display images on visdo and save images to a HTML file
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, True, epoch_iter=epoch_iter)
 
