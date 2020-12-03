@@ -41,7 +41,7 @@ class CopyPasteGANModel(BaseModel):
         #
 
         # set default options for this model
-        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, n_epochs_decay= 1,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)
+        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, n_epochs_decay= 1,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=10)
 
         # define new arguments for this model
         if is_train:
@@ -68,7 +68,7 @@ class CopyPasteGANModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.multi_layered = opt.nr_object_classes != 1
+        self.multi_layered = opt.nr_obj_classes != 1
 
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
@@ -142,19 +142,19 @@ class CopyPasteGANModel(BaseModel):
 
 
     def backward_G(self):
-        """Calculate losses, gradients, and update network weights; called in every training iteration"""
-        # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
-        # calculate loss given the input and intermediate results
+        """Calculate losses, gradients, and update network weights; called in every training iteration. Discriminator predictions have been computed
+        in the backward_D"""
 
         # stimulate the generator to fool discriminator
         self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
         self.loss_G_anti_sc = self.criterionGAN(self.pred_anti_sc, False)
-        self.loss_G_conf = self.criterionConf(self.g_mask)
+        self.loss_G_conf = self.opt.confidence_weight * self.criterionConf(
+            self.g_mask)
 
 
         # add up components and compute gradients
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + \
-            self.opt.confidence_weight * self.loss_G_conf + \
+            self.loss_G_conf
 
         if self.multi_layered:
             self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
@@ -178,32 +178,35 @@ class CopyPasteGANModel(BaseModel):
         self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
         self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
 
-        # compute auxiliary loss
-        self.loss_AUX = self.criterionMask(self.D_mask_real, self.D_mask_fake, self.D_mask_antisc, self.D_mask_grfake, self.g_mask, self.mask_gf)
+        # compute auxiliary loss, directly use lambda for plotting purposes
+        self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
+            self.D_mask_real, self.D_mask_fake, self.D_mask_antisc,
+            self.D_mask_grfake, self.g_mask, self.mask_gf)
 
         # sum the losses
-        self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.opt.lambda_aux * self.loss_AUX
+        self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.loss_AUX
 
         # Calculate gradients of discriminator
         self.loss_D.backward(retain_graph=True)
 
 
     def optimize_parameters(self):
-        """Update network weights; it will be called in every training iteration.
-        only perform steps after all backward operations, torch1.5 gives an error, see
-        https://github.com/pytorch/pytorch/issues/39141"""
+        """Update network weights; it is called in every training iteration.
+        only perform  optimizer steps after all backward operations, torch1.5
+        gives an error, see https://github.com/pytorch/pytorch/issues/39141"""
 
         # perform forward step
         self.forward()
 
-        # compute gradients and update discriminator
+        # reset the gradients
         self.optimizer_D.zero_grad()
-        self.backward_D()
-
-        # compute gradients and update generator
         self.optimizer_G.zero_grad()
+
+        # compute gradients
+        self.backward_D()
         self.backward_G()
 
+        # update networks
         self.optimizer_G.step()
         self.optimizer_D.step()
 
