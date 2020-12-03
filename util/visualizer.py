@@ -3,6 +3,7 @@ import os
 import sys
 import ntpath
 import time
+import json
 from . import util, html
 from subprocess import Popen, PIPE
 
@@ -66,6 +67,8 @@ class Visualizer():
         self.name = opt.name
         self.port = opt.display_port
         self.saved = False
+        self.dataset_size = opt.dataset_size
+
         if self.display_id > 0:  # connect to a visdom server given <display_port> and <display_server>
             import visdom
             self.ncols = opt.display_ncols
@@ -79,7 +82,10 @@ class Visualizer():
             print('create web directory %s...' % self.web_dir)
             util.mkdirs([self.web_dir, self.img_dir])
         # create a logging file to store training losses
-        self.log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
+        self.log_name = os.path.join(opt.checkpoints_dir, opt.name,
+            'loss_log.txt')
+        self.log_json = os.path.join(opt.checkpoints_dir, opt.name,
+            "loss_log.json")
         with open(self.log_name, "a") as log_file:
             now = time.strftime("%c")
             log_file.write('================ Training Loss (%s) ================\n' % now)
@@ -165,7 +171,7 @@ class Visualizer():
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
             for n in range(epoch, 0, -1):
                 # TODO make this foulproof
-                for i in range(70000, 0, -self.opt.update_html_freq):
+                for i in range(self.dataset_size, 0, -self.opt.update_html_freq):
                     webpage.add_header('epoch [%d], iter [%d]' % (n, i))
                     ims, txts, links = [], [], []
 
@@ -217,7 +223,39 @@ class Visualizer():
         message = '(epoch: %d, iters: %d, time: %.3f, data: %.3f) ' % (epoch, iters, t_comp, t_data)
         for k, v in losses.items():
             message += '%s: %.3f ' % (k, v)
-
         print(message)  # print the message
         with open(self.log_name, "a") as log_file:
             log_file.write('%s\n' % message)  # save the message
+
+        # save as json
+        if os.path.exists(self.log_json):
+            with open(self.log_json) as f:
+                written_data = json.load(f)
+
+        rounded_losses = {key : round(losses[key], 3) for key in losses}
+        # update losses
+        new_data = {iters : rounded_losses}
+        if iters == self.opt.print_freq:
+            new_data = {epoch : new_data}
+            if epoch == 1:
+                written_data = new_data
+            else:
+                written_data.update(new_data)
+        else:
+            written_data[str(epoch)].update(new_data)
+
+
+        # save to json again
+        with open(self.log_json, 'w') as f:
+            json.dump(written_data, f, indent=2)
+
+
+
+
+
+
+
+
+
+
+
