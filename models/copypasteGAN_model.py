@@ -38,6 +38,7 @@ class CopyPasteGANModel(BaseModel):
         # batch size of 80 per GPU is used (and 4 GPUs)
         # norm is instance by default (as in paper)
         # do not flip the images
+        #
 
         # set default options for this model
         parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, n_epochs_decay= 1,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=1)
@@ -46,7 +47,11 @@ class CopyPasteGANModel(BaseModel):
         if is_train:
             parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
             parser.add_argument('--confidence_weight', type=float, default=0.1, help='weight for the confidence loss for generator')
-            parser.add_argument('--nr_obj_classes', type=int, default=3, help='Number of object classes in images, used for multiple masks')
+            parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
+            # parser.add_argument('--multi_layered', action='store_true', default=3, help='Number of object classes in images, used for multiple masks')
+
+        # nr_object_classes is used to output a multi-layered mask, each
+        # channel representing a different object class
 
 
         return parser
@@ -63,10 +68,14 @@ class CopyPasteGANModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
+        self.multi_layered = opt.nr_object_classes != 1
+
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
-            "loss_D", "loss_G_conf", "loss_G_distinct"]
+            "loss_D", "loss_G_conf"]
+        if self.multi_layered:
+            self.loss_names.append("loss_G_distinct")
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
         self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
             'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
@@ -86,7 +95,8 @@ class CopyPasteGANModel(BaseModel):
             self.criterionGAN = networks.GANLoss(gan_mode="vanilla").to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
-            self.criterionDist = networks.DistinctMaskLoss(opt.nr_obj_classes).to(self.device)
+            if self.multi_layered:
+                self.criterionDist = networks.DistinctMaskLoss(opt.nr_obj_classes).to(self.device)
 
             # define optimizers
             self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
@@ -136,15 +146,20 @@ class CopyPasteGANModel(BaseModel):
         # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
         # calculate loss given the input and intermediate results
 
-        self.loss_G_comp = -self.criterionGAN(self.pred_fake, False)
+        # stimulate the generator to fool discriminator
+        self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
         self.loss_G_anti_sc = self.criterionGAN(self.pred_anti_sc, False)
         self.loss_G_conf = self.criterionConf(self.g_mask)
-        self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
+
 
         # add up components and compute gradients
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + \
             self.opt.confidence_weight * self.loss_G_conf + \
-            self.loss_G_distinct
+
+        if self.multi_layered:
+            self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
+            self.loss_G = self.loss_G + self.loss_G_distinct
+
         self.loss_G.backward()
 
 
@@ -175,7 +190,7 @@ class CopyPasteGANModel(BaseModel):
 
     def optimize_parameters(self):
         """Update network weights; it will be called in every training iteration.
-        only perform steps after all backward operations, torch1.5 gives an error, see 
+        only perform steps after all backward operations, torch1.5 gives an error, see
         https://github.com/pytorch/pytorch/issues/39141"""
 
         # perform forward step
@@ -184,7 +199,7 @@ class CopyPasteGANModel(BaseModel):
         # compute gradients and update discriminator
         self.optimizer_D.zero_grad()
         self.backward_D()
-       
+
         # compute gradients and update generator
         self.optimizer_G.zero_grad()
         self.backward_G()
