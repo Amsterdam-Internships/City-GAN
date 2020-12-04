@@ -97,7 +97,7 @@ class Visualizer():
 
     def create_visdom_connections(self):
         """If the program could not connect to Visdom server, this function will start a new server at port < self.port > """
-        cmd = sys.executable + f' -m visdom.server -p {self.port}' #&>/dev/null &'
+        cmd = sys.executable + f' -m visdom.server -p {self.port} &>/dev/null &'
         print('\n\nCould not connect to Visdom server. \n Trying to start a server....')
         print(f'Command: {cmd}')
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
