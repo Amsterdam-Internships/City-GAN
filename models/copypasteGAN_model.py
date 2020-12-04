@@ -48,6 +48,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
             parser.add_argument('--confidence_weight', type=float, default=0.1, help='weight for the confidence loss for generator')
             parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
+            parser.add_argument('--D_head_start', type=int, default=1000, help='First train only discriminator for D_head_start iterations')
             # parser.add_argument('--multi_layered', action='store_true', default=3, help='Number of object classes in images, used for multiple masks')
 
         # nr_object_classes is used to output a multi-layered mask, each
@@ -69,6 +70,7 @@ class CopyPasteGANModel(BaseModel):
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
         self.multi_layered = opt.nr_obj_classes != 1
+        self.D_head_start = opt.D_head_start
 
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
@@ -190,24 +192,34 @@ class CopyPasteGANModel(BaseModel):
         self.loss_D.backward(retain_graph=True)
 
 
-    def optimize_parameters(self):
+    def optimize_parameters(self, total_iters):
         """Update network weights; it is called in every training iteration.
         only perform  optimizer steps after all backward operations, torch1.5
-        gives an error, see https://github.com/pytorch/pytorch/issues/39141"""
+        gives an error, see https://github.com/pytorch/pytorch/issues/39141
+
+        Arguments:
+            - total_iters: training progress in steps, used to give D a
+            headstart
+
+        """
+        train_G = total_iters > self.D_head_start
 
         # perform forward step
         self.forward()
 
         # reset the gradients
         self.optimizer_D.zero_grad()
-        self.optimizer_G.zero_grad()
 
         # compute gradients
         self.backward_D()
-        self.backward_G()
 
-        # update networks
-        self.optimizer_G.step()
+        # only train G after headstart for D
+        if self.train_G:
+            self.optimizer_G.zero_grad()
+            self.backward_G()
+            self.optimizer_G.step()
+
+        # update D
         self.optimizer_D.step()
 
 
