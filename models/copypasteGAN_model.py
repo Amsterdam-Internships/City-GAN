@@ -207,10 +207,8 @@ class CopyPasteGANModel(BaseModel):
         # perform forward step
         self.forward()
 
-        # reset the gradients
+        # reset previous gradients and compute new gradients for D
         self.optimizer_D.zero_grad()
-
-        # compute gradients
         self.backward_D()
 
         # only train G after headstart for D
