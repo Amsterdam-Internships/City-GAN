@@ -27,5 +27,5 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
        --display_freq 1000 --verbose
 
 # copy checkpoints to home directory
-mkdir -p $HOME/City-GAN/checkpoints/run2
-cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run2
+mkdir -p $HOME/City-GAN/checkpoints/run3
+cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run3

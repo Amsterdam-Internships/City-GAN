@@ -41,7 +41,7 @@ class CopyPasteGANModel(BaseModel):
         #
 
         # set default options for this model
-        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=5, n_epochs_decay= 1,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=100)
+        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3 ,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=100)
 
         # define new arguments for this model
         if is_train:
@@ -212,7 +212,7 @@ class CopyPasteGANModel(BaseModel):
         self.backward_D()
 
         # only train G after headstart for D
-        if self.train_G:
+        if train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
             self.optimizer_G.step()
