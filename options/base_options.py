@@ -120,6 +120,13 @@ class BaseOptions():
             suffix = ('_' + opt.suffix.format(**vars(opt))) if opt.suffix != '' else ''
             opt.name = opt.name + suffix
 
+        if opt.display_freq < opt.batch_size:
+            opt.display_freq = opt.batch_size
+        if opt.print_freq < opt.batch_size:
+            opt.print_freq = opt.batch_size
+        if opt.update_html_freq < opt.batch_size:
+            opt.update_html_freq = opt.batch_size
+
         self.print_options(opt)
 
         # set gpu ids
