@@ -7,28 +7,29 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=tom.lotze@gmail.com
 
-#Loading modules
+# Loading modules
 module load 2020
 module load Python
 
 
-
-#Create output directory on scratch
+# Create output directory on scratch
 mkdir "$TMPDIR"/datasets
 mkdir "$TMPDIR"/datasets/CLEVR_default
 
-#Copy input file to scratch
+#Copy data files to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_default/images "$TMPDIR"/datasets/CLEVR_default/
 
-#Execute a Python program located in $HOME, that takes an input file and output directory as arguments.
-python $HOME/City-GAN/train.py --model copypasteGAN --dataroot "$TMPDIR"/datasets/CLEVR_default/images --batch_size 80 --n_epochs 1 --save_epoch_freq 1 --batch_size 20 --max_dataset_size 20 --checkpoints_dir "$TMPDIR"/checkpoints
+# Execute training script 
+python $HOME/City-GAN/train.py --model copypasteGAN \
+       --dataroot "$TMPDIR"/datasets/CLEVR_default/images \
+       --n_epochs 1 --batch_size 50\
+       --save_epoch_freq 1\
+       --max_dataset_size 100\
+       --checkpoints_dir "$TMPDIR"/checkpoints\
+       --display_freq 10 --print_freq 10 --update_html_freq 10\
+       --verbose
 
-
-#Copy output directory from scratch to home
-
-mkdir -p $HOME/City-GAN/checkpoints/test_run
-
-ls
 
 # copy checkpoints to home directory
+mkdir -p $HOME/City-GAN/checkpoints/test_run
 cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/test_run
