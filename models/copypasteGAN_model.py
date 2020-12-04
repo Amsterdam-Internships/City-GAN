@@ -76,6 +76,11 @@ class CopyPasteGANModel(BaseModel):
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
             "loss_D", "loss_G_conf"]
+
+        # for visualization purposes, set G losses to zero in case of headstart
+        if self.D_head_start > 0:
+            self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
+
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
