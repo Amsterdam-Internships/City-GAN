@@ -236,10 +236,10 @@ def render_scene(args,
   if args.use_gpu == 1:
     # Blender changed the API for enabling CUDA at some point
     if bpy.app.version < (2, 78, 0):
-      bpy.context.user_preferences.system.compute_device_type = 'CUDA'
-      bpy.context.user_preferences.system.compute_device = 'CUDA_0'
+      bpy.context.preferences.system.compute_device_type = 'CUDA'
+      bpy.context.preferences.system.compute_device = 'CUDA_0'
     else:
-      cycles_prefs = bpy.context.user_preferences.addons['cycles'].preferences
+      cycles_prefs = bpy.context.preferences.addons['cycles'].preferences
       cycles_prefs.compute_device_type = 'CUDA'
 
   # Some CYCLES-specific stuff
