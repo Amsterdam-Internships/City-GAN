@@ -76,6 +76,7 @@ class Visualizer():
             if not self.vis.check_connection():
                 print("checking connection:", self.vis.check_connection())
                 self.create_visdom_connections()
+                print("check connection after creating it:", vis.check_connection())
 
         if self.use_html:  # create an HTML object at <checkpoints_dir>/web/; images will be saved under <checkpoints_dir>/web/images/
             self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
