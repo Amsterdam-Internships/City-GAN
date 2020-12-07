@@ -63,7 +63,7 @@ parser.add_argument('--shape_color_combos_json', default=None,
          "allowed color names for that shape. This allows rendering images " +
          "for CLEVR-CoGenT.")
 
-# Settings for objects
+# Setings for objects
 parser.add_argument('--min_objects', default=3, type=int,
     help="The minimum number of objects to place in each scene")
 parser.add_argument('--max_objects', default=10, type=int,
@@ -261,7 +261,7 @@ def render_scene(args,
   }
 
   # Put a plane on the ground so we can compute cardinal directions
-  bpy.ops.mesh.primitive_plane_add(radius=5)
+  bpy.ops.mesh.primitive_plane_add(size=5)
   plane = bpy.context.object
 
   def rand(L):
@@ -276,9 +276,9 @@ def render_scene(args,
   # them in the scene structure
   camera = bpy.data.objects['Camera']
   plane_normal = plane.data.vertices[0].normal
-  cam_behind = camera.matrix_world.to_quaternion() * Vector((0, 0, -1))
-  cam_left = camera.matrix_world.to_quaternion() * Vector((-1, 0, 0))
-  cam_up = camera.matrix_world.to_quaternion() * Vector((0, 1, 0))
+  cam_behind = camera.matrix_world.to_quaternion() @ Vector((0, 0, -1))
+  cam_left = camera.matrix_world.to_quaternion() @ Vector((-1, 0, 0))
+  cam_up = camera.matrix_world.to_quaternion() @ Vector((0, 1, 0))
   plane_behind = (cam_behind - cam_behind.project(plane_normal)).normalized()
   plane_left = (cam_left - cam_left.project(plane_normal)).normalized()
   plane_up = cam_up.project(plane_normal).normalized()
@@ -544,18 +544,18 @@ def render_shadeless(blender_objects, path='flat.png'):
   # Cache the render args we are about to clobber
   old_filepath = render_args.filepath
   old_engine = render_args.engine
-  old_use_antialiasing = render_args.use_antialiasing
+  #old_use_antialiasing = render_args.use_antialiasing
 
   # Override some render settings to have flat shading
   render_args.filepath = path
-  render_args.engine = 'BLENDER_RENDER'
-  render_args.use_antialiasing = False
+  render_args.engine = 'CYCLES'
+  #render_args.use_antialiasing = False
 
   # Move the lights and ground to layer 2 so they don't render
-  set_layer(bpy.data.objects['Lamp_Key'], 2)
-  set_layer(bpy.data.objects['Lamp_Fill'], 2)
-  set_layer(bpy.data.objects['Lamp_Back'], 2)
-  set_layer(bpy.data.objects['Ground'], 2)
+  set_render(bpy.data.objects['Lamp_Key'], False)
+  set_render(bpy.data.objects['Lamp_Fill'], False)
+  set_render(bpy.data.objects['Lamp_Back'], False)
+  set_render(bpy.data.objects['Ground'], False)
 
   # Add random shadeless materials to all objects
   object_colors = set()
@@ -569,8 +569,8 @@ def render_shadeless(blender_objects, path='flat.png'):
       r, g, b = [random.random() for _ in range(3)]
       if (r, g, b) not in object_colors: break
     object_colors.add((r, g, b))
-    mat.diffuse_color = [r, g, b]
-    mat.use_shadeless = True
+    mat.diffuse_color = [r, g, b, 1.0]
+    mat.shadow_method = "NONE"
     obj.data.materials[0] = mat
 
   # Render the scene
@@ -579,17 +579,18 @@ def render_shadeless(blender_objects, path='flat.png'):
   # Undo the above; first restore the materials to objects
   for mat, obj in zip(old_materials, blender_objects):
     obj.data.materials[0] = mat
+    set_render(obj, True)
 
   # Move the lights and ground back to layer 0
-  set_layer(bpy.data.objects['Lamp_Key'], 0)
-  set_layer(bpy.data.objects['Lamp_Fill'], 0)
-  set_layer(bpy.data.objects['Lamp_Back'], 0)
-  set_layer(bpy.data.objects['Ground'], 0)
+  set_render(bpy.data.objects['Lamp_Key'], True)
+  set_render(bpy.data.objects['Lamp_Fill'], True)
+  set_render(bpy.data.objects['Lamp_Back'], True)
+  set_render(bpy.data.objects['Ground'], True)
 
   # Set the render settings back to what they were
   render_args.filepath = old_filepath
   render_args.engine = old_engine
-  render_args.use_antialiasing = old_use_antialiasing
+  #render_args.use_antialiasing = old_use_antialiasing
 
   return object_colors
 
@@ -622,8 +623,8 @@ def parse_args(parser, argv=None):
 def delete_object(obj):
   """ Delete a specified blender object """
   for o in bpy.data.objects:
-    o.select = False
-  obj.select = True
+    o.select_set(state=False)
+  obj.select_set(state=True)
   bpy.ops.object.delete()
 
 
@@ -641,7 +642,7 @@ def get_camera_coords(cam, pos):
     in the range [-1, 1]
   """
   scene = bpy.context.scene
-  x, y, z = bpy_extras.object_world_to_camera_view(scene, cam, pos)
+  x, y, z = bpy_extras.object_utils.world_to_camera_view(scene, cam, pos)
   scale = scene.render.resolution_percentage / 100.0
   w = int(scale * scene.render.resolution_x)
   h = int(scale * scene.render.resolution_y)
@@ -654,11 +655,17 @@ def set_layer(obj, layer_idx):
   """ Move an object to a particular layer """
   # Set the target layer to True first because an object must always be on
   # at least one layer.
+  print(obj, "\n")
+  print(dir(obj))
   obj.layers[layer_idx] = True
   for i in range(len(obj.layers)):
     obj.layers[i] = (i == layer_idx)
 
+def set_render(obj, val):
+  obj.hide_render = not val
 
+
+    
 def add_object(object_dir, name, scale, loc, theta=0):
   """
   Load an object from a file. We assume that in the directory object_dir, there
@@ -685,7 +692,8 @@ def add_object(object_dir, name, scale, loc, theta=0):
 
   # Set the new object as active, then rotate, scale, and translate it
   x, y = loc
-  bpy.context.scene.objects.active = bpy.data.objects[new_name]
+  bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
+  
   bpy.context.object.rotation_euler[2] = theta
   bpy.ops.transform.resize(value=(scale, scale, scale))
   bpy.ops.transform.translate(value=(x, y, scale))
