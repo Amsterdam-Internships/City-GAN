@@ -344,14 +344,13 @@ def render_scene(args,
   obj = bpy.context.window.scene.objects["Ground"]
   bpy.context.view_layer.objects.active = obj
   obj.active_material = bg_mat
-  print(bpy.context.window.scene.objects.items())
 
   ######## end added by me #################
 
-  print("ground objects", bpy.context.scene.objects["Ground"].active_material)
-  print("ground objects", bpy.context.scene.objects["Ground"].color)
-  print("list of objects:", objects)
-  
+  # print("ground objects", bpy.context.scene.objects["Ground"].active_material)
+  # print("ground objects", bpy.context.scene.objects["Ground"].color)
+  # print("list of objects:", objects)
+
   # Render the scene and dump the scene data structure
   scene_struct['objects'] = objects
   scene_struct['relationships'] = compute_all_relationships(scene_struct)
@@ -398,7 +397,7 @@ def add_random_objects(scene_struct, num_objects, args, camera):
     # Choose a random size
     size_name, r = random.choice(size_mapping)
 
-    print(f"object of size {size_name}, {r} is being added")
+    # print(f"object of size {size_name}, {r} is being added")
 
     # Try to place the object, ensuring that we don't intersect any existing
     # objects and that we are more than the desired margin away from all existing
