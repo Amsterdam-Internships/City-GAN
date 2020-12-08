@@ -4,38 +4,21 @@
   "image_filename": "CLEVR_color__000003.png",
   "objects": [
     {
-      "shape": "cube",
+      "shape": "cylinder",
       "size": "small",
-      "material": "rubber",
+      "material": "metal",
       "3d_coords": [
-        -1.7191342115402222,
-        -1.1901041269302368,
+        -1.7946676015853882,
+        1.4650222063064575,
         0.3499999940395355
       ],
-      "rotation": 241.2627956718142,
+      "rotation": 225.39687967024688,
       "pixel_coords": [
-        -276,
-        889,
-        11.595648765563965
+        135,
+        103,
+        13.30461597442627
       ],
-      "color": "brown"
-    },
-    {
-      "shape": "cube",
-      "size": "large",
-      "material": "rubber",
-      "3d_coords": [
-        -2.4277312755584717,
-        0.1567080318927765,
-        0.699999988079071
-      ],
-      "rotation": 332.2717870836441,
-      "pixel_coords": [
-        -135,
-        740,
-        12.689228057861328
-      ],
-      "color": "purple"
+      "color": "green"
     }
   ],
   "directions": {
@@ -72,27 +55,15 @@
   },
   "relationships": {
     "behind": [
-      [
-        1
-      ],
       []
     ],
     "front": [
-      [],
-      [
-        0
-      ]
+      []
     ],
     "left": [
-      [],
-      [
-        0
-      ]
+      []
     ],
     "right": [
-      [
-        1
-      ],
       []
     ]
   }
