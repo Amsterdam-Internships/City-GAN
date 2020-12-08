@@ -474,15 +474,15 @@ def add_random_objects(scene_struct, num_objects, args, camera):
     })
 
   # Check that all objects are at least partially visible in the rendered image
-  print("checking visibility")
-  all_visible = check_visibility(blender_objects, args.min_pixels_per_object)
-  if not all_visible:
-    # If any of the objects are fully occluded then start over; delete all
-    # objects from the scene and place them all again.
-    print('Some objects are occluded; replacing objects')
-    for obj in blender_objects:
-      delete_object(obj)
-    return add_random_objects(scene_struct, num_objects, args, camera)
+  # print("checking visibility")
+  # all_visible = check_visibility(blender_objects, args.min_pixels_per_object)
+  # if not all_visible:
+  #   # If any of the objects are fully occluded then start over; delete all
+  #   # objects from the scene and place them all again.
+  #   print('Some objects are occluded; replacing objects')
+  #   for obj in blender_objects:
+  #     delete_object(obj)
+  #   return add_random_objects(scene_struct, num_objects, args, camera)
 
   return objects, blender_objects
 
