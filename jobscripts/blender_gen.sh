@@ -15,10 +15,12 @@ module load Python
 mkdir "$TMPDIR"/datasets
 mkdir "$TMPDIR"/datasets/CLEVR_colorized
 mkdir "$TMPDIR"/datasets/CLEVR_colorized/jsons
+mkdir "$TMPDIR"/datasets/CLEVR_colorized/images
 
-# Execute training script 
+
+# Execute training script
 blender --background -noaudio --python data/render_images.py -- \
-	--output_image_dir "$TMPDIR"/datasets/CLEVR_colorized\
+	--output_image_dir "$TMPDIR"/datasets/CLEVR_colorized/images\
 	--output_scene_dir "$TMPDIR"/datasets/CLEVR_colorized/jsons\
 	--output_scene_file "$TMPDIR"/datasets/CLEVR_colorized/CLEVR_scenes.json\
 	--base_scene_blendfile data/data/base_scene.blend\
@@ -40,5 +42,8 @@ ls "$TMPDIR"/datasets/CLEVR_colorized
 
 
 # copy checkpoints to home directory
-mkdir -p $HOME/City-GAN/datasets/
-cp -r "$TMPDIR"/datasets/CLEVR_colorized $HOME/City-GAN/datasets
+mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized
+mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized/images
+mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized/jsons
+cp -r "$TMPDIR"/datasets/CLEVR_colorized/images/* $HOME/City-GAN/datasets/CLEVR_colorized/images/
+cp -r "$TMPDIR"/datasets/CLEVR_colorized/jsons/* $HOME/City-GAN/datasets/CLEVR_colorized/jsons/

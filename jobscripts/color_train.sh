@@ -13,19 +13,19 @@ module load Python
 
 #Create output directory on scratch
 mkdir "$TMPDIR"/datasets
-mkdir "$TMPDIR"/datasets/CLEVR_default
+mkdir "$TMPDIR"/datasets/CLEVR_colorized
 
 #Copy data file to scratch
-cp -r $HOME/City-GAN/datasets/CLEVR_default/images "$TMPDIR"/datasets/CLEVR_default/
+cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
-       --dataroot "$TMPDIR"/datasets/CLEVR_default/images\
+       --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
        --batch_size 50 --n_epochs 5 --save_epoch_freq 1 \
        --checkpoints_dir "$TMPDIR"/checkpoints\
        --print_freq 1000 --update_html 10000 \
        --display_freq 1000 --verbose
 
 # copy checkpoints to home directory
-mkdir -p $HOME/City-GAN/checkpoints/run3
-cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run3
+mkdir -p $HOME/City-GAN/checkpoints/run4
+cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run4
