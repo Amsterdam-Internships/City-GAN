@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2020-12-04 10:36
+# @Last Modified time: 2020-12-04 17:57
 
 
 """
@@ -26,7 +26,7 @@ This script takes a json file with losses with the following structure:
   ...
 }
 
-And saves a plot
+And saves a plot to destination filename
 
 """
 
@@ -61,14 +61,14 @@ def plot_json(opt):
 
 
 
-    plt.title(f"Loss plot run {opt.run}")
+    plt.title(f"Loss plot {opt.run}")
     plt.xlabel(f"Iteration ({iters_per_epoch} per epoch)")
     plt.ylabel("Loss")
     plt.legend()
 
     plt.savefig(opt.dest)
 
-
+    print(f"figure saved to {opt.dest}")
 
 
 
@@ -87,8 +87,9 @@ if __name__ == "__main__":
     if not opt.filename:
         if opt.run == 0:
             # latest run is extracted
-            opt.run = int(sorted(glob("checkpoints/run*"))[-1][-1])
+            opt.run = sorted(glob("checkpoints/run*"))[-1][-1]
         opt.filename = f"checkpoints/run{opt.run}/checkpoints/CopyGAN/loss_log.json"
+
 
     if not opt.dest:
         opt.dest = f"checkpoints/run{opt.run}/checkpoints/CopyGAN/loss_plot.pdf"
