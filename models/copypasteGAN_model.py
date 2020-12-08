@@ -46,7 +46,7 @@ class CopyPasteGANModel(BaseModel):
         # define new arguments for this model
         if is_train:
             parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
-            parser.add_argument('--confidence_weight', type=float, default=0.1, help='weight for the confidence loss for generator')
+            parser.add_argument('--confidence_weight', type=float, default=0.0, help='weight for the confidence loss for generator')
             parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
             parser.add_argument('--D_head_start', type=int, default=1000, help='First train only discriminator for D_head_start iterations')
             # parser.add_argument('--multi_layered', action='store_true', default=3, help='Number of object classes in images, used for multiple masks')
@@ -75,7 +75,9 @@ class CopyPasteGANModel(BaseModel):
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
-            "loss_D", "loss_G_conf"]
+            "loss_D"]
+        if self.confidence_weight > 0:
+            self.loss_names.append("loss_G_conf")
 
         # for visualization purposes, set G losses to zero in case of headstart
         if self.D_head_start > 0:
