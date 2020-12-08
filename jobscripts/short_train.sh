@@ -3,7 +3,7 @@
 #SBATCH -n 16
 #SBATCH -t 59:00
 #SBATCH -p gpu_short
-
+#SBATCH -N 1
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=tom.lotze@gmail.com
 
@@ -11,6 +11,9 @@
 module load 2020
 module load Python
 
+# print host to create ssh tunnel
+echo "Running on following host:"
+cat /etc/hosts
 
 # Create output directory on scratch
 mkdir "$TMPDIR"/datasets
