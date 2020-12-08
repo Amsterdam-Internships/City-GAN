@@ -171,6 +171,7 @@ def main(args):
 
   all_scene_paths = []
   for i in range(args.num_images):
+    print(f"rendering image {i}/{args.num_images}")
     img_path = img_template % (i + args.start_idx)
     scene_path = scene_template % (i + args.start_idx)
     all_scene_paths.append(scene_path)
@@ -351,6 +352,7 @@ def render_scene(args,
       bpy.ops.render.render(write_still=True)
       break
     except Exception as e:
+      print("exception in loop in render_scene:")
       print(e)
 
   with open(output_scene, 'w') as f:
@@ -388,6 +390,8 @@ def add_random_objects(scene_struct, num_objects, args, camera):
     # Choose a random size
     size_name, r = random.choice(size_mapping)
 
+    print(f"object of size {size_name}, {r} is being added") 
+    
     # Try to place the object, ensuring that we don't intersect any existing
     # objects and that we are more than the desired margin away from all existing
     # objects along all cardinal directions.
@@ -397,8 +401,10 @@ def add_random_objects(scene_struct, num_objects, args, camera):
       # the objects in the scene and start over.
       num_tries += 1
       if num_tries > args.max_retries:
+        print("num tries exceeded, removing all objects and restarting")
         for obj in blender_objects:
           delete_object(obj)
+        print("deleted all objects")
         return add_random_objects(scene_struct, num_objects, args, camera)
       x = random.uniform(-3, 3)
       y = random.uniform(-3, 3)
@@ -410,6 +416,7 @@ def add_random_objects(scene_struct, num_objects, args, camera):
         dx, dy = x - xx, y - yy
         dist = math.sqrt(dx * dx + dy * dy)
         if dist - r - rr < args.min_dist:
+          print("BROKEN DISTANCE")
           dists_good = False
           break
         for direction_name in ['left', 'right', 'front', 'behind']:
@@ -467,6 +474,7 @@ def add_random_objects(scene_struct, num_objects, args, camera):
     })
 
   # Check that all objects are at least partially visible in the rendered image
+  print("checking visibility")
   all_visible = check_visibility(blender_objects, args.min_pixels_per_object)
   if not all_visible:
     # If any of the objects are fully occluded then start over; delete all
@@ -525,9 +533,11 @@ def check_visibility(blender_objects, min_pixels_per_object):
                         for i in range(0, len(p), 4))
   os.remove(path)
   if len(color_count) != len(blender_objects) + 1:
+    print("incorrect color count")
     return False
   for _, count in color_count.most_common():
     if count < min_pixels_per_object:
+      print("incorrect nr of pixels")
       return False
   return True
 
