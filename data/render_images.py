@@ -315,22 +315,22 @@ def render_scene(args,
 
   bg_mat = bpy.data.materials.new(name='bg_mat')
   bg_mat.diffuse_color = random.choice([
-      [0.11505457, 0.60906654, 0.13339096],
-      [0.24058962, 0.32713906, 0.85913749],
-      [0.66609021, 0.54116221, 0.02901382],
-      [0.7337483 , 0.39495002, 0.80204712],
-      [0.25442113, 0.05688494, 0.86664864],
-      [0.221029  , 0.40498945, 0.31609647],
-      [0.0766627 , 0.84322469, 0.84893915],
-      [0.97146509, 0.38537691, 0.95448813],
-      [0.44575836, 0.66972465, 0.08250005],
-      [0.89709858, 0.2980035 , 0.26230482],
-      [0.00512955, 0.54320252, 0.47559637],
-      [0.63637368, 0.97820413, 0.90866276],
-      [0.91015308, 0.52525567, 0.10401895],
-      [0.1809146 , 0.95304022, 0.41195298],
-      [0.86501712, 0.67217728, 0.6287858 ],
-      [0.27555878, 0.89674727, 0.20689137]])
+      [0.11505457, 0.60906654, 0.13339096, 1],
+      [0.24058962, 0.32713906, 0.85913749, 1],
+      [0.66609021, 0.54116221, 0.02901382, 1],
+      [0.7337483 , 0.39495002, 0.80204712, 1],
+      [0.25442113, 0.05688494, 0.86664864, 1],
+      [0.221029  , 0.40498945, 0.31609647, 1],
+      [0.0766627 , 0.84322469, 0.84893915, 1],
+      [0.97146509, 0.38537691, 0.95448813, 1],
+      [0.44575836, 0.66972465, 0.08250005, 1],
+      [0.89709858, 0.2980035 , 0.26230482, 1],
+      [0.00512955, 0.54320252, 0.47559637, 1],
+      [0.63637368, 0.97820413, 0.90866276, 1],
+      [0.91015308, 0.52525567, 0.10401895, 1],
+      [0.1809146 , 0.95304022, 0.41195298, 1],
+      [0.86501712, 0.67217728, 0.6287858 , 1],
+      [0.27555878, 0.89674727, 0.20689137, 1]])
 
   ### for generating the above matrix, can be regenerated
   # num_bg = 16
@@ -339,11 +339,19 @@ def render_scene(args,
 
 
 
-  bpy.context.scene.objects.active = bpy.data.objects['Ground']
-  bpy.context.object.active_material = bg_mat
+  #bpy.context.scene.objects.active = bpy.data.objects['Ground']
+  #bpy.context.object.active_material = bg_mat
+  obj = bpy.context.window.scene.objects["Ground"]
+  bpy.context.view_layer.objects.active = obj
+  obj.active_material = bg_mat
+  print(bpy.context.window.scene.objects.items())
 
   ######## end added by me #################
 
+  print("ground objects", bpy.context.scene.objects["Ground"].active_material)
+  print("ground objects", bpy.context.scene.objects["Ground"].color)
+  print("list of objects:", objects)
+  
   # Render the scene and dump the scene data structure
   scene_struct['objects'] = objects
   scene_struct['relationships'] = compute_all_relationships(scene_struct)
