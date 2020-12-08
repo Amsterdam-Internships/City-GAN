@@ -171,7 +171,7 @@ def main(args):
 
   all_scene_paths = []
   for i in range(args.num_images):
-    print(f"rendering image {i}/{args.num_images}")
+    print(f"rendering image {i+1}/{args.num_images}")
     img_path = img_template % (i + args.start_idx)
     scene_path = scene_template % (i + args.start_idx)
     all_scene_paths.append(scene_path)
@@ -390,8 +390,8 @@ def add_random_objects(scene_struct, num_objects, args, camera):
     # Choose a random size
     size_name, r = random.choice(size_mapping)
 
-    print(f"object of size {size_name}, {r} is being added") 
-    
+    print(f"object of size {size_name}, {r} is being added")
+
     # Try to place the object, ensuring that we don't intersect any existing
     # objects and that we are more than the desired margin away from all existing
     # objects along all cardinal directions.
@@ -533,7 +533,7 @@ def check_visibility(blender_objects, min_pixels_per_object):
                         for i in range(0, len(p), 4))
   os.remove(path)
   if len(color_count) != len(blender_objects) + 1:
-    print("incorrect color count")
+    print(f"incorrect color count, image: {len(color_count)}, nr objects: {len(blender_objects)}")
     return False
   for _, count in color_count.most_common():
     if count < min_pixels_per_object:
@@ -675,7 +675,7 @@ def set_render(obj, val):
   obj.hide_render = not val
 
 
-    
+
 def add_object(object_dir, name, scale, loc, theta=0):
   """
   Load an object from a file. We assume that in the directory object_dir, there
@@ -703,7 +703,7 @@ def add_object(object_dir, name, scale, loc, theta=0):
   # Set the new object as active, then rotate, scale, and translate it
   x, y = loc
   bpy.context.view_layer.objects.active = bpy.data.objects[new_name]
-  
+
   bpy.context.object.rotation_euler[2] = theta
   bpy.ops.transform.resize(value=(scale, scale, scale))
   bpy.ops.transform.translate(value=(x, y, scale))
@@ -786,12 +786,9 @@ if __name__ == '__main__':
   elif '--help' in sys.argv or '-h' in sys.argv:
     parser.print_help()
   else:
-    print('This script is intended to be called from blender like this:')
-    print()
-    print('blender --background --python render_images.py -- [args]')
-    print()
+    print('This script is intended to be called from blender like this:\n')
+    print('blender --background --python render_images.py -- [args]\n')
     print('You can also run as a standalone python script to view all')
-    print('arguments like this:')
-    print()
+    print('arguments like this:\n')
     print('python render_images.py --help')
 
