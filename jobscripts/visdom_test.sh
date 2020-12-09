@@ -18,6 +18,8 @@ mkdir "$TMPDIR"/datasets/CLEVR_default
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_default/images "$TMPDIR"/datasets/CLEVR_default/
 
+python -m visdom.server -p 8097
+
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
        --dataroot "$TMPDIR"/datasets/CLEVR_default/images\

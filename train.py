@@ -65,7 +65,7 @@ if __name__ == '__main__':
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
-                print(f"D: real {model.pred_real}, fake {model.pred_fake}")
+                print(f"D: real {torch.mean(model.pred_real)}, fake {torch.mean(model.pred_fake)}")
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
 
