@@ -1,15 +1,14 @@
 #!/bin/bash
 #Set job requirements
-#SBATCH -N 1
-#SBATCH -t 20:00
+#SBATCH -t 25:00:00
 #SBATCH -p gpu_shared
-
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=tom.lotze@gmail.com
 
 # Loading modules
 module load 2020
 module load Python
+module load Blender
 
 # Create output directory on scratch
 mkdir "$TMPDIR"/datasets
@@ -28,9 +27,10 @@ blender --background -noaudio --python data/render_images.py -- \
 	--split ""\
 	--min_objects 1\
 	--max_objects 4\
-	--num_images 5\
+	--num_images 5000\
+	--start_idx 5000\
 	--use_gpu 1\
-	--render_num_samples 10000\
+	--render_num_samples 20\
 	--render_min_bounces 0\
 	--render_max_bounces 4\
 	--width 270 --height 270\
@@ -45,5 +45,5 @@ ls "$TMPDIR"/datasets/CLEVR_colorized
 mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized
 mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized/images
 mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized/jsons
-cp -r "$TMPDIR"/datasets/CLEVR_colorized/images/* $HOME/City-GAN/datasets/CLEVR_colorized/images/
+cp -r "$TMPDIR"/datasets/CLEVR_colorized/images/* $HOME/City-GAN/datasets/CLEVR_colorized/images/train/
 cp -r "$TMPDIR"/datasets/CLEVR_colorized/jsons/* $HOME/City-GAN/datasets/CLEVR_colorized/jsons/
