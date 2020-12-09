@@ -16,7 +16,7 @@ The project setup is inspired by the [Pix2Pix framework](https://github.com/juny
 2) [`data`](./data): Folder containing all dataset classes and helper functions
 3) [`jobscripts`](./jobscripts): Folder containing all bash scripts used for generating datasets and training models on a GPU-cluster ([https://userinfo.surfsara.nl/](Surfsara))
 4) [`options`](./options): Folder containing all command line options for various phases in training. Additional options can be defined in the model class definitions. 
-5) [`util`](./util): Folder containing all model classes
+5) [`util`](./util): Folder containing all utlity functions, including the visualizer (Visdom)
 
 
 ---
