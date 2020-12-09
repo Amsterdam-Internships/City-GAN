@@ -76,7 +76,7 @@ class CopyPasteGANModel(BaseModel):
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
             "loss_D"]
-        if self.confidence_weight > 0:
+        if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
 
         # for visualization purposes, set G losses to zero in case of headstart
