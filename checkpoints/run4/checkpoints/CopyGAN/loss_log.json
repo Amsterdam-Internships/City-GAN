@@ -1,0 +1,614 @@
+{
+  "1": {
+    "1000": {
+      "loss_G_comp": 0.0,
+      "loss_G_anti_sc": 0.0,
+      "loss_G": 0.0,
+      "loss_D_real": 0.598,
+      "loss_D_fake": 0.913,
+      "loss_D_gr_fake": 0.918,
+      "loss_AUX": 0.059,
+      "loss_D": 2.488
+    },
+    "2000": {
+      "loss_G_comp": 0.622,
+      "loss_G_anti_sc": 0.834,
+      "loss_G": 1.456,
+      "loss_D_real": 0.624,
+      "loss_D_fake": 0.835,
+      "loss_D_gr_fake": 0.847,
+      "loss_AUX": 0.053,
+      "loss_D": 2.359
+    },
+    "3000": {
+      "loss_G_comp": 0.635,
+      "loss_G_anti_sc": 0.799,
+      "loss_G": 1.434,
+      "loss_D_real": 0.637,
+      "loss_D_fake": 0.805,
+      "loss_D_gr_fake": 0.812,
+      "loss_AUX": 0.046,
+      "loss_D": 2.3
+    },
+    "4000": {
+      "loss_G_comp": 0.646,
+      "loss_G_anti_sc": 0.78,
+      "loss_G": 1.426,
+      "loss_D_real": 0.647,
+      "loss_D_fake": 0.782,
+      "loss_D_gr_fake": 0.788,
+      "loss_AUX": 0.042,
+      "loss_D": 2.259
+    },
+    "5000": {
+      "loss_G_comp": 0.654,
+      "loss_G_anti_sc": 0.764,
+      "loss_G": 1.418,
+      "loss_D_real": 0.655,
+      "loss_D_fake": 0.765,
+      "loss_D_gr_fake": 0.77,
+      "loss_AUX": 0.04,
+      "loss_D": 2.229
+    },
+    "6000": {
+      "loss_G_comp": 0.659,
+      "loss_G_anti_sc": 0.753,
+      "loss_G": 1.413,
+      "loss_D_real": 0.66,
+      "loss_D_fake": 0.754,
+      "loss_D_gr_fake": 0.757,
+      "loss_AUX": 0.037,
+      "loss_D": 2.209
+    },
+    "7000": {
+      "loss_G_comp": 0.664,
+      "loss_G_anti_sc": 0.744,
+      "loss_G": 1.408,
+      "loss_D_real": 0.665,
+      "loss_D_fake": 0.745,
+      "loss_D_gr_fake": 0.749,
+      "loss_AUX": 0.035,
+      "loss_D": 2.194
+    },
+    "8000": {
+      "loss_G_comp": 0.667,
+      "loss_G_anti_sc": 0.738,
+      "loss_G": 1.405,
+      "loss_D_real": 0.668,
+      "loss_D_fake": 0.739,
+      "loss_D_gr_fake": 0.741,
+      "loss_AUX": 0.038,
+      "loss_D": 2.187
+    },
+    "9000": {
+      "loss_G_comp": 0.67,
+      "loss_G_anti_sc": 0.732,
+      "loss_G": 1.402,
+      "loss_D_real": 0.672,
+      "loss_D_fake": 0.733,
+      "loss_D_gr_fake": 0.733,
+      "loss_AUX": 0.037,
+      "loss_D": 2.175
+    },
+    "10000": {
+      "loss_G_comp": 0.673,
+      "loss_G_anti_sc": 0.727,
+      "loss_G": 1.4,
+      "loss_D_real": 0.674,
+      "loss_D_fake": 0.728,
+      "loss_D_gr_fake": 0.729,
+      "loss_AUX": 0.033,
+      "loss_D": 2.165
+    }
+  },
+  "2": {
+    "1000": {
+      "loss_G_comp": 0.675,
+      "loss_G_anti_sc": 0.723,
+      "loss_G": 1.398,
+      "loss_D_real": 0.676,
+      "loss_D_fake": 0.724,
+      "loss_D_gr_fake": 0.725,
+      "loss_AUX": 0.029,
+      "loss_D": 2.154
+    },
+    "2000": {
+      "loss_G_comp": 0.677,
+      "loss_G_anti_sc": 0.72,
+      "loss_G": 1.397,
+      "loss_D_real": 0.678,
+      "loss_D_fake": 0.721,
+      "loss_D_gr_fake": 0.722,
+      "loss_AUX": 0.027,
+      "loss_D": 2.148
+    },
+    "3000": {
+      "loss_G_comp": 0.679,
+      "loss_G_anti_sc": 0.717,
+      "loss_G": 1.396,
+      "loss_D_real": 0.679,
+      "loss_D_fake": 0.718,
+      "loss_D_gr_fake": 0.719,
+      "loss_AUX": 0.027,
+      "loss_D": 2.144
+    },
+    "4000": {
+      "loss_G_comp": 0.68,
+      "loss_G_anti_sc": 0.715,
+      "loss_G": 1.395,
+      "loss_D_real": 0.681,
+      "loss_D_fake": 0.716,
+      "loss_D_gr_fake": 0.717,
+      "loss_AUX": 0.019,
+      "loss_D": 2.132
+    },
+    "5000": {
+      "loss_G_comp": 0.681,
+      "loss_G_anti_sc": 0.713,
+      "loss_G": 1.394,
+      "loss_D_real": 0.682,
+      "loss_D_fake": 0.713,
+      "loss_D_gr_fake": 0.714,
+      "loss_AUX": 0.018,
+      "loss_D": 2.128
+    },
+    "6000": {
+      "loss_G_comp": 0.682,
+      "loss_G_anti_sc": 0.711,
+      "loss_G": 1.393,
+      "loss_D_real": 0.683,
+      "loss_D_fake": 0.712,
+      "loss_D_gr_fake": 0.712,
+      "loss_AUX": 0.014,
+      "loss_D": 2.121
+    },
+    "7000": {
+      "loss_G_comp": 0.683,
+      "loss_G_anti_sc": 0.71,
+      "loss_G": 1.393,
+      "loss_D_real": 0.684,
+      "loss_D_fake": 0.71,
+      "loss_D_gr_fake": 0.711,
+      "loss_AUX": 0.015,
+      "loss_D": 2.119
+    },
+    "8000": {
+      "loss_G_comp": 0.684,
+      "loss_G_anti_sc": 0.708,
+      "loss_G": 1.392,
+      "loss_D_real": 0.684,
+      "loss_D_fake": 0.709,
+      "loss_D_gr_fake": 0.709,
+      "loss_AUX": 0.013,
+      "loss_D": 2.116
+    },
+    "9000": {
+      "loss_G_comp": 0.685,
+      "loss_G_anti_sc": 0.707,
+      "loss_G": 1.392,
+      "loss_D_real": 0.685,
+      "loss_D_fake": 0.708,
+      "loss_D_gr_fake": 0.708,
+      "loss_AUX": 0.014,
+      "loss_D": 2.115
+    },
+    "10000": {
+      "loss_G_comp": 0.685,
+      "loss_G_anti_sc": 0.706,
+      "loss_G": 1.391,
+      "loss_D_real": 0.686,
+      "loss_D_fake": 0.707,
+      "loss_D_gr_fake": 0.707,
+      "loss_AUX": 0.013,
+      "loss_D": 2.113
+    }
+  },
+  "3": {
+    "1000": {
+      "loss_G_comp": 0.686,
+      "loss_G_anti_sc": 0.705,
+      "loss_G": 1.391,
+      "loss_D_real": 0.686,
+      "loss_D_fake": 0.706,
+      "loss_D_gr_fake": 0.706,
+      "loss_AUX": 0.013,
+      "loss_D": 2.11
+    },
+    "2000": {
+      "loss_G_comp": 0.686,
+      "loss_G_anti_sc": 0.704,
+      "loss_G": 1.391,
+      "loss_D_real": 0.687,
+      "loss_D_fake": 0.705,
+      "loss_D_gr_fake": 0.705,
+      "loss_AUX": 0.011,
+      "loss_D": 2.108
+    },
+    "3000": {
+      "loss_G_comp": 0.687,
+      "loss_G_anti_sc": 0.704,
+      "loss_G": 1.39,
+      "loss_D_real": 0.687,
+      "loss_D_fake": 0.704,
+      "loss_D_gr_fake": 0.704,
+      "loss_AUX": 0.011,
+      "loss_D": 2.106
+    },
+    "4000": {
+      "loss_G_comp": 0.687,
+      "loss_G_anti_sc": 0.703,
+      "loss_G": 1.39,
+      "loss_D_real": 0.687,
+      "loss_D_fake": 0.703,
+      "loss_D_gr_fake": 0.704,
+      "loss_AUX": 0.013,
+      "loss_D": 2.107
+    },
+    "5000": {
+      "loss_G_comp": 0.688,
+      "loss_G_anti_sc": 0.702,
+      "loss_G": 1.39,
+      "loss_D_real": 0.688,
+      "loss_D_fake": 0.703,
+      "loss_D_gr_fake": 0.703,
+      "loss_AUX": 0.011,
+      "loss_D": 2.104
+    },
+    "6000": {
+      "loss_G_comp": 0.688,
+      "loss_G_anti_sc": 0.702,
+      "loss_G": 1.39,
+      "loss_D_real": 0.688,
+      "loss_D_fake": 0.702,
+      "loss_D_gr_fake": 0.703,
+      "loss_AUX": 0.009,
+      "loss_D": 2.102
+    },
+    "7000": {
+      "loss_G_comp": 0.688,
+      "loss_G_anti_sc": 0.701,
+      "loss_G": 1.389,
+      "loss_D_real": 0.688,
+      "loss_D_fake": 0.701,
+      "loss_D_gr_fake": 0.702,
+      "loss_AUX": 0.01,
+      "loss_D": 2.102
+    },
+    "8000": {
+      "loss_G_comp": 0.688,
+      "loss_G_anti_sc": 0.701,
+      "loss_G": 1.389,
+      "loss_D_real": 0.689,
+      "loss_D_fake": 0.701,
+      "loss_D_gr_fake": 0.701,
+      "loss_AUX": 0.014,
+      "loss_D": 2.105
+    },
+    "9000": {
+      "loss_G_comp": 0.689,
+      "loss_G_anti_sc": 0.7,
+      "loss_G": 1.389,
+      "loss_D_real": 0.689,
+      "loss_D_fake": 0.701,
+      "loss_D_gr_fake": 0.701,
+      "loss_AUX": 0.01,
+      "loss_D": 2.1
+    },
+    "10000": {
+      "loss_G_comp": 0.689,
+      "loss_G_anti_sc": 0.7,
+      "loss_G": 1.389,
+      "loss_D_real": 0.689,
+      "loss_D_fake": 0.7,
+      "loss_D_gr_fake": 0.7,
+      "loss_AUX": 0.011,
+      "loss_D": 2.101
+    }
+  },
+  "4": {
+    "1000": {
+      "loss_G_comp": 0.689,
+      "loss_G_anti_sc": 0.7,
+      "loss_G": 1.389,
+      "loss_D_real": 0.689,
+      "loss_D_fake": 0.7,
+      "loss_D_gr_fake": 0.7,
+      "loss_AUX": 0.011,
+      "loss_D": 2.1
+    },
+    "2000": {
+      "loss_G_comp": 0.689,
+      "loss_G_anti_sc": 0.699,
+      "loss_G": 1.389,
+      "loss_D_real": 0.689,
+      "loss_D_fake": 0.7,
+      "loss_D_gr_fake": 0.7,
+      "loss_AUX": 0.01,
+      "loss_D": 2.098
+    },
+    "3000": {
+      "loss_G_comp": 0.689,
+      "loss_G_anti_sc": 0.699,
+      "loss_G": 1.389,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.699,
+      "loss_D_gr_fake": 0.7,
+      "loss_AUX": 0.011,
+      "loss_D": 2.099
+    },
+    "4000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.699,
+      "loss_G": 1.389,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.699,
+      "loss_D_gr_fake": 0.699,
+      "loss_AUX": 0.008,
+      "loss_D": 2.096
+    },
+    "5000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.699,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.699,
+      "loss_D_gr_fake": 0.699,
+      "loss_AUX": 0.01,
+      "loss_D": 2.098
+    },
+    "6000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.699,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.699,
+      "loss_D_gr_fake": 0.699,
+      "loss_AUX": 0.009,
+      "loss_D": 2.096
+    },
+    "7000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.698,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.699,
+      "loss_D_gr_fake": 0.699,
+      "loss_AUX": 0.01,
+      "loss_D": 2.097
+    },
+    "8000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.698,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.699,
+      "loss_D_gr_fake": 0.699,
+      "loss_AUX": 0.012,
+      "loss_D": 2.1
+    },
+    "9000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.698,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.698,
+      "loss_D_gr_fake": 0.698,
+      "loss_AUX": 0.006,
+      "loss_D": 2.093
+    },
+    "10000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.698,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.698,
+      "loss_D_gr_fake": 0.698,
+      "loss_AUX": 0.009,
+      "loss_D": 2.096
+    }
+  },
+  "5": {
+    "1000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.698,
+      "loss_G": 1.388,
+      "loss_D_real": 0.69,
+      "loss_D_fake": 0.698,
+      "loss_D_gr_fake": 0.698,
+      "loss_AUX": 0.011,
+      "loss_D": 2.098
+    },
+    "2000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.698,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.698,
+      "loss_D_gr_fake": 0.698,
+      "loss_AUX": 0.01,
+      "loss_D": 2.097
+    },
+    "3000": {
+      "loss_G_comp": 0.69,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.698,
+      "loss_D_gr_fake": 0.698,
+      "loss_AUX": 0.011,
+      "loss_D": 2.097
+    },
+    "4000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.008,
+      "loss_D": 2.093
+    },
+    "5000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.008,
+      "loss_D": 2.094
+    },
+    "6000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.012,
+      "loss_D": 2.097
+    },
+    "7000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.011,
+      "loss_D": 2.096
+    },
+    "8000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.013,
+      "loss_D": 2.098
+    },
+    "9000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.011,
+      "loss_D": 2.095
+    },
+    "10000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.697,
+      "loss_G": 1.388,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.008,
+      "loss_D": 2.093
+    }
+  },
+  "6": {
+    "1000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.697,
+      "loss_AUX": 0.011,
+      "loss_D": 2.095
+    },
+    "2000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.006,
+      "loss_D": 2.09
+    },
+    "3000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.014,
+      "loss_D": 2.098
+    },
+    "4000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.697,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.01,
+      "loss_D": 2.095
+    },
+    "5000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.009,
+      "loss_D": 2.093
+    },
+    "6000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.01,
+      "loss_D": 2.094
+    },
+    "7000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.691,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.008,
+      "loss_D": 2.092
+    },
+    "8000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.692,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.007,
+      "loss_D": 2.091
+    },
+    "9000": {
+      "loss_G_comp": 0.691,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.692,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.013,
+      "loss_D": 2.096
+    },
+    "10000": {
+      "loss_G_comp": 0.692,
+      "loss_G_anti_sc": 0.696,
+      "loss_G": 1.387,
+      "loss_D_real": 0.692,
+      "loss_D_fake": 0.696,
+      "loss_D_gr_fake": 0.696,
+      "loss_AUX": 0.007,
+      "loss_D": 2.091
+    }
+  }
+}
