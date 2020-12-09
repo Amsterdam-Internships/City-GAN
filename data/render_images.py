@@ -240,8 +240,8 @@ def render_scene(args,
       bpy.context.preferences.system.compute_device_type = 'CUDA'
       bpy.context.preferences.system.compute_device = 'CUDA_0'
     else:
-      cycles_prefs = bpy.context.preferences.addons['cycles'].preferences
-      cycles_prefs.compute_device_type = 'CUDA'
+      bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+      
 
   # Some CYCLES-specific stuff
   bpy.data.worlds['World'].cycles.sample_as_light = True
@@ -252,6 +252,8 @@ def render_scene(args,
   if args.use_gpu == 1:
     bpy.context.scene.cycles.device = 'GPU'
 
+  print(f"Device used: {bpy.context.preferences.addons['cycles'].preferences.get_devices()}")
+    
   # This will give ground-truth information about the scene and its objects
   scene_struct = {
       'split': output_split,
