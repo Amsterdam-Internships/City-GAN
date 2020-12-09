@@ -1,11 +1,7 @@
 # CityGAN: Automatic addition and removal of objects
 
-Explain in short what this repository is. Mind the target audience.
-No need to go into too much technical details if you expect some people would just use it as end-users 
-and don't care about the internals (so focus on what the code really *does*), not how.
-The *_How it works_* section below would contain more technical details for curious people.
-
-If applicable, you can also show an example of the final output.
+This repo contains the code for my MSc AI thesis project, exploring the use of GANs for the Municipality of Amsterdam. More specifically, I tried to reproduce and improve the CopyPasteGAN ([Arandejovic, 2018](https://arxiv.org/abs/1905.11369)) for object discovery. The ultimate goal is to find objects of a specific object class automatically in an image, and be able to "cut" that object from the source image, and place it realistically in a target image. 
+The *_How it works_* section below contains more technical information about the model and reasoning.
 
 ![](media/examples/emojis.png)
 
@@ -14,10 +10,14 @@ If applicable, you can also show an example of the final output.
 
 ## Project Folder Structure
 
-The project is structured as follows:
+The project setup is inspired by the [Pix2Pix framework](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix), and is structured as follows:
 
-1) [`src`](./src): Folder for all source files specific to this project
 1) [`models`](./models): Folder containing all model classes
+2) [`data`](./data): Folder containing all dataset classes and helper functions
+3) [`jobscripts`](./jobscripts): Folder containing all bash scripts used for generating datasets and training models on a GPU-cluster ([https://userinfo.surfsara.nl/](Surfsara))
+4) [`options`](./options): Folder containing all command line options for various phases in training. Additional options can be defined in the model class definitions. 
+5) [`util`](./util): Folder containing all model classes
+
 
 ---
 
@@ -26,8 +26,6 @@ The project is structured as follows:
 
 Explain how to set up everything. 
 Let people know if there are weird dependencies - if so feel free to add links to guides and tutorials.
-
-A person should be able to clone this repo, follow your instructions blindly, and still end up with something *fully working*!
 
 1) Clone this repository:
     ```bash
@@ -38,6 +36,8 @@ A person should be able to clone this repo, follow your instructions blindly, an
     ```bash
     pip install -r requirements.txt
     ```
+3) Create a ./datasets directory with following structure:
+
 ---
 
 
