@@ -76,7 +76,7 @@ class Visualizer():
             if not self.vis.check_connection():
                 print("checking connection:", self.vis.check_connection())
                 self.create_visdom_connections()
-                print("check connection after creating it:", vis.check_connection())
+                print("check connection after creating new server:", vis.check_connection())
 
         if self.use_html:  # create an HTML object at <checkpoints_dir>/web/; images will be saved under <checkpoints_dir>/web/images/
             self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
@@ -98,10 +98,10 @@ class Visualizer():
 
     def create_visdom_connections(self):
         """If the program could not connect to Visdom server, this function will start a new server at port < self.port > """
-        cmd = sys.executable + f' -m visdom.server -p {self.port} &>/dev/null &'
+        cmd = sys.executable + f' -m visdom.server -p {self.port} '#&>/dev/null &'
         print('\n\nCould not connect to Visdom server. \n Trying to start a server....')
         print(f'Command: {cmd}')
-        Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        Popen(cmd, shell=True)#, stdout=PIPE, stderr=PIPE)
 
     def display_current_results(self, visuals, epoch, save_result, epoch_iter=0):
         """Display current results on visdom; save current results to an HTML file.
