@@ -49,6 +49,9 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--confidence_weight', type=float, default=0.0, help='weight for the confidence loss for generator')
             parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
             parser.add_argument('--D_head_start', type=int, default=1000, help='First train only discriminator for D_head_start iterations')
+            parser.add_argument('--beta2', type=int, default=0.999, help='beta2 parameter for the adam optimizer')
+            parser.add_argument('--sigma_blur', type=float, default=1.0, help='Sigma used in Gaussian filter used for blurring discriminator input')
+            parser.add_argument('--real_target', type=float, default=1.0, help='Target label for the discriminator, can be set <1 to prevent overfitting')
             # parser.add_argument('--multi_layered', action='store_true', default=3, help='Number of object classes in images, used for multiple masks')
 
         # nr_object_classes is used to output a multi-layered mask, each
@@ -97,19 +100,19 @@ class CopyPasteGANModel(BaseModel):
 
         if self.isTrain:
             # only define the Discriminator if in training phase
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size)
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size, sigma_blur=opt.sigma_blur)
             self.model_names.append("D")
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss(gan_mode="vanilla").to(self.device)
+            self.criterionGAN = networks.GANLoss(gan_mode="vanilla", target_real_label=opt.real_target).to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
             if self.multi_layered:
                 self.criterionDist = networks.DistinctMaskLoss(opt.nr_obj_classes).to(self.device)
 
             # define optimizers
-            self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-            self.optimizer_D = torch.optim.Adam(self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+            self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2))
+            self.optimizer_D = torch.optim.Adam(self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2))
             self.optimizers = [self.optimizer_G, self.optimizer_D]
 
         # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
@@ -149,6 +152,12 @@ class CopyPasteGANModel(BaseModel):
         self.anti_sc_src = torch.flip(self.src, [0, 1])
         self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt, self.g_mask)
 
+        # get predictions from discriminators for all images
+        self.pred_real, self.D_mask_real = self.netD(self.tgt) # can also be source
+        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+        self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
+        self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+
 
     def backward_G(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration. Discriminator predictions have been computed
@@ -175,12 +184,6 @@ class CopyPasteGANModel(BaseModel):
     def backward_D(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
-        torch.autograd.set_detect_anomaly(True)
-        # get predictions from discriminators for all images
-        self.pred_real, self.D_mask_real = self.netD(self.tgt) # can also be source
-        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-        self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
-        self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # compute the GAN losses
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
@@ -209,23 +212,24 @@ class CopyPasteGANModel(BaseModel):
             headstart
 
         """
-        train_G = total_iters > self.D_head_start
+
+        # headstart for D, and train one-one alternating
+        train_G = total_iters > self.D_head_start and total_iters % 2 == 0
 
         # perform forward step
         self.forward()
 
-        # reset previous gradients and compute new gradients for D
-        self.optimizer_D.zero_grad()
-        self.backward_D()
 
-        # only train G after headstart for D
+        # train D and G in alternating fashion
         if train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
             self.optimizer_G.step()
 
-        # update D
-        self.optimizer_D.step()
+        else:
+            self.optimizer_D.zero_grad()
+            self.backward_D()
+            self.optimizer_D.step()
 
 
 
