@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
-from math import log
+from math import log, pi
 
 
 ###############################################################################
@@ -273,7 +273,7 @@ def create_gaussian_filter(sigma_blur):
     xy_grid = torch.stack([x_grid, y_grid], dim=-1)
     mean = (kernel_size - 1.0) / 2.0
     variance = sigma_blur ** 2.0
-    gaussian_kernel = (1./(2.*math.pi*variance)) *\
+    gaussian_kernel = (1./(2.*pi*variance)) *\
                     torch.exp(
                         -torch.sum((xy_grid - mean)**2., dim=-1) /\
                         (2*variance)
@@ -438,6 +438,8 @@ class CopyUNet(nn.Module):
         self.img_dim = img_dim
         if discriminator and sigma_blur:
             self.blur_filter = create_gaussian_filter(sigma_blur)
+        else:
+            self.blur_filter = None
 
         self.downscale = []
         self.upscale = []

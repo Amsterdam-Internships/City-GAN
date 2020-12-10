@@ -4,6 +4,7 @@ import sys
 import ntpath
 import time
 import json
+import torch
 from . import util, html
 from subprocess import Popen, PIPE
 
