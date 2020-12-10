@@ -163,7 +163,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
-def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64):
+def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0):
     """Create a discriminator
 
     Parameters:
@@ -203,7 +203,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
     elif netD == 'pixel':     # classify if each pixel is real or fake
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
-        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True, img_dim=img_dim)
+        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True, img_dim=img_dim, sigma_blur=sigma_blur)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' % netD)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -212,7 +212,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
 
 
 ###############################################
-# HELPER FUNCTIONS
+# CUSTOM HELPER FUNCTIONS
 ###############################################
 
 def composite_image(src, tgt, mask=None, device='cpu'):
@@ -260,6 +260,34 @@ def mask_to_binary(mask):
     return bin_mask
 
 
+def create_gaussian_filter(sigma_blur):
+    """
+    this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
+    """
+
+    bs_round = int(sigma_blur)
+    kernel_size = bs_round * 2 + 1
+    x_cord = torch.arange(kernel_size)
+    x_grid = x_cord.repeat(kernel_size).view(kernel_size, kernel_size)
+    y_grid = x_grid.t()
+    xy_grid = torch.stack([x_grid, y_grid], dim=-1)
+    mean = (kernel_size - 1.0) / 2.0
+    variance = sigma_blur ** 2.0
+    gaussian_kernel = (1./(2.*math.pi*variance)) *\
+                    torch.exp(
+                        -torch.sum((xy_grid - mean)**2., dim=-1) /\
+                        (2*variance)
+                    )
+    gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
+    gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
+    gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
+    gaussian_filter = nn.Conv2d(3, 3, kernel_size=kernel_size, padding=bs_round, groups=3, bias=False)
+    gaussian_filter.weight.data = gaussian_kernel
+    gaussian_filter.weight.requires_grad = False
+
+    return gaussian_filter
+
+
 
 ##############################################################################
 # Classes
@@ -301,7 +329,7 @@ class GANLoss(nn.Module):
         """Create label tensors with the same size as the input.
 
         Parameters:
-            prediction (tensor) - - tpyically the prediction from a discriminator
+            prediction (tensor) - - typically the prediction from a discriminator
             target_is_real (bool) - - if the ground truth label is for real images or fake images
 
         Returns:
@@ -388,7 +416,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False, img_dim=64):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False, sigma_blur=0, img_dim=64):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -408,6 +436,8 @@ class CopyUNet(nn.Module):
         self.discriminator = discriminator
         self.border_zeroing = border_zeroing
         self.img_dim = img_dim
+        if discriminator and sigma_blur:
+            self.blur_filter = create_gaussian_filter(sigma_blur)
 
         self.downscale = []
         self.upscale = []
@@ -451,6 +481,11 @@ class CopyUNet(nn.Module):
         if self.downscale:
             for layer in self.downscale:
                 input = layer(input)
+
+        if self.blur_filter:
+            input = self.blur_filter(input)
+
+        assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
 
         enc1 = self.enc1(input)
         enc2 = self.enc2(enc1)
