@@ -203,7 +203,7 @@ class CopyPasteGANModel(BaseModel):
         self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.loss_AUX
 
         # Calculate gradients of discriminator
-        self.loss_D.backward(retain_graph=True)
+        self.loss_D.backward()
 
 
     def optimize_parameters(self, total_iters):
