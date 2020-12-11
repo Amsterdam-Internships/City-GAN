@@ -198,9 +198,11 @@ class CopyPasteGANModel(BaseModel):
         self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
+        # detach all masks coming from G to prevent gradients in G
         self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
-            self.D_mask_real, self.D_mask_fake, self.D_mask_antisc,
-            self.D_mask_grfake, self.g_mask, self.mask_gf)
+            self.D_mask_real, self.D_mask_fake.detach(),
+            self.D_mask_antisc.detach(), self.D_mask_grfake,
+            self.g_mask.detach(), self.mask_gf)
 
         # sum the losses
         self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.loss_AUX
