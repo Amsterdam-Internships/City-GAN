@@ -260,7 +260,7 @@ def mask_to_binary(mask):
     return bin_mask
 
 
-def create_gaussian_filter(sigma_blur):
+def create_gaussian_filter(sigma_blur, padding_mode="border"):
     """
     this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
     """
@@ -281,7 +281,7 @@ def create_gaussian_filter(sigma_blur):
     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
-    gaussian_filter = nn.Conv2d(3, 3, kernel_size=kernel_size, padding=bs_round, groups=3, bias=False, padding_mode='border')
+    gaussian_filter = nn.Conv2d(3, 3, kernel_size=kernel_size, padding=bs_round, groups=3, bias=False, padding_mode=padding_mode)
     gaussian_filter.weight.data = gaussian_kernel
     gaussian_filter.weight.requires_grad = False
 
