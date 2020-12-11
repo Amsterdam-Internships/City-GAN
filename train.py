@@ -35,6 +35,11 @@ if __name__ == '__main__':
     print(f'The number of epochs to run = {total_nr_epochs}')
 
 
+    # set random seeds for reproducibility
+    torch.manual_seed(opt.seed)
+
+
+
     model = create_model(opt)      # create a model given opt.model and other options
     model.setup(opt)               # regular setup: load and print networks; create schedulers
     visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots

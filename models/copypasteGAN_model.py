@@ -52,6 +52,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--beta2', type=int, default=0.999, help='beta2 parameter for the adam optimizer')
             parser.add_argument('--sigma_blur', type=float, default=1.0, help='Sigma used in Gaussian filter used for blurring discriminator input')
             parser.add_argument('--real_target', type=float, default=1.0, help='Target label for the discriminator, can be set <1 to prevent overfitting')
+            parser.add_argument('--seed', type=int, default=42, help='Provide an integer for setting the random seed')
             # parser.add_argument('--multi_layered', action='store_true', default=3, help='Number of object classes in images, used for multiple masks')
 
         # nr_object_classes is used to output a multi-layered mask, each
@@ -74,6 +75,9 @@ class CopyPasteGANModel(BaseModel):
 
         self.multi_layered = opt.nr_obj_classes != 1
         self.D_head_start = opt.D_head_start
+
+        # specify random seed
+        torch.manual_seed(opt.seed)
 
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
