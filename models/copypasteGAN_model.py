@@ -239,13 +239,11 @@ class CopyPasteGANModel(BaseModel):
         if train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
-            breakpoint()
             self.optimizer_G.step()
 
         else:
             self.optimizer_D.zero_grad()
             self.backward_D()
-            breakpoint()
             self.optimizer_D.step()
 
 
