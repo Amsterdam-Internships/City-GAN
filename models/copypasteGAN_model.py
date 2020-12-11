@@ -158,6 +158,9 @@ class CopyPasteGANModel(BaseModel):
 
         # get predictions from discriminators for all images
         self.pred_real, self.D_mask_real = self.netD(self.tgt) # can also be source
+
+        assert self.pred_real.shape[0] == self.opt.batch_size, f"prediction shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
+
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
         self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
         self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
@@ -191,7 +194,7 @@ class CopyPasteGANModel(BaseModel):
 
         # compute the GAN losses
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
-        self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
+        self.loss_D_fake = self.criterionGAN(self.pred_fake.detach(), False)
         self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
@@ -203,6 +206,7 @@ class CopyPasteGANModel(BaseModel):
         self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.loss_AUX
 
         # Calculate gradients of discriminator
+        # TODO: retain_graph was true here
         self.loss_D.backward()
 
 
@@ -218,7 +222,11 @@ class CopyPasteGANModel(BaseModel):
         """
 
         # headstart for D, and train one-one alternating
-        train_G = total_iters > self.D_head_start and total_iters % 2 == 0
+        train_G = total_iters >= self.D_head_start and total_iters % 2 == 0
+
+
+        if total_iters == self.D_head_start:
+            print("Headstart D over, starting G training")
 
         # perform forward step
         self.forward()
@@ -233,6 +241,7 @@ class CopyPasteGANModel(BaseModel):
         else:
             self.optimizer_D.zero_grad()
             self.backward_D()
+            breakpoint()
             self.optimizer_D.step()
 
 
