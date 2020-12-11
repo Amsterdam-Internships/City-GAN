@@ -281,7 +281,7 @@ def create_gaussian_filter(sigma_blur):
     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
-    gaussian_filter = nn.Conv2d(3, 3, kernel_size=kernel_size, padding=bs_round, groups=3, bias=False)
+    gaussian_filter = nn.Conv2d(3, 3, kernel_size=kernel_size, padding=bs_round, groups=3, bias=False, padding_mode='border')
     gaussian_filter.weight.data = gaussian_kernel
     gaussian_filter.weight.requires_grad = False
 
