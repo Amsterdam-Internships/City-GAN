@@ -48,7 +48,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
             parser.add_argument('--confidence_weight', type=float, default=0.0, help='weight for the confidence loss for generator')
             parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
-            parser.add_argument('--D_head_start', type=int, default=1000, help='First train only discriminator for D_head_start iterations')
+            parser.add_argument('--D_headstart', type=int, default=1000, help='First train only discriminator for D_headstart iterations')
             parser.add_argument('--beta2', type=int, default=0.999, help='beta2 parameter for the adam optimizer')
             parser.add_argument('--sigma_blur', type=float, default=1.0, help='Sigma used in Gaussian filter used for blurring discriminator input')
             parser.add_argument('--real_target', type=float, default=1.0, help='Target label for the discriminator, can be set <1 to prevent overfitting')
@@ -74,7 +74,7 @@ class CopyPasteGANModel(BaseModel):
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
         self.multi_layered = opt.nr_obj_classes != 1
-        self.D_head_start = opt.D_head_start
+        self.D_headstart = opt.D_headstart
 
         # specify random seed
         torch.manual_seed(opt.seed)
@@ -87,7 +87,7 @@ class CopyPasteGANModel(BaseModel):
             self.loss_names.append("loss_G_conf")
 
         # for visualization purposes, set G losses to zero in case of headstart
-        if self.D_head_start > 0:
+        if self.D_headstart > 0:
             self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
 
         if self.multi_layered:
@@ -224,10 +224,10 @@ class CopyPasteGANModel(BaseModel):
         """
 
         # headstart for D, and train one-one alternating
-        train_G = total_iters >= self.D_head_start and total_iters % 2 == 0
+        train_G = total_iters >= self.D_headstart and total_iters % 2 == 0
 
 
-        if total_iters == self.D_head_start:
+        if total_iters == self.D_headstart:
             print("Headstart D over, starting G training")
 
         # perform forward step
@@ -235,9 +235,11 @@ class CopyPasteGANModel(BaseModel):
 
 
         # train D and G in alternating fashion
+        # TODO: make sure D does not have gradients if G is updated
         if train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
+            breakpoint()
             self.optimizer_G.step()
 
         else:

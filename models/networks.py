@@ -319,7 +319,8 @@ class GANLoss(nn.Module):
         if gan_mode == 'lsgan':
             self.loss = nn.MSELoss()
         elif gan_mode == 'vanilla':
-            self.loss = nn.BCEWithLogitsLoss()
+            # sigmoid is done in model itself
+            self.loss = nn.BCELoss()
         elif gan_mode in ['wgangp']:
             self.loss = None
         else:
@@ -503,6 +504,7 @@ class CopyUNet(nn.Module):
             for layer in self.upscale:
                 dec1 = layer(dec1)
 
+        # decoder output
         copy_mask = self.sigmoid(dec1)
 
         # clamp the borders of the copy mask to 0
@@ -663,7 +665,7 @@ class DistinctMaskLoss(nn.Module):
 
 
 
-
+# TODO implement this
 class FeatureMatchingLoss(nn.Module):
     """Define different GAN objectives.
 
