@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2020-12-14 09:05
+# @Last Modified time: 2020-12-14 17:20
 
 
 """
@@ -56,7 +56,8 @@ def plot_json(opt):
 
     for loss_name in loss_names:
         losses = [data[epoch][iter_][loss_name] for epoch in data.keys() for iter_ in data['1']]
-        plt.plot(all_iters, losses, label=loss_name)
+        losses = running_mean(losses, opt.n)
+        plt.plot(all_iters[:-opt.n], losses, label=loss_name)
 
 
 
@@ -70,6 +71,10 @@ def plot_json(opt):
     print(f"figure saved to {opt.dest}")
 
 
+def running_mean(vals, n=3):
+    assert n < len(vals)
+    cumvals = np.array(vals).cumsum()
+    return (cumvals[n:] - cumvals[:-n])
 
 
 if __name__ == "__main__":
@@ -80,6 +85,8 @@ if __name__ == "__main__":
         help='run to plot json file from, default 0 will plot latest')
     parser.add_argument('--dest', type=str, default="",
         help='leave empty to save plot at filename path')
+    parser.add_argument('--n', type=int, default=5,
+        help='Interval to take running mean over for plotting')
 
     opt, unparsed = parser.parse_known_args()
 
