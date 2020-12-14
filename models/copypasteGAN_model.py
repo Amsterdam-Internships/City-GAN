@@ -224,7 +224,7 @@ class CopyPasteGANModel(BaseModel):
         """
 
         # headstart for D, and train one-one alternating
-        train_G = total_iters >= self.D_headstart and total_iters % 2 == 0
+        train_G = total_iters >= self.D_headstart and (total_iters/self.opt.batch_size) % 2 == 0
 
 
         if total_iters == self.D_headstart:
@@ -235,12 +235,10 @@ class CopyPasteGANModel(BaseModel):
 
 
         # train D and G in alternating fashion
-        # TODO: make sure D does not have gradients if G is updated
         if train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
             self.optimizer_G.step()
-
         else:
             self.optimizer_D.zero_grad()
             self.backward_D()
