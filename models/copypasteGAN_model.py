@@ -53,7 +53,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--sigma_blur', type=float, default=1.0, help='Sigma used in Gaussian filter used for blurring discriminator input')
             parser.add_argument('--real_target', type=float, default=1.0, help='Target label for the discriminator, can be set <1 to prevent overfitting')
             parser.add_argument('--seed', type=int, default=42, help='Provide an integer for setting the random seed')
-            # parser.add_argument('--multi_layered', action='store_true', default=3, help='Number of object classes in images, used for multiple masks')
+            parser.add_argument('--border_zeroing', action='store_false', help='default: clamp borders of generated mask to 0 (store_false)')
 
         # nr_object_classes is used to output a multi-layered mask, each
         # channel representing a different object class
@@ -98,7 +98,7 @@ class CopyPasteGANModel(BaseModel):
             'anti_sc_src', 'anti_sc', "D_mask_antisc", "D_mask_real"]
 
         # define generator, output_nc is set to nr of object classes
-        self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size)
+        self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, border_zeroing=opt.border_zeroing, gpu_ids=self.gpu_ids, img_dim=opt.crop_size)
         # specify which models to save to disk
         self.model_names = ['G']
 

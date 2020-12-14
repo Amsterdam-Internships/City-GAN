@@ -118,7 +118,7 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
     return net
 
 
-def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64):
+def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False, border_zeroing=False, init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64):
     """Create a generator
 
     Parameters:
@@ -157,7 +157,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     elif netG == 'unet_256':
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'copy':
-        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=use_dropout, img_dim=img_dim)
+        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=use_dropout, border_zeroing=border_zeroing, img_dim=img_dim)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -417,7 +417,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=True, discriminator=False, sigma_blur=0, img_dim=64):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64):
         """Construct a Unet generator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -427,7 +427,11 @@ class CopyUNet(nn.Module):
             border_zeroing  -- Set borders of mask to 0
             discriminator   -- in Discriminator mode, score and predicted copy
                                 mask are returned
-            double_size     -- To handle 128x128 images
+            sigma_blur      -- sigma for gaussian blurring of discriminator
+                                input
+            img_dim         -- image dimensions, must be square of 2, used for
+                                down and upscaling
+
 
         The U-net is constructed from encoder and decoder building blocks
         Inspired from https://github.com/zijundeng/pytorch-semantic-segmentation/blob/master/models/u_net.py
