@@ -6,3 +6,4 @@
 *.png
 *.pth
 slurm*
+*.txt
