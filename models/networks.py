@@ -719,14 +719,13 @@ class MaskLoss(nn.Module):
         """
         super(MaskLoss, self).__init__()
 
-        self.MSE_loss = nn.MSELoss(reduction='mean')
-        self.criterion = nn.CrossEntropyLoss()
+        self.BCELoss = nn.BCELoss()
 
     def get_mask_loss(self, pred_mask, mask):
 
         # TODO: should be cross entropy loss, but unofficial github uses MSE
         # compute average pixel-wise loss between two images
-        loss = torch.min(self.MSE_loss(pred_mask, mask), self.MSE_loss(pred_mask, (1-mask)))
+        loss = torch.min(self.BCELoss(pred_mask, mask), self.BCELoss(pred_mask, (1-mask)))
 
 
         return loss
