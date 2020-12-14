@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2020-12-04 17:57
+# @Last Modified time: 2020-12-14 09:05
 
 
 """
@@ -56,12 +56,11 @@ def plot_json(opt):
 
     for loss_name in loss_names:
         losses = [data[epoch][iter_][loss_name] for epoch in data.keys() for iter_ in data['1']]
-        print(len(losses), len(all_iters))
         plt.plot(all_iters, losses, label=loss_name)
 
 
 
-    plt.title(f"Loss plot {opt.run}")
+    plt.title(f"Loss plot run {opt.run}")
     plt.xlabel(f"Iteration ({iters_per_epoch} per epoch)")
     plt.ylabel("Loss")
     plt.legend()
