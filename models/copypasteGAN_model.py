@@ -48,7 +48,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
             parser.add_argument('--confidence_weight', type=float, default=0.0, help='weight for the confidence loss for generator')
             parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
-            parser.add_argument('--D_headstart', type=int, default=80000, help='First train only discriminator for D_headstart iterations')
+            parser.add_argument('--D_headstart', type=int, default=80000, help='First train only discriminator for D_headstart iterations (images, independent on batchsize')
             parser.add_argument('--beta2', type=int, default=0.999, help='beta2 parameter for the adam optimizer')
             parser.add_argument('--sigma_blur', type=float, default=1.0, help='Sigma used in Gaussian filter used for blurring discriminator input')
             parser.add_argument('--real_target', type=float, default=1.0, help='Target label for the discriminator, can be set <1 to prevent overfitting')
