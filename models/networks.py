@@ -260,7 +260,7 @@ def mask_to_binary(mask):
     return bin_mask
 
 
-def create_gaussian_filter(sigma_blur, padding_mode="border"):
+def create_gaussian_filter(sigma_blur, padding_mode="replicate"):
     """
     this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
     """
