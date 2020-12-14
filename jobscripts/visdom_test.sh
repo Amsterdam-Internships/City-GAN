@@ -1,6 +1,6 @@
 #!/bin/bash
 #Set job requirements
-#SBATCH -n 16
+#SBATCH -N 1
 #SBATCH -t 1:00:00
 #SBATCH -p gpu_shared
 

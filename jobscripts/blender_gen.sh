@@ -28,7 +28,7 @@ blender --background -noaudio --python data/render_images.py -- \
 	--min_objects 1\
 	--max_objects 4\
 	--num_images 5000\
-	--start_idx 5000\
+	--start_idx 10000\
 	--use_gpu 1\
 	--render_num_samples 20\
 	--render_min_bounces 0\
