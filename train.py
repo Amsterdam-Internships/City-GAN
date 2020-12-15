@@ -71,9 +71,13 @@ if __name__ == '__main__':
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
-                print(f"D: real {torch.mean(model.pred_real)}, fake {torch.mean(model.pred_fake)}, grfake: {torch.mean(model.pred_gr_fake)}")
+
+                # print discriminator scores on various batches
+                print(f"D: real {torch.mean(model.pred_real):.2f}, fake {torch.mean(model.pred_fake):.2f}, grfake: {torch.mean(model.pred_gr_fake):.2f}")
                 B = model.opt.batch_size
+                # print discriminator accuracies
                 print(f"accuracy: real: {len(model.pred_real[model.pred_real>0.5])/B}\n fake: {len(model.pred_fake[model.pred_fake<0.5])/B}\n grfake: {len(model.pred_gr_fake[model.pred_gr_fake<0.5])/B}\n")
+
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
 
