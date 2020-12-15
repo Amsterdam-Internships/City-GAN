@@ -253,16 +253,24 @@ def composite_image(src, tgt, mask=None, device='cpu'):
         assert mask.shape == (b, 1, w, h), "mask is incorrect shape"
         return mask
 
-
+    # check input shapes
     assert src.shape == tgt.shape
+    grounded_fake = False
 
     if not torch.is_tensor(mask):
+        grounded_fake = True
         b, w, h = src.shape[0], src.shape[2], src.shape[3]
         mask = get_polygon_mask(w, h, b).to(device)
 
     # compute the composite image based on the mask and inverse mask
     inv_mask = 1 - mask
     composite = torch.mul(src, mask) + torch.mul(tgt, inv_mask)
+
+
+    if grounded_fake:
+        blur_filter = create_gaussian_filter(1.0)
+        composite = blur_filter(composite)
+
 
     return composite, mask
 
