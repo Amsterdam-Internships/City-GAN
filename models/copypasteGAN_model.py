@@ -1,20 +1,10 @@
-"""Model class template
+""" CopyPasteGAN model template
 
-This module provides a template for users to implement custom models.
-You can specify '--model template' to use this model.
-The class name should be consistent with both the filename and its model option.
-The filename should be <model>_dataset.py
-The class name should be <Model>Dataset.py
-It implements a simple image-to-image translation baseline based on regression loss.
-Given input-output pairs (batch, data_B), it learns a network netG that can minimize the following L1 loss:
-    min_<netG> ||netG(batch) - data_B||_1
-You need to implement the following functions:
-    <modify_commandline_options>:　Add model-specific options and rewrite default values for existing options.
-    <__init__>: Initialize this model class.
-    <set_input>: Unpack input data and perform data pre-processing.
-    <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test>.
-    <optimize_parameters>: Update network weights; it will be called in every training iteration.
+You can specify '--model copypasteGAN' to use this model.
+
 """
+
+
 import torch
 import torch.nn.functional as F
 from models.base_model import BaseModel
@@ -23,11 +13,13 @@ import models.networks as networks
 class CopyPasteGANModel(BaseModel):
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
-        """Add new model-specific options and rewrite default values for existing options.
+        """Add new model-specific options and rewrite default values for
+        existing options.
 
         Parameters:
             parser -- the option parser
-            is_train -- if it is training phase or test phase. You can use this flag to add training-specific or test-specific options.
+            is_train -- if it is training phase or test phase. You can use
+            this flag to add training-specific or test-specific options.
 
         Returns:
             the modified parser.
@@ -41,19 +33,35 @@ class CopyPasteGANModel(BaseModel):
         #
 
         # set default options for this model
-        parser.set_defaults(dataset_mode='double', name="CopyGAN", load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True, lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3 ,netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50, display_freq=1, print_freq=100)
+        parser.set_defaults(dataset_mode='double', name="CopyGAN",
+            load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True,
+            lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3,
+            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50,
+            display_freq=1, print_freq=100)
 
         # define new arguments for this model
         if is_train:
-            parser.add_argument('--lambda_aux', type=float, default=0.2, help='weight for the auxiliary mask loss')
-            parser.add_argument('--confidence_weight', type=float, default=0.0, help='weight for the confidence loss for generator')
-            parser.add_argument('--nr_obj_classes', type=int, default=1, help='Number of object classes in images, used for multiple masks')
-            parser.add_argument('--D_headstart', type=int, default=80000, help='First train only discriminator for D_headstart iterations (images, independent on batchsize')
-            parser.add_argument('--beta2', type=int, default=0.999, help='beta2 parameter for the adam optimizer')
-            parser.add_argument('--sigma_blur', type=float, default=1.0, help='Sigma used in Gaussian filter used for blurring discriminator input')
-            parser.add_argument('--real_target', type=float, default=1.0, help='Target label for the discriminator, can be set <1 to prevent overfitting')
-            parser.add_argument('--seed', type=int, default=42, help='Provide an integer for setting the random seed')
-            parser.add_argument('--border_zeroing', action='store_false', help='default: clamp borders of generated mask to 0 (store_false)')
+            parser.add_argument('--lambda_aux', type=float, default=0.2,
+                help='weight for the auxiliary mask loss')
+            parser.add_argument('--confidence_weight', type=float, default=0.0,
+                help='weight for the confidence loss for generator')
+            parser.add_argument('--nr_obj_classes', type=int, default=1, help=
+                'Number of object classes in images, used for multiple masks')
+            parser.add_argument('--D_headstart', type=int, default=80000, help=
+                'First train only discriminator for D_headstart iterations \
+                (images, independent on batchsize')
+            parser.add_argument('--beta2', type=int, default=0.999,
+                help='beta2 parameter for the adam optimizer')
+            parser.add_argument('--sigma_blur', type=float, default=1.0,
+                help='Sigma used in Gaussian filter used for blurring \
+                discriminator input')
+            parser.add_argument('--real_target', type=float, default=1.0,
+                help='Target label for the discriminator, can be set <1 to \
+                prevent overfitting')
+            parser.add_argument('--seed', type=int, default=42, help=
+                'Provide an integer for setting the random seed')
+            parser.add_argument('--border_zeroing', action='store_false', help=
+                'default: clamp borders of generated mask to 0 (store_false)')
 
         # nr_object_classes is used to output a multi-layered mask, each
         # channel representing a different object class
@@ -67,11 +75,8 @@ class CopyPasteGANModel(BaseModel):
         Parameters:
             opt -- training/test options
 
-        A few things can be done here.
-        - (required) call the initialization function of BaseModel
-        - define loss function, visualization images, model names, and optimizers
         """
-        BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
+        BaseModel.__init__(self, opt)
 
         self.multi_layered = opt.nr_obj_classes != 1
         self.D_headstart = opt.D_headstart
@@ -79,10 +84,12 @@ class CopyPasteGANModel(BaseModel):
         # specify random seed
         torch.manual_seed(opt.seed)
 
-        # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
+        # specify the training losses you want to print out.
+        # base_model.get_current_losses is used for plotting and saving these
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
             "loss_D"]
+        # add confidence loss if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
 
@@ -94,53 +101,69 @@ class CopyPasteGANModel(BaseModel):
 
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
-        # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
+
+        # specify the images you want to save and display (via
+        # base_model.get_current_visuals)
         self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
             'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
             'anti_sc_src', 'anti_sc', "D_mask_antisc", "D_mask_real"]
 
         # define generator, output_nc is set to nr of object classes
-        self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes, ngf=opt.ngf, netG=opt.netG, norm=opt.norm, border_zeroing=opt.border_zeroing, gpu_ids=self.gpu_ids, img_dim=opt.crop_size)
+        self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes,
+            ngf=opt.ngf, netG=opt.netG, norm=opt.norm,
+            border_zeroing=opt.border_zeroing, gpu_ids=self.gpu_ids,
+            img_dim=opt.crop_size)
+
         # specify which models to save to disk
         self.model_names = ['G']
 
         if self.isTrain:
-            # only define the Discriminator if in training phase
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size, sigma_blur=opt.sigma_blur)
+            # only define the discriminator if in training phase
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD,
+                norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size,
+                sigma_blur=opt.sigma_blur)
             self.model_names.append("D")
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss(gan_mode="vanilla", target_real_label=opt.real_target).to(self.device)
+            self.criterionGAN = networks.GANLoss(gan_mode="vanilla",
+                target_real_label=opt.real_target).to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
             if self.multi_layered:
-                self.criterionDist = networks.DistinctMaskLoss(opt.nr_obj_classes).to(self.device)
+                self.criterionDist = networks.DistinctMaskLoss(
+                    opt.nr_obj_classes).to(self.device)
 
             # define optimizers
-            self.optimizer_G = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2))
-            self.optimizer_D = torch.optim.Adam(self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2))
+            self.optimizer_G = torch.optim.Adam(self.netG.parameters(),
+                lr=opt.lr, betas=(opt.beta1, opt.beta2))
+            self.optimizer_D = torch.optim.Adam(self.netD.parameters(),
+                lr=opt.lr, betas=(opt.beta1, opt.beta2))
             self.optimizers = [self.optimizer_G, self.optimizer_D]
 
-        # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
 
 
     def set_input(self, input):
-        """Unpack input data from the dataloader and perform necessary pre-processing steps.
+        """Unpack input data from the dataloader and perform necessary
+        pre-processing steps.
 
         Parameters:
-            input: a dictionary that contains the data itself and its metadata information.
+            input: a dictionary that contains the data itself and its metadata
+            information.
         """
 
-        self.src = input['src'].to(self.device)  # get image data
+        # put image data on device
+        self.src = input['src'].to(self.device)
         self.tgt = input['tgt'].to(self.device)
 
         # create a grounded fake, the function samples a random polygon mask
-        self.grounded_fake, self.mask_gf = networks.composite_image(self.src, self.tgt, device=self.device)
+        self.grounded_fake, self.mask_gf = networks.composite_image(self.src,
+            self.tgt, device=self.device)
 
 
 
     def forward(self):
-        """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
+        """Run forward pass. This will be called by both functions <
+        optimize_parameters> and <test>."""
 
         # generate output image given the input batch
         self.g_mask_layered = self.netG(self.src)
@@ -150,18 +173,20 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
-        self.composite, _ = networks.composite_image(self.src, self.tgt, self.g_mask, device=self.device)
+        self.composite, _ = networks.composite_image(self.src, self.tgt,
+            self.g_mask, device=self.device)
 
-        # TODO: is this sound to create anti shortcut?
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
         self.anti_sc_src = torch.flip(self.src, [0, 1])
-        self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt, self.g_mask)
+        self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt,
+            self.g_mask)
 
-        # get predictions from discriminators for all images
-        self.pred_real, self.D_mask_real = self.netD(self.tgt) # can also be source
+        # get predictions from discriminators for all images (use tgt/src)
+        self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
-        assert self.pred_real.shape[0] == self.opt.batch_size, f"prediction shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
+        assert self.pred_real.shape[0] == self.opt.batch_size, f"prediction \
+            shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
 
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
         self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
@@ -169,7 +194,8 @@ class CopyPasteGANModel(BaseModel):
 
 
     def backward_G(self):
-        """Calculate losses, gradients, and update network weights; called in every training iteration. Discriminator predictions have been computed
+        """Calculate losses, gradients, and update network weights; called in
+        every training iteration. Discriminator predictions have been computed
         in the backward_D"""
 
         # stimulate the generator to fool discriminator
@@ -191,10 +217,10 @@ class CopyPasteGANModel(BaseModel):
 
 
     def backward_D(self):
-        """Calculate losses, gradients, and update network weights; called in every training iteration"""
-        # caculate the intermediate results if necessary; here self.composite has been computed during function <forward>
+        """Calculate losses, gradients, and update network weights; called in
+        every training iteration"""
 
-        # compute the GAN losses
+        # compute the GAN losses using predictions from forward pass
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
         self.loss_D_fake = self.criterionGAN(self.pred_fake.detach(), False)
         self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
@@ -207,7 +233,8 @@ class CopyPasteGANModel(BaseModel):
             self.g_mask.detach(), self.mask_gf)
 
         # sum the losses
-        self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_D_gr_fake + self.loss_AUX
+        self.loss_D = self.loss_D_real + self.loss_D_fake + \
+            self.loss_D_gr_fake + self.loss_AUX
 
         # Calculate gradients of discriminator
         self.loss_D.backward()
@@ -221,11 +248,11 @@ class CopyPasteGANModel(BaseModel):
         Arguments:
             - total_iters: training progress in steps, used to give D a
             headstart
-
         """
 
         # headstart for D, and train one-one alternating
-        train_G = total_iters >= self.D_headstart and (total_iters/self.opt.batch_size) % 2 == 0
+        nr_batches_even = (total_iters/self.opt.batch_size) % 2 == 0
+        train_G = total_iters >= self.D_headstart and nr_batches_even
 
 
         if total_iters == self.D_headstart:
@@ -233,7 +260,6 @@ class CopyPasteGANModel(BaseModel):
 
         # perform forward step
         self.forward()
-
 
         # train D and G in alternating fashion
         if train_G:
