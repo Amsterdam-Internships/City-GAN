@@ -89,6 +89,8 @@ class CopyPasteGANModel(BaseModel):
         # for visualization purposes, set G losses to zero in case of headstart
         if self.D_headstart > 0:
             self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
+            if opt.confidence_weight > 0:
+                self.loss_G_conf = 0
 
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
