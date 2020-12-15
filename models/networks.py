@@ -7,6 +7,7 @@ import functools
 from torch.optim import lr_scheduler
 from math import log
 from PIL import Image, ImageDraw
+from torchvision import transforms
 
 
 
@@ -271,21 +272,17 @@ def composite_image(src, tgt, mask=None, device='cpu'):
 
     # check input shapes
     assert src.shape == tgt.shape
-    grounded_fake = False
 
     if not torch.is_tensor(mask):
         grounded_fake = True
         b, w, h = src.shape[0], src.shape[2], src.shape[3]
         mask = get_polygon_mask(w, h, b).to(device)
+        blur = transforms.GaussianBlur(3, sigma=(0.5, 2.0))
+        mask = blur(mask)
 
     # compute the composite image based on the mask and inverse mask
     inv_mask = 1 - mask
     composite = torch.mul(src, mask) + torch.mul(tgt, inv_mask)
-
-
-    if grounded_fake:
-        blur_filter = create_gaussian_filter(1.0)
-        composite = blur_filter(composite)
 
 
     return composite, mask
@@ -302,7 +299,7 @@ def mask_to_binary(mask):
     return bin_mask
 
 
-def create_gaussian_filter(sigma_blur, padding_mode="replicate"):
+def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3, in_out=3):
     """
     this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
     """
@@ -323,7 +320,7 @@ def create_gaussian_filter(sigma_blur, padding_mode="replicate"):
     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
-    gaussian_filter = nn.Conv2d(3, 3, kernel_size=kernel_size, padding=bs_round, groups=3, bias=False, padding_mode=padding_mode)
+    gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size, padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
     gaussian_filter.weight.data = gaussian_kernel
     gaussian_filter.weight.requires_grad = False
 
