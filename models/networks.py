@@ -2,9 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
+import numpy as np
 import functools
 from torch.optim import lr_scheduler
-from math import log, pi
+from math import log
+from PIL import Image, ImageDraw
+
 
 
 ###############################################################################
@@ -221,13 +224,33 @@ def composite_image(src, tgt, mask=None, device='cpu'):
     If no mask is given, A random polygon is generared to generate a
     grounded fake
     """
-    def get_polygon_mask(w, h, b=1, coverage=0.1):
-        mask = torch.zeros((b, 1, w, h))
-        # TODO: change this to real polygon
-        for i in range(b):
-            xy = (torch.rand(2) * 0.5 * torch.tensor([w, h])).int()
-            mask[i, 0, xy[0]:xy[0]+25, xy[1]:xy[1]+25] = 1
+    def get_polygon_mask(w, h, b=1, coverage=0.1, square=False):
 
+        mask = torch.zeros((b, 1, w, h))
+
+        if square:
+
+            for i in range(b):
+                xy = (torch.rand(2) * 0.5 * torch.tensor([w, h])).int()
+                mask[i, 0, xy[0]:xy[0]+25, xy[1]:xy[1]+25] = 1
+        else:
+            # inspired by https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_data.py
+            for i in range(b):
+                x, y = np.random.rand(2) * 0.8 + 0.1
+                nr_vertices = np.random.randint(4, 7)
+                radii = np.random.rand(nr_vertices) * 0.4 + 0.1
+                angles = np.sort(np.random.rand(nr_vertices) * 2 * np.pi)
+                points = list(zip(radii, angles))
+                polygon = [(int(w * (x + r * np.cos(a)) / 1), int(h *
+                    (y + r * np.sin(a)) / 1)) for (r, a) in points]
+
+                img = Image.new('L', (w, h), 0)
+                ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+                maski = np.array(img)
+                maski = torch.from_numpy(maski)
+                mask[i, :] = maski
+
+        assert mask.shape == (b, 1, w, h), "mask is incorrect shape"
         return mask
 
 
@@ -236,11 +259,6 @@ def composite_image(src, tgt, mask=None, device='cpu'):
     if not torch.is_tensor(mask):
         b, w, h = src.shape[0], src.shape[2], src.shape[3]
         mask = get_polygon_mask(w, h, b).to(device)
-
-
-    # make sure the mask size corresponds to the image size
-    for i in [0, 2, 3]:
-        assert mask.shape[i] == src.shape[i]
 
     # compute the composite image based on the mask and inverse mask
     inv_mask = 1 - mask
@@ -273,7 +291,7 @@ def create_gaussian_filter(sigma_blur, padding_mode="replicate"):
     xy_grid = torch.stack([x_grid, y_grid], dim=-1)
     mean = (kernel_size - 1.0) / 2.0
     variance = sigma_blur ** 2.0
-    gaussian_kernel = (1./(2.*pi*variance)) *\
+    gaussian_kernel = (1./(2.*np.pi*variance)) *\
                     torch.exp(
                         -torch.sum((xy_grid - mean)**2., dim=-1) /\
                         (2*variance)
