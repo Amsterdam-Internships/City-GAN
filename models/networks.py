@@ -224,30 +224,46 @@ def composite_image(src, tgt, mask=None, device='cpu'):
     If no mask is given, A random polygon is generared to generate a
     grounded fake
     """
-    def get_polygon_mask(w, h, b=1, coverage=0.1, square=False):
+    def sample_single_polygon(w, h, min_coverage):
+        """
+        Helper function to sample a single polygon, ensuring the min coverage
+        Arguments:
+        - w, h: width and height of the mask
+        - min-coverage: float in [0, 1], at least this fraction must be masked
+        """
+        maski = np.zeros((w, h))
+        while len(maski[maski==1]) < min_coverage * w * h:
+            x, y = np.random.rand(2) * 0.8 + 0.1
+            nr_vertices = np.random.randint(4, 7)
+            radii = np.random.rand(nr_vertices) * 0.4 + 0.1
+            angles = np.sort(np.random.rand(nr_vertices) * 2 * np.pi)
+            points = list(zip(radii, angles))
+            polygon = [(int(w * (x + r * np.cos(a)) / 1), int(h *
+                (y + r * np.sin(a)) / 1)) for (r, a) in points]
+
+            img = Image.new('L', (w, h), 0)
+            ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
+            maski = np.array(img)
+
+        maski = torch.from_numpy(maski)
+
+        assert maski.shape == (w, h)
+
+        return maski
+
+
+    def get_polygon_mask(w, h, b=1, min_coverage=0.1, square=False):
 
         mask = torch.zeros((b, 1, w, h))
 
         if square:
-
             for i in range(b):
                 xy = (torch.rand(2) * 0.5 * torch.tensor([w, h])).int()
                 mask[i, 0, xy[0]:xy[0]+25, xy[1]:xy[1]+25] = 1
         else:
             # inspired by https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_data.py
             for i in range(b):
-                x, y = np.random.rand(2) * 0.8 + 0.1
-                nr_vertices = np.random.randint(4, 7)
-                radii = np.random.rand(nr_vertices) * 0.4 + 0.1
-                angles = np.sort(np.random.rand(nr_vertices) * 2 * np.pi)
-                points = list(zip(radii, angles))
-                polygon = [(int(w * (x + r * np.cos(a)) / 1), int(h *
-                    (y + r * np.sin(a)) / 1)) for (r, a) in points]
-
-                img = Image.new('L', (w, h), 0)
-                ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-                maski = np.array(img)
-                maski = torch.from_numpy(maski)
+                maski = sample_single_polygon(w, h, min_coverage)
                 mask[i, :] = maski
 
         assert mask.shape == (b, 1, w, h), "mask is incorrect shape"
