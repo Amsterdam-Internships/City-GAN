@@ -100,6 +100,7 @@ class CopyPasteGANModel(BaseModel):
                 self.loss_G_conf = 0
 
         self.train_on_gf = True
+        self.acc_grfake = 0.0
 
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
