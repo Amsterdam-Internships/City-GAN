@@ -524,6 +524,9 @@ class CopyUNet(nn.Module):
     def forward(self, input):
         """Standard forward, return decoder output and encoder output if in
         discriminator mode"""
+
+        assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
+
         if self.downscale:
             for layer in self.downscale:
                 input = layer(input)
@@ -531,7 +534,9 @@ class CopyUNet(nn.Module):
         if self.blur_filter:
             input = self.blur_filter(input)
 
-        assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
+        assert input.shape[-1] == 64, "incorrect image shape after \
+            downscaling and blurring"
+
 
         enc1 = self.enc1(input)
         enc2 = self.enc2(enc1)
