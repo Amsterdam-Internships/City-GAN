@@ -76,7 +76,7 @@ if __name__ == '__main__':
                 print(f"D preds: real {torch.mean(model.pred_real):.2f}, fake {torch.mean(model.pred_fake):.2f}, grfake: {torch.mean(model.pred_gr_fake):.2f}")
                 B = model.opt.batch_size
                 # print discriminator accuracies
-                print(f"accuracy: real: {len(model.pred_real[model.pred_real>0.5])/B}, fake: {len(model.pred_fake[model.pred_fake<0.5])/B}, grfake: {len(model.pred_gr_fake[model.pred_gr_fake<0.5])/B}\n")
+                print(f"accuracy: real: {model.acc_real}, fake: {model.acc_fake}, grfake: {model.acc_grfake}\n")
 
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
