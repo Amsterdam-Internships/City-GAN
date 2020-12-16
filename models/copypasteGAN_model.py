@@ -199,12 +199,12 @@ class CopyPasteGANModel(BaseModel):
                 self.grounded_fake)
 
         # also compute the accuracy of discriminator
-        if self.total_iters % opt.print_freq:
+        if self.total_iters % self.opt.print_freq:
             B = self.opt.batch_size
-            self.acc_real = len(model.pred_real[model.pred_real > 0.5]) / B
-            self.acc_fake = len(model.pred_fake[model.pred_fake < 0.5]) / B
+            self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
+            self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
             if self.train_on_gf:
-                self.acc_grfake = len(model.pred_gr_fake[model.pred_gr_fake
+                self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
                     < 0.5]) / B
 
 
