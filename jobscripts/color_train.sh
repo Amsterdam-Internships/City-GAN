@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=13
+run=15
 echo "starting training run $run"
 
 #Create output directory on scratch
