@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2020-12-16 16:33
+# @Last Modified time: 2020-12-16 16:41
 
 
 """
@@ -67,10 +67,9 @@ def plot_json(opt):
             label = loss_name[5:]
             ax2.plot(plot_iters, losses, label=label)
 
-
-    fig.suptitle(f'Accuracy and loss plot run {opt.run}')
+    ax1.set_title(f"Discriminator accuracy (run {opt.run})")
     ax2.set_title("Losses")
-    ax1.set_title("Discriminator Accuracy")
+
     ax2.set(xlabel=f"Iteration ({iters_per_epoch} per epoch)")
     ax1.set(ylabel="Accuracy")
     ax2.set(ylabel="Loss")
