@@ -30,7 +30,7 @@ Traceback (most recent call last):
     conn = self._new_conn()
   File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connection.py", line 171, in _new_conn
     raise NewConnectionError(
-urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x14fc775a9e20>: Failed to establish a new connection: [Errno 111] Connection refused
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x154e33e88df0>: Failed to establish a new connection: [Errno 111] Connection refused
 
 During handling of the above exception, another exception occurred:
 
@@ -41,7 +41,7 @@ Traceback (most recent call last):
     retries = retries.increment(
   File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/util/retry.py", line 439, in increment
     raise MaxRetryError(_pool, url, error or ResponseError(cause))
-urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8097): Max retries exceeded with url: /env/main (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x14fc775a9e20>: Failed to establish a new connection: [Errno 111] Connection refused'))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8097): Max retries exceeded with url: /env/main (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x154e33e88df0>: Failed to establish a new connection: [Errno 111] Connection refused'))
 
 During handling of the above exception, another exception occurred:
 
@@ -58,10 +58,10 @@ Traceback (most recent call last):
     r = adapter.send(request, **kwargs)
   File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/requests/adapters.py", line 516, in send
     raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8097): Max retries exceeded with url: /env/main (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x14fc775a9e20>: Failed to establish a new connection: [Errno 111] Connection refused'))
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8097): Max retries exceeded with url: /env/main (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x154e33e88df0>: Failed to establish a new connection: [Errno 111] Connection refused'))
 [Errno 111] Connection refused
 ----------------- Options ---------------
-              D_headstart: 80000                         
+              D_headstart: 10000                         	[default: 80000]
               D_threshold: 0.5                           
                batch_size: 50                            
                     beta1: 0.5                           
@@ -97,8 +97,8 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8
                 lr_policy: step                          
          max_dataset_size: inf                           
                     model: copypasteGAN                  	[default: cycle_gan]
-                 n_epochs: 12                            	[default: 1]
-           n_epochs_decay: 5                             	[default: 3]
+                 n_epochs: 3                             	[default: 1]
+           n_epochs_decay: 3                             
                n_layers_D: 3                             
                      name: CopyGAN                       
                       ndf: 64                            
@@ -129,7 +129,7 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8
 ----------------- End -------------------
 dataset [DoubleDataset] was created
 The number of training images = 15000
-The number of epochs to run = 17
+The number of epochs to run = 6
 initialize network with normal
 initialize network with normal
 model [CopyPasteGANModel] was created
@@ -278,1111 +278,395 @@ Could not connect to Visdom server.
 Command: /sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/bin/python -m visdom.server -p 8097 &>/dev/null &
 check connection after creating new server: False
 create web directory /scratch/checkpoints/CopyGAN/web...
-(epoch: 1, iters: 1000, time: 0.008, data: 0.826) loss_G_comp: 0.425 loss_G_anti_sc: 1.043 loss_G: 1.469 loss_D_real: 0.370 loss_D_fake: 1.032 loss_D_gr_fake: 0.681 loss_AUX: 0.381 loss_D: 1.783 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.70, fake 0.65, grfake: 0.65
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 1000, time: 0.008, data: 0.819) loss_G_comp: 0.425 loss_G_anti_sc: 1.045 loss_G: 1.469 loss_D_real: 0.370 loss_D_fake: 1.033 loss_D_gr_fake: 0.681 loss_AUX: 0.381 loss_D: 1.784 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.000 
+D preds: real 0.70, fake 0.65, grfake: 0.66
+accuracy: real: 1.0, fake: 0.0, grfake: 0.0
 
-(epoch: 1, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.325 loss_G_anti_sc: 1.294 loss_G: 1.619 loss_D_real: 0.265 loss_D_fake: 1.302 loss_D_gr_fake: 0.681 loss_AUX: 0.390 loss_D: 1.956 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.77, fake 0.72, grfake: 0.74
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.587 loss_G_anti_sc: 0.829 loss_G: 1.416 loss_D_real: 0.490 loss_D_fake: 0.857 loss_D_gr_fake: 0.801 loss_AUX: 0.464 loss_D: 2.613 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.220 
+D preds: real 0.61, fake 0.56, grfake: 0.53
+accuracy: real: 1.0, fake: 0.0, grfake: 0.22
 
-(epoch: 1, iters: 3000, time: 0.007, data: 0.004) loss_G_comp: 0.258 loss_G_anti_sc: 1.445 loss_G: 1.704 loss_D_real: 0.209 loss_D_fake: 1.452 loss_D_gr_fake: 0.681 loss_AUX: 0.413 loss_D: 2.074 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.81, fake 0.77, grfake: 0.78
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 3000, time: 0.008, data: 0.003) loss_G_comp: 0.629 loss_G_anti_sc: 0.764 loss_G: 1.392 loss_D_real: 0.518 loss_D_fake: 0.748 loss_D_gr_fake: 0.669 loss_AUX: 0.474 loss_D: 2.409 acc_real: 0.960 acc_fake: 0.200 acc_grfake: 0.680 
+D preds: real 0.60, fake 0.53, grfake: 0.48
+accuracy: real: 0.96, fake: 0.2, grfake: 0.68
 
-(epoch: 1, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.215 loss_G_anti_sc: 1.631 loss_G: 1.846 loss_D_real: 0.169 loss_D_fake: 1.629 loss_D_gr_fake: 0.681 loss_AUX: 0.442 loss_D: 2.240 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.84, fake 0.81, grfake: 0.82
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 4000, time: 0.008, data: 0.002) loss_G_comp: 0.692 loss_G_anti_sc: 0.677 loss_G: 1.368 loss_D_real: 0.497 loss_D_fake: 0.726 loss_D_gr_fake: 0.608 loss_AUX: 0.501 loss_D: 2.333 acc_real: 0.880 acc_fake: 0.520 acc_grfake: 0.820 
+D preds: real 0.58, fake 0.50, grfake: 0.45
+accuracy: real: 0.88, fake: 0.52, grfake: 0.82
 
-(epoch: 1, iters: 5000, time: 0.010, data: 0.003) loss_G_comp: 0.184 loss_G_anti_sc: 1.746 loss_G: 1.930 loss_D_real: 0.145 loss_D_fake: 1.771 loss_D_gr_fake: 0.681 loss_AUX: 0.474 loss_D: 2.390 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.87, fake 0.83, grfake: 0.84
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.717 loss_G_anti_sc: 0.653 loss_G: 1.370 loss_D_real: 0.527 loss_D_fake: 0.705 loss_D_gr_fake: 0.568 loss_AUX: 0.520 loss_D: 2.320 acc_real: 0.860 acc_fake: 0.640 acc_grfake: 0.900 
+D preds: real 0.59, fake 0.49, grfake: 0.42
+accuracy: real: 0.86, fake: 0.64, grfake: 0.9
 
 saving the latest model (epoch 1, total_iters 5000)
-(epoch: 1, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.160 loss_G_anti_sc: 1.905 loss_G: 2.066 loss_D_real: 0.121 loss_D_fake: 1.962 loss_D_gr_fake: 0.681 loss_AUX: 0.502 loss_D: 2.584 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.89, fake 0.85, grfake: 0.86
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 6000, time: 0.008, data: 0.003) loss_G_comp: 0.741 loss_G_anti_sc: 0.637 loss_G: 1.378 loss_D_real: 0.471 loss_D_fake: 0.736 loss_D_gr_fake: 0.597 loss_AUX: 0.547 loss_D: 2.350 acc_real: 0.880 acc_fake: 0.740 acc_grfake: 0.880 
+D preds: real 0.59, fake 0.48, grfake: 0.39
+accuracy: real: 0.88, fake: 0.74, grfake: 0.88
 
-(epoch: 1, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.137 loss_G_anti_sc: 2.033 loss_G: 2.171 loss_D_real: 0.105 loss_D_fake: 2.000 loss_D_gr_fake: 0.681 loss_AUX: 0.526 loss_D: 2.631 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.90, fake 0.87, grfake: 0.89
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 7000, time: 0.008, data: 0.002) loss_G_comp: 0.658 loss_G_anti_sc: 0.691 loss_G: 1.348 loss_D_real: 0.519 loss_D_fake: 0.630 loss_D_gr_fake: 0.479 loss_AUX: 0.571 loss_D: 2.199 acc_real: 0.980 acc_fake: 0.320 acc_grfake: 0.780 
+D preds: real 0.60, fake 0.52, grfake: 0.44
+accuracy: real: 0.98, fake: 0.32, grfake: 0.78
 
-(epoch: 1, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.123 loss_G_anti_sc: 2.134 loss_G: 2.257 loss_D_real: 0.089 loss_D_fake: 2.171 loss_D_gr_fake: 0.681 loss_AUX: 0.538 loss_D: 2.797 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.91, fake 0.88, grfake: 0.90
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.738 loss_G_anti_sc: 0.644 loss_G: 1.382 loss_D_real: 0.469 loss_D_fake: 0.703 loss_D_gr_fake: 0.516 loss_AUX: 0.592 loss_D: 2.281 acc_real: 0.980 acc_fake: 0.660 acc_grfake: 0.920 
+D preds: real 0.62, fake 0.48, grfake: 0.37
+accuracy: real: 0.98, fake: 0.66, grfake: 0.92
 
-(epoch: 1, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.110 loss_G_anti_sc: 2.246 loss_G: 2.356 loss_D_real: 0.080 loss_D_fake: 2.259 loss_D_gr_fake: 0.681 loss_AUX: 0.564 loss_D: 2.902 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.92, fake 0.90, grfake: 0.91
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.694 loss_G_anti_sc: 0.635 loss_G: 1.329 loss_D_real: 0.508 loss_D_fake: 0.622 loss_D_gr_fake: 0.461 loss_AUX: 0.601 loss_D: 2.192 acc_real: 0.940 acc_fake: 0.520 acc_grfake: 0.860 
+D preds: real 0.63, fake 0.50, grfake: 0.39
+accuracy: real: 0.94, fake: 0.52, grfake: 0.86
 
-(epoch: 1, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.094 loss_G_anti_sc: 2.403 loss_G: 2.498 loss_D_real: 0.070 loss_D_fake: 2.379 loss_D_gr_fake: 0.681 loss_AUX: 0.592 loss_D: 3.042 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.93, fake 0.91, grfake: 0.92
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+Headstart D over, starting G training
+(epoch: 1, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.624 loss_G_anti_sc: 0.672 loss_G: 1.296 loss_D_real: 0.540 loss_D_fake: 0.648 loss_D_gr_fake: 0.451 loss_AUX: 0.614 loss_D: 2.252 acc_real: 0.920 acc_fake: 0.300 acc_grfake: 0.840 
+D preds: real 0.64, fake 0.54, grfake: 0.39
+accuracy: real: 0.92, fake: 0.3, grfake: 0.84
 
 saving the latest model (epoch 1, total_iters 10000)
-(epoch: 1, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.090 loss_G_anti_sc: 2.434 loss_G: 2.524 loss_D_real: 0.063 loss_D_fake: 2.495 loss_D_gr_fake: 0.681 loss_AUX: 0.621 loss_D: 3.178 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.94, fake 0.91, grfake: 0.93
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 11000, time: 0.008, data: 0.003) loss_G_comp: 0.710 loss_G_anti_sc: 0.585 loss_G: 1.295 loss_D_real: 0.453 loss_D_fake: 0.712 loss_D_gr_fake: 0.472 loss_AUX: 0.615 loss_D: 2.252 acc_real: 0.940 acc_fake: 0.580 acc_grfake: 0.900 
+D preds: real 0.65, fake 0.50, grfake: 0.35
+accuracy: real: 0.94, fake: 0.58, grfake: 0.9
 
-(epoch: 1, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.078 loss_G_anti_sc: 2.563 loss_G: 2.641 loss_D_real: 0.056 loss_D_fake: 2.589 loss_D_gr_fake: 0.681 loss_AUX: 0.633 loss_D: 3.278 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.95, fake 0.93, grfake: 0.94
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.661 loss_G_anti_sc: 0.624 loss_G: 1.285 loss_D_real: 0.449 loss_D_fake: 0.690 loss_D_gr_fake: 0.429 loss_AUX: 0.612 loss_D: 2.181 acc_real: 1.000 acc_fake: 0.380 acc_grfake: 0.840 
+D preds: real 0.67, fake 0.52, grfake: 0.36
+accuracy: real: 1.0, fake: 0.38, grfake: 0.84
 
-(epoch: 1, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.067 loss_G_anti_sc: 2.687 loss_G: 2.755 loss_D_real: 0.051 loss_D_fake: 2.720 loss_D_gr_fake: 0.681 loss_AUX: 0.653 loss_D: 3.424 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.95, fake 0.93, grfake: 0.94
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 13000, time: 0.008, data: 0.003) loss_G_comp: 0.624 loss_G_anti_sc: 0.586 loss_G: 1.210 loss_D_real: 0.423 loss_D_fake: 0.758 loss_D_gr_fake: 0.436 loss_AUX: 0.623 loss_D: 2.240 acc_real: 0.940 acc_fake: 0.320 acc_grfake: 0.800 
+D preds: real 0.68, fake 0.54, grfake: 0.37
+accuracy: real: 0.94, fake: 0.32, grfake: 0.8
 
-(epoch: 1, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.065 loss_G_anti_sc: 2.747 loss_G: 2.811 loss_D_real: 0.046 loss_D_fake: 2.753 loss_D_gr_fake: 0.681 loss_AUX: 0.676 loss_D: 3.476 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.96, fake 0.94, grfake: 0.95
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 14000, time: 0.008, data: 0.003) loss_G_comp: 0.655 loss_G_anti_sc: 0.592 loss_G: 1.246 loss_D_real: 0.417 loss_D_fake: 0.739 loss_D_gr_fake: 0.424 loss_AUX: 0.613 loss_D: 2.194 acc_real: 0.960 acc_fake: 0.360 acc_grfake: 0.880 
+D preds: real 0.68, fake 0.53, grfake: 0.33
+accuracy: real: 0.96, fake: 0.36, grfake: 0.88
 
-(epoch: 1, iters: 15000, time: 0.009, data: 0.003) loss_G_comp: 0.057 loss_G_anti_sc: 2.845 loss_G: 2.902 loss_D_real: 0.042 loss_D_fake: 2.881 loss_D_gr_fake: 0.681 loss_AUX: 0.687 loss_D: 3.609 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.96, fake 0.94, grfake: 0.95
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 1, iters: 15000, time: 0.010, data: 0.002) loss_G_comp: 0.618 loss_G_anti_sc: 0.611 loss_G: 1.229 loss_D_real: 0.428 loss_D_fake: 0.641 loss_D_gr_fake: 0.376 loss_AUX: 0.609 loss_D: 2.054 acc_real: 0.960 acc_fake: 0.260 acc_grfake: 0.760 
+D preds: real 0.69, fake 0.55, grfake: 0.38
+accuracy: real: 0.96, fake: 0.26, grfake: 0.76
 
 saving the latest model (epoch 1, total_iters 15000)
 learning rate 0.0001000 -> 0.0001000
-End of epoch 1 / 17 	 Time Taken: 70 sec
-(epoch: 2, iters: 1000, time: 0.007, data: 0.818) loss_G_comp: 0.054 loss_G_anti_sc: 2.971 loss_G: 3.025 loss_D_real: 0.038 loss_D_fake: 2.957 loss_D_gr_fake: 0.681 loss_AUX: 0.717 loss_D: 3.712 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.96, fake 0.95, grfake: 0.96
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+End of epoch 1 / 6 	 Time Taken: 105 sec
+(epoch: 2, iters: 1000, time: 0.009, data: 0.826) loss_G_comp: 0.640 loss_G_anti_sc: 0.559 loss_G: 1.199 loss_D_real: 0.398 loss_D_fake: 0.716 loss_D_gr_fake: 0.358 loss_AUX: 0.606 loss_D: 2.078 acc_real: 1.000 acc_fake: 0.340 acc_grfake: 0.840 
+D preds: real 0.70, fake 0.53, grfake: 0.32
+accuracy: real: 1.0, fake: 0.34, grfake: 0.84
 
-(epoch: 2, iters: 2000, time: 0.007, data: 0.004) loss_G_comp: 0.049 loss_G_anti_sc: 3.015 loss_G: 3.064 loss_D_real: 0.035 loss_D_fake: 3.035 loss_D_gr_fake: 0.681 loss_AUX: 0.721 loss_D: 3.791 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.97, fake 0.95, grfake: 0.96
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.681 loss_G_anti_sc: 0.540 loss_G: 1.221 loss_D_real: 0.377 loss_D_fake: 0.758 loss_D_gr_fake: 0.364 loss_AUX: 0.623 loss_D: 2.122 acc_real: 0.980 acc_fake: 0.400 acc_grfake: 0.960 
+D preds: real 0.69, fake 0.51, grfake: 0.29
+accuracy: real: 0.98, fake: 0.4, grfake: 0.96
 
-(epoch: 2, iters: 3000, time: 0.008, data: 0.003) loss_G_comp: 0.046 loss_G_anti_sc: 3.093 loss_G: 3.138 loss_D_real: 0.032 loss_D_fake: 3.113 loss_D_gr_fake: 0.681 loss_AUX: 0.723 loss_D: 3.869 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.97, fake 0.96, grfake: 0.96
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 3000, time: 0.008, data: 0.003) loss_G_comp: 0.649 loss_G_anti_sc: 0.557 loss_G: 1.206 loss_D_real: 0.342 loss_D_fake: 0.799 loss_D_gr_fake: 0.417 loss_AUX: 0.611 loss_D: 2.169 acc_real: 0.980 acc_fake: 0.400 acc_grfake: 0.920 
+D preds: real 0.72, fake 0.53, grfake: 0.28
+accuracy: real: 0.98, fake: 0.4, grfake: 0.92
 
-(epoch: 2, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.042 loss_G_anti_sc: 3.150 loss_G: 3.193 loss_D_real: 0.030 loss_D_fake: 3.181 loss_D_gr_fake: 0.681 loss_AUX: 0.744 loss_D: 3.956 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.97, fake 0.96, grfake: 0.97
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.352 loss_G_anti_sc: 1.018 loss_G: 1.370 loss_D_real: 0.227 loss_D_fake: 1.214 loss_D_gr_fake: 0.318 loss_AUX: 0.604 loss_D: 2.044 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.600 
+D preds: real 0.79, fake 0.71, grfake: 0.51
+accuracy: real: 1.0, fake: 0.0, grfake: 0.6
 
-(epoch: 2, iters: 5000, time: 0.009, data: 0.003) loss_G_comp: 0.039 loss_G_anti_sc: 3.271 loss_G: 3.311 loss_D_real: 0.028 loss_D_fake: 3.279 loss_D_gr_fake: 0.681 loss_AUX: 0.761 loss_D: 4.067 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.97, fake 0.96, grfake: 0.97
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 5000, time: 0.009, data: 0.003) loss_G_comp: 0.374 loss_G_anti_sc: 0.854 loss_G: 1.228 loss_D_real: 0.214 loss_D_fake: 1.225 loss_D_gr_fake: 0.309 loss_AUX: 0.614 loss_D: 2.053 acc_real: 1.000 acc_fake: 0.020 acc_grfake: 0.460 
+D preds: real 0.80, fake 0.69, grfake: 0.54
+accuracy: real: 1.0, fake: 0.02, grfake: 0.46
 
 saving the latest model (epoch 2, total_iters 20000)
-(epoch: 2, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.035 loss_G_anti_sc: 3.321 loss_G: 3.356 loss_D_real: 0.026 loss_D_fake: 3.343 loss_D_gr_fake: 0.681 loss_AUX: 0.785 loss_D: 4.153 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.97, fake 0.97, grfake: 0.97
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 6000, time: 0.008, data: 0.003) loss_G_comp: 0.755 loss_G_anti_sc: 0.496 loss_G: 1.251 loss_D_real: 0.318 loss_D_fake: 0.669 loss_D_gr_fake: 0.320 loss_AUX: 0.632 loss_D: 1.939 acc_real: 0.960 acc_fake: 0.640 acc_grfake: 0.820 
+D preds: real 0.72, fake 0.49, grfake: 0.32
+accuracy: real: 0.96, fake: 0.64, grfake: 0.82
 
-(epoch: 2, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.032 loss_G_anti_sc: 3.374 loss_G: 3.407 loss_D_real: 0.024 loss_D_fake: 3.391 loss_D_gr_fake: 0.681 loss_AUX: 0.800 loss_D: 4.215 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.97, grfake: 0.97
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 7000, time: 0.008, data: 0.003) loss_G_comp: 0.530 loss_G_anti_sc: 0.691 loss_G: 1.221 loss_D_real: 0.267 loss_D_fake: 1.048 loss_D_gr_fake: 0.561 loss_AUX: 0.646 loss_D: 2.523 acc_real: 0.980 acc_fake: 0.160 acc_grfake: 0.800 
+D preds: real 0.75, fake 0.60, grfake: 0.37
+accuracy: real: 0.98, fake: 0.16, grfake: 0.8
 
-(epoch: 2, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.032 loss_G_anti_sc: 3.490 loss_G: 3.522 loss_D_real: 0.022 loss_D_fake: 3.454 loss_D_gr_fake: 0.681 loss_AUX: 0.797 loss_D: 4.273 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.97, grfake: 0.97
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.620 loss_G_anti_sc: 0.454 loss_G: 1.073 loss_D_real: 0.290 loss_D_fake: 0.929 loss_D_gr_fake: 0.453 loss_AUX: 0.634 loss_D: 2.307 acc_real: 1.000 acc_fake: 0.380 acc_grfake: 0.840 
+D preds: real 0.77, fake 0.55, grfake: 0.31
+accuracy: real: 1.0, fake: 0.38, grfake: 0.84
 
-(epoch: 2, iters: 9000, time: 0.007, data: 0.002) loss_G_comp: 0.030 loss_G_anti_sc: 3.519 loss_G: 3.549 loss_D_real: 0.021 loss_D_fake: 3.529 loss_D_gr_fake: 0.681 loss_AUX: 0.826 loss_D: 4.376 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.97, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.624 loss_G_anti_sc: 0.585 loss_G: 1.209 loss_D_real: 0.322 loss_D_fake: 0.772 loss_D_gr_fake: 0.321 loss_AUX: 0.619 loss_D: 2.034 acc_real: 1.000 acc_fake: 0.340 acc_grfake: 0.960 
+D preds: real 0.78, fake 0.55, grfake: 0.24
+accuracy: real: 1.0, fake: 0.34, grfake: 0.96
 
-(epoch: 2, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.028 loss_G_anti_sc: 3.595 loss_G: 3.622 loss_D_real: 0.020 loss_D_fake: 3.604 loss_D_gr_fake: 0.681 loss_AUX: 0.840 loss_D: 4.464 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.97, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.313 loss_G_anti_sc: 1.014 loss_G: 1.327 loss_D_real: 0.210 loss_D_fake: 1.213 loss_D_gr_fake: 0.219 loss_AUX: 0.611 loss_D: 2.034 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.620 
+D preds: real 0.83, fake 0.73, grfake: 0.45
+accuracy: real: 1.0, fake: 0.0, grfake: 0.62
 
 saving the latest model (epoch 2, total_iters 25000)
-(epoch: 2, iters: 11000, time: 0.008, data: 0.003) loss_G_comp: 0.026 loss_G_anti_sc: 3.657 loss_G: 3.683 loss_D_real: 0.018 loss_D_fake: 3.610 loss_D_gr_fake: 0.681 loss_AUX: 0.869 loss_D: 4.497 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.97, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 11000, time: 0.008, data: 0.003) loss_G_comp: 0.740 loss_G_anti_sc: 0.467 loss_G: 1.207 loss_D_real: 0.280 loss_D_fake: 0.839 loss_D_gr_fake: 0.376 loss_AUX: 0.624 loss_D: 2.119 acc_real: 0.940 acc_fake: 0.540 acc_grfake: 0.860 
+D preds: real 0.74, fake 0.50, grfake: 0.27
+accuracy: real: 0.94, fake: 0.54, grfake: 0.86
 
-(epoch: 2, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.025 loss_G_anti_sc: 3.675 loss_G: 3.701 loss_D_real: 0.017 loss_D_fake: 3.720 loss_D_gr_fake: 0.681 loss_AUX: 0.904 loss_D: 4.641 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.98, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.691 loss_G_anti_sc: 0.579 loss_G: 1.269 loss_D_real: 0.315 loss_D_fake: 0.652 loss_D_gr_fake: 0.331 loss_AUX: 0.634 loss_D: 1.932 acc_real: 0.940 acc_fake: 0.480 acc_grfake: 0.840 
+D preds: real 0.77, fake 0.52, grfake: 0.25
+accuracy: real: 0.94, fake: 0.48, grfake: 0.84
 
-(epoch: 2, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.024 loss_G_anti_sc: 3.790 loss_G: 3.814 loss_D_real: 0.016 loss_D_fake: 3.781 loss_D_gr_fake: 0.681 loss_AUX: 0.912 loss_D: 4.709 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.98, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 13000, time: 0.008, data: 0.003) loss_G_comp: 0.559 loss_G_anti_sc: 0.620 loss_G: 1.179 loss_D_real: 0.253 loss_D_fake: 0.944 loss_D_gr_fake: 0.377 loss_AUX: 0.638 loss_D: 2.212 acc_real: 1.000 acc_fake: 0.160 acc_grfake: 0.880 
+D preds: real 0.79, fake 0.58, grfake: 0.26
+accuracy: real: 1.0, fake: 0.16, grfake: 0.88
 
-(epoch: 2, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.022 loss_G_anti_sc: 3.815 loss_G: 3.837 loss_D_real: 0.016 loss_D_fake: 3.849 loss_D_gr_fake: 0.681 loss_AUX: 0.903 loss_D: 4.768 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.98, fake 0.98, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 14000, time: 0.008, data: 0.002) loss_G_comp: 0.575 loss_G_anti_sc: 0.523 loss_G: 1.098 loss_D_real: 0.299 loss_D_fake: 0.873 loss_D_gr_fake: 0.377 loss_AUX: 0.636 loss_D: 2.185 acc_real: 0.980 acc_fake: 0.240 acc_grfake: 0.860 
+D preds: real 0.78, fake 0.58, grfake: 0.26
+accuracy: real: 0.98, fake: 0.24, grfake: 0.86
 
-(epoch: 2, iters: 15000, time: 0.009, data: 0.003) loss_G_comp: 0.021 loss_G_anti_sc: 3.835 loss_G: 3.856 loss_D_real: 0.015 loss_D_fake: 3.902 loss_D_gr_fake: 0.681 loss_AUX: 0.967 loss_D: 4.884 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 2, iters: 15000, time: 0.010, data: 0.003) loss_G_comp: 0.727 loss_G_anti_sc: 0.474 loss_G: 1.201 loss_D_real: 0.229 loss_D_fake: 0.839 loss_D_gr_fake: 0.341 loss_AUX: 0.620 loss_D: 2.028 acc_real: 0.960 acc_fake: 0.520 acc_grfake: 0.880 
+D preds: real 0.74, fake 0.50, grfake: 0.24
+accuracy: real: 0.96, fake: 0.52, grfake: 0.88
 
 saving the latest model (epoch 2, total_iters 30000)
 learning rate 0.0001000 -> 0.0001000
-End of epoch 2 / 17 	 Time Taken: 69 sec
-(epoch: 3, iters: 1000, time: 0.008, data: 0.822) loss_G_comp: 0.020 loss_G_anti_sc: 3.926 loss_G: 3.946 loss_D_real: 0.014 loss_D_fake: 3.923 loss_D_gr_fake: 0.681 loss_AUX: 1.021 loss_D: 4.958 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.98
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+End of epoch 2 / 6 	 Time Taken: 103 sec
+(epoch: 3, iters: 1000, time: 0.008, data: 0.827) loss_G_comp: 0.828 loss_G_anti_sc: 0.377 loss_G: 1.205 loss_D_real: 0.293 loss_D_fake: 0.735 loss_D_gr_fake: 0.323 loss_AUX: 0.626 loss_D: 1.977 acc_real: 0.920 acc_fake: 0.660 acc_grfake: 0.940 
+D preds: real 0.74, fake 0.46, grfake: 0.20
+accuracy: real: 0.92, fake: 0.66, grfake: 0.94
 
-(epoch: 3, iters: 2000, time: 0.007, data: 0.004) loss_G_comp: 0.019 loss_G_anti_sc: 4.006 loss_G: 4.024 loss_D_real: 0.013 loss_D_fake: 3.971 loss_D_gr_fake: 0.681 loss_AUX: 1.030 loss_D: 5.014 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.700 loss_G_anti_sc: 0.552 loss_G: 1.252 loss_D_real: 0.348 loss_D_fake: 0.707 loss_D_gr_fake: 0.349 loss_AUX: 0.659 loss_D: 2.063 acc_real: 1.000 acc_fake: 0.440 acc_grfake: 0.860 
+D preds: real 0.80, fake 0.51, grfake: 0.26
+accuracy: real: 1.0, fake: 0.44, grfake: 0.86
 
-(epoch: 3, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.018 loss_G_anti_sc: 4.007 loss_G: 4.026 loss_D_real: 0.013 loss_D_fake: 4.030 loss_D_gr_fake: 0.681 loss_AUX: 1.012 loss_D: 5.055 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.295 loss_G_anti_sc: 1.093 loss_G: 1.389 loss_D_real: 0.187 loss_D_fake: 1.310 loss_D_gr_fake: 0.164 loss_AUX: 0.619 loss_D: 2.117 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.660 
+D preds: real 0.86, fake 0.75, grfake: 0.40
+accuracy: real: 1.0, fake: 0.0, grfake: 0.66
 
-(epoch: 3, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.018 loss_G_anti_sc: 4.062 loss_G: 4.080 loss_D_real: 0.012 loss_D_fake: 4.098 loss_D_gr_fake: 0.681 loss_AUX: 0.995 loss_D: 5.105 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 4000, time: 0.008, data: 0.003) loss_G_comp: 0.538 loss_G_anti_sc: 0.636 loss_G: 1.174 loss_D_real: 0.247 loss_D_fake: 0.798 loss_D_gr_fake: 0.184 loss_AUX: 0.620 loss_D: 1.849 acc_real: 0.960 acc_fake: 0.280 acc_grfake: 0.800 
+D preds: real 0.83, fake 0.61, grfake: 0.29
+accuracy: real: 0.96, fake: 0.28, grfake: 0.8
 
-(epoch: 3, iters: 5000, time: 0.010, data: 0.003) loss_G_comp: 0.016 loss_G_anti_sc: 4.105 loss_G: 4.122 loss_D_real: 0.012 loss_D_fake: 4.113 loss_D_gr_fake: 0.681 loss_AUX: 1.026 loss_D: 5.150 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.736 loss_G_anti_sc: 0.378 loss_G: 1.114 loss_D_real: 0.212 loss_D_fake: 0.908 loss_D_gr_fake: 0.235 loss_AUX: 0.640 loss_D: 1.994 acc_real: 0.960 acc_fake: 0.580 acc_grfake: 0.840 
+D preds: real 0.79, fake 0.51, grfake: 0.26
+accuracy: real: 0.96, fake: 0.58, grfake: 0.84
 
 saving the latest model (epoch 3, total_iters 35000)
-(epoch: 3, iters: 6000, time: 0.008, data: 0.003) loss_G_comp: 0.016 loss_G_anti_sc: 4.150 loss_G: 4.167 loss_D_real: 0.011 loss_D_fake: 4.164 loss_D_gr_fake: 0.681 loss_AUX: 1.058 loss_D: 5.233 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 6000, time: 0.008, data: 0.003) loss_G_comp: 0.513 loss_G_anti_sc: 0.417 loss_G: 0.930 loss_D_real: 0.235 loss_D_fake: 0.867 loss_D_gr_fake: 0.292 loss_AUX: 0.639 loss_D: 2.034 acc_real: 1.000 acc_fake: 0.180 acc_grfake: 0.780 
+D preds: real 0.83, fake 0.62, grfake: 0.29
+accuracy: real: 1.0, fake: 0.18, grfake: 0.78
 
-(epoch: 3, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.016 loss_G_anti_sc: 4.173 loss_G: 4.189 loss_D_real: 0.010 loss_D_fake: 4.191 loss_D_gr_fake: 0.681 loss_AUX: 1.099 loss_D: 5.301 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 7000, time: 0.008, data: 0.002) loss_G_comp: 0.823 loss_G_anti_sc: 0.388 loss_G: 1.212 loss_D_real: 0.185 loss_D_fake: 0.960 loss_D_gr_fake: 0.323 loss_AUX: 0.640 loss_D: 2.108 acc_real: 0.920 acc_fake: 0.560 acc_grfake: 0.900 
+D preds: real 0.76, fake 0.48, grfake: 0.18
+accuracy: real: 0.92, fake: 0.56, grfake: 0.9
 
-(epoch: 3, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.015 loss_G_anti_sc: 4.215 loss_G: 4.231 loss_D_real: 0.010 loss_D_fake: 4.224 loss_D_gr_fake: 0.681 loss_AUX: 1.094 loss_D: 5.328 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.98, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.643 loss_G_anti_sc: 0.476 loss_G: 1.119 loss_D_real: 0.223 loss_D_fake: 0.962 loss_D_gr_fake: 0.300 loss_AUX: 0.646 loss_D: 2.131 acc_real: 0.960 acc_fake: 0.380 acc_grfake: 0.860 
+D preds: real 0.82, fake 0.55, grfake: 0.20
+accuracy: real: 0.96, fake: 0.38, grfake: 0.86
 
-(epoch: 3, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.014 loss_G_anti_sc: 4.288 loss_G: 4.302 loss_D_real: 0.010 loss_D_fake: 4.238 loss_D_gr_fake: 0.681 loss_AUX: 1.115 loss_D: 5.363 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.606 loss_G_anti_sc: 0.519 loss_G: 1.126 loss_D_real: 0.200 loss_D_fake: 0.979 loss_D_gr_fake: 0.267 loss_AUX: 0.639 loss_D: 2.085 acc_real: 0.900 acc_fake: 0.320 acc_grfake: 0.920 
+D preds: real 0.79, fake 0.56, grfake: 0.16
+accuracy: real: 0.9, fake: 0.32, grfake: 0.92
 
-(epoch: 3, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.014 loss_G_anti_sc: 4.272 loss_G: 4.286 loss_D_real: 0.009 loss_D_fake: 4.331 loss_D_gr_fake: 0.681 loss_AUX: 1.103 loss_D: 5.443 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.583 loss_G_anti_sc: 0.556 loss_G: 1.139 loss_D_real: 0.194 loss_D_fake: 1.068 loss_D_gr_fake: 0.292 loss_AUX: 0.619 loss_D: 2.173 acc_real: 0.960 acc_fake: 0.240 acc_grfake: 0.880 
+D preds: real 0.80, fake 0.58, grfake: 0.21
+accuracy: real: 0.96, fake: 0.24, grfake: 0.88
 
 saving the latest model (epoch 3, total_iters 40000)
-(epoch: 3, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.013 loss_G_anti_sc: 4.340 loss_G: 4.353 loss_D_real: 0.009 loss_D_fake: 4.403 loss_D_gr_fake: 0.681 loss_AUX: 1.097 loss_D: 5.509 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.200 loss_G_anti_sc: 1.447 loss_G: 1.647 loss_D_real: 0.101 loss_D_fake: 1.795 loss_D_gr_fake: 0.127 loss_AUX: 0.637 loss_D: 2.532 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.520 
+D preds: real 0.91, fake 0.82, grfake: 0.48
+accuracy: real: 1.0, fake: 0.0, grfake: 0.52
 
-(epoch: 3, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.012 loss_G_anti_sc: 4.382 loss_G: 4.394 loss_D_real: 0.008 loss_D_fake: 4.383 loss_D_gr_fake: 0.681 loss_AUX: 1.132 loss_D: 5.524 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.592 loss_G_anti_sc: 0.490 loss_G: 1.082 loss_D_real: 0.153 loss_D_fake: 1.019 loss_D_gr_fake: 0.243 loss_AUX: 0.656 loss_D: 2.072 acc_real: 1.000 acc_fake: 0.360 acc_grfake: 0.840 
+D preds: real 0.86, fake 0.58, grfake: 0.23
+accuracy: real: 1.0, fake: 0.36, grfake: 0.84
 
-(epoch: 3, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.012 loss_G_anti_sc: 4.476 loss_G: 4.488 loss_D_real: 0.008 loss_D_fake: 4.439 loss_D_gr_fake: 0.681 loss_AUX: 1.140 loss_D: 5.587 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 13000, time: 0.008, data: 0.003) loss_G_comp: 0.462 loss_G_anti_sc: 0.644 loss_G: 1.107 loss_D_real: 0.226 loss_D_fake: 0.893 loss_D_gr_fake: 0.251 loss_AUX: 0.669 loss_D: 2.039 acc_real: 1.000 acc_fake: 0.180 acc_grfake: 0.840 
+D preds: real 0.86, fake 0.65, grfake: 0.27
+accuracy: real: 1.0, fake: 0.18, grfake: 0.84
 
-(epoch: 3, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.011 loss_G_anti_sc: 4.499 loss_G: 4.510 loss_D_real: 0.008 loss_D_fake: 4.426 loss_D_gr_fake: 0.681 loss_AUX: 1.156 loss_D: 5.590 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 14000, time: 0.008, data: 0.003) loss_G_comp: 0.716 loss_G_anti_sc: 0.292 loss_G: 1.007 loss_D_real: 0.150 loss_D_fake: 0.984 loss_D_gr_fake: 0.360 loss_AUX: 0.678 loss_D: 2.172 acc_real: 0.980 acc_fake: 0.520 acc_grfake: 0.860 
+D preds: real 0.83, fake 0.52, grfake: 0.20
+accuracy: real: 0.98, fake: 0.52, grfake: 0.86
 
-(epoch: 3, iters: 15000, time: 0.009, data: 0.003) loss_G_comp: 0.011 loss_G_anti_sc: 4.559 loss_G: 4.569 loss_D_real: 0.007 loss_D_fake: 4.535 loss_D_gr_fake: 0.681 loss_AUX: 1.158 loss_D: 5.701 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 3, iters: 15000, time: 0.010, data: 0.003) loss_G_comp: 0.493 loss_G_anti_sc: 0.524 loss_G: 1.017 loss_D_real: 0.168 loss_D_fake: 0.977 loss_D_gr_fake: 0.185 loss_AUX: 0.671 loss_D: 2.000 acc_real: 0.980 acc_fake: 0.280 acc_grfake: 0.940 
+D preds: real 0.84, fake 0.63, grfake: 0.15
+accuracy: real: 0.98, fake: 0.28, grfake: 0.94
 
 saving the latest model (epoch 3, total_iters 45000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 3 / 17 	 Time Taken: 70 sec
-(epoch: 4, iters: 1000, time: 0.007, data: 0.814) loss_G_comp: 0.011 loss_G_anti_sc: 4.567 loss_G: 4.577 loss_D_real: 0.007 loss_D_fake: 4.576 loss_D_gr_fake: 0.681 loss_AUX: 1.147 loss_D: 5.730 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+learning rate 0.0001000 -> 0.0000800
+End of epoch 3 / 6 	 Time Taken: 104 sec
+(epoch: 4, iters: 1000, time: 0.009, data: 0.815) loss_G_comp: 0.550 loss_G_anti_sc: 0.516 loss_G: 1.065 loss_D_real: 0.161 loss_D_fake: 1.086 loss_D_gr_fake: 0.258 loss_AUX: 0.668 loss_D: 2.173 acc_real: 1.000 acc_fake: 0.320 acc_grfake: 0.880 
+D preds: real 0.85, fake 0.60, grfake: 0.20
+accuracy: real: 1.0, fake: 0.32, grfake: 0.88
 
-(epoch: 4, iters: 2000, time: 0.007, data: 0.005) loss_G_comp: 0.011 loss_G_anti_sc: 4.552 loss_G: 4.563 loss_D_real: 0.007 loss_D_fake: 4.587 loss_D_gr_fake: 0.681 loss_AUX: 1.167 loss_D: 5.762 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.588 loss_G_anti_sc: 0.391 loss_G: 0.979 loss_D_real: 0.203 loss_D_fake: 0.902 loss_D_gr_fake: 0.224 loss_AUX: 0.662 loss_D: 1.992 acc_real: 1.000 acc_fake: 0.300 acc_grfake: 0.940 
+D preds: real 0.85, fake 0.58, grfake: 0.15
+accuracy: real: 1.0, fake: 0.3, grfake: 0.94
 
-(epoch: 4, iters: 3000, time: 0.007, data: 0.002) loss_G_comp: 0.010 loss_G_anti_sc: 4.629 loss_G: 4.639 loss_D_real: 0.007 loss_D_fake: 4.626 loss_D_gr_fake: 0.681 loss_AUX: 1.178 loss_D: 5.811 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 3000, time: 0.008, data: 0.003) loss_G_comp: 0.524 loss_G_anti_sc: 0.487 loss_G: 1.012 loss_D_real: 0.156 loss_D_fake: 0.977 loss_D_gr_fake: 0.196 loss_AUX: 0.657 loss_D: 1.986 acc_real: 1.000 acc_fake: 0.240 acc_grfake: 0.860 
+D preds: real 0.85, fake 0.62, grfake: 0.18
+accuracy: real: 1.0, fake: 0.24, grfake: 0.86
 
-(epoch: 4, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.009 loss_G_anti_sc: 4.617 loss_G: 4.627 loss_D_real: 0.006 loss_D_fake: 4.657 loss_D_gr_fake: 0.681 loss_AUX: 1.184 loss_D: 5.847 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 4000, time: 0.008, data: 0.003) loss_G_comp: 0.477 loss_G_anti_sc: 0.538 loss_G: 1.016 loss_D_real: 0.142 loss_D_fake: 1.166 loss_D_gr_fake: 0.416 loss_AUX: 0.663 loss_D: 2.388 acc_real: 1.000 acc_fake: 0.080 acc_grfake: 0.900 
+D preds: real 0.84, fake 0.63, grfake: 0.19
+accuracy: real: 1.0, fake: 0.08, grfake: 0.9
 
-(epoch: 4, iters: 5000, time: 0.010, data: 0.003) loss_G_comp: 0.010 loss_G_anti_sc: 4.698 loss_G: 4.708 loss_D_real: 0.006 loss_D_fake: 4.661 loss_D_gr_fake: 0.681 loss_AUX: 1.218 loss_D: 5.885 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 5000, time: 0.011, data: 0.002) loss_G_comp: 0.765 loss_G_anti_sc: 0.296 loss_G: 1.061 loss_D_real: 0.183 loss_D_fake: 0.905 loss_D_gr_fake: 0.209 loss_AUX: 0.647 loss_D: 1.944 acc_real: 0.920 acc_fake: 0.540 acc_grfake: 0.980 
+D preds: real 0.83, fake 0.50, grfake: 0.11
+accuracy: real: 0.92, fake: 0.54, grfake: 0.98
 
 saving the latest model (epoch 4, total_iters 50000)
-(epoch: 4, iters: 6000, time: 0.007, data: 0.004) loss_G_comp: 0.010 loss_G_anti_sc: 4.667 loss_G: 4.676 loss_D_real: 0.006 loss_D_fake: 4.689 loss_D_gr_fake: 0.681 loss_AUX: 1.223 loss_D: 5.918 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 6000, time: 0.008, data: 0.004) loss_G_comp: 0.577 loss_G_anti_sc: 0.407 loss_G: 0.984 loss_D_real: 0.173 loss_D_fake: 1.049 loss_D_gr_fake: 0.264 loss_AUX: 0.654 loss_D: 2.140 acc_real: 0.980 acc_fake: 0.280 acc_grfake: 0.900 
+D preds: real 0.86, fake 0.59, grfake: 0.17
+accuracy: real: 0.98, fake: 0.28, grfake: 0.9
 
-(epoch: 4, iters: 7000, time: 0.008, data: 0.003) loss_G_comp: 0.009 loss_G_anti_sc: 4.743 loss_G: 4.752 loss_D_real: 0.006 loss_D_fake: 4.810 loss_D_gr_fake: 0.681 loss_AUX: 1.211 loss_D: 6.026 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 7000, time: 0.008, data: 0.003) loss_G_comp: 0.617 loss_G_anti_sc: 0.416 loss_G: 1.033 loss_D_real: 0.140 loss_D_fake: 1.051 loss_D_gr_fake: 0.211 loss_AUX: 0.649 loss_D: 2.051 acc_real: 0.980 acc_fake: 0.260 acc_grfake: 0.980 
+D preds: real 0.84, fake 0.57, grfake: 0.13
+accuracy: real: 0.98, fake: 0.26, grfake: 0.98
 
-(epoch: 4, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.009 loss_G_anti_sc: 4.761 loss_G: 4.770 loss_D_real: 0.006 loss_D_fake: 4.712 loss_D_gr_fake: 0.681 loss_AUX: 1.231 loss_D: 5.948 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.622 loss_G_anti_sc: 0.480 loss_G: 1.102 loss_D_real: 0.154 loss_D_fake: 1.074 loss_D_gr_fake: 0.265 loss_AUX: 0.651 loss_D: 2.144 acc_real: 0.980 acc_fake: 0.320 acc_grfake: 0.940 
+D preds: real 0.85, fake 0.56, grfake: 0.11
+accuracy: real: 0.98, fake: 0.32, grfake: 0.94
 
-(epoch: 4, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.009 loss_G_anti_sc: 4.765 loss_G: 4.775 loss_D_real: 0.005 loss_D_fake: 4.797 loss_D_gr_fake: 0.681 loss_AUX: 1.254 loss_D: 6.056 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 9000, time: 0.008, data: 0.004) loss_G_comp: 0.475 loss_G_anti_sc: 0.497 loss_G: 0.972 loss_D_real: 0.148 loss_D_fake: 1.056 loss_D_gr_fake: 0.164 loss_AUX: 0.652 loss_D: 2.019 acc_real: 1.000 acc_fake: 0.120 acc_grfake: 0.920 
+D preds: real 0.88, fake 0.65, grfake: 0.14
+accuracy: real: 1.0, fake: 0.12, grfake: 0.92
 
-(epoch: 4, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.009 loss_G_anti_sc: 4.833 loss_G: 4.842 loss_D_real: 0.005 loss_D_fake: 4.788 loss_D_gr_fake: 0.681 loss_AUX: 1.251 loss_D: 6.044 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.445 loss_G_anti_sc: 0.499 loss_G: 0.944 loss_D_real: 0.128 loss_D_fake: 1.224 loss_D_gr_fake: 0.281 loss_AUX: 0.655 loss_D: 2.288 acc_real: 1.000 acc_fake: 0.160 acc_grfake: 0.840 
+D preds: real 0.87, fake 0.66, grfake: 0.19
+accuracy: real: 1.0, fake: 0.16, grfake: 0.84
 
 saving the latest model (epoch 4, total_iters 55000)
-(epoch: 4, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.008 loss_G_anti_sc: 4.807 loss_G: 4.815 loss_D_real: 0.005 loss_D_fake: 4.831 loss_D_gr_fake: 0.681 loss_AUX: 1.240 loss_D: 6.076 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 0.99, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 11000, time: 0.008, data: 0.004) loss_G_comp: 0.457 loss_G_anti_sc: 0.540 loss_G: 0.997 loss_D_real: 0.218 loss_D_fake: 0.873 loss_D_gr_fake: 0.201 loss_AUX: 0.654 loss_D: 1.947 acc_real: 1.000 acc_fake: 0.120 acc_grfake: 0.960 
+D preds: real 0.87, fake 0.65, grfake: 0.12
+accuracy: real: 1.0, fake: 0.12, grfake: 0.96
 
-(epoch: 4, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.008 loss_G_anti_sc: 4.904 loss_G: 4.912 loss_D_real: 0.005 loss_D_fake: 4.932 loss_D_gr_fake: 0.681 loss_AUX: 1.254 loss_D: 6.192 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.521 loss_G_anti_sc: 0.393 loss_G: 0.914 loss_D_real: 0.251 loss_D_fake: 0.829 loss_D_gr_fake: 0.179 loss_AUX: 0.652 loss_D: 1.910 acc_real: 1.000 acc_fake: 0.280 acc_grfake: 0.820 
+D preds: real 0.85, fake 0.61, grfake: 0.21
+accuracy: real: 1.0, fake: 0.28, grfake: 0.82
 
-(epoch: 4, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.007 loss_G_anti_sc: 4.891 loss_G: 4.898 loss_D_real: 0.005 loss_D_fake: 4.905 loss_D_gr_fake: 0.681 loss_AUX: 1.248 loss_D: 6.158 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 13000, time: 0.008, data: 0.003) loss_G_comp: 0.635 loss_G_anti_sc: 0.438 loss_G: 1.073 loss_D_real: 0.169 loss_D_fake: 0.868 loss_D_gr_fake: 0.174 loss_AUX: 0.649 loss_D: 1.860 acc_real: 0.980 acc_fake: 0.380 acc_grfake: 0.960 
+D preds: real 0.87, fake 0.56, grfake: 0.08
+accuracy: real: 0.98, fake: 0.38, grfake: 0.96
 
-(epoch: 4, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.007 loss_G_anti_sc: 4.957 loss_G: 4.964 loss_D_real: 0.005 loss_D_fake: 4.914 loss_D_gr_fake: 0.681 loss_AUX: 1.250 loss_D: 6.169 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.284 loss_G_anti_sc: 1.000 loss_G: 1.284 loss_D_real: 0.087 loss_D_fake: 1.633 loss_D_gr_fake: 0.094 loss_AUX: 0.646 loss_D: 2.366 acc_real: 1.000 acc_fake: 0.060 acc_grfake: 0.800 
+D preds: real 0.91, fake 0.76, grfake: 0.27
+accuracy: real: 1.0, fake: 0.06, grfake: 0.8
 
-(epoch: 4, iters: 15000, time: 0.010, data: 0.003) loss_G_comp: 0.007 loss_G_anti_sc: 4.933 loss_G: 4.940 loss_D_real: 0.004 loss_D_fake: 4.996 loss_D_gr_fake: 0.681 loss_AUX: 1.247 loss_D: 6.248 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 0.99
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 4, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.745 loss_G_anti_sc: 0.291 loss_G: 1.036 loss_D_real: 0.133 loss_D_fake: 0.998 loss_D_gr_fake: 0.285 loss_AUX: 0.655 loss_D: 2.072 acc_real: 0.920 acc_fake: 0.500 acc_grfake: 0.880 
+D preds: real 0.84, fake 0.52, grfake: 0.17
+accuracy: real: 0.92, fake: 0.5, grfake: 0.88
 
 saving the latest model (epoch 4, total_iters 60000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 4 / 17 	 Time Taken: 70 sec
-(epoch: 5, iters: 1000, time: 0.008, data: 0.814) loss_G_comp: 0.007 loss_G_anti_sc: 4.949 loss_G: 4.956 loss_D_real: 0.004 loss_D_fake: 4.958 loss_D_gr_fake: 0.681 loss_AUX: 1.286 loss_D: 6.249 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+learning rate 0.0000800 -> 0.0000800
+End of epoch 4 / 6 	 Time Taken: 106 sec
+(epoch: 5, iters: 1000, time: 0.008, data: 0.813) loss_G_comp: 0.596 loss_G_anti_sc: 0.513 loss_G: 1.109 loss_D_real: 0.147 loss_D_fake: 1.017 loss_D_gr_fake: 0.210 loss_AUX: 0.665 loss_D: 2.039 acc_real: 1.000 acc_fake: 0.400 acc_grfake: 0.880 
+D preds: real 0.89, fake 0.60, grfake: 0.17
+accuracy: real: 1.0, fake: 0.4, grfake: 0.88
 
-(epoch: 5, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.007 loss_G_anti_sc: 5.004 loss_G: 5.011 loss_D_real: 0.004 loss_D_fake: 4.965 loss_D_gr_fake: 0.681 loss_AUX: 1.297 loss_D: 6.266 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.550 loss_G_anti_sc: 0.293 loss_G: 0.843 loss_D_real: 0.148 loss_D_fake: 0.863 loss_D_gr_fake: 0.158 loss_AUX: 0.652 loss_D: 1.821 acc_real: 1.000 acc_fake: 0.260 acc_grfake: 0.920 
+D preds: real 0.88, fake 0.61, grfake: 0.14
+accuracy: real: 1.0, fake: 0.26, grfake: 0.92
 
-(epoch: 5, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.007 loss_G_anti_sc: 4.941 loss_G: 4.948 loss_D_real: 0.004 loss_D_fake: 5.092 loss_D_gr_fake: 0.681 loss_AUX: 1.285 loss_D: 6.381 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 3000, time: 0.008, data: 0.003) loss_G_comp: 0.776 loss_G_anti_sc: 0.330 loss_G: 1.107 loss_D_real: 0.155 loss_D_fake: 0.907 loss_D_gr_fake: 0.239 loss_AUX: 0.646 loss_D: 1.947 acc_real: 1.000 acc_fake: 0.520 acc_grfake: 0.980 
+D preds: real 0.86, fake 0.51, grfake: 0.08
+accuracy: real: 1.0, fake: 0.52, grfake: 0.98
 
-(epoch: 5, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.007 loss_G_anti_sc: 5.084 loss_G: 5.091 loss_D_real: 0.004 loss_D_fake: 5.091 loss_D_gr_fake: 0.681 loss_AUX: 1.307 loss_D: 6.403 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 4000, time: 0.008, data: 0.003) loss_G_comp: 0.555 loss_G_anti_sc: 0.342 loss_G: 0.897 loss_D_real: 0.123 loss_D_fake: 0.977 loss_D_gr_fake: 0.168 loss_AUX: 0.650 loss_D: 1.918 acc_real: 1.000 acc_fake: 0.280 acc_grfake: 0.840 
+D preds: real 0.89, fake 0.61, grfake: 0.19
+accuracy: real: 1.0, fake: 0.28, grfake: 0.84
 
-(epoch: 5, iters: 5000, time: 0.010, data: 0.003) loss_G_comp: 0.006 loss_G_anti_sc: 5.048 loss_G: 5.054 loss_D_real: 0.004 loss_D_fake: 5.050 loss_D_gr_fake: 0.681 loss_AUX: 1.308 loss_D: 6.362 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.621 loss_G_anti_sc: 0.265 loss_G: 0.886 loss_D_real: 0.119 loss_D_fake: 1.049 loss_D_gr_fake: 0.183 loss_AUX: 0.650 loss_D: 2.001 acc_real: 1.000 acc_fake: 0.340 acc_grfake: 0.920 
+D preds: real 0.88, fake 0.57, grfake: 0.13
+accuracy: real: 1.0, fake: 0.34, grfake: 0.92
 
 saving the latest model (epoch 5, total_iters 65000)
-(epoch: 5, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.006 loss_G_anti_sc: 5.087 loss_G: 5.094 loss_D_real: 0.004 loss_D_fake: 5.081 loss_D_gr_fake: 0.681 loss_AUX: 1.348 loss_D: 6.433 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 6000, time: 0.008, data: 0.004) loss_G_comp: 0.508 loss_G_anti_sc: 0.445 loss_G: 0.953 loss_D_real: 0.173 loss_D_fake: 0.995 loss_D_gr_fake: 0.204 loss_AUX: 0.653 loss_D: 2.025 acc_real: 1.000 acc_fake: 0.180 acc_grfake: 0.880 
+D preds: real 0.87, fake 0.63, grfake: 0.18
+accuracy: real: 1.0, fake: 0.18, grfake: 0.88
 
-(epoch: 5, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.006 loss_G_anti_sc: 5.096 loss_G: 5.102 loss_D_real: 0.004 loss_D_fake: 5.097 loss_D_gr_fake: 0.681 loss_AUX: 1.342 loss_D: 6.443 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 7000, time: 0.008, data: 0.002) loss_G_comp: 0.547 loss_G_anti_sc: 0.395 loss_G: 0.942 loss_D_real: 0.164 loss_D_fake: 0.905 loss_D_gr_fake: 0.197 loss_AUX: 0.639 loss_D: 1.905 acc_real: 0.960 acc_fake: 0.260 acc_grfake: 0.960 
+D preds: real 0.88, fake 0.62, grfake: 0.09
+accuracy: real: 0.96, fake: 0.26, grfake: 0.96
 
-(epoch: 5, iters: 8000, time: 0.007, data: 0.002) loss_G_comp: 0.006 loss_G_anti_sc: 5.149 loss_G: 5.155 loss_D_real: 0.004 loss_D_fake: 5.211 loss_D_gr_fake: 0.681 loss_AUX: 1.345 loss_D: 6.560 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.245 loss_G_anti_sc: 1.093 loss_G: 1.338 loss_D_real: 0.066 loss_D_fake: 1.686 loss_D_gr_fake: 0.070 loss_AUX: 0.649 loss_D: 2.401 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.840 
+D preds: real 0.93, fake 0.79, grfake: 0.24
+accuracy: real: 1.0, fake: 0.0, grfake: 0.84
 
-(epoch: 5, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.006 loss_G_anti_sc: 5.219 loss_G: 5.225 loss_D_real: 0.003 loss_D_fake: 5.179 loss_D_gr_fake: 0.681 loss_AUX: 1.346 loss_D: 6.528 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 9000, time: 0.007, data: 0.002) loss_G_comp: 0.304 loss_G_anti_sc: 0.869 loss_G: 1.173 loss_D_real: 0.076 loss_D_fake: 1.510 loss_D_gr_fake: 0.056 loss_AUX: 0.666 loss_D: 2.253 acc_real: 1.000 acc_fake: 0.040 acc_grfake: 0.900 
+D preds: real 0.93, fake 0.75, grfake: 0.19
+accuracy: real: 1.0, fake: 0.04, grfake: 0.9
 
-(epoch: 5, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.006 loss_G_anti_sc: 5.229 loss_G: 5.235 loss_D_real: 0.003 loss_D_fake: 5.236 loss_D_gr_fake: 0.681 loss_AUX: 1.341 loss_D: 6.580 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.551 loss_G_anti_sc: 0.424 loss_G: 0.976 loss_D_real: 0.102 loss_D_fake: 1.173 loss_D_gr_fake: 0.169 loss_AUX: 0.652 loss_D: 2.096 acc_real: 0.980 acc_fake: 0.280 acc_grfake: 0.920 
+D preds: real 0.91, fake 0.61, grfake: 0.14
+accuracy: real: 0.98, fake: 0.28, grfake: 0.92
 
 saving the latest model (epoch 5, total_iters 70000)
-(epoch: 5, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.217 loss_G: 5.222 loss_D_real: 0.003 loss_D_fake: 5.277 loss_D_gr_fake: 0.681 loss_AUX: 1.363 loss_D: 6.643 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 11000, time: 0.009, data: 0.003) loss_G_comp: 0.504 loss_G_anti_sc: 0.424 loss_G: 0.928 loss_D_real: 0.148 loss_D_fake: 0.998 loss_D_gr_fake: 0.194 loss_AUX: 0.659 loss_D: 1.999 acc_real: 1.000 acc_fake: 0.160 acc_grfake: 0.900 
+D preds: real 0.90, fake 0.63, grfake: 0.14
+accuracy: real: 1.0, fake: 0.16, grfake: 0.9
 
-(epoch: 5, iters: 12000, time: 0.008, data: 0.002) loss_G_comp: 0.006 loss_G_anti_sc: 5.205 loss_G: 5.211 loss_D_real: 0.003 loss_D_fake: 5.279 loss_D_gr_fake: 0.681 loss_AUX: 1.357 loss_D: 6.639 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.572 loss_G_anti_sc: 0.372 loss_G: 0.943 loss_D_real: 0.100 loss_D_fake: 1.165 loss_D_gr_fake: 0.163 loss_AUX: 0.648 loss_D: 2.076 acc_real: 1.000 acc_fake: 0.300 acc_grfake: 0.940 
+D preds: real 0.91, fake 0.60, grfake: 0.10
+accuracy: real: 1.0, fake: 0.3, grfake: 0.94
 
-(epoch: 5, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.226 loss_G: 5.231 loss_D_real: 0.003 loss_D_fake: 5.228 loss_D_gr_fake: 0.681 loss_AUX: 1.359 loss_D: 6.590 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 13000, time: 0.008, data: 0.003) loss_G_comp: 0.840 loss_G_anti_sc: 0.195 loss_G: 1.035 loss_D_real: 0.143 loss_D_fake: 0.993 loss_D_gr_fake: 0.336 loss_AUX: 0.645 loss_D: 2.117 acc_real: 0.940 acc_fake: 0.500 acc_grfake: 0.920 
+D preds: real 0.82, fake 0.48, grfake: 0.12
+accuracy: real: 0.94, fake: 0.5, grfake: 0.92
 
-(epoch: 5, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.421 loss_G: 5.426 loss_D_real: 0.003 loss_D_fake: 5.291 loss_D_gr_fake: 0.681 loss_AUX: 1.381 loss_D: 6.675 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 14000, time: 0.008, data: 0.003) loss_G_comp: 0.535 loss_G_anti_sc: 0.518 loss_G: 1.053 loss_D_real: 0.172 loss_D_fake: 1.078 loss_D_gr_fake: 0.309 loss_AUX: 0.661 loss_D: 2.219 acc_real: 1.000 acc_fake: 0.280 acc_grfake: 0.900 
+D preds: real 0.83, fake 0.61, grfake: 0.17
+accuracy: real: 1.0, fake: 0.28, grfake: 0.9
 
-(epoch: 5, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.358 loss_G: 5.363 loss_D_real: 0.003 loss_D_fake: 5.257 loss_D_gr_fake: 0.681 loss_AUX: 1.376 loss_D: 6.636 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 5, iters: 15000, time: 0.012, data: 0.003) loss_G_comp: 0.545 loss_G_anti_sc: 0.408 loss_G: 0.953 loss_D_real: 0.150 loss_D_fake: 1.026 loss_D_gr_fake: 0.145 loss_AUX: 0.635 loss_D: 1.956 acc_real: 1.000 acc_fake: 0.280 acc_grfake: 0.940 
+D preds: real 0.87, fake 0.61, grfake: 0.11
+accuracy: real: 1.0, fake: 0.28, grfake: 0.94
 
 saving the latest model (epoch 5, total_iters 75000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 5 / 17 	 Time Taken: 70 sec
-(epoch: 6, iters: 1000, time: 0.007, data: 0.813) loss_G_comp: 0.005 loss_G_anti_sc: 5.335 loss_G: 5.340 loss_D_real: 0.003 loss_D_fake: 5.319 loss_D_gr_fake: 0.681 loss_AUX: 1.379 loss_D: 6.700 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 0.99, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+learning rate 0.0000800 -> 0.0000800
+End of epoch 5 / 6 	 Time Taken: 106 sec
+(epoch: 6, iters: 1000, time: 0.008, data: 0.837) loss_G_comp: 0.518 loss_G_anti_sc: 0.375 loss_G: 0.893 loss_D_real: 0.126 loss_D_fake: 1.156 loss_D_gr_fake: 0.130 loss_AUX: 0.612 loss_D: 2.024 acc_real: 0.980 acc_fake: 0.280 acc_grfake: 0.960 
+D preds: real 0.89, fake 0.63, grfake: 0.08
+accuracy: real: 0.98, fake: 0.28, grfake: 0.96
 
-(epoch: 6, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.348 loss_G: 5.352 loss_D_real: 0.003 loss_D_fake: 5.346 loss_D_gr_fake: 0.681 loss_AUX: 1.405 loss_D: 6.754 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.412 loss_G_anti_sc: 0.589 loss_G: 1.001 loss_D_real: 0.202 loss_D_fake: 0.887 loss_D_gr_fake: 0.143 loss_AUX: 0.631 loss_D: 1.863 acc_real: 1.000 acc_fake: 0.120 acc_grfake: 0.940 
+D preds: real 0.89, fake 0.68, grfake: 0.11
+accuracy: real: 1.0, fake: 0.12, grfake: 0.94
 
-(epoch: 6, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.485 loss_G: 5.490 loss_D_real: 0.003 loss_D_fake: 5.376 loss_D_gr_fake: 0.681 loss_AUX: 1.417 loss_D: 6.796 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 3000, time: 0.008, data: 0.004) loss_G_comp: 0.460 loss_G_anti_sc: 0.571 loss_G: 1.031 loss_D_real: 0.109 loss_D_fake: 1.164 loss_D_gr_fake: 0.307 loss_AUX: 0.632 loss_D: 2.213 acc_real: 1.000 acc_fake: 0.120 acc_grfake: 0.920 
+D preds: real 0.88, fake 0.65, grfake: 0.14
+accuracy: real: 1.0, fake: 0.12, grfake: 0.92
 
-(epoch: 6, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.429 loss_G: 5.434 loss_D_real: 0.003 loss_D_fake: 5.494 loss_D_gr_fake: 0.681 loss_AUX: 1.434 loss_D: 6.931 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 4000, time: 0.008, data: 0.003) loss_G_comp: 0.709 loss_G_anti_sc: 0.255 loss_G: 0.964 loss_D_real: 0.100 loss_D_fake: 0.843 loss_D_gr_fake: 0.133 loss_AUX: 0.618 loss_D: 1.694 acc_real: 1.000 acc_fake: 0.380 acc_grfake: 0.940 
+D preds: real 0.89, fake 0.55, grfake: 0.10
+accuracy: real: 1.0, fake: 0.38, grfake: 0.94
 
-Headstart D over, starting G training
-(epoch: 6, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.456 loss_G: 5.461 loss_D_real: 0.003 loss_D_fake: 5.416 loss_D_gr_fake: 0.681 loss_AUX: 1.399 loss_D: 6.817 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 5000, time: 0.012, data: 0.002) loss_G_comp: 0.516 loss_G_anti_sc: 0.537 loss_G: 1.053 loss_D_real: 0.125 loss_D_fake: 1.263 loss_D_gr_fake: 0.474 loss_AUX: 0.652 loss_D: 2.514 acc_real: 1.000 acc_fake: 0.200 acc_grfake: 0.960 
+D preds: real 0.88, fake 0.63, grfake: 0.11
+accuracy: real: 1.0, fake: 0.2, grfake: 0.96
 
 saving the latest model (epoch 6, total_iters 80000)
-(epoch: 6, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.005 loss_G_anti_sc: 5.466 loss_G: 5.471 loss_D_real: 0.003 loss_D_fake: 5.489 loss_D_gr_fake: 0.681 loss_AUX: 1.420 loss_D: 6.911 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 6000, time: 0.008, data: 0.003) loss_G_comp: 0.512 loss_G_anti_sc: 0.687 loss_G: 1.199 loss_D_real: 0.096 loss_D_fake: 1.098 loss_D_gr_fake: 0.114 loss_AUX: 0.629 loss_D: 1.937 acc_real: 0.960 acc_fake: 0.240 acc_grfake: 0.900 
+D preds: real 0.89, fake 0.63, grfake: 0.12
+accuracy: real: 0.96, fake: 0.24, grfake: 0.9
 
-(epoch: 6, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.490 loss_G: 5.494 loss_D_real: 0.002 loss_D_fake: 5.454 loss_D_gr_fake: 0.681 loss_AUX: 1.454 loss_D: 6.911 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 7000, time: 0.008, data: 0.003) loss_G_comp: 0.616 loss_G_anti_sc: 0.345 loss_G: 0.961 loss_D_real: 0.120 loss_D_fake: 0.860 loss_D_gr_fake: 0.061 loss_AUX: 0.617 loss_D: 1.657 acc_real: 1.000 acc_fake: 0.360 acc_grfake: 0.960 
+D preds: real 0.90, fake 0.58, grfake: 0.08
+accuracy: real: 1.0, fake: 0.36, grfake: 0.96
 
-(epoch: 6, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.477 loss_G: 5.481 loss_D_real: 0.002 loss_D_fake: 5.471 loss_D_gr_fake: 0.681 loss_AUX: 1.454 loss_D: 6.927 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.570 loss_G_anti_sc: 0.230 loss_G: 0.801 loss_D_real: 0.137 loss_D_fake: 0.868 loss_D_gr_fake: 0.188 loss_AUX: 0.640 loss_D: 1.833 acc_real: 1.000 acc_fake: 0.300 acc_grfake: 0.960 
+D preds: real 0.90, fake 0.60, grfake: 0.08
+accuracy: real: 1.0, fake: 0.3, grfake: 0.96
 
-(epoch: 6, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.569 loss_G: 5.573 loss_D_real: 0.002 loss_D_fake: 5.529 loss_D_gr_fake: 0.681 loss_AUX: 1.477 loss_D: 7.008 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.583 loss_G_anti_sc: 0.304 loss_G: 0.887 loss_D_real: 0.095 loss_D_fake: 1.230 loss_D_gr_fake: 0.307 loss_AUX: 0.621 loss_D: 2.254 acc_real: 0.980 acc_fake: 0.320 acc_grfake: 0.920 
+D preds: real 0.88, fake 0.61, grfake: 0.11
+accuracy: real: 0.98, fake: 0.32, grfake: 0.92
 
-(epoch: 6, iters: 10000, time: 0.010, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.552 loss_G: 5.556 loss_D_real: 0.002 loss_D_fake: 5.537 loss_D_gr_fake: 0.681 loss_AUX: 1.451 loss_D: 6.991 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.243 loss_G_anti_sc: 0.948 loss_G: 1.191 loss_D_real: 0.072 loss_D_fake: 1.708 loss_D_gr_fake: 0.050 loss_AUX: 0.625 loss_D: 2.405 acc_real: 1.000 acc_fake: 0.040 acc_grfake: 0.900 
+D preds: real 0.94, fake 0.79, grfake: 0.15
+accuracy: real: 1.0, fake: 0.04, grfake: 0.9
 
 saving the latest model (epoch 6, total_iters 85000)
-(epoch: 6, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.535 loss_G: 5.539 loss_D_real: 0.002 loss_D_fake: 5.617 loss_D_gr_fake: 0.681 loss_AUX: 1.441 loss_D: 7.060 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 11000, time: 0.008, data: 0.003) loss_G_comp: 0.594 loss_G_anti_sc: 0.366 loss_G: 0.960 loss_D_real: 0.107 loss_D_fake: 1.022 loss_D_gr_fake: 0.250 loss_AUX: 0.649 loss_D: 2.028 acc_real: 1.000 acc_fake: 0.340 acc_grfake: 0.960 
+D preds: real 0.89, fake 0.59, grfake: 0.07
+accuracy: real: 1.0, fake: 0.34, grfake: 0.96
 
-(epoch: 6, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.541 loss_G: 5.545 loss_D_real: 0.002 loss_D_fake: 5.575 loss_D_gr_fake: 0.681 loss_AUX: 1.419 loss_D: 6.996 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.718 loss_G_anti_sc: 0.297 loss_G: 1.015 loss_D_real: 0.116 loss_D_fake: 1.277 loss_D_gr_fake: 0.385 loss_AUX: 0.640 loss_D: 2.418 acc_real: 0.980 acc_fake: 0.420 acc_grfake: 0.940 
+D preds: real 0.84, fake 0.52, grfake: 0.08
+accuracy: real: 0.98, fake: 0.42, grfake: 0.94
 
-(epoch: 6, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.640 loss_G: 5.643 loss_D_real: 0.002 loss_D_fake: 5.641 loss_D_gr_fake: 0.681 loss_AUX: 1.429 loss_D: 7.072 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.248 loss_G_anti_sc: 0.834 loss_G: 1.081 loss_D_real: 0.054 loss_D_fake: 1.831 loss_D_gr_fake: 0.038 loss_AUX: 0.641 loss_D: 2.526 acc_real: 1.000 acc_fake: 0.060 acc_grfake: 0.860 
+D preds: real 0.95, fake 0.80, grfake: 0.19
+accuracy: real: 1.0, fake: 0.06, grfake: 0.86
 
-(epoch: 6, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.599 loss_G: 5.603 loss_D_real: 0.002 loss_D_fake: 5.672 loss_D_gr_fake: 0.681 loss_AUX: 1.422 loss_D: 7.096 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.207 loss_G_anti_sc: 0.967 loss_G: 1.174 loss_D_real: 0.053 loss_D_fake: 1.798 loss_D_gr_fake: 0.048 loss_AUX: 0.652 loss_D: 2.503 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 0.820 
+D preds: real 0.95, fake 0.82, grfake: 0.25
+accuracy: real: 1.0, fake: 0.0, grfake: 0.82
 
-(epoch: 6, iters: 15000, time: 0.010, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.618 loss_G: 5.621 loss_D_real: 0.002 loss_D_fake: 5.639 loss_D_gr_fake: 0.681 loss_AUX: 1.432 loss_D: 7.074 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
+(epoch: 6, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.812 loss_G_anti_sc: 0.290 loss_G: 1.103 loss_D_real: 0.088 loss_D_fake: 1.019 loss_D_gr_fake: 0.248 loss_AUX: 0.650 loss_D: 2.006 acc_real: 0.960 acc_fake: 0.460 acc_grfake: 0.940 
+D preds: real 0.88, fake 0.49, grfake: 0.08
+accuracy: real: 0.96, fake: 0.46, grfake: 0.94
 
 saving the latest model (epoch 6, total_iters 90000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 6 / 17 	 Time Taken: 70 sec
-(epoch: 7, iters: 1000, time: 0.008, data: 0.834) loss_G_comp: 0.004 loss_G_anti_sc: 5.604 loss_G: 5.608 loss_D_real: 0.002 loss_D_fake: 5.676 loss_D_gr_fake: 0.681 loss_AUX: 1.437 loss_D: 7.115 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.606 loss_G: 5.610 loss_D_real: 0.002 loss_D_fake: 5.690 loss_D_gr_fake: 0.681 loss_AUX: 1.415 loss_D: 7.107 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.693 loss_G: 5.697 loss_D_real: 0.002 loss_D_fake: 5.725 loss_D_gr_fake: 0.681 loss_AUX: 1.414 loss_D: 7.141 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.693 loss_G: 5.696 loss_D_real: 0.002 loss_D_fake: 5.756 loss_D_gr_fake: 0.681 loss_AUX: 1.438 loss_D: 7.196 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.004 loss_G_anti_sc: 5.710 loss_G: 5.713 loss_D_real: 0.002 loss_D_fake: 5.768 loss_D_gr_fake: 0.681 loss_AUX: 1.423 loss_D: 7.192 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 7, total_iters 95000)
-(epoch: 7, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.802 loss_G: 5.806 loss_D_real: 0.002 loss_D_fake: 5.789 loss_D_gr_fake: 0.681 loss_AUX: 1.489 loss_D: 7.279 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.678 loss_G: 5.682 loss_D_real: 0.002 loss_D_fake: 5.767 loss_D_gr_fake: 0.681 loss_AUX: 1.512 loss_D: 7.281 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.825 loss_G: 5.828 loss_D_real: 0.002 loss_D_fake: 5.840 loss_D_gr_fake: 0.681 loss_AUX: 1.482 loss_D: 7.324 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.809 loss_G: 5.812 loss_D_real: 0.002 loss_D_fake: 5.761 loss_D_gr_fake: 0.681 loss_AUX: 1.505 loss_D: 7.268 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.888 loss_G: 5.891 loss_D_real: 0.002 loss_D_fake: 5.847 loss_D_gr_fake: 0.681 loss_AUX: 1.493 loss_D: 7.341 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 7, total_iters 100000)
-(epoch: 7, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.893 loss_G: 5.896 loss_D_real: 0.002 loss_D_fake: 5.849 loss_D_gr_fake: 0.681 loss_AUX: 1.528 loss_D: 7.378 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.808 loss_G: 5.811 loss_D_real: 0.002 loss_D_fake: 5.794 loss_D_gr_fake: 0.681 loss_AUX: 1.532 loss_D: 7.327 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.863 loss_G: 5.866 loss_D_real: 0.002 loss_D_fake: 5.854 loss_D_gr_fake: 0.681 loss_AUX: 1.503 loss_D: 7.358 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.979 loss_G: 5.982 loss_D_real: 0.002 loss_D_fake: 5.903 loss_D_gr_fake: 0.681 loss_AUX: 1.576 loss_D: 7.481 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 7, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.908 loss_G: 5.911 loss_D_real: 0.002 loss_D_fake: 6.007 loss_D_gr_fake: 0.681 loss_AUX: 1.569 loss_D: 7.577 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 7, total_iters 105000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 7 / 17 	 Time Taken: 70 sec
-(epoch: 8, iters: 1000, time: 0.007, data: 0.823) loss_G_comp: 0.003 loss_G_anti_sc: 5.928 loss_G: 5.931 loss_D_real: 0.001 loss_D_fake: 5.962 loss_D_gr_fake: 0.681 loss_AUX: 1.575 loss_D: 7.538 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 2000, time: 0.007, data: 0.004) loss_G_comp: 0.003 loss_G_anti_sc: 5.872 loss_G: 5.875 loss_D_real: 0.001 loss_D_fake: 6.012 loss_D_gr_fake: 0.681 loss_AUX: 1.564 loss_D: 7.577 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.982 loss_G: 5.984 loss_D_real: 0.001 loss_D_fake: 6.003 loss_D_gr_fake: 0.681 loss_AUX: 1.525 loss_D: 7.530 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 4000, time: 0.008, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.971 loss_G: 5.973 loss_D_real: 0.001 loss_D_fake: 5.968 loss_D_gr_fake: 0.681 loss_AUX: 1.549 loss_D: 7.519 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 5000, time: 0.012, data: 0.004) loss_G_comp: 0.003 loss_G_anti_sc: 6.060 loss_G: 6.063 loss_D_real: 0.001 loss_D_fake: 5.993 loss_D_gr_fake: 0.681 loss_AUX: 1.571 loss_D: 7.565 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 8, total_iters 110000)
-(epoch: 8, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.025 loss_G: 6.028 loss_D_real: 0.001 loss_D_fake: 6.094 loss_D_gr_fake: 0.681 loss_AUX: 1.573 loss_D: 7.668 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 6.000 loss_G: 6.003 loss_D_real: 0.001 loss_D_fake: 6.017 loss_D_gr_fake: 0.681 loss_AUX: 1.604 loss_D: 7.622 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 5.895 loss_G: 5.898 loss_D_real: 0.001 loss_D_fake: 6.134 loss_D_gr_fake: 0.681 loss_AUX: 1.559 loss_D: 7.694 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 6.009 loss_G: 6.012 loss_D_real: 0.001 loss_D_fake: 6.013 loss_D_gr_fake: 0.681 loss_AUX: 1.615 loss_D: 7.629 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.004 loss_G: 6.006 loss_D_real: 0.001 loss_D_fake: 6.053 loss_D_gr_fake: 0.681 loss_AUX: 1.598 loss_D: 7.652 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 8, total_iters 115000)
-(epoch: 8, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.121 loss_G: 6.123 loss_D_real: 0.001 loss_D_fake: 6.101 loss_D_gr_fake: 0.681 loss_AUX: 1.616 loss_D: 7.718 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.003 loss_G_anti_sc: 6.041 loss_G: 6.043 loss_D_real: 0.001 loss_D_fake: 6.065 loss_D_gr_fake: 0.681 loss_AUX: 1.632 loss_D: 7.699 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 13000, time: 0.008, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.066 loss_G: 6.069 loss_D_real: 0.001 loss_D_fake: 6.110 loss_D_gr_fake: 0.681 loss_AUX: 1.636 loss_D: 7.746 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.059 loss_G: 6.061 loss_D_real: 0.001 loss_D_fake: 6.138 loss_D_gr_fake: 0.681 loss_AUX: 1.634 loss_D: 7.773 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 8, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.088 loss_G: 6.091 loss_D_real: 0.001 loss_D_fake: 6.184 loss_D_gr_fake: 0.681 loss_AUX: 1.639 loss_D: 7.824 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 8, total_iters 120000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 8 / 17 	 Time Taken: 70 sec
-(epoch: 9, iters: 1000, time: 0.007, data: 0.926) loss_G_comp: 0.002 loss_G_anti_sc: 6.158 loss_G: 6.160 loss_D_real: 0.001 loss_D_fake: 6.222 loss_D_gr_fake: 0.681 loss_AUX: 1.624 loss_D: 7.847 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.112 loss_G: 6.114 loss_D_real: 0.001 loss_D_fake: 6.070 loss_D_gr_fake: 0.681 loss_AUX: 1.690 loss_D: 7.761 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.216 loss_G: 6.218 loss_D_real: 0.001 loss_D_fake: 6.169 loss_D_gr_fake: 0.681 loss_AUX: 1.627 loss_D: 7.797 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.192 loss_G: 6.194 loss_D_real: 0.001 loss_D_fake: 6.250 loss_D_gr_fake: 0.681 loss_AUX: 1.644 loss_D: 7.895 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.117 loss_G: 6.119 loss_D_real: 0.001 loss_D_fake: 6.095 loss_D_gr_fake: 0.681 loss_AUX: 1.632 loss_D: 7.728 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 9, total_iters 125000)
-(epoch: 9, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.196 loss_G: 6.198 loss_D_real: 0.001 loss_D_fake: 6.299 loss_D_gr_fake: 0.681 loss_AUX: 1.600 loss_D: 7.900 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.268 loss_G: 6.270 loss_D_real: 0.001 loss_D_fake: 6.150 loss_D_gr_fake: 0.681 loss_AUX: 1.644 loss_D: 7.795 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.345 loss_G: 6.347 loss_D_real: 0.001 loss_D_fake: 6.245 loss_D_gr_fake: 0.681 loss_AUX: 1.686 loss_D: 7.931 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.330 loss_G: 6.332 loss_D_real: 0.001 loss_D_fake: 6.260 loss_D_gr_fake: 0.681 loss_AUX: 1.633 loss_D: 7.894 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.224 loss_G: 6.226 loss_D_real: 0.001 loss_D_fake: 6.241 loss_D_gr_fake: 0.681 loss_AUX: 1.664 loss_D: 7.906 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 9, total_iters 130000)
-(epoch: 9, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.268 loss_G: 6.270 loss_D_real: 0.001 loss_D_fake: 6.228 loss_D_gr_fake: 0.681 loss_AUX: 1.682 loss_D: 7.911 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.416 loss_G: 6.418 loss_D_real: 0.001 loss_D_fake: 6.375 loss_D_gr_fake: 0.681 loss_AUX: 1.657 loss_D: 8.033 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 13000, time: 0.008, data: 0.004) loss_G_comp: 0.002 loss_G_anti_sc: 6.275 loss_G: 6.277 loss_D_real: 0.001 loss_D_fake: 6.404 loss_D_gr_fake: 0.681 loss_AUX: 1.660 loss_D: 8.064 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.305 loss_G: 6.307 loss_D_real: 0.001 loss_D_fake: 6.423 loss_D_gr_fake: 0.681 loss_AUX: 1.660 loss_D: 8.084 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 9, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.397 loss_G: 6.399 loss_D_real: 0.001 loss_D_fake: 6.466 loss_D_gr_fake: 0.681 loss_AUX: 1.661 loss_D: 8.127 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 9, total_iters 135000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 9 / 17 	 Time Taken: 71 sec
-(epoch: 10, iters: 1000, time: 0.008, data: 0.829) loss_G_comp: 0.002 loss_G_anti_sc: 6.294 loss_G: 6.295 loss_D_real: 0.001 loss_D_fake: 6.430 loss_D_gr_fake: 0.681 loss_AUX: 1.678 loss_D: 8.108 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.382 loss_G: 6.384 loss_D_real: 0.001 loss_D_fake: 6.382 loss_D_gr_fake: 0.681 loss_AUX: 1.695 loss_D: 8.078 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.342 loss_G: 6.344 loss_D_real: 0.001 loss_D_fake: 6.342 loss_D_gr_fake: 0.681 loss_AUX: 1.678 loss_D: 8.021 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.436 loss_G: 6.438 loss_D_real: 0.001 loss_D_fake: 6.401 loss_D_gr_fake: 0.681 loss_AUX: 1.675 loss_D: 8.076 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 5000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.446 loss_G: 6.448 loss_D_real: 0.001 loss_D_fake: 6.464 loss_D_gr_fake: 0.681 loss_AUX: 1.666 loss_D: 8.131 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 10, total_iters 140000)
-(epoch: 10, iters: 6000, time: 0.007, data: 0.005) loss_G_comp: 0.002 loss_G_anti_sc: 6.466 loss_G: 6.467 loss_D_real: 0.001 loss_D_fake: 6.379 loss_D_gr_fake: 0.681 loss_AUX: 1.650 loss_D: 8.030 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.384 loss_G: 6.386 loss_D_real: 0.001 loss_D_fake: 6.400 loss_D_gr_fake: 0.681 loss_AUX: 1.684 loss_D: 8.085 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.424 loss_G: 6.426 loss_D_real: 0.001 loss_D_fake: 6.349 loss_D_gr_fake: 0.681 loss_AUX: 1.712 loss_D: 8.062 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.456 loss_G: 6.458 loss_D_real: 0.001 loss_D_fake: 6.514 loss_D_gr_fake: 0.681 loss_AUX: 1.658 loss_D: 8.173 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.454 loss_G: 6.456 loss_D_real: 0.001 loss_D_fake: 6.456 loss_D_gr_fake: 0.681 loss_AUX: 1.710 loss_D: 8.166 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 10, total_iters 145000)
-(epoch: 10, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.503 loss_G: 6.505 loss_D_real: 0.001 loss_D_fake: 6.542 loss_D_gr_fake: 0.681 loss_AUX: 1.675 loss_D: 8.218 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.545 loss_G: 6.546 loss_D_real: 0.001 loss_D_fake: 6.560 loss_D_gr_fake: 0.681 loss_AUX: 1.675 loss_D: 8.236 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.483 loss_G: 6.484 loss_D_real: 0.001 loss_D_fake: 6.446 loss_D_gr_fake: 0.681 loss_AUX: 1.737 loss_D: 8.183 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.506 loss_G: 6.507 loss_D_real: 0.001 loss_D_fake: 6.509 loss_D_gr_fake: 0.681 loss_AUX: 1.757 loss_D: 8.266 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 10, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.519 loss_G: 6.520 loss_D_real: 0.001 loss_D_fake: 6.581 loss_D_gr_fake: 0.681 loss_AUX: 1.714 loss_D: 8.295 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 10, total_iters 150000)
-saving the model at the end of epoch 10, iters 150000
-learning rate 0.0001000 -> 0.0001000
-End of epoch 10 / 17 	 Time Taken: 71 sec
-(epoch: 11, iters: 1000, time: 0.007, data: 0.814) loss_G_comp: 0.002 loss_G_anti_sc: 6.540 loss_G: 6.542 loss_D_real: 0.001 loss_D_fake: 6.599 loss_D_gr_fake: 0.681 loss_AUX: 1.772 loss_D: 8.372 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.634 loss_G: 6.636 loss_D_real: 0.001 loss_D_fake: 6.558 loss_D_gr_fake: 0.681 loss_AUX: 1.761 loss_D: 8.320 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.589 loss_G: 6.591 loss_D_real: 0.001 loss_D_fake: 6.713 loss_D_gr_fake: 0.681 loss_AUX: 1.739 loss_D: 8.453 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.708 loss_G: 6.709 loss_D_real: 0.001 loss_D_fake: 6.654 loss_D_gr_fake: 0.681 loss_AUX: 1.777 loss_D: 8.431 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 5000, time: 0.014, data: 0.003) loss_G_comp: 0.002 loss_G_anti_sc: 6.604 loss_G: 6.605 loss_D_real: 0.001 loss_D_fake: 6.704 loss_D_gr_fake: 0.681 loss_AUX: 1.740 loss_D: 8.444 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 11, total_iters 155000)
-(epoch: 11, iters: 6000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.590 loss_G: 6.592 loss_D_real: 0.001 loss_D_fake: 6.694 loss_D_gr_fake: 0.681 loss_AUX: 1.723 loss_D: 8.417 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.623 loss_G: 6.624 loss_D_real: 0.001 loss_D_fake: 6.716 loss_D_gr_fake: 0.681 loss_AUX: 1.799 loss_D: 8.515 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.672 loss_G: 6.673 loss_D_real: 0.001 loss_D_fake: 6.693 loss_D_gr_fake: 0.681 loss_AUX: 1.778 loss_D: 8.472 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.631 loss_G: 6.632 loss_D_real: 0.001 loss_D_fake: 6.708 loss_D_gr_fake: 0.681 loss_AUX: 1.763 loss_D: 8.472 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 10000, time: 0.011, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.701 loss_G: 6.702 loss_D_real: 0.001 loss_D_fake: 6.718 loss_D_gr_fake: 0.681 loss_AUX: 1.772 loss_D: 8.491 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 11, total_iters 160000)
-(epoch: 11, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.763 loss_G: 6.765 loss_D_real: 0.001 loss_D_fake: 6.753 loss_D_gr_fake: 0.681 loss_AUX: 1.754 loss_D: 8.508 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.728 loss_G: 6.729 loss_D_real: 0.001 loss_D_fake: 6.640 loss_D_gr_fake: 0.681 loss_AUX: 1.747 loss_D: 8.387 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.601 loss_G: 6.603 loss_D_real: 0.001 loss_D_fake: 6.767 loss_D_gr_fake: 0.681 loss_AUX: 1.758 loss_D: 8.526 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.771 loss_G: 6.772 loss_D_real: 0.001 loss_D_fake: 6.724 loss_D_gr_fake: 0.681 loss_AUX: 1.771 loss_D: 8.496 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 11, iters: 15000, time: 0.011, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.685 loss_G: 6.686 loss_D_real: 0.001 loss_D_fake: 6.688 loss_D_gr_fake: 0.681 loss_AUX: 1.788 loss_D: 8.477 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 11, total_iters 165000)
-learning rate 0.0001000 -> 0.0001000
-End of epoch 11 / 17 	 Time Taken: 70 sec
-(epoch: 12, iters: 1000, time: 0.008, data: 0.816) loss_G_comp: 0.001 loss_G_anti_sc: 6.769 loss_G: 6.770 loss_D_real: 0.001 loss_D_fake: 6.817 loss_D_gr_fake: 0.681 loss_AUX: 1.714 loss_D: 8.531 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 2000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.768 loss_G: 6.770 loss_D_real: 0.001 loss_D_fake: 6.823 loss_D_gr_fake: 0.681 loss_AUX: 1.659 loss_D: 8.483 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 3000, time: 0.008, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 6.711 loss_G: 6.712 loss_D_real: 0.001 loss_D_fake: 6.734 loss_D_gr_fake: 0.681 loss_AUX: 1.721 loss_D: 8.456 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.732 loss_G: 6.733 loss_D_real: 0.001 loss_D_fake: 6.706 loss_D_gr_fake: 0.681 loss_AUX: 1.722 loss_D: 8.429 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 5000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.809 loss_G: 6.810 loss_D_real: 0.001 loss_D_fake: 6.874 loss_D_gr_fake: 0.681 loss_AUX: 1.752 loss_D: 8.626 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 12, total_iters 170000)
-(epoch: 12, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.825 loss_G: 6.826 loss_D_real: 0.001 loss_D_fake: 6.823 loss_D_gr_fake: 0.681 loss_AUX: 1.683 loss_D: 8.507 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.744 loss_G: 6.745 loss_D_real: 0.001 loss_D_fake: 6.913 loss_D_gr_fake: 0.681 loss_AUX: 1.731 loss_D: 8.645 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 8000, time: 0.007, data: 0.002) loss_G_comp: 0.001 loss_G_anti_sc: 6.943 loss_G: 6.944 loss_D_real: 0.001 loss_D_fake: 6.831 loss_D_gr_fake: 0.681 loss_AUX: 1.825 loss_D: 8.656 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.729 loss_G: 6.731 loss_D_real: 0.000 loss_D_fake: 6.783 loss_D_gr_fake: 0.681 loss_AUX: 1.830 loss_D: 8.614 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 10000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.849 loss_G: 6.850 loss_D_real: 0.000 loss_D_fake: 6.888 loss_D_gr_fake: 0.681 loss_AUX: 1.790 loss_D: 8.678 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 12, total_iters 175000)
-(epoch: 12, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.899 loss_G: 6.900 loss_D_real: 0.000 loss_D_fake: 6.845 loss_D_gr_fake: 0.681 loss_AUX: 1.770 loss_D: 8.616 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 12000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.838 loss_G: 6.839 loss_D_real: 0.000 loss_D_fake: 6.863 loss_D_gr_fake: 0.681 loss_AUX: 1.776 loss_D: 8.640 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.966 loss_G: 6.967 loss_D_real: 0.000 loss_D_fake: 6.822 loss_D_gr_fake: 0.681 loss_AUX: 1.794 loss_D: 8.617 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.911 loss_G: 6.913 loss_D_real: 0.000 loss_D_fake: 6.830 loss_D_gr_fake: 0.681 loss_AUX: 1.764 loss_D: 8.594 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 12, iters: 15000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.837 loss_G: 6.838 loss_D_real: 0.000 loss_D_fake: 6.969 loss_D_gr_fake: 0.681 loss_AUX: 1.748 loss_D: 8.717 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 12, total_iters 180000)
-learning rate 0.0001000 -> 0.0000800
-End of epoch 12 / 17 	 Time Taken: 71 sec
-(epoch: 13, iters: 1000, time: 0.007, data: 0.815) loss_G_comp: 0.001 loss_G_anti_sc: 6.897 loss_G: 6.898 loss_D_real: 0.000 loss_D_fake: 6.891 loss_D_gr_fake: 0.681 loss_AUX: 1.771 loss_D: 8.663 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 2000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.021 loss_G: 7.022 loss_D_real: 0.000 loss_D_fake: 6.885 loss_D_gr_fake: 0.681 loss_AUX: 1.825 loss_D: 8.709 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.885 loss_G: 6.886 loss_D_real: 0.000 loss_D_fake: 7.009 loss_D_gr_fake: 0.681 loss_AUX: 1.815 loss_D: 8.825 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.989 loss_G: 6.990 loss_D_real: 0.000 loss_D_fake: 7.017 loss_D_gr_fake: 0.681 loss_AUX: 1.796 loss_D: 8.813 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 5000, time: 0.014, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.009 loss_G: 7.010 loss_D_real: 0.000 loss_D_fake: 6.956 loss_D_gr_fake: 0.681 loss_AUX: 1.785 loss_D: 8.742 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 13, total_iters 185000)
-(epoch: 13, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.953 loss_G: 6.954 loss_D_real: 0.000 loss_D_fake: 6.907 loss_D_gr_fake: 0.681 loss_AUX: 1.774 loss_D: 8.681 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.978 loss_G: 6.979 loss_D_real: 0.000 loss_D_fake: 6.989 loss_D_gr_fake: 0.681 loss_AUX: 1.737 loss_D: 8.727 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.960 loss_G: 6.961 loss_D_real: 0.000 loss_D_fake: 6.950 loss_D_gr_fake: 0.681 loss_AUX: 1.798 loss_D: 8.749 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.997 loss_G: 6.998 loss_D_real: 0.000 loss_D_fake: 7.213 loss_D_gr_fake: 0.681 loss_AUX: 1.757 loss_D: 8.970 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 10000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.919 loss_G: 6.920 loss_D_real: 0.000 loss_D_fake: 6.893 loss_D_gr_fake: 0.681 loss_AUX: 1.806 loss_D: 8.699 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 13, total_iters 190000)
-(epoch: 13, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.871 loss_G: 6.872 loss_D_real: 0.000 loss_D_fake: 7.078 loss_D_gr_fake: 0.681 loss_AUX: 1.796 loss_D: 8.874 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.020 loss_G: 7.021 loss_D_real: 0.000 loss_D_fake: 7.118 loss_D_gr_fake: 0.681 loss_AUX: 1.764 loss_D: 8.883 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 6.918 loss_G: 6.919 loss_D_real: 0.000 loss_D_fake: 7.079 loss_D_gr_fake: 0.681 loss_AUX: 1.789 loss_D: 8.868 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.038 loss_G: 7.039 loss_D_real: 0.000 loss_D_fake: 6.931 loss_D_gr_fake: 0.681 loss_AUX: 1.805 loss_D: 8.736 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 13, iters: 15000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.057 loss_G: 7.058 loss_D_real: 0.000 loss_D_fake: 7.079 loss_D_gr_fake: 0.681 loss_AUX: 1.809 loss_D: 8.888 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 13, total_iters 195000)
-learning rate 0.0000800 -> 0.0000800
-End of epoch 13 / 17 	 Time Taken: 71 sec
-(epoch: 14, iters: 1000, time: 0.007, data: 0.831) loss_G_comp: 0.001 loss_G_anti_sc: 7.085 loss_G: 7.085 loss_D_real: 0.000 loss_D_fake: 7.083 loss_D_gr_fake: 0.681 loss_AUX: 1.739 loss_D: 8.823 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 2000, time: 0.008, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.015 loss_G: 7.016 loss_D_real: 0.000 loss_D_fake: 6.957 loss_D_gr_fake: 0.681 loss_AUX: 1.831 loss_D: 8.789 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.256 loss_G: 7.257 loss_D_real: 0.000 loss_D_fake: 7.096 loss_D_gr_fake: 0.681 loss_AUX: 1.821 loss_D: 8.917 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.114 loss_G: 7.115 loss_D_real: 0.000 loss_D_fake: 7.096 loss_D_gr_fake: 0.681 loss_AUX: 1.843 loss_D: 8.940 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 5000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.023 loss_G: 7.024 loss_D_real: 0.000 loss_D_fake: 7.156 loss_D_gr_fake: 0.681 loss_AUX: 1.779 loss_D: 8.936 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 14, total_iters 200000)
-(epoch: 14, iters: 6000, time: 0.008, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.086 loss_G: 7.087 loss_D_real: 0.000 loss_D_fake: 7.074 loss_D_gr_fake: 0.681 loss_AUX: 1.799 loss_D: 8.873 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.052 loss_G: 7.053 loss_D_real: 0.000 loss_D_fake: 7.117 loss_D_gr_fake: 0.681 loss_AUX: 1.797 loss_D: 8.915 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.127 loss_G: 7.128 loss_D_real: 0.000 loss_D_fake: 7.204 loss_D_gr_fake: 0.681 loss_AUX: 1.807 loss_D: 9.011 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.261 loss_G: 7.262 loss_D_real: 0.000 loss_D_fake: 7.093 loss_D_gr_fake: 0.681 loss_AUX: 1.793 loss_D: 8.886 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 10000, time: 0.012, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.168 loss_G: 7.168 loss_D_real: 0.000 loss_D_fake: 7.082 loss_D_gr_fake: 0.681 loss_AUX: 1.812 loss_D: 8.895 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 14, total_iters 205000)
-(epoch: 14, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.120 loss_G: 7.120 loss_D_real: 0.000 loss_D_fake: 7.244 loss_D_gr_fake: 0.681 loss_AUX: 1.766 loss_D: 9.010 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.264 loss_G: 7.265 loss_D_real: 0.000 loss_D_fake: 7.165 loss_D_gr_fake: 0.681 loss_AUX: 1.759 loss_D: 8.925 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.242 loss_G: 7.243 loss_D_real: 0.000 loss_D_fake: 7.277 loss_D_gr_fake: 0.681 loss_AUX: 1.795 loss_D: 9.072 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.120 loss_G: 7.121 loss_D_real: 0.000 loss_D_fake: 7.237 loss_D_gr_fake: 0.681 loss_AUX: 1.826 loss_D: 9.064 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 14, iters: 15000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.166 loss_G: 7.167 loss_D_real: 0.000 loss_D_fake: 7.186 loss_D_gr_fake: 0.681 loss_AUX: 1.825 loss_D: 9.011 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 14, total_iters 210000)
-learning rate 0.0000800 -> 0.0000800
-End of epoch 14 / 17 	 Time Taken: 71 sec
-(epoch: 15, iters: 1000, time: 0.008, data: 0.820) loss_G_comp: 0.001 loss_G_anti_sc: 7.195 loss_G: 7.196 loss_D_real: 0.000 loss_D_fake: 7.261 loss_D_gr_fake: 0.681 loss_AUX: 1.830 loss_D: 9.092 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 2000, time: 0.008, data: 0.006) loss_G_comp: 0.001 loss_G_anti_sc: 7.074 loss_G: 7.075 loss_D_real: 0.000 loss_D_fake: 7.163 loss_D_gr_fake: 0.681 loss_AUX: 1.818 loss_D: 8.981 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.148 loss_G: 7.148 loss_D_real: 0.000 loss_D_fake: 7.196 loss_D_gr_fake: 0.681 loss_AUX: 1.790 loss_D: 8.986 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 4000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.235 loss_G: 7.236 loss_D_real: 0.000 loss_D_fake: 7.243 loss_D_gr_fake: 0.681 loss_AUX: 1.837 loss_D: 9.081 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 5000, time: 0.013, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.281 loss_G: 7.282 loss_D_real: 0.000 loss_D_fake: 7.353 loss_D_gr_fake: 0.681 loss_AUX: 1.820 loss_D: 9.173 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 15, total_iters 215000)
-(epoch: 15, iters: 6000, time: 0.007, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.235 loss_G: 7.235 loss_D_real: 0.000 loss_D_fake: 7.312 loss_D_gr_fake: 0.681 loss_AUX: 1.791 loss_D: 9.103 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.297 loss_G: 7.298 loss_D_real: 0.000 loss_D_fake: 7.232 loss_D_gr_fake: 0.681 loss_AUX: 1.842 loss_D: 9.074 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 8000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.175 loss_G: 7.176 loss_D_real: 0.000 loss_D_fake: 7.299 loss_D_gr_fake: 0.681 loss_AUX: 1.824 loss_D: 9.124 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 9000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.336 loss_G: 7.337 loss_D_real: 0.000 loss_D_fake: 7.271 loss_D_gr_fake: 0.681 loss_AUX: 1.868 loss_D: 9.139 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 10000, time: 0.013, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.246 loss_G: 7.247 loss_D_real: 0.000 loss_D_fake: 7.334 loss_D_gr_fake: 0.681 loss_AUX: 1.917 loss_D: 9.252 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 15, total_iters 220000)
-(epoch: 15, iters: 11000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.324 loss_G: 7.325 loss_D_real: 0.000 loss_D_fake: 7.227 loss_D_gr_fake: 0.681 loss_AUX: 1.914 loss_D: 9.141 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.225 loss_G: 7.226 loss_D_real: 0.000 loss_D_fake: 7.253 loss_D_gr_fake: 0.681 loss_AUX: 1.923 loss_D: 9.176 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.404 loss_G: 7.404 loss_D_real: 0.000 loss_D_fake: 7.347 loss_D_gr_fake: 0.681 loss_AUX: 1.899 loss_D: 9.247 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.189 loss_G: 7.190 loss_D_real: 0.000 loss_D_fake: 7.364 loss_D_gr_fake: 0.681 loss_AUX: 1.921 loss_D: 9.286 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 15, iters: 15000, time: 0.013, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.308 loss_G: 7.309 loss_D_real: 0.000 loss_D_fake: 7.406 loss_D_gr_fake: 0.681 loss_AUX: 1.876 loss_D: 9.282 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 15, total_iters 225000)
-learning rate 0.0000800 -> 0.0000800
-End of epoch 15 / 17 	 Time Taken: 71 sec
-(epoch: 16, iters: 1000, time: 0.008, data: 0.822) loss_G_comp: 0.001 loss_G_anti_sc: 7.381 loss_G: 7.382 loss_D_real: 0.000 loss_D_fake: 7.356 loss_D_gr_fake: 0.681 loss_AUX: 1.855 loss_D: 9.212 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 2000, time: 0.008, data: 0.005) loss_G_comp: 0.001 loss_G_anti_sc: 7.435 loss_G: 7.435 loss_D_real: 0.000 loss_D_fake: 7.315 loss_D_gr_fake: 0.681 loss_AUX: 1.869 loss_D: 9.185 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.411 loss_G: 7.412 loss_D_real: 0.000 loss_D_fake: 7.378 loss_D_gr_fake: 0.681 loss_AUX: 1.870 loss_D: 9.249 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 4000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.358 loss_G: 7.359 loss_D_real: 0.000 loss_D_fake: 7.346 loss_D_gr_fake: 0.681 loss_AUX: 1.916 loss_D: 9.262 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 5000, time: 0.015, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.410 loss_G: 7.411 loss_D_real: 0.000 loss_D_fake: 7.378 loss_D_gr_fake: 0.681 loss_AUX: 1.914 loss_D: 9.293 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 16, total_iters 230000)
-(epoch: 16, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.460 loss_G: 7.461 loss_D_real: 0.000 loss_D_fake: 7.572 loss_D_gr_fake: 0.681 loss_AUX: 1.877 loss_D: 9.450 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 7000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.354 loss_G: 7.355 loss_D_real: 0.000 loss_D_fake: 7.229 loss_D_gr_fake: 0.681 loss_AUX: 1.924 loss_D: 9.153 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.418 loss_G: 7.419 loss_D_real: 0.000 loss_D_fake: 7.383 loss_D_gr_fake: 0.681 loss_AUX: 1.885 loss_D: 9.269 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 9000, time: 0.007, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.362 loss_G: 7.363 loss_D_real: 0.000 loss_D_fake: 7.512 loss_D_gr_fake: 0.681 loss_AUX: 1.895 loss_D: 9.408 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 10000, time: 0.013, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.403 loss_G: 7.404 loss_D_real: 0.000 loss_D_fake: 7.443 loss_D_gr_fake: 0.681 loss_AUX: 1.902 loss_D: 9.345 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 16, total_iters 235000)
-(epoch: 16, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.426 loss_G: 7.426 loss_D_real: 0.000 loss_D_fake: 7.330 loss_D_gr_fake: 0.681 loss_AUX: 1.906 loss_D: 9.235 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.388 loss_G: 7.388 loss_D_real: 0.000 loss_D_fake: 7.494 loss_D_gr_fake: 0.681 loss_AUX: 1.897 loss_D: 9.392 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.303 loss_G: 7.304 loss_D_real: 0.000 loss_D_fake: 7.471 loss_D_gr_fake: 0.681 loss_AUX: 1.860 loss_D: 9.332 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 14000, time: 0.008, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.504 loss_G: 7.504 loss_D_real: 0.000 loss_D_fake: 7.593 loss_D_gr_fake: 0.681 loss_AUX: 1.911 loss_D: 9.504 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 16, iters: 15000, time: 0.013, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.439 loss_G: 7.440 loss_D_real: 0.000 loss_D_fake: 7.542 loss_D_gr_fake: 0.681 loss_AUX: 1.895 loss_D: 9.437 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 16, total_iters 240000)
-learning rate 0.0000800 -> 0.0000800
-End of epoch 16 / 17 	 Time Taken: 71 sec
-(epoch: 17, iters: 1000, time: 0.007, data: 0.804) loss_G_comp: 0.001 loss_G_anti_sc: 7.385 loss_G: 7.385 loss_D_real: 0.000 loss_D_fake: 7.564 loss_D_gr_fake: 0.681 loss_AUX: 1.925 loss_D: 9.489 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 2000, time: 0.007, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.420 loss_G: 7.421 loss_D_real: 0.000 loss_D_fake: 7.486 loss_D_gr_fake: 0.681 loss_AUX: 1.909 loss_D: 9.395 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 3000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.591 loss_G: 7.592 loss_D_real: 0.000 loss_D_fake: 7.599 loss_D_gr_fake: 0.681 loss_AUX: 1.910 loss_D: 9.510 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 4000, time: 0.007, data: 0.004) loss_G_comp: 0.001 loss_G_anti_sc: 7.413 loss_G: 7.414 loss_D_real: 0.000 loss_D_fake: 7.608 loss_D_gr_fake: 0.681 loss_AUX: 1.848 loss_D: 9.456 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 5000, time: 0.013, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.505 loss_G: 7.506 loss_D_real: 0.000 loss_D_fake: 7.620 loss_D_gr_fake: 0.681 loss_AUX: 1.834 loss_D: 9.454 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 17, total_iters 245000)
-(epoch: 17, iters: 6000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.547 loss_G: 7.547 loss_D_real: 0.000 loss_D_fake: 7.414 loss_D_gr_fake: 0.681 loss_AUX: 1.882 loss_D: 9.297 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 7000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.674 loss_G: 7.675 loss_D_real: 0.000 loss_D_fake: 7.638 loss_D_gr_fake: 0.681 loss_AUX: 1.904 loss_D: 9.543 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 8000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.659 loss_G: 7.660 loss_D_real: 0.000 loss_D_fake: 7.449 loss_D_gr_fake: 0.681 loss_AUX: 1.864 loss_D: 9.313 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 9000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.617 loss_G: 7.618 loss_D_real: 0.000 loss_D_fake: 7.596 loss_D_gr_fake: 0.681 loss_AUX: 1.932 loss_D: 9.528 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 10000, time: 0.015, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.488 loss_G: 7.488 loss_D_real: 0.000 loss_D_fake: 7.530 loss_D_gr_fake: 0.681 loss_AUX: 1.949 loss_D: 9.478 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 17, total_iters 250000)
-(epoch: 17, iters: 11000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.411 loss_G: 7.412 loss_D_real: 0.000 loss_D_fake: 7.467 loss_D_gr_fake: 0.681 loss_AUX: 1.901 loss_D: 9.368 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 12000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.631 loss_G: 7.631 loss_D_real: 0.000 loss_D_fake: 7.515 loss_D_gr_fake: 0.681 loss_AUX: 1.922 loss_D: 9.437 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 13000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.587 loss_G: 7.588 loss_D_real: 0.000 loss_D_fake: 7.521 loss_D_gr_fake: 0.681 loss_AUX: 1.907 loss_D: 9.428 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 14000, time: 0.007, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.506 loss_G: 7.507 loss_D_real: 0.000 loss_D_fake: 7.636 loss_D_gr_fake: 0.681 loss_AUX: 1.935 loss_D: 9.571 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-(epoch: 17, iters: 15000, time: 0.012, data: 0.003) loss_G_comp: 0.001 loss_G_anti_sc: 7.478 loss_G: 7.478 loss_D_real: 0.000 loss_D_fake: 7.548 loss_D_gr_fake: 0.681 loss_AUX: 1.933 loss_D: 9.481 acc_real: 1.000 acc_fake: 0.000 acc_grfake: 1.000 
-D preds: real 1.00, fake 1.00, grfake: 1.00
-accuracy: real: 1.0, fake: 0.0, grfake: 1.0
-
-saving the latest model (epoch 17, total_iters 255000)
-learning rate 0.0000800 -> 0.0000800
-End of epoch 17 / 17 	 Time Taken: 71 sec
+learning rate 0.0000800 -> 0.0000640
+End of epoch 6 / 6 	 Time Taken: 104 sec
 Finished training, model is saved
