@@ -88,7 +88,7 @@ class CopyPasteGANModel(BaseModel):
         # base_model.get_current_losses is used for plotting and saving these
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
-            "loss_D"]
+            "loss_D", "acc_real", "acc_fake", "acc_grfake"]
         # add confidence loss if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
@@ -192,6 +192,13 @@ class CopyPasteGANModel(BaseModel):
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
         self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
         self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+
+        # also compute the accuracy of discriminator
+        if total_iters % opt.print_freq:
+            B = self.opt.batch_size
+            self.acc_real = len(model.pred_real[model.pred_real > 0.5]) / B
+            self.acc_fake = len(model.pred_fake[model.pred_fake < 0.5]) / B
+            self.acc_grfake = len(model.pred_gr_fake[model.pred_gr_fake<0.5])/B
 
 
     def backward_G(self):
