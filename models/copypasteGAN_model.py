@@ -99,6 +99,8 @@ class CopyPasteGANModel(BaseModel):
             if opt.confidence_weight > 0:
                 self.loss_G_conf = 0
 
+        self.train_on_gf = True
+
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
 
@@ -157,8 +159,9 @@ class CopyPasteGANModel(BaseModel):
         self.tgt = input['tgt'].to(self.device)
 
         # create a grounded fake, the function samples a random polygon mask
-        self.grounded_fake, self.mask_gf = networks.composite_image(self.src,
-            self.tgt, device=self.device)
+        if train_on_gf:
+            self.grounded_fake, self.mask_gf = networks.composite_image(
+                self.src, self.tgt, device=self.device)
 
 
 
@@ -190,15 +193,19 @@ class CopyPasteGANModel(BaseModel):
             shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
 
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-        self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
         self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+        if self.train_on_gf:
+            self.pred_gr_fake, self.D_mask_grfake = self.netD(
+                self.grounded_fake)
 
         # also compute the accuracy of discriminator
         if self.total_iters % opt.print_freq:
             B = self.opt.batch_size
             self.acc_real = len(model.pred_real[model.pred_real > 0.5]) / B
             self.acc_fake = len(model.pred_fake[model.pred_fake < 0.5]) / B
-            self.acc_grfake = len(model.pred_gr_fake[model.pred_gr_fake<0.5])/B
+            if self.train_on_gf:
+                self.acc_grfake = len(model.pred_gr_fake[model.pred_gr_fake
+                    < 0.5]) / B
 
 
     def backward_G(self):
@@ -231,14 +238,15 @@ class CopyPasteGANModel(BaseModel):
         # compute the GAN losses using predictions from forward pass
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
         self.loss_D_fake = self.criterionGAN(self.pred_fake.detach(), False)
-        self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
+        if self.train_on_gf:
+            self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
         self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
             self.D_mask_real, self.D_mask_fake.detach(),
             self.D_mask_antisc.detach(), self.D_mask_grfake,
-            self.g_mask.detach(), self.mask_gf)
+            self.g_mask.detach(), self.mask_gf, use_gf=self.train_on_gf)
 
         # sum the losses
         self.loss_D = self.loss_D_real + self.loss_D_fake + \
@@ -258,21 +266,11 @@ class CopyPasteGANModel(BaseModel):
             headstart
         """
 
-        self.total_iters = total_iters
-
-        # headstart for D, and train one-one alternating
-        nr_batches_even = (total_iters/self.opt.batch_size) % 2 == 0
-        train_G = total_iters >= self.D_headstart and nr_batches_even
-
-
-        if total_iters == self.D_headstart:
-            print("Headstart D over, starting G training")
-
         # perform forward step
         self.forward()
 
         # train D and G in alternating fashion
-        if train_G:
+        if self.train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
             self.optimizer_G.step()
@@ -281,6 +279,35 @@ class CopyPasteGANModel(BaseModel):
             self.backward_D()
             self.optimizer_D.step()
 
+
+
+    def run_batch(self, data, total_iters):
+        """
+        This method incorporates the set_input and optimize_parameters
+        functions, and does some checks beforehand
+
+        """
+        self.total_iters = total_iters
+
+        # headstart for D, and train one-one alternating
+        nr_batches_even = (total_iters/self.opt.batch_size) % 2 == 0
+        self.train_G = total_iters >= self.D_headstart and nr_batches_even
+        if total_iters == self.D_headstart:
+            print("Headstart D over, starting G training")
+
+        # decide if grounded fakes are still used:
+        if self.acc_grfake > 0.99 and total_iters > self.D_headstart:
+            print("Stop training on grounded fakes for 1000 iters")
+            self.train_on_gf = False
+        elif total_iters % 1000 == 0 and not self.train_on_gf:
+            print("Start training on grounded fakes again")
+            self.train_on_gf = True
+
+
+        # unpack data from dataset and apply preprocessing
+        model.set_input(data)
+        # calculate loss functions, get gradients, update network weights
+        model.optimize_parameters(total_iters)
 
 
 
