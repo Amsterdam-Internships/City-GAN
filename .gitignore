@@ -3,9 +3,10 @@
 *__pycache__*
 *datasets/*
 *#*
+*~*
 *.png
 *.pth
-slurm*
+./slurm*
 *.txt
 checkpoints/CopyGAN/*
 checkpoints/visdom_test

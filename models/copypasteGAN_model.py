@@ -34,7 +34,7 @@ class CopyPasteGANModel(BaseModel):
 
         # set default options for this model
         parser.set_defaults(dataset_mode='double', name="CopyGAN",
-            load_size=70, crop_size= 64,batch_size=80, lr=1e-4, no_flip=True,
+            load_size=70, crop_size= 64, batch_size=50, lr=1e-4, no_flip=True,
             lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3,
             netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50,
             display_freq=1, print_freq=100)
@@ -62,6 +62,9 @@ class CopyPasteGANModel(BaseModel):
                 'Provide an integer for setting the random seed')
             parser.add_argument('--border_zeroing', action='store_false', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
+            parser.add_argument('--D_threshold', default=0.5, help=
+                "when the accuracy of the discriminator is lower than this \
+                threshold, only train D")
 
         # nr_object_classes is used to output a multi-layered mask, each
         # channel representing a different object class
@@ -88,7 +91,7 @@ class CopyPasteGANModel(BaseModel):
         # base_model.get_current_losses is used for plotting and saving these
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
-            "loss_D"]
+            "loss_D", "acc_real", "acc_fake", "acc_grfake"]
         # add confidence loss if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
@@ -98,6 +101,10 @@ class CopyPasteGANModel(BaseModel):
             self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
             if opt.confidence_weight > 0:
                 self.loss_G_conf = 0
+
+        self.train_on_gf = True
+        self.acc_grfake = self.acc_fake = self.acc_real = 0.0
+
 
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
@@ -157,8 +164,9 @@ class CopyPasteGANModel(BaseModel):
         self.tgt = input['tgt'].to(self.device)
 
         # create a grounded fake, the function samples a random polygon mask
-        self.grounded_fake, self.mask_gf = networks.composite_image(self.src,
-            self.tgt, device=self.device)
+        if self.train_on_gf:
+            self.grounded_fake, self.mask_gf = networks.composite_image(
+                self.src, self.tgt, device=self.device)
 
 
 
@@ -190,8 +198,18 @@ class CopyPasteGANModel(BaseModel):
             shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
 
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-        self.pred_gr_fake, self.D_mask_grfake = self.netD(self.grounded_fake)
         self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+        if self.train_on_gf:
+            self.pred_gr_fake, self.D_mask_grfake = self.netD(
+                self.grounded_fake)
+
+        # also compute the accuracy of discriminator
+        B = self.opt.batch_size
+        self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
+        self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
+        if self.train_on_gf:
+            self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
+                < 0.5]) / B
 
 
     def backward_G(self):
@@ -224,24 +242,27 @@ class CopyPasteGANModel(BaseModel):
         # compute the GAN losses using predictions from forward pass
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
         self.loss_D_fake = self.criterionGAN(self.pred_fake.detach(), False)
-        self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
+        if self.train_on_gf:
+            self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
         self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
             self.D_mask_real, self.D_mask_fake.detach(),
             self.D_mask_antisc.detach(), self.D_mask_grfake,
-            self.g_mask.detach(), self.mask_gf)
+            self.g_mask.detach(), self.mask_gf, use_gf=self.train_on_gf)
 
         # sum the losses
-        self.loss_D = self.loss_D_real + self.loss_D_fake + \
-            self.loss_D_gr_fake + self.loss_AUX
+        self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_AUX
+
+        if self.train_on_gf:
+            self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # Calculate gradients of discriminator
         self.loss_D.backward()
 
 
-    def optimize_parameters(self, total_iters):
+    def optimize_parameters(self):
         """Update network weights; it is called in every training iteration.
         only perform  optimizer steps after all backward operations, torch1.5
         gives an error, see https://github.com/pytorch/pytorch/issues/39141
@@ -251,19 +272,11 @@ class CopyPasteGANModel(BaseModel):
             headstart
         """
 
-        # headstart for D, and train one-one alternating
-        nr_batches_even = (total_iters/self.opt.batch_size) % 2 == 0
-        train_G = total_iters >= self.D_headstart and nr_batches_even
-
-
-        if total_iters == self.D_headstart:
-            print("Headstart D over, starting G training")
-
         # perform forward step
         self.forward()
 
         # train D and G in alternating fashion
-        if train_G:
+        if self.train_G:
             self.optimizer_G.zero_grad()
             self.backward_G()
             self.optimizer_G.step()
@@ -272,6 +285,49 @@ class CopyPasteGANModel(BaseModel):
             self.backward_D()
             self.optimizer_D.step()
 
+
+
+    def run_batch(self, data, total_iters):
+        """
+        This method incorporates the set_input and optimize_parameters
+        functions, and does some checks beforehand
+
+        """
+        self.total_iters = total_iters
+
+        # sat some boolean variables needed in threshold training curriculum
+        self.headstart_over = total_iters >= self.D_headstart
+        self.even_batch = (total_iters/self.opt.batch_size) % 2 == 0
+        # is D performing well on the fake images generated by G?
+        self.D_above_thresh = self.acc_fake > self.opt.D_threshold
+        # Does D perform perfectly on the grounded fakes?
+        self.D_gf_perfect = self.acc_grfake > 0.99
+        # every 20 batches, run everything to update accuracies
+        train_all = total_iters % (20 * self.opt.batch_size) == 0
+
+        # by default train D (in headstart or performing below threshold:
+        self.train_G = False
+
+        # G is trained
+        if self.headstart_over and self.even_batch and self.D_above_thresh:
+            self.train_G = True
+
+        # determine if grounded fakes are still used in training
+        self.train_on_gf = True
+        if self.D_gf_perfect:
+            self.train_on_gf = False
+
+        if total_iters == self.D_headstart:
+            print("Headstart D over, starting G training")
+
+        if train_all:
+            self.train_G = self.train_on_gf = True
+
+
+        # unpack data from dataset and apply preprocessing
+        self.set_input(data)
+        # calculate loss functions, get gradients, update network weights
+        self.optimize_parameters()
 
 
 
