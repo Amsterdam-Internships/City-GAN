@@ -194,7 +194,7 @@ class CopyPasteGANModel(BaseModel):
         self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # also compute the accuracy of discriminator
-        if total_iters % opt.print_freq:
+        if self.total_iters % opt.print_freq:
             B = self.opt.batch_size
             self.acc_real = len(model.pred_real[model.pred_real > 0.5]) / B
             self.acc_fake = len(model.pred_fake[model.pred_fake < 0.5]) / B
@@ -257,6 +257,8 @@ class CopyPasteGANModel(BaseModel):
             - total_iters: training progress in steps, used to give D a
             headstart
         """
+
+        self.total_iters = total_iters
 
         # headstart for D, and train one-one alternating
         nr_batches_even = (total_iters/self.opt.batch_size) % 2 == 0
