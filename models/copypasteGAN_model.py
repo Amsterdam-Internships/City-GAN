@@ -103,8 +103,8 @@ class CopyPasteGANModel(BaseModel):
                 self.loss_G_conf = 0
 
         self.train_on_gf = True
-        self.acc_grfake = 0.0
-        self.acc_fake = 0.0
+        self.acc_grfake = self.acc_fake = self.acc_real = 0.0
+
 
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
@@ -204,13 +204,12 @@ class CopyPasteGANModel(BaseModel):
                 self.grounded_fake)
 
         # also compute the accuracy of discriminator
-        if self.total_iters % self.opt.print_freq:
-            B = self.opt.batch_size
-            self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
-            self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
-            if self.train_on_gf:
-                self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
-                    < 0.5]) / B
+        B = self.opt.batch_size
+        self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
+        self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
+        if self.train_on_gf:
+            self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
+                < 0.5]) / B
 
 
     def backward_G(self):
@@ -323,6 +322,7 @@ class CopyPasteGANModel(BaseModel):
 
         if train_all:
             self.train_G = self.train_on_gf = True
+
 
         # unpack data from dataset and apply preprocessing
         self.set_input(data)
