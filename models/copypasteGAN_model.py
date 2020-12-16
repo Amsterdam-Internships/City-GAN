@@ -254,8 +254,10 @@ class CopyPasteGANModel(BaseModel):
             self.g_mask.detach(), self.mask_gf, use_gf=self.train_on_gf)
 
         # sum the losses
-        self.loss_D = self.loss_D_real + self.loss_D_fake + \
-            self.loss_D_gr_fake + self.loss_AUX
+        self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_AUX
+
+        if self.train_on_gf:
+            self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # Calculate gradients of discriminator
         self.loss_D.backward()
