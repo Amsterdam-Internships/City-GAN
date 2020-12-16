@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2020-12-14 17:20
+# @Last Modified time: 2020-12-15 16:36
 
 
 """
@@ -57,7 +57,8 @@ def plot_json(opt):
     for loss_name in loss_names:
         losses = [data[epoch][iter_][loss_name] for epoch in data.keys() for iter_ in data['1']]
         losses = running_mean(losses, opt.n)
-        plt.plot(all_iters[:-opt.n], losses, label=loss_name)
+
+        plt.plot(all_iters[opt.n//2:-(opt.n//2)], losses, label=loss_name)
 
 
 
@@ -73,9 +74,8 @@ def plot_json(opt):
 
 def running_mean(vals, n=3):
     assert n < len(vals)
-    cumvals = np.array(vals).cumsum()
-    return (cumvals[n:] - cumvals[:-n])
-
+    out = np.convolve(vals, np.ones(n)/n, mode='valid')
+    return out
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

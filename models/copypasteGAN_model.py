@@ -105,8 +105,9 @@ class CopyPasteGANModel(BaseModel):
         # specify the images you want to save and display (via
         # base_model.get_current_visuals)
         self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
-            'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
-            'anti_sc_src', 'anti_sc', "D_mask_antisc", "D_mask_real"]
+            'composite', "D_mask_fake", 'grounded_fake', "mask_gf",
+            "D_mask_grfake", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
+             "D_mask_real"]
 
         # define generator, output_nc is set to nr of object classes
         self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes,
