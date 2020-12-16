@@ -160,7 +160,7 @@ class CopyPasteGANModel(BaseModel):
         self.tgt = input['tgt'].to(self.device)
 
         # create a grounded fake, the function samples a random polygon mask
-        if train_on_gf:
+        if self.train_on_gf:
             self.grounded_fake, self.mask_gf = networks.composite_image(
                 self.src, self.tgt, device=self.device)
 
@@ -306,9 +306,9 @@ class CopyPasteGANModel(BaseModel):
 
 
         # unpack data from dataset and apply preprocessing
-        model.set_input(data)
+        self.set_input(data)
         # calculate loss functions, get gradients, update network weights
-        model.optimize_parameters(total_iters)
+        self.optimize_parameters(total_iters)
 
 
 
