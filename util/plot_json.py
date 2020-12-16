@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2020-12-15 16:36
+# @Last Modified time: 2020-12-16 16:33
 
 
 """
@@ -52,27 +52,48 @@ def plot_json(opt):
     max_iter = n_epochs*iters_per_epoch + step_size
     all_iters = np.arange(step_size, max_iter, step_size)
 
-    plt.figure()
+
+    fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True, figsize=(7, 7))
 
     for loss_name in loss_names:
         losses = [data[epoch][iter_][loss_name] for epoch in data.keys() for iter_ in data['1']]
         losses = running_mean(losses, opt.n)
+        plot_iters = all_iters[opt.n//2:-(opt.n//2)]
 
-        plt.plot(all_iters[opt.n//2:-(opt.n//2)], losses, label=loss_name)
+        if "acc" in loss_name:
+            label = loss_name[4:]
+            ax1.plot(plot_iters, losses, label=label)
+        else:
+            label = loss_name[5:]
+            ax2.plot(plot_iters, losses, label=label)
 
 
+    fig.suptitle(f'Accuracy and loss plot run {opt.run}')
+    ax2.set_title("Losses")
+    ax1.set_title("Discriminator Accuracy")
+    ax2.set(xlabel=f"Iteration ({iters_per_epoch} per epoch)")
+    ax1.set(ylabel="Accuracy")
+    ax2.set(ylabel="Loss")
+    ax1.legend()
+    ax2.legend()
+    ax1.label_outer()
+    ax2.label_outer()
 
-    plt.title(f"Loss plot run {opt.run}")
-    plt.xlabel(f"Iteration ({iters_per_epoch} per epoch)")
-    plt.ylabel("Loss")
-    plt.legend()
+    plt.tight_layout()
 
     plt.savefig(opt.dest)
 
     print(f"figure saved to {opt.dest}")
 
 
-def running_mean(vals, n=3):
+
+
+
+
+
+
+
+def running_mean(vals, n=5):
     assert n < len(vals)
     out = np.convolve(vals, np.ones(n)/n, mode='valid')
     return out
