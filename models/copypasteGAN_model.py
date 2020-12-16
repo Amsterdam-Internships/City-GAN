@@ -62,6 +62,9 @@ class CopyPasteGANModel(BaseModel):
                 'Provide an integer for setting the random seed')
             parser.add_argument('--border_zeroing', action='store_false', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
+            parser.add_argument('--D_threshold', default=0.5, help=
+                "when the accuracy of the discriminator is lower than this \
+                threshold, only train D")
 
         # nr_object_classes is used to output a multi-layered mask, each
         # channel representing a different object class
@@ -100,6 +103,7 @@ class CopyPasteGANModel(BaseModel):
                 self.loss_G_conf = 0
 
         self.train_on_gf = True
+        self.acc_grfake = 0.0
         self.acc_grfake = 0.0
 
         if self.multi_layered:
@@ -303,6 +307,10 @@ class CopyPasteGANModel(BaseModel):
         elif total_iters % 1000 == 0 and not self.train_on_gf:
             print("Start training on grounded fakes again")
             self.train_on_gf = True
+
+        # only train generator if accuracy on fakes is below threshold
+        if self.acc_fake < self.opt.D_threshold:
+            self.train_G = False
 
 
         # unpack data from dataset and apply preprocessing
