@@ -770,7 +770,7 @@ class MaskLoss(nn.Module):
         return loss
 
 
-    def __call__(self, mask_real, mask_fake, mask_anti_sc, mask_gr_fake, g_mask, mask_gf):
+    def __call__(self, mask_real, mask_fake, mask_anti_sc, mask_gr_fake, g_mask, mask_gf, use_gf=True):
         """Calculate loss given Discriminator's output and ground truth labels.
 
         Parameters:
@@ -784,9 +784,13 @@ class MaskLoss(nn.Module):
         L_real = self.get_mask_loss(mask_real, torch.zeros_like(mask_real))
         L_fake = self.get_mask_loss(mask_fake, g_mask)
         L_anti_sc = self.get_mask_loss(mask_anti_sc, g_mask)
-        L_gr_fake = self.get_mask_loss(mask_gr_fake, mask_gf)
 
-        total_loss = L_real + L_fake + L_anti_sc + L_gr_fake
+        total_loss = L_real + L_fake + L_anti_sc
+
+        # only include the grounded fake loss
+        if use_gf:
+            L_gr_fake = self.get_mask_loss(mask_gr_fake, mask_gf)
+            total_loss = total_loss + L_gr_fake
 
         return total_loss
 
