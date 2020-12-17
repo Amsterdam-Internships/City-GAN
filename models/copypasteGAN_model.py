@@ -62,7 +62,7 @@ class CopyPasteGANModel(BaseModel):
                 'Provide an integer for setting the random seed')
             parser.add_argument('--border_zeroing', action='store_false', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
-            parser.add_argument('--D_threshold', default=0.5, help=
+            parser.add_argument('--D_threshold', default=0.6, help=
                 "when the accuracy of the discriminator is lower than this \
                 threshold, only train D")
 
