@@ -168,7 +168,6 @@ class CopyPasteGANModel(BaseModel):
             self.grounded_fake, self.mask_gf = networks.composite_image(
                 self.src, self.tgt, device=self.device)
 
-        breakpoint()
 
     def forward(self):
         """Run forward pass. This will be called by both functions <
