@@ -138,14 +138,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
     Returns a generator
 
-    Our current implementation provides two types of generators:
-        U-Net: [unet_128] (for 128x128 input images) and [unet_256] (for 256x256 input images)
-        The original U-Net paper: https://arxiv.org/abs/1505.04597
-
-        Resnet-based generator: [resnet_6blocks] (with 6 Resnet blocks) and [resnet_9blocks] (with 9 Resnet blocks)
-        Resnet-based generator consists of several Resnet blocks between a few downsampling/upsampling operations.
-        We adapt Torch code from Justin Johnson's neural style transfer project (https://github.com/jcjohnson/fast-neural-style).
-
+    At the moment only used for the copyUNet generator
 
     The generator has been initialized by <init_net>. It uses RELU for non-linearity.
     """
@@ -153,29 +146,38 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     norm_layer = get_norm_layer(norm_type=norm)
 
     if netG == 'resnet_9blocks':
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer,
+            use_dropout=use_dropout, n_blocks=9)
     elif netG == 'resnet_6blocks':
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer,
+            use_dropout=use_dropout, n_blocks=6)
     elif netG == 'unet_128':
-        net = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+        net = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer,
+            use_dropout=use_dropout)
     elif netG == 'unet_256':
-        net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+        net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer,
+            use_dropout=use_dropout)
     elif netG == 'copy':
-        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=use_dropout, border_zeroing=border_zeroing, img_dim=img_dim)
+        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=
+            use_dropout, border_zeroing=border_zeroing, img_dim=img_dim)
     else:
-        raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
+        raise NotImplementedError(f'Generator model name [{netG}] is not \
+            recognized')
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
-def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0):
+def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
+    'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0):
     """Create a discriminator
 
     Parameters:
         input_nc (int)     -- the number of channels in input images
         ndf (int)          -- the number of filters in the first conv layer
         netD (str)         -- the architecture's name: basic | n_layers | pixel
-        n_layers_D (int)   -- the number of conv layers in the discriminator; effective when netD=='n_layers'
-        norm (str)         -- the type of normalization layers used in the network.
+        n_layers_D (int)   -- the number of conv layers in the discriminator;
+                              effective when netD=='n_layers'
+        norm (str)         -- the type of normalization layers used in the
+                              network.
         init_type (str)    -- the name of the initialization method.
         init_gain (float)  -- scaling factor for normal, xavier and orthogonal.
         gpu_ids (int list) -- which GPUs the network runs on: e.g., 0,1,2
@@ -186,30 +188,40 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type='norm
         [basic]: 'PatchGAN' classifier described in the original pix2pix paper.
         It can classify whether 70×70 overlapping patches are real or fake.
         Such a patch-level discriminator architecture has fewer parameters
-        than a full-image discriminator and can work on arbitrarily-sized images
-        in a fully convolutional fashion.
+        than a full-image discriminator and can work on arbitrarily-sized
+        images in a fully convolutional fashion.
 
-        [n_layers]: With this mode, you can specify the number of conv layers in the discriminator
-        with the parameter <n_layers_D> (default=3 as used in [basic] (PatchGAN).)
+        [n_layers]: With this mode, you can specify the number of conv layers
+        in the discriminator with the parameter <n_layers_D> (default=3 as
+        used in [basic] (PatchGAN).)
 
-        [pixel]: 1x1 PixelGAN discriminator can classify whether a pixel is real or not.
-        It encourages greater color diversity but has no effect on spatial statistics.
+        [pixel]: 1x1 PixelGAN discriminator can classify whether a pixel is
+        real or not.
+        It encourages greater color diversity but has no effect on spatial
+        statistics.
+        [copy]: With this mode a copy discriminator is defined, based on a
+        U-net architecture.
 
-    The discriminator has been initialized by <init_net>. It uses Leakly RELU for non-linearity.
+    The discriminator has been initialized by <init_net>. It uses Leakly RELU
+    for non-linearity.
     """
     net = None
     norm_layer = get_norm_layer(norm_type=norm)
 
     if netD == 'basic':  # default PatchGAN classifier
-        net = NLayerDiscriminator(input_nc, ndf, n_layers=3, norm_layer=norm_layer)
+        net = NLayerDiscriminator(input_nc, ndf, n_layers=3,
+            norm_layer=norm_layer)
     elif netD == 'n_layers':  # more options
-        net = NLayerDiscriminator(input_nc, ndf, n_layers_D, norm_layer=norm_layer)
+        net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
+            norm_layer=norm_layer)
     elif netD == 'pixel':     # classify if each pixel is real or fake
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
-        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True, img_dim=img_dim, sigma_blur=sigma_blur)
+        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True,
+            img_dim=img_dim, sigma_blur=sigma_blur)
     else:
-        raise NotImplementedError('Discriminator model name [%s] is not recognized' % netD)
+        raise NotImplementedError(f'Discriminator model name [{netD}] is not \
+            recognized')
     return init_net(net, init_type, init_gain, gpu_ids)
 
 
@@ -299,7 +311,8 @@ def mask_to_binary(mask):
     return bin_mask
 
 
-def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3, in_out=3):
+def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
+    in_out=3):
     """
     this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
     """
@@ -320,7 +333,8 @@ def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3, in_ou
     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
-    gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size, padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
+    gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size,
+        padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
     gaussian_filter.weight.data = gaussian_kernel
     gaussian_filter.weight.requires_grad = False
 
@@ -339,17 +353,16 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    # TODO: set real label to 0.95/0.7 (in the paper) instead of 1 to prevent overconfidence?
     def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
         """ Initialize the GANLoss class.
 
         Parameters:
             gan_mode (str) - - the type of GAN objective. It currently supports vanilla, lsgan, and wgangp.
-            target_real_label (bool) - - label for a real image
+            target_real_label (bool) - - label for a real image, set to 0.8 to
+                prevent overconfidence
             target_fake_label (bool) - - label of a fake image
 
-        Note: Do not use sigmoid as the last layer of Discriminator.
-        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
+        Note: the BCE loss is used as the sigmoid is computed in the model
         """
         super(GANLoss, self).__init__()
         self.register_buffer('real_label', torch.tensor(target_real_label))
@@ -404,47 +417,6 @@ class GANLoss(nn.Module):
 
 
 
-
-
-def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', constant=1.0, lambda_gp=10.0):
-    """Calculate the gradient penalty loss, used in WGAN-GP paper https://arxiv.org/abs/1704.00028
-
-    Arguments:
-        netD (network)              -- discriminator network
-        real_data (tensor array)    -- real images
-        fake_data (tensor array)    -- generated images from the generator
-        device (str)                -- GPU / CPU: from torch.device('cuda:{}'.format(self.gpu_ids[0])) if self.gpu_ids else torch.device('cpu')
-        type (str)                  -- if we mix real and fake data or not [real | fake | mixed].
-        constant (float)            -- the constant used in formula ( ||gradient||_2 - constant)^2
-        lambda_gp (float)           -- weight for this loss
-
-    Returns the gradient penalty loss
-    """
-    if lambda_gp > 0.0:
-        if type == 'real':   # either use real images, fake images, or a linear interpolation of two.
-            interpolatesv = real_data
-        elif type == 'fake':
-            interpolatesv = fake_data
-        elif type == 'mixed':
-            alpha = torch.rand(real_data.shape[0], 1, device=device)
-            alpha = alpha.expand(real_data.shape[0], real_data.nelement() // real_data.shape[0]).contiguous().view(*real_data.shape)
-            interpolatesv = alpha * real_data + ((1 - alpha) * fake_data)
-        else:
-            raise NotImplementedError('{} not implemented'.format(type))
-        interpolatesv.requires_grad_(True)
-        disc_interpolates = netD(interpolatesv)
-
-        gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolatesv, grad_outputs=torch.ones(disc_interpolates.size()).to(device), create_graph=True, retain_graph=True, only_inputs=True)
-        gradients = gradients[0].view(real_data.size(0), -1)  # flat the data
-        gradient_penalty = (((gradients + 1e-16).norm(2, dim=1) - constant) ** 2).mean() * lambda_gp        # added eps
-
-        return gradient_penalty, gradients
-    else:
-        return 0.0, None
-
-
-
-
 ######################################
 # COPYGAN UNET ARCHITECTURE
 ######################################
@@ -457,7 +429,7 @@ class CopyUNet(nn.Module):
     """
 
     def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64):
-        """Construct a Unet generator
+        """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)  -- the number of channels in input images
             output_nc (int) -- the number of channels in output images
@@ -495,6 +467,7 @@ class CopyUNet(nn.Module):
 
             nr_scale_ops = int(log(self.img_dim, 2) - 6)
 
+            # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
                 self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
                 self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1))
@@ -503,17 +476,19 @@ class CopyUNet(nn.Module):
             self.upscale = nn.Sequential(*self.upscale)
 
 
-
+        # set up encoder layers
         self.enc1 = EncoderBlock(input_nc, 64, stride=1)
         self.enc2 = EncoderBlock(64, 128)
         self.enc3 = EncoderBlock(128, 256)
         self.enc4 = EncoderBlock(256, 512)
 
+        # set up decoder layers
         self.dec4 = DecoderBlock(512, 256)
         self.dec3 = DecoderBlock(512, 128)
         self.dec2 = DecoderBlock(256, 64)
         self.dec1 = DecoderBlock(128, output_nc, last_layer=True)
 
+        # init other layers needed
         self.sigmoid = nn.Sigmoid()
         self.avg_pool = nn.AvgPool2d(8, stride=2)
         self.fc = nn.Linear(512, 1)
@@ -525,19 +500,23 @@ class CopyUNet(nn.Module):
         """Standard forward, return decoder output and encoder output if in
         discriminator mode"""
 
+        # check if the image dimensions are correct
         assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
 
+        # if necessary, downscale the input to 64x64
         if self.downscale:
             for layer in self.downscale:
                 input = layer(input)
 
+        # initialize the Gaussian blur filter
         if self.blur_filter:
             input = self.blur_filter(input)
 
+        # check downscaling and blurring operations in terms of dimensions
         assert input.shape[-1] == 64, "incorrect image shape after \
             downscaling and blurring"
 
-
+        # forward pass through the model
         enc1 = self.enc1(input)
         enc2 = self.enc2(enc1)
         enc3 = self.enc3(enc2)
@@ -548,14 +527,15 @@ class CopyUNet(nn.Module):
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
         dec1 = self.dec1(torch.cat([enc1, dec2], 1))
 
+        # upscale the output if necessary
         if self.upscale:
             for layer in self.upscale:
                 dec1 = layer(dec1)
 
-        # decoder output
+        # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
 
-        # clamp the borders of the copy mask to 0
+        # clamp the borders of the copy mask to 0 (anti shortcut measure)
         if self.border_zeroing and not self.discriminator:
             border_array = torch.ones_like(copy_mask)
             border_array[:, 0, 0, :] = 0
@@ -564,7 +544,7 @@ class CopyUNet(nn.Module):
             border_array[:, 0, :, -1] = 0
             copy_mask = copy_mask * border_array
 
-        # return the encoder output if in discriminator mode
+        # return the encoder output (realness score) if in discriminator mode
         if self.discriminator:
             enc_out = self.avg_pool(enc4).squeeze()
             linear_out = self.fc(enc_out)
@@ -580,21 +560,22 @@ class CopyUNet(nn.Module):
 
 class EncoderBlock(nn.Module):
     """
-    UnetEncoder
+    UNet Encoder Block. This is used to build up the encoder part of the
+    CopyUNet iteratively. It consists of a convolutional layer, followed by
+    normalization and a leakyReLU non-linearity.
     """
 
     def __init__(self, input_nc, output_nc, stride=2, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
-        """Construct a Unet generator
+        """Construct a Unet encoder block
         Parameters:
-            input_nc (int)  -- the number of channels in input images
-            output_nc (int) -- the number of channels in output images
-            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
-                                image of size 128x128 will become of size 1x1 # at the bottleneck
-            ngf (int)       -- the number of filters in the last conv layer
-            norm_layer      -- normalization layer
+            input_nc (int)  -- (int) the number of channels in input images
+            output_nc (int) -- (int) the number of channels in output images
+            stride, kernel, padding -- params for conv layer
+            norm_layer      -- (str) normalization layer
+            slope           -- (float) slope of leakyReLU
+            dropout         -- (bool), whether to use dropout
+            use_bias        -- (bool) whether to use bias in layer
 
-        We construct the U-Net from the innermost layer to the outermost layer.
-        It is a recursive process.
         """
         super(EncoderBlock, self).__init__()
 
@@ -617,21 +598,23 @@ class EncoderBlock(nn.Module):
 
 class DecoderBlock(nn.Module):
     """
-    UnetEncoder
+    UNet Decoder Block. This is used to build up the decoder part of the
+    CopyUNet iteratively. It consists of an upsampling layer, followed by
+    a convolutional layer, normalization and a leakyReLU non-linearity.
     """
 
     def __init__(self, input_nc, output_nc, stride=1, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
-        """Construct a Unet generator
+        """Construct a Unet encoder block
         Parameters:
-            input_nc (int)  -- the number of channels in input images
-            output_nc (int) -- the number of channels in output images
-            num_downs (int) -- the number of downsamplings in UNet. For example, # if |num_downs| == 7,
-                                image of size 128x128 will become of size 1x1 # at the bottleneck
-            ngf (int)       -- the number of filters in the last conv layer
-            norm_layer      -- normalization layer
-
-        We construct the U-Net from the innermost layer to the outermost layer.
-        It is a recursive process.
+            input_nc (int)  -- (int) the number of channels in input images
+            output_nc (int) -- (int) the number of channels in output images
+            stride, kernel, padding -- params for conv layer
+            norm_layer      -- (str) normalization layer
+            slope           -- (float) slope of leakyReLU
+            dropout         -- (bool), whether to use dropout
+            use_bias        -- (bool) whether to use bias in layer
+            last_layer      -- (bool) if this is the last layer, do not
+                                upsample anymore
         """
         super(DecoderBlock, self).__init__()
 
