@@ -62,7 +62,7 @@ class CopyPasteGANModel(BaseModel):
                 'Provide an integer for setting the random seed')
             parser.add_argument('--border_zeroing', action='store_false', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
-            parser.add_argument('--D_threshold', default=0.5, help=
+            parser.add_argument('--D_threshold', default=0.6, help=
                 "when the accuracy of the discriminator is lower than this \
                 threshold, only train D")
 
@@ -167,7 +167,6 @@ class CopyPasteGANModel(BaseModel):
         if self.train_on_gf:
             self.grounded_fake, self.mask_gf = networks.composite_image(
                 self.src, self.tgt, device=self.device)
-
 
 
     def forward(self):
@@ -314,7 +313,7 @@ class CopyPasteGANModel(BaseModel):
 
         # determine if grounded fakes are still used in training
         self.train_on_gf = True
-        if self.D_gf_perfect:
+        if self.D_gf_perfect and self.headstart_over:
             self.train_on_gf = False
 
         if total_iters == self.D_headstart:
