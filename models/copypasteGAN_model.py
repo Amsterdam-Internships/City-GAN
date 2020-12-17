@@ -168,7 +168,7 @@ class CopyPasteGANModel(BaseModel):
             self.grounded_fake, self.mask_gf = networks.composite_image(
                 self.src, self.tgt, device=self.device)
 
-
+        breakpoint()
 
     def forward(self):
         """Run forward pass. This will be called by both functions <
@@ -314,7 +314,7 @@ class CopyPasteGANModel(BaseModel):
 
         # determine if grounded fakes are still used in training
         self.train_on_gf = True
-        if self.D_gf_perfect:
+        if self.D_gf_perfect and self.headstart_over:
             self.train_on_gf = False
 
         if total_iters == self.D_headstart:
