@@ -28,8 +28,15 @@ import torch
 if __name__ == '__main__':
     # get training options
     opt = TrainOptions().parse()
+    opt_valid = TrainOptions().parse()
     # create a dataset given opt.dataset_mode and other options
     dataset = create_dataset(opt)
+
+    # Create a validation dataset
+    opt_valid.phase = "val"
+    val_dataset = create_dataset(opt_valid)
+
+    breakpoint()
     # get the number of images in the dataset.
     dataset_size = len(dataset)
     opt.dataset_size = dataset_size
