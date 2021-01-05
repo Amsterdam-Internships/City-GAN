@@ -63,15 +63,15 @@ class CopyPasteGANModel(BaseModel):
                 'Provide an integer for setting the random seed')
             parser.add_argument('--border_zeroing', action='store_false', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
-            parser.add_argument('--D_threshold', default=0.6, help=
+            parser.add_argument('--D_threshold', type=float, default=0.6, help=
                 "when the accuracy of the discriminator is lower than this \
                 threshold, only train D")
-            parser.add_argument('--val_freq', default=50, help=
+            parser.add_argument('--val_freq', type=int, default=50, help=
                 "every val_freq batches run the model on validation data, \
                 and obtain accuracies for training schedule.")
-            parser.add_argument('--val_batch_size', default=500, help=
-                "every val_freq batches run the model on validation data, \
-                and obtain accuracies for training schedule.")
+            parser.add_argument('--val_batch_size', type=int, default=500,
+                help= "every val_freq batches run the model on validation \
+                data, and obtain accuracies for training schedule.")
 
 
         # nr_object_classes is used to output a multi-layered mask, each
@@ -111,6 +111,8 @@ class CopyPasteGANModel(BaseModel):
                 self.loss_G_conf = 0
 
         self.train_on_gf = True
+        self.D_gf_perfect = False
+        self.D_above_thresh = False
         self.acc_grfake = self.acc_fake = self.acc_real = 0.0
 
 
@@ -301,7 +303,7 @@ class CopyPasteGANModel(BaseModel):
 
         """
         if total_iters == self.D_headstart:
-            print("Headstart D over, starting G training")
+            print("Headstart D over")
 
         self.total_iters = total_iters
 
@@ -347,22 +349,27 @@ class CopyPasteGANModel(BaseModel):
 
         # compute accuracy on the validation data
         with torch.no_grad():
-            for i, data in val_data:
+            for i, data in enumerate(val_data):
                 self.set_input(data)
                 self.forward()
+
+                # save accuracies
                 acc_gf.append(self.acc_grfake)
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
 
+        # determine training curriculum for next session
         if np.mean(acc_gf) > 0.99:
             self.D_gf_perfect = True
         if np.mean(acc_fake) > self.opt.D_threshold:
             self.D_above_thresh = True
 
-        print(f"validation scores:\n\
-            gf: {np.mean(acc_gf):.2f}\n\
-            real: {np.mean(acc_real):.2f}\n\
-            fake: {np.mean(acc_fake):.2f}\n")
+        # print validation scores
+        if self.opt.verbose:
+            print(f"validation accuracies:\n\
+                gf: {np.mean(acc_gf):.2f}\n\
+                real: {np.mean(acc_real):.2f}\n\
+                fake: {np.mean(acc_fake):.2f}\n")
 
 
 
