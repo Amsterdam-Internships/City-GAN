@@ -77,6 +77,10 @@ if __name__ == '__main__':
             total_iters += opt.batch_size
             epoch_iter += opt.batch_size
 
+            # run everything on validation set every val_freq batches
+            if total_iters % (opt.val_freq * opt.batch_size) == 0:
+                model.run_validation(val_dataset)
+
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
             model.run_batch(data, total_iters)
