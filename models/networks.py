@@ -490,11 +490,12 @@ class CopyUNet(nn.Module):
 
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
-        self.avg_pool = nn.AvgPool2d(8, stride=2)
-        self.fc = nn.Linear(512, 1)
-        self.relu = nn.ReLU()
 
 
+        if discriminator:
+            self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2), nn.Flatten(),
+                nn.Linear(512, 256), nn.LeakyReLU(0.01), nn.Linear(256, 1),
+                self.sigmoid)
 
     def forward(self, input):
         """Standard forward, return decoder output and encoder output if in
@@ -546,9 +547,7 @@ class CopyUNet(nn.Module):
 
         # return the encoder output (realness score) if in discriminator mode
         if self.discriminator:
-            enc_out = self.avg_pool(enc4).squeeze()
-            linear_out = self.fc(enc_out)
-            realness_score = self.sigmoid(linear_out)
+            realness_score = self.avg(enc4)
             out = [realness_score, copy_mask]
         else:
             out = copy_mask
