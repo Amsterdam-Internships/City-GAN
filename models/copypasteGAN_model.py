@@ -179,7 +179,7 @@ class CopyPasteGANModel(BaseModel):
                 self.src, self.tgt, device=self.device)
 
 
-    def forward(self):
+    def forward(self, valid=False):
         """Run forward pass. This will be called by both functions <
         optimize_parameters> and <test>."""
 
@@ -203,8 +203,9 @@ class CopyPasteGANModel(BaseModel):
         # get predictions from discriminators for all images (use tgt/src)
         self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
-        assert self.pred_real.shape[0] == self.opt.batch_size, f"prediction \
-            shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
+        assert self.pred_real.shape[0] == self.opt.batch_size or valid,\
+            f"prediction shape incorrect ({self.pred_real.shape}, B: \
+            {self.opt.batch_size})"
 
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
         self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
@@ -351,7 +352,7 @@ class CopyPasteGANModel(BaseModel):
         with torch.no_grad():
             for i, data in enumerate(val_data):
                 self.set_input(data)
-                self.forward()
+                self.forward(valid=True)
 
                 # save accuracies
                 acc_gf.append(self.acc_grfake)

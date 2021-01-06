@@ -35,6 +35,7 @@ if __name__ == '__main__':
     # Create a validation dataset
     opt_valid.phase = "val"
     opt_valid.num_threads = 0
+    opt_valid.batch_size = opt.val_batch_size
     val_dataset = create_dataset(opt_valid)
 
     # get the number of images in the dataset.
@@ -79,6 +80,8 @@ if __name__ == '__main__':
 
             # run everything on validation set every val_freq batches
             if total_iters % (opt.val_freq * opt.batch_size) == 0:
+                if opt.verbose:
+                    print("running validation set")
                 model.run_validation(val_dataset)
 
             # this includes setting and preprocessing the data, and optimizing
