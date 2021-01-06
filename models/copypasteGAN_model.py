@@ -69,9 +69,11 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--val_freq', type=int, default=50, help=
                 "every val_freq batches run the model on validation data, \
                 and obtain accuracies for training schedule.")
-            parser.add_argument('--val_batch_size', type=int, default=500,
+            parser.add_argument('--val_batch_size', type=int, default=256,
                 help= "every val_freq batches run the model on validation \
                 data, and obtain accuracies for training schedule.")
+            parser.add_argument('--drop_last', action='store_true',
+                help= "drop last incomplete batch")
 
 
         # nr_object_classes is used to output a multi-layered mask, each
