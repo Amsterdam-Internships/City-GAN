@@ -35,10 +35,10 @@ class CopyPasteGANModel(BaseModel):
 
         # set default options for this model
         parser.set_defaults(dataset_mode='double', name="CopyGAN",
-            load_size=70, crop_size= 64, batch_size=50, lr=1e-4, no_flip=True,
+            load_size=70, crop_size= 64, batch_size=64, lr=1e-4, no_flip=True,
             lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3,
-            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50,
-            display_freq=1, print_freq=100)
+            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=56,
+            display_freq=1, print_freq=128)
 
         # define new arguments for this model
         if is_train:
@@ -113,8 +113,7 @@ class CopyPasteGANModel(BaseModel):
                 self.loss_G_conf = 0
 
         self.train_on_gf = True
-        self.D_gf_perfect = False
-        self.D_above_thresh = False
+        self.D_gf_perfect = self.D_above_thresh = False
         self.acc_grfake = self.acc_fake = self.acc_real = 0.0
 
 
@@ -216,7 +215,7 @@ class CopyPasteGANModel(BaseModel):
                 self.grounded_fake)
 
         # also compute the accuracy of discriminator
-        B = self.opt.batch_size
+        B = self.opt.val_batch_size
         self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
         self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
         if self.train_on_gf:

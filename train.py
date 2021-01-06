@@ -82,7 +82,8 @@ if __name__ == '__main__':
             # run everything on validation set every val_freq batches
             if total_iters % (opt.val_freq * opt.batch_size) == 0:
                 if opt.verbose:
-                    print("running validation set")
+                    print(f"running validation set (B:\
+                        {total_iters / opt.batch_size})")
                 model.run_validation(val_dataset)
 
             # this includes setting and preprocessing the data, and optimizing
