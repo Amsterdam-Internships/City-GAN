@@ -292,10 +292,10 @@ class CopyPasteGANModel(BaseModel):
         """
 
         def grad_accum(loss, total_loss, count, optimizer, acc_freq=4):
-        """
-        stores the gradients over multiple batches, updates weights every
-        acc_freq batches, to simulate a larger batch size.
-        """
+            """
+            stores the gradients over multiple batches, updates weights every
+            acc_freq batches, to simulate a larger batch size.
+            """
             if count % acc_freq == 0:
                 total_loss = (total_loss + loss) / acc_freq
                 total_loss.backward()
