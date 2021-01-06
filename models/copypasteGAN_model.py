@@ -37,8 +37,8 @@ class CopyPasteGANModel(BaseModel):
         parser.set_defaults(dataset_mode='double', name="CopyGAN",
             load_size=70, crop_size= 64, batch_size=64, lr=1e-4, no_flip=True,
             lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3,
-            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=56,
-            display_freq=1, print_freq=128)
+            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=10,
+            display_freq=100, print_freq=20)
 
         # define new arguments for this model
         if is_train:
@@ -336,8 +336,6 @@ class CopyPasteGANModel(BaseModel):
             self.total_loss_D = grad_accum(loss, self.total_loss_D,
                 self.count_D, self.optimizer_D, self.opt.accumulation_steps)
 
-
-        breakpoint()
 
 
 
