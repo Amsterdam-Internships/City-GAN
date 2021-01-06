@@ -98,7 +98,6 @@ if __name__ == '__main__':
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, epoch_iter=epoch_iter)
 
-            breakpoint()
 
             # print training losses and save logging information to the disk
             if overall_batch % opt.print_freq == 0:
