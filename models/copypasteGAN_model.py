@@ -72,7 +72,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--val_batch_size', type=int, default=256,
                 help= "every val_freq batches run the model on validation \
                 data, and obtain accuracies for training schedule.")
-            parser.add_argument('--drop_last', action='store_true',
+            parser.add_argument('--keep_last_batch', action='store_true',
                 help= "drop last incomplete batch")
             parser.add_argument('--patch_D', action='store_true',
                 help= "If true, discriminator scores individual patches on \

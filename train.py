@@ -36,7 +36,6 @@ if __name__ == '__main__':
     opt_valid.phase = "val"
     opt_valid.num_threads = 0
     opt_valid.batch_size = opt.val_batch_size
-    opt_valid.drop_last=True
     val_dataset = create_dataset(opt_valid)
 
     # get the number of images in the dataset.
