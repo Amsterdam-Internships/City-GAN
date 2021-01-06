@@ -74,6 +74,10 @@ class CopyPasteGANModel(BaseModel):
                 data, and obtain accuracies for training schedule.")
             parser.add_argument('--drop_last', action='store_true',
                 help= "drop last incomplete batch")
+            parser.add_argument('--patch_D', action='store_true',
+                help= "If true, discriminator scores individual patches on \
+                realness, else, two linear layers yield a scalar score")
+
 
 
         # nr_object_classes is used to output a multi-layered mask, each
@@ -140,7 +144,7 @@ class CopyPasteGANModel(BaseModel):
             # only define the discriminator if in training phase
             self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD,
                 norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size,
-                sigma_blur=opt.sigma_blur)
+                sigma_blur=opt.sigma_blur, patchGAN=opt.patch_D)
             self.model_names.append("D")
 
             # define loss functions
@@ -215,12 +219,13 @@ class CopyPasteGANModel(BaseModel):
                 self.grounded_fake)
 
         # also compute the accuracy of discriminator
-        B = self.opt.val_batch_size
-        self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
-        self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
-        if self.train_on_gf:
-            self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
-                < 0.5]) / B
+        if valid:
+            B = self.opt.val_batch_size * self.pred_real.shape[-1] ** 2
+            self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
+            self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
+            if self.train_on_gf:
+                self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
+                    < 0.5]) / B
 
 
     def backward_G(self):
