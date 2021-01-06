@@ -69,7 +69,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--val_freq', type=int, default=50, help=
                 "every val_freq batches run the model on validation data, \
                 and obtain accuracies for training schedule.")
-            parser.add_argument('--val_batch_size', type=int, default=256,
+            parser.add_argument('--val_batch_size', type=int, default=128,
                 help= "every val_freq batches run the model on validation \
                 data, and obtain accuracies for training schedule.")
             parser.add_argument('--keep_last_batch', action='store_true',
@@ -77,6 +77,9 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--patch_D', action='store_true',
                 help= "If true, discriminator scores individual patches on \
                 realness, else, two linear layers yield a scalar score")
+            parser.add_argument('--accumulation_steps', type=int, default=4,
+                help= "accumulate gradients for this amount of batches, \
+                before backpropagating, to simulate a larger batch size")
 
 
 
@@ -119,6 +122,9 @@ class CopyPasteGANModel(BaseModel):
         self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
         self.acc_grfake = self.acc_fake = self.acc_real = 0.0
+
+        # init count for gradient accumulation, simulating lager batch size
+        self.count_D = self.count_G = self.total_loss_G = self.total_loss_D = 0
 
 
         if self.multi_layered:
@@ -248,7 +254,8 @@ class CopyPasteGANModel(BaseModel):
             self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
             self.loss_G = self.loss_G + self.loss_G_distinct
 
-        self.loss_G.backward()
+        # self.loss_G.backward()
+        return self.loss_G
 
 
     def backward_D(self):
@@ -275,31 +282,65 @@ class CopyPasteGANModel(BaseModel):
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # Calculate gradients of discriminator
-        self.loss_D.backward()
-
+        # self.loss_D.backward()
+        return self.loss_D
 
     def optimize_parameters(self):
         """Update network weights; it is called in every training iteration.
         only perform  optimizer steps after all backward operations, torch1.5
         gives an error, see https://github.com/pytorch/pytorch/issues/39141
-
-        Arguments:
-            - total_iters: training progress in steps, used to give D a
-            headstart
         """
+
+        def grad_accum(loss, total_loss, count, optimizer, acc_freq=4):
+        """
+        stores the gradients over multiple batches, updates weights every
+        acc_freq batches, to simulate a larger batch size.
+        """
+            if count % acc_freq == 0:
+                total_loss = (total_loss + loss) / acc_freq
+                total_loss.backward()
+                optimizer.step()
+                optimizer.zero_grad()
+                total_loss = 0
+            else:
+                total_loss = total_loss + loss
+
+            return total_loss
 
         # perform forward step
         self.forward()
 
-        # train D and G in alternating fashion
+        # # train D and G in alternating fashion
+        # if self.train_G:
+        #     self.optimizer_G.zero_grad()
+        #     self.backward_G()
+        #     self.optimizer_G.step()
+        # else:
+        #     self.optimizer_D.zero_grad()
+        #     self.backward_D()
+        #     self.optimizer_D.step()
+
+        # pass
+        # try gradient accumulation
+
+
+
         if self.train_G:
-            self.optimizer_G.zero_grad()
-            self.backward_G()
-            self.optimizer_G.step()
+            loss = self.backward_G()
+            self.count_G += 1
+            self.total_loss_G = grad_accum(loss, self.total_loss_G,
+               self.count_G, self.optimizer_G, self.opt.accumulation_steps)
         else:
-            self.optimizer_D.zero_grad()
-            self.backward_D()
-            self.optimizer_D.step()
+            loss = self.backward_D()
+            self.count_D += 1
+            self.total_loss_D = grad_accum(loss, self.total_loss_D,
+                self.count_D, self.optimizer_D, self.opt.accumulation_steps)
+
+
+        breakpoint()
+
+
+
 
 
 
@@ -307,6 +348,10 @@ class CopyPasteGANModel(BaseModel):
         """
         This method incorporates the set_input and optimize_parameters
         functions, and does some checks beforehand
+
+        Arguments:
+            - total_iters: training progress in steps, used to give D a
+            headstart
 
         """
         if total_iters == self.D_headstart:
@@ -366,8 +411,10 @@ class CopyPasteGANModel(BaseModel):
                 acc_real.append(self.acc_real)
 
         # determine training curriculum for next session
+        # how well does the discriminator do on grounded fakes?
         if np.mean(acc_gf) > 0.99:
             self.D_gf_perfect = True
+        # check performance on fakes to determine whether to train G
         if np.mean(acc_fake) > self.opt.D_threshold:
             self.D_above_thresh = True
 
