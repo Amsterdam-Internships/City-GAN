@@ -295,6 +295,7 @@ class CopyPasteGANModel(BaseModel):
             """
             stores the gradients over multiple batches, updates weights every
             acc_freq batches, to simulate a larger batch size.
+            Inspired from https://gist.github.com/thomwolf/ac7a7da6b1888c2eeac8ac8b9b05d3d3
             """
             if count % acc_freq == 0:
                 total_loss = (total_loss + loss) / acc_freq
@@ -336,7 +337,7 @@ class CopyPasteGANModel(BaseModel):
             self.total_loss_D = grad_accum(loss, self.total_loss_D,
                 self.count_D, self.optimizer_D, self.opt.accumulation_steps)
 
-
+        print(torch.cuda.memory_summary(), "\n\n")
 
 
 
