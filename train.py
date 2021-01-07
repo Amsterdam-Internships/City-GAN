@@ -83,9 +83,10 @@ if __name__ == '__main__':
             overall_batch += 1
 
             # run everything on validation set every val_freq batches
-            if total_iters % (opt.val_freq * opt.batch_size) == 0:
+            # also run the untrained model (batch = 0), for baseline
+            if (overall_batch -1) % opt.val_freq == 0:
                 if opt.verbose:
-                    print(f"running validation set (B:{int(total_iters / opt.batch_size)})")
+                    print(f"running validation set (B:{overall_batch})")
                 model.run_validation(val_dataset)
 
             # this includes setting and preprocessing the data, and optimizing
@@ -98,7 +99,7 @@ if __name__ == '__main__':
             if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
-                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, epoch_iter=epoch_batch)
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, epoch_batch=epoch_batch)
 
 
             # print training losses and save logging information to the disk
