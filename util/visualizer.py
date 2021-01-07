@@ -106,7 +106,7 @@ class Visualizer():
         # Popen(cmd, shell=True)#, stdout=PIPE, stderr=PIPE)
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
-    def display_current_results(self, visuals, epoch, save_result, epoch_iter=0):
+    def display_current_results(self, visuals, epoch, save_result, epoch_batch=0):
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -169,7 +169,7 @@ class Visualizer():
             # save images to the disk
             for label, image in visuals.items():
                 image_numpy = util.tensor2im(image)
-                img_path = os.path.join(self.img_dir, 'epoch%.3d_%d_%s.png' % (epoch, epoch_iter, label))
+                img_path = os.path.join(self.img_dir, 'epoch%.3d_%d_%s.png' % (epoch, epoch_batch, label))
                 util.save_image(image_numpy, img_path)
 
             # update website
@@ -214,17 +214,17 @@ class Visualizer():
             self.create_visdom_connections()
 
     # losses: same format as |losses| of plot_current_losses
-    def print_current_losses(self, epoch, iters, losses, t_comp, t_data):
+    def print_current_losses(self, epoch, batches, losses, t_comp, t_data):
         """print current losses on console; also save the losses to the disk
 
         Parameters:
             epoch (int) -- current epoch
-            iters (int) -- current training iteration during this epoch (reset to 0 at the end of every epoch)
+            batches (int) -- current training batch during this epoch (reset to 0 at the end of every epoch)
             losses (OrderedDict) -- training losses stored in the format of (name, float) pairs
             t_comp (float) -- computational time per data point (normalized by batch_size)
             t_data (float) -- data loading time per data point (normalized by batch_size)
         """
-        message = '(epoch: %d, iters: %d, time: %.3f, data: %.3f) ' % (epoch, iters, t_comp, t_data)
+        message = '(epoch: %d, batches: %d, time: %.3f, data: %.3f) ' % (epoch, batches, t_comp, t_data)
         for k, v in losses.items():
             message += '%s: %.3f ' % (k, v)
         print(message)  # print the message
@@ -238,8 +238,8 @@ class Visualizer():
 
         rounded_losses = {key : round(losses[key], 3) for key in losses}
         # update losses
-        new_data = {iters : rounded_losses}
-        if iters == self.opt.print_freq:
+        new_data = {batches : rounded_losses}
+        if batches == self.opt.print_freq:
             new_data = {epoch : new_data}
             if epoch == 1:
                 written_data = new_data
