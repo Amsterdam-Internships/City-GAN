@@ -283,6 +283,7 @@ class CopyPasteGANModel(BaseModel):
         # Calculate gradients of discriminator
         (self.loss_D / self.opt.accumulation_steps).backward()
 
+
     def optimize_parameters(self):
         """Update network weights; it is called in every training iteration.
         only perform  optimizer steps after all backward operations, torch1.5
@@ -303,8 +304,9 @@ class CopyPasteGANModel(BaseModel):
         #     self.optimizer_D.step()
 
         # pass
-        # try gradient accumulation
 
+        # perform gradient accumulation to simulate larger batch size
+        # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
         update_freq = self.opt.accumulation_steps
 
         if self.train_G:
@@ -319,8 +321,6 @@ class CopyPasteGANModel(BaseModel):
             if self.count_D % update_freq == 0:
                 self.optimizer_D.step()
                 self.optimizer_D.zero_grad()
-
-
 
 
 
@@ -382,7 +382,6 @@ class CopyPasteGANModel(BaseModel):
         # compute accuracy on the validation data
         with torch.no_grad():
             for i, data in enumerate(val_data):
-                print("xxx")
                 self.set_input(data)
                 self.forward(valid=True)
 
