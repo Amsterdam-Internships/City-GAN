@@ -1,0 +1,761 @@
+starting training run 23
+Setting up a new session...
+Traceback (most recent call last):
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connection.py", line 159, in _new_conn
+    conn = connection.create_connection(
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/util/connection.py", line 84, in create_connection
+    raise err
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/util/connection.py", line 74, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connectionpool.py", line 670, in urlopen
+    httplib_response = self._make_request(
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connectionpool.py", line 392, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/http/client.py", line 1230, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/http/client.py", line 1276, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/http/client.py", line 1225, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/http/client.py", line 1004, in _send_output
+    self.send(msg)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/http/client.py", line 944, in send
+    self.connect()
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connection.py", line 187, in connect
+    conn = self._new_conn()
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connection.py", line 171, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x148c507617f0>: Failed to establish a new connection: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/requests/adapters.py", line 439, in send
+    resp = conn.urlopen(
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/connectionpool.py", line 724, in urlopen
+    retries = retries.increment(
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/urllib3/util/retry.py", line 439, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8097): Max retries exceeded with url: /env/main (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x148c507617f0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tlotze/.local/lib/python3.8/site-packages/visdom/__init__.py", line 708, in _send
+    return self._handle_post(
+  File "/home/tlotze/.local/lib/python3.8/site-packages/visdom/__init__.py", line 677, in _handle_post
+    r = self.session.post(url, data=data)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/requests/sessions.py", line 578, in post
+    return self.request('POST', url, data=data, json=json, **kwargs)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/requests/sessions.py", line 530, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/requests/sessions.py", line 643, in send
+    r = adapter.send(request, **kwargs)
+  File "/sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/lib/python3.8/site-packages/requests/adapters.py", line 516, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8097): Max retries exceeded with url: /env/main (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x148c507617f0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[Errno 111] Connection refused
+----------------- Options ---------------
+              D_headstart: 10000                         	[default: 80000]
+              D_threshold: 0.6                           
+       accumulation_steps: 4                             
+               batch_size: 64                            
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+           border_zeroing: True                          
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+        confidence_weight: 0.0                           
+           continue_train: False                         
+                crop_size: 256                           	[default: 64]
+                 dataroot: /scratch/datasets/CLEVR_colorized/images	[default: datasets]
+             dataset_mode: double                        
+                direction: None                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 1                             
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: lsgan                         
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+               lambda_aux: 0.2                           
+                load_iter: 0                             	[default: 0]
+                load_size: 265                           	[default: 70]
+                       lr: 0.0001                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: inf                           
+                    model: copypasteGAN                  	[default: cycle_gan]
+                 n_epochs: 5                             	[default: 1]
+           n_epochs_decay: 3                             
+               n_layers_D: 3                             
+                     name: CopyGAN                       
+                      ndf: 64                            
+                     netD: copy                          
+                     netG: copy                          
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+                     norm: instance                      
+           nr_obj_classes: 1                             
+              num_threads: 4                             
+                output_nc: 3                             
+                  patch_D: True                          	[default: False]
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize_and_crop               
+               print_freq: 20                            
+              real_target: 1.0                           
+             save_by_iter: False                         
+          save_epoch_freq: 10                            
+         save_latest_freq: 5000                          
+                     seed: 42                            
+           serial_batches: False                         
+               sigma_blur: 1.0                           
+                   suffix:                               
+         update_html_freq: 100                           
+           val_batch_size: 128                           
+                 val_freq: 50                            
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+----------------- Options ---------------
+              D_headstart: 10000                         	[default: 80000]
+              D_threshold: 0.6                           
+       accumulation_steps: 4                             
+               batch_size: 64                            
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+           border_zeroing: True                          
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+        confidence_weight: 0.0                           
+           continue_train: False                         
+                crop_size: 256                           	[default: 64]
+                 dataroot: /scratch/datasets/CLEVR_colorized/images	[default: datasets]
+             dataset_mode: double                        
+                direction: None                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 1                             
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: lsgan                         
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+               lambda_aux: 0.2                           
+                load_iter: 0                             	[default: 0]
+                load_size: 265                           	[default: 70]
+                       lr: 0.0001                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: inf                           
+                    model: copypasteGAN                  	[default: cycle_gan]
+                 n_epochs: 5                             	[default: 1]
+           n_epochs_decay: 3                             
+               n_layers_D: 3                             
+                     name: CopyGAN                       
+                      ndf: 64                            
+                     netD: copy                          
+                     netG: copy                          
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+                     norm: instance                      
+           nr_obj_classes: 1                             
+              num_threads: 4                             
+                output_nc: 3                             
+                  patch_D: True                          	[default: False]
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize_and_crop               
+               print_freq: 20                            
+              real_target: 1.0                           
+             save_by_iter: False                         
+          save_epoch_freq: 10                            
+         save_latest_freq: 5000                          
+                     seed: 42                            
+           serial_batches: False                         
+               sigma_blur: 1.0                           
+                   suffix:                               
+         update_html_freq: 100                           
+           val_batch_size: 128                           
+                 val_freq: 50                            
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+dataset [DoubleDataset] was created
+dataset [DoubleDataset] was created
+The number of training images = 15000
+The number of epochs to run = 8
+initialize network with normal
+initialize network with normal
+model [CopyPasteGANModel] was created
+---------- Networks initialized -------------
+DataParallel(
+  (module): CopyUNet(
+    (downscale): Sequential(
+      (0): EncoderBlock(
+        (model): Sequential(
+          (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (1): InstanceNorm2d(3, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (2): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (1): EncoderBlock(
+        (model): Sequential(
+          (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (1): InstanceNorm2d(3, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (2): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+    )
+    (upscale): Sequential(
+      (0): DecoderBlock(
+        (model): Sequential(
+          (0): Upsample(scale_factor=2.0, mode=bilinear)
+          (1): Conv2d(1, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (2): InstanceNorm2d(1, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (3): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (1): DecoderBlock(
+        (model): Sequential(
+          (0): Upsample(scale_factor=2.0, mode=bilinear)
+          (1): Conv2d(1, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (2): InstanceNorm2d(1, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (3): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+    )
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (sigmoid): Sigmoid()
+  )
+)
+[Network G] Total number of parameters : 3.469 M
+DataParallel(
+  (module): CopyUNet(
+    (blur_filter): Conv2d(3, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=3, bias=False, padding_mode=replicate)
+    (downscale): Sequential(
+      (0): EncoderBlock(
+        (model): Sequential(
+          (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (1): InstanceNorm2d(3, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (2): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (1): EncoderBlock(
+        (model): Sequential(
+          (0): Conv2d(3, 3, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (1): InstanceNorm2d(3, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (2): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+    )
+    (upscale): Sequential(
+      (0): DecoderBlock(
+        (model): Sequential(
+          (0): Upsample(scale_factor=2.0, mode=bilinear)
+          (1): Conv2d(1, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (2): InstanceNorm2d(1, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (3): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+      (1): DecoderBlock(
+        (model): Sequential(
+          (0): Upsample(scale_factor=2.0, mode=bilinear)
+          (1): Conv2d(1, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (2): InstanceNorm2d(1, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (3): LeakyReLU(negative_slope=0.2, inplace=True)
+        )
+      )
+    )
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (sigmoid): Sigmoid()
+    (avg): Sequential(
+      (0): Conv2d(512, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): Sigmoid()
+    )
+  )
+)
+[Network D] Total number of parameters : 3.473 M
+-----------------------------------------------
+Exception in user code:
+------------------------------------------------------------
+checking connection: False
+
+
+Could not connect to Visdom server. 
+ Trying to start a server....
+Command: /sw/arch/Debian10/EB_production/2020/software/Python/3.8.2-GCCcore-9.3.0/bin/python -m visdom.server -p 8097 &>/dev/null &
+check connection after creating new server: False
+create web directory /scratch/checkpoints/CopyGAN/web...
+running validation set (B:1)
+validation accuracies:
+                gf: 0.69
+                real: 0.31
+                fake: 0.69
+
+(epoch: 1, batches: 20, time: 0.027, data: 0.026) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.731 loss_D_fake: 0.742 loss_D_gr_fake: 0.711 loss_AUX: 0.509 loss_D: 2.694 acc_real: 0.305 acc_fake: 0.692 acc_grfake: 0.696 
+(epoch: 1, batches: 40, time: 0.042, data: 0.027) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.708 loss_D_fake: 0.737 loss_D_gr_fake: 0.640 loss_AUX: 0.508 loss_D: 2.593 acc_real: 0.305 acc_fake: 0.692 acc_grfake: 0.696 
+running validation set (B:51)
+validation accuracies:
+                gf: 0.66
+                real: 0.56
+                fake: 0.45
+
+(epoch: 1, batches: 60, time: 0.044, data: 0.025) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.669 loss_D_fake: 0.779 loss_D_gr_fake: 0.605 loss_AUX: 0.506 loss_D: 2.560 acc_real: 0.555 acc_fake: 0.444 acc_grfake: 0.669 
+(epoch: 1, batches: 80, time: 0.044, data: 0.028) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.632 loss_D_fake: 0.886 loss_D_gr_fake: 0.643 loss_AUX: 0.506 loss_D: 2.667 acc_real: 0.555 acc_fake: 0.444 acc_grfake: 0.669 
+(epoch: 1, batches: 100, time: 0.084, data: 0.025) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.613 loss_D_fake: 0.907 loss_D_gr_fake: 0.571 loss_AUX: 0.506 loss_D: 2.597 acc_real: 0.555 acc_fake: 0.444 acc_grfake: 0.669 
+running validation set (B:101)
+validation accuracies:
+                gf: 0.73
+                real: 0.67
+                fake: 0.40
+
+(epoch: 1, batches: 120, time: 0.019, data: 0.054) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.574 loss_D_fake: 0.898 loss_D_gr_fake: 0.536 loss_AUX: 0.505 loss_D: 2.514 acc_real: 0.664 acc_fake: 0.396 acc_grfake: 0.743 
+(epoch: 1, batches: 140, time: 0.021, data: 0.027) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.536 loss_D_fake: 0.963 loss_D_gr_fake: 0.560 loss_AUX: 0.506 loss_D: 2.564 acc_real: 0.664 acc_fake: 0.396 acc_grfake: 0.743 
+running validation set (B:151)
+validation accuracies:
+                gf: 0.79
+                real: 0.76
+                fake: 0.40
+
+(epoch: 1, batches: 160, time: 0.041, data: 0.029) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.451 loss_D_fake: 1.061 loss_D_gr_fake: 0.509 loss_AUX: 0.504 loss_D: 2.525 acc_real: 0.725 acc_fake: 0.395 acc_grfake: 0.757 
+(epoch: 1, batches: 180, time: 0.042, data: 0.027) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.432 loss_D_fake: 1.008 loss_D_gr_fake: 0.523 loss_AUX: 0.505 loss_D: 2.468 acc_real: 0.725 acc_fake: 0.395 acc_grfake: 0.757 
+(epoch: 1, batches: 200, time: 0.086, data: 0.048) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.492 loss_D_fake: 0.880 loss_D_gr_fake: 0.452 loss_AUX: 0.504 loss_D: 2.329 acc_real: 0.725 acc_fake: 0.395 acc_grfake: 0.757 
+running validation set (B:201)
+validation accuracies:
+                gf: 0.78
+                real: 0.84
+                fake: 0.37
+
+(epoch: 1, batches: 220, time: 0.014, data: 0.027) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.370 loss_D_fake: 1.147 loss_D_gr_fake: 0.486 loss_AUX: 0.504 loss_D: 2.508 acc_real: 0.864 acc_fake: 0.437 acc_grfake: 0.846 
+learning rate 0.0001000 -> 0.0001000
+End of epoch 1 / 8 	 Time Taken: 2487 sec
+/home/tlotze/.local/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:131: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step()`. "
+running validation set (B:251)
+validation accuracies:
+                gf: 0.80
+                real: 0.85
+                fake: 0.43
+
+(epoch: 2, batches: 20, time: 0.013, data: 0.028) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.402 loss_D_fake: 1.054 loss_D_gr_fake: 0.470 loss_AUX: 0.506 loss_D: 2.432 acc_real: 0.865 acc_fake: 0.408 acc_grfake: 0.826 
+(epoch: 2, batches: 40, time: 0.027, data: 0.027) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.454 loss_D_fake: 0.900 loss_D_gr_fake: 0.313 loss_AUX: 0.503 loss_D: 2.169 acc_real: 0.865 acc_fake: 0.408 acc_grfake: 0.826 
+(epoch: 2, batches: 60, time: 0.027, data: 0.029) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.371 loss_D_fake: 1.055 loss_D_gr_fake: 0.502 loss_AUX: 0.505 loss_D: 2.433 acc_real: 0.865 acc_fake: 0.408 acc_grfake: 0.826 
+running validation set (B:301)
+validation accuracies:
+                gf: 0.83
+                real: 0.87
+                fake: 0.49
+
+(epoch: 2, batches: 80, time: 0.030, data: 0.035) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.285 loss_D_fake: 1.082 loss_D_gr_fake: 0.443 loss_AUX: 0.505 loss_D: 2.315 acc_real: 0.877 acc_fake: 0.534 acc_grfake: 0.872 
+(epoch: 2, batches: 100, time: 0.014, data: 0.023) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.366 loss_D_fake: 1.004 loss_D_gr_fake: 0.373 loss_AUX: 0.504 loss_D: 2.248 acc_real: 0.877 acc_fake: 0.534 acc_grfake: 0.872 
+running validation set (B:351)
+validation accuracies:
+                gf: 0.77
+                real: 0.94
+                fake: 0.38
+
+(epoch: 2, batches: 120, time: 0.015, data: 0.029) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.424 loss_D_fake: 0.783 loss_D_gr_fake: 0.391 loss_AUX: 0.505 loss_D: 2.102 acc_real: 0.933 acc_fake: 0.419 acc_grfake: 0.781 
+(epoch: 2, batches: 140, time: 0.013, data: 0.028) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.313 loss_D_fake: 0.980 loss_D_gr_fake: 0.390 loss_AUX: 0.505 loss_D: 2.188 acc_real: 0.933 acc_fake: 0.419 acc_grfake: 0.781 
+(epoch: 2, batches: 160, time: 0.017, data: 0.037) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.315 loss_D_fake: 0.993 loss_D_gr_fake: 0.444 loss_AUX: 0.505 loss_D: 2.257 acc_real: 0.933 acc_fake: 0.419 acc_grfake: 0.781 
+running validation set (B:401)
+validation accuracies:
+                gf: 0.80
+                real: 0.92
+                fake: 0.44
+
+(epoch: 2, batches: 180, time: 0.031, data: 0.024) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.457 loss_D_fake: 0.743 loss_D_gr_fake: 0.261 loss_AUX: 0.503 loss_D: 1.963 acc_real: 0.921 acc_fake: 0.442 acc_grfake: 0.848 
+(epoch: 2, batches: 200, time: 0.032, data: 0.032) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.215 loss_D_fake: 1.262 loss_D_gr_fake: 0.493 loss_AUX: 0.503 loss_D: 2.473 acc_real: 0.921 acc_fake: 0.442 acc_grfake: 0.848 
+running validation set (B:451)
+validation accuracies:
+                gf: 0.84
+                real: 0.91
+                fake: 0.51
+
+(epoch: 2, batches: 220, time: 0.021, data: 0.021) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.343 loss_D_fake: 0.806 loss_D_gr_fake: 0.370 loss_AUX: 0.505 loss_D: 2.024 acc_real: 0.911 acc_fake: 0.532 acc_grfake: 0.867 
+learning rate 0.0001000 -> 0.0001000
+End of epoch 2 / 8 	 Time Taken: 484 sec
+(epoch: 3, batches: 20, time: 0.014, data: 0.019) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.276 loss_D_fake: 0.900 loss_D_gr_fake: 0.368 loss_AUX: 0.502 loss_D: 2.046 acc_real: 0.911 acc_fake: 0.532 acc_grfake: 0.867 
+running validation set (B:501)
+validation accuracies:
+                gf: 0.86
+                real: 0.91
+                fake: 0.54
+
+(epoch: 3, batches: 40, time: 0.027, data: 0.028) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.202 loss_D_fake: 1.151 loss_D_gr_fake: 0.438 loss_AUX: 0.503 loss_D: 2.294 acc_real: 0.872 acc_fake: 0.536 acc_grfake: 0.860 
+(epoch: 3, batches: 60, time: 0.020, data: 0.029) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.173 loss_D_fake: 1.117 loss_D_gr_fake: 0.455 loss_AUX: 0.502 loss_D: 2.248 acc_real: 0.872 acc_fake: 0.536 acc_grfake: 0.860 
+(epoch: 3, batches: 80, time: 0.027, data: 0.022) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.246 loss_D_fake: 0.822 loss_D_gr_fake: 0.332 loss_AUX: 0.504 loss_D: 1.902 acc_real: 0.872 acc_fake: 0.536 acc_grfake: 0.860 
+running validation set (B:551)
+validation accuracies:
+                gf: 0.87
+                real: 0.89
+                fake: 0.59
+
+(epoch: 3, batches: 100, time: 0.014, data: 0.022) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.265 loss_D_fake: 0.878 loss_D_gr_fake: 0.264 loss_AUX: 0.501 loss_D: 1.908 acc_real: 0.873 acc_fake: 0.587 acc_grfake: 0.847 
+(epoch: 3, batches: 120, time: 0.014, data: 0.022) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.245 loss_D_fake: 1.116 loss_D_gr_fake: 0.399 loss_AUX: 0.504 loss_D: 2.264 acc_real: 0.873 acc_fake: 0.587 acc_grfake: 0.847 
+running validation set (B:601)
+validation accuracies:
+                gf: 0.85
+                real: 0.95
+                fake: 0.53
+
+(epoch: 3, batches: 140, time: 0.017, data: 0.036) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.279 loss_D_fake: 0.921 loss_D_gr_fake: 0.377 loss_AUX: 0.504 loss_D: 2.080 acc_real: 0.962 acc_fake: 0.550 acc_grfake: 0.869 
+saving the latest model (epoch 3, total_iters 40000)
+(epoch: 3, batches: 160, time: 0.016, data: 0.022) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.224 loss_D_fake: 1.024 loss_D_gr_fake: 0.295 loss_AUX: 0.503 loss_D: 2.046 acc_real: 0.962 acc_fake: 0.550 acc_grfake: 0.869 
+(epoch: 3, batches: 180, time: 0.025, data: 0.028) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.190 loss_D_fake: 0.898 loss_D_gr_fake: 0.352 loss_AUX: 0.503 loss_D: 1.942 acc_real: 0.962 acc_fake: 0.550 acc_grfake: 0.869 
+running validation set (B:651)
+validation accuracies:
+                gf: 0.91
+                real: 0.86
+                fake: 0.70
+
+(epoch: 3, batches: 200, time: 0.022, data: 0.026) loss_G_comp: 1.343 loss_G_anti_sc: 0.521 loss_G: 1.865 loss_D_real: 0.609 loss_D_fake: 0.822 loss_D_gr_fake: 0.279 loss_AUX: 0.500 loss_D: 2.210 acc_real: 0.842 acc_fake: 0.682 acc_grfake: 0.884 
+(epoch: 3, batches: 220, time: 0.013, data: 0.027) loss_G_comp: 0.760 loss_G_anti_sc: 0.932 loss_G: 1.692 loss_D_real: 0.540 loss_D_fake: 1.260 loss_D_gr_fake: 0.413 loss_AUX: 0.500 loss_D: 2.713 acc_real: 0.842 acc_fake: 0.682 acc_grfake: 0.884 
+running validation set (B:701)
+validation accuracies:
+                gf: 0.85
+                real: 0.75
+                fake: 0.40
+
+learning rate 0.0001000 -> 0.0001000
+End of epoch 3 / 8 	 Time Taken: 493 sec
+(epoch: 4, batches: 20, time: 0.014, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.315 loss_D_fake: 1.370 loss_D_gr_fake: 0.442 loss_AUX: 0.503 loss_D: 2.629 acc_real: 0.753 acc_fake: 0.377 acc_grfake: 0.819 
+(epoch: 4, batches: 40, time: 0.018, data: 0.028) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.233 loss_D_fake: 1.409 loss_D_gr_fake: 0.301 loss_AUX: 0.501 loss_D: 2.444 acc_real: 0.753 acc_fake: 0.377 acc_grfake: 0.819 
+running validation set (B:751)
+validation accuracies:
+                gf: 0.85
+                real: 0.94
+                fake: 0.20
+
+(epoch: 4, batches: 60, time: 0.030, data: 0.029) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.232 loss_D_fake: 1.399 loss_D_gr_fake: 0.392 loss_AUX: 0.504 loss_D: 2.527 acc_real: 0.914 acc_fake: 0.260 acc_grfake: 0.889 
+(epoch: 4, batches: 80, time: 0.017, data: 0.020) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.224 loss_D_fake: 1.250 loss_D_gr_fake: 0.395 loss_AUX: 0.502 loss_D: 2.371 acc_real: 0.914 acc_fake: 0.260 acc_grfake: 0.889 
+running validation set (B:801)
+validation accuracies:
+                gf: 0.87
+                real: 0.95
+                fake: 0.26
+
+(epoch: 4, batches: 100, time: 0.020, data: 0.023) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.233 loss_D_fake: 1.213 loss_D_gr_fake: 0.320 loss_AUX: 0.502 loss_D: 2.267 acc_real: 0.972 acc_fake: 0.206 acc_grfake: 0.878 
+(epoch: 4, batches: 120, time: 0.027, data: 0.029) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.213 loss_D_fake: 1.603 loss_D_gr_fake: 0.487 loss_AUX: 0.503 loss_D: 2.806 acc_real: 0.972 acc_fake: 0.206 acc_grfake: 0.878 
+(epoch: 4, batches: 140, time: 0.017, data: 0.037) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.242 loss_D_fake: 1.204 loss_D_gr_fake: 0.295 loss_AUX: 0.502 loss_D: 2.243 acc_real: 0.972 acc_fake: 0.206 acc_grfake: 0.878 
+running validation set (B:851)
+validation accuracies:
+                gf: 0.85
+                real: 0.96
+                fake: 0.22
+
+(epoch: 4, batches: 160, time: 0.014, data: 0.021) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.182 loss_D_fake: 1.291 loss_D_gr_fake: 0.309 loss_AUX: 0.502 loss_D: 2.284 acc_real: 0.966 acc_fake: 0.229 acc_grfake: 0.879 
+(epoch: 4, batches: 180, time: 0.021, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.339 loss_D_fake: 1.202 loss_D_gr_fake: 0.345 loss_AUX: 0.502 loss_D: 2.388 acc_real: 0.966 acc_fake: 0.229 acc_grfake: 0.879 
+running validation set (B:901)
+validation accuracies:
+                gf: 0.87
+                real: 0.95
+                fake: 0.29
+
+(epoch: 4, batches: 200, time: 0.014, data: 0.021) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.235 loss_D_fake: 1.281 loss_D_gr_fake: 0.230 loss_AUX: 0.502 loss_D: 2.248 acc_real: 0.947 acc_fake: 0.319 acc_grfake: 0.845 
+(epoch: 4, batches: 220, time: 0.013, data: 0.027) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.335 loss_D_fake: 1.255 loss_D_gr_fake: 0.321 loss_AUX: 0.502 loss_D: 2.414 acc_real: 0.947 acc_fake: 0.319 acc_grfake: 0.845 
+learning rate 0.0001000 -> 0.0001000
+End of epoch 4 / 8 	 Time Taken: 433 sec
+running validation set (B:951)
+validation accuracies:
+                gf: 0.89
+                real: 0.93
+                fake: 0.38
+
+(epoch: 5, batches: 20, time: 0.021, data: 0.030) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.209 loss_D_fake: 1.403 loss_D_gr_fake: 0.367 loss_AUX: 0.502 loss_D: 2.481 acc_real: 0.948 acc_fake: 0.412 acc_grfake: 0.870 
+(epoch: 5, batches: 40, time: 0.013, data: 0.035) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.260 loss_D_fake: 1.242 loss_D_gr_fake: 0.267 loss_AUX: 0.502 loss_D: 2.271 acc_real: 0.948 acc_fake: 0.412 acc_grfake: 0.870 
+(epoch: 5, batches: 60, time: 0.028, data: 0.032) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.229 loss_D_fake: 1.234 loss_D_gr_fake: 0.381 loss_AUX: 0.503 loss_D: 2.347 acc_real: 0.948 acc_fake: 0.412 acc_grfake: 0.870 
+running validation set (B:1001)
+validation accuracies:
+                gf: 0.88
+                real: 0.94
+                fake: 0.36
+
+(epoch: 5, batches: 80, time: 0.015, data: 0.027) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.179 loss_D_fake: 1.342 loss_D_gr_fake: 0.469 loss_AUX: 0.503 loss_D: 2.493 acc_real: 0.922 acc_fake: 0.360 acc_grfake: 0.900 
+(epoch: 5, batches: 100, time: 0.032, data: 0.033) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.225 loss_D_fake: 1.233 loss_D_gr_fake: 0.351 loss_AUX: 0.501 loss_D: 2.311 acc_real: 0.922 acc_fake: 0.360 acc_grfake: 0.900 
+running validation set (B:1051)
+validation accuracies:
+                gf: 0.87
+                real: 0.96
+                fake: 0.31
+
+(epoch: 5, batches: 120, time: 0.015, data: 0.032) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.200 loss_D_fake: 1.156 loss_D_gr_fake: 0.352 loss_AUX: 0.501 loss_D: 2.210 acc_real: 0.978 acc_fake: 0.327 acc_grfake: 0.840 
+(epoch: 5, batches: 140, time: 0.014, data: 0.027) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.237 loss_D_fake: 1.110 loss_D_gr_fake: 0.258 loss_AUX: 0.501 loss_D: 2.106 acc_real: 0.978 acc_fake: 0.327 acc_grfake: 0.840 
+(epoch: 5, batches: 160, time: 0.015, data: 0.026) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.173 loss_D_fake: 1.444 loss_D_gr_fake: 0.322 loss_AUX: 0.503 loss_D: 2.441 acc_real: 0.978 acc_fake: 0.327 acc_grfake: 0.840 
+running validation set (B:1101)
+validation accuracies:
+                gf: 0.88
+                real: 0.97
+                fake: 0.29
+
+(epoch: 5, batches: 180, time: 0.032, data: 0.018) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.195 loss_D_fake: 1.259 loss_D_gr_fake: 0.257 loss_AUX: 0.501 loss_D: 2.212 acc_real: 0.970 acc_fake: 0.288 acc_grfake: 0.905 
+(epoch: 5, batches: 200, time: 0.019, data: 0.035) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.195 loss_D_fake: 1.324 loss_D_gr_fake: 0.304 loss_AUX: 0.502 loss_D: 2.325 acc_real: 0.970 acc_fake: 0.288 acc_grfake: 0.905 
+running validation set (B:1151)
+validation accuracies:
+                gf: 0.88
+                real: 0.96
+                fake: 0.37
+
+(epoch: 5, batches: 220, time: 0.016, data: 0.021) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.208 loss_D_fake: 1.017 loss_D_gr_fake: 0.202 loss_AUX: 0.500 loss_D: 1.926 acc_real: 0.948 acc_fake: 0.367 acc_grfake: 0.883 
+learning rate 0.0001000 -> 0.0000800
+End of epoch 5 / 8 	 Time Taken: 479 sec
+(epoch: 6, batches: 20, time: 0.013, data: 0.024) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.140 loss_D_fake: 1.420 loss_D_gr_fake: 0.367 loss_AUX: 0.502 loss_D: 2.429 acc_real: 0.948 acc_fake: 0.367 acc_grfake: 0.883 
+running validation set (B:1201)
+validation accuracies:
+                gf: 0.87
+                real: 0.95
+                fake: 0.39
+
+(epoch: 6, batches: 40, time: 0.023, data: 0.021) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.157 loss_D_fake: 1.239 loss_D_gr_fake: 0.206 loss_AUX: 0.500 loss_D: 2.102 acc_real: 0.953 acc_fake: 0.356 acc_grfake: 0.857 
+(epoch: 6, batches: 60, time: 0.013, data: 0.029) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.144 loss_D_fake: 1.542 loss_D_gr_fake: 0.403 loss_AUX: 0.501 loss_D: 2.590 acc_real: 0.953 acc_fake: 0.356 acc_grfake: 0.857 
+(epoch: 6, batches: 80, time: 0.031, data: 0.020) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.144 loss_D_fake: 1.390 loss_D_gr_fake: 0.376 loss_AUX: 0.500 loss_D: 2.409 acc_real: 0.953 acc_fake: 0.356 acc_grfake: 0.857 
+saving the latest model (epoch 6, total_iters 80000)
+running validation set (B:1251)
+validation accuracies:
+                gf: 0.87
+                real: 0.96
+                fake: 0.35
+
+(epoch: 6, batches: 100, time: 0.032, data: 0.026) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.190 loss_D_fake: 1.254 loss_D_gr_fake: 0.334 loss_AUX: 0.500 loss_D: 2.278 acc_real: 0.967 acc_fake: 0.357 acc_grfake: 0.860 
+(epoch: 6, batches: 120, time: 0.013, data: 0.024) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.228 loss_D_fake: 1.099 loss_D_gr_fake: 0.240 loss_AUX: 0.499 loss_D: 2.066 acc_real: 0.967 acc_fake: 0.357 acc_grfake: 0.860 
+running validation set (B:1301)
+validation accuracies:
+                gf: 0.89
+                real: 0.96
+                fake: 0.39
+
+(epoch: 6, batches: 140, time: 0.018, data: 0.053) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.185 loss_D_fake: 1.229 loss_D_gr_fake: 0.304 loss_AUX: 0.501 loss_D: 2.219 acc_real: 0.955 acc_fake: 0.344 acc_grfake: 0.867 
+(epoch: 6, batches: 160, time: 0.014, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.146 loss_D_fake: 1.184 loss_D_gr_fake: 0.283 loss_AUX: 0.499 loss_D: 2.112 acc_real: 0.955 acc_fake: 0.344 acc_grfake: 0.867 
+(epoch: 6, batches: 180, time: 0.023, data: 0.025) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.183 loss_D_fake: 1.031 loss_D_gr_fake: 0.257 loss_AUX: 0.501 loss_D: 1.971 acc_real: 0.955 acc_fake: 0.344 acc_grfake: 0.867 
+running validation set (B:1351)
+validation accuracies:
+                gf: 0.90
+                real: 0.95
+                fake: 0.42
+
+(epoch: 6, batches: 200, time: 0.013, data: 0.025) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.140 loss_D_fake: 1.219 loss_D_gr_fake: 0.267 loss_AUX: 0.499 loss_D: 2.125 acc_real: 0.928 acc_fake: 0.498 acc_grfake: 0.901 
+(epoch: 6, batches: 220, time: 0.020, data: 0.025) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.201 loss_D_fake: 1.295 loss_D_gr_fake: 0.315 loss_AUX: 0.500 loss_D: 2.312 acc_real: 0.928 acc_fake: 0.498 acc_grfake: 0.901 
+running validation set (B:1401)
+validation accuracies:
+                gf: 0.88
+                real: 0.96
+                fake: 0.37
+
+learning rate 0.0000800 -> 0.0000800
+End of epoch 6 / 8 	 Time Taken: 504 sec
+(epoch: 7, batches: 20, time: 0.022, data: 0.023) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.193 loss_D_fake: 1.109 loss_D_gr_fake: 0.085 loss_AUX: 0.499 loss_D: 1.886 acc_real: 0.959 acc_fake: 0.400 acc_grfake: 0.880 
+(epoch: 7, batches: 40, time: 0.027, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.208 loss_D_fake: 1.177 loss_D_gr_fake: 0.361 loss_AUX: 0.501 loss_D: 2.248 acc_real: 0.959 acc_fake: 0.400 acc_grfake: 0.880 
+running validation set (B:1451)
+validation accuracies:
+                gf: 0.88
+                real: 0.97
+                fake: 0.40
+
+(epoch: 7, batches: 60, time: 0.026, data: 0.027) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.198 loss_D_fake: 0.979 loss_D_gr_fake: 0.158 loss_AUX: 0.499 loss_D: 1.835 acc_real: 0.974 acc_fake: 0.472 acc_grfake: 0.918 
+(epoch: 7, batches: 80, time: 0.024, data: 0.028) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.192 loss_D_fake: 1.244 loss_D_gr_fake: 0.292 loss_AUX: 0.501 loss_D: 2.229 acc_real: 0.974 acc_fake: 0.472 acc_grfake: 0.918 
+running validation set (B:1501)
+validation accuracies:
+                gf: 0.88
+                real: 0.97
+                fake: 0.36
+
+(epoch: 7, batches: 100, time: 0.013, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.194 loss_D_fake: 1.052 loss_D_gr_fake: 0.214 loss_AUX: 0.500 loss_D: 1.960 acc_real: 0.982 acc_fake: 0.325 acc_grfake: 0.898 
+(epoch: 7, batches: 120, time: 0.024, data: 0.027) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.180 loss_D_fake: 1.034 loss_D_gr_fake: 0.385 loss_AUX: 0.501 loss_D: 2.101 acc_real: 0.982 acc_fake: 0.325 acc_grfake: 0.898 
+(epoch: 7, batches: 140, time: 0.014, data: 0.038) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.186 loss_D_fake: 1.228 loss_D_gr_fake: 0.264 loss_AUX: 0.500 loss_D: 2.179 acc_real: 0.982 acc_fake: 0.325 acc_grfake: 0.898 
+running validation set (B:1551)
+validation accuracies:
+                gf: 0.89
+                real: 0.94
+                fake: 0.48
+
+(epoch: 7, batches: 160, time: 0.017, data: 0.028) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.221 loss_D_fake: 1.054 loss_D_gr_fake: 0.189 loss_AUX: 0.499 loss_D: 1.963 acc_real: 0.949 acc_fake: 0.472 acc_grfake: 0.882 
+(epoch: 7, batches: 180, time: 0.014, data: 0.030) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.098 loss_D_fake: 1.363 loss_D_gr_fake: 0.307 loss_AUX: 0.500 loss_D: 2.269 acc_real: 0.949 acc_fake: 0.472 acc_grfake: 0.882 
+running validation set (B:1601)
+validation accuracies:
+                gf: 0.87
+                real: 0.97
+                fake: 0.38
+
+(epoch: 7, batches: 200, time: 0.020, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.171 loss_D_fake: 1.163 loss_D_gr_fake: 0.260 loss_AUX: 0.500 loss_D: 2.094 acc_real: 0.977 acc_fake: 0.378 acc_grfake: 0.875 
+(epoch: 7, batches: 220, time: 0.017, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.183 loss_D_fake: 1.076 loss_D_gr_fake: 0.214 loss_AUX: 0.501 loss_D: 1.974 acc_real: 0.977 acc_fake: 0.378 acc_grfake: 0.875 
+learning rate 0.0000800 -> 0.0000800
+End of epoch 7 / 8 	 Time Taken: 441 sec
+running validation set (B:1651)
+validation accuracies:
+                gf: 0.87
+                real: 0.98
+                fake: 0.33
+
+(epoch: 8, batches: 20, time: 0.014, data: 0.023) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.254 loss_D_fake: 0.946 loss_D_gr_fake: 0.222 loss_AUX: 0.499 loss_D: 1.922 acc_real: 0.965 acc_fake: 0.298 acc_grfake: 0.847 
+(epoch: 8, batches: 40, time: 0.016, data: 0.022) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.122 loss_D_fake: 1.153 loss_D_gr_fake: 0.209 loss_AUX: 0.500 loss_D: 1.984 acc_real: 0.965 acc_fake: 0.298 acc_grfake: 0.847 
+(epoch: 8, batches: 60, time: 0.017, data: 0.032) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.192 loss_D_fake: 0.960 loss_D_gr_fake: 0.165 loss_AUX: 0.499 loss_D: 1.817 acc_real: 0.965 acc_fake: 0.298 acc_grfake: 0.847 
+running validation set (B:1701)
+validation accuracies:
+                gf: 0.90
+                real: 0.94
+                fake: 0.46
+
+(epoch: 8, batches: 80, time: 0.014, data: 0.021) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.129 loss_D_fake: 1.181 loss_D_gr_fake: 0.348 loss_AUX: 0.502 loss_D: 2.161 acc_real: 0.954 acc_fake: 0.451 acc_grfake: 0.882 
+(epoch: 8, batches: 100, time: 0.013, data: 0.028) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.148 loss_D_fake: 1.086 loss_D_gr_fake: 0.142 loss_AUX: 0.499 loss_D: 1.875 acc_real: 0.954 acc_fake: 0.451 acc_grfake: 0.882 
+running validation set (B:1751)
+validation accuracies:
+                gf: 0.88
+                real: 0.97
+                fake: 0.39
+
+(epoch: 8, batches: 120, time: 0.013, data: 0.028) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.252 loss_D_fake: 1.130 loss_D_gr_fake: 0.386 loss_AUX: 0.500 loss_D: 2.268 acc_real: 0.974 acc_fake: 0.380 acc_grfake: 0.852 
+(epoch: 8, batches: 140, time: 0.034, data: 0.020) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.158 loss_D_fake: 1.183 loss_D_gr_fake: 0.374 loss_AUX: 0.502 loss_D: 2.217 acc_real: 0.974 acc_fake: 0.380 acc_grfake: 0.852 
+(epoch: 8, batches: 160, time: 0.014, data: 0.027) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.159 loss_D_fake: 0.952 loss_D_gr_fake: 0.215 loss_AUX: 0.500 loss_D: 1.826 acc_real: 0.974 acc_fake: 0.380 acc_grfake: 0.852 
+running validation set (B:1801)
+validation accuracies:
+                gf: 0.87
+                real: 0.97
+                fake: 0.39
+
+(epoch: 8, batches: 180, time: 0.013, data: 0.029) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.163 loss_D_fake: 1.114 loss_D_gr_fake: 0.137 loss_AUX: 0.500 loss_D: 1.914 acc_real: 0.966 acc_fake: 0.346 acc_grfake: 0.817 
+(epoch: 8, batches: 200, time: 0.013, data: 0.028) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.189 loss_D_fake: 1.062 loss_D_gr_fake: 0.246 loss_AUX: 0.500 loss_D: 1.997 acc_real: 0.966 acc_fake: 0.346 acc_grfake: 0.817 
+running validation set (B:1851)
+validation accuracies:
+                gf: 0.88
+                real: 0.98
+                fake: 0.39
+
+(epoch: 8, batches: 220, time: 0.023, data: 0.021) loss_G_comp: 0.696 loss_G_anti_sc: 0.740 loss_G: 1.436 loss_D_real: 0.167 loss_D_fake: 0.977 loss_D_gr_fake: 0.319 loss_AUX: 0.500 loss_D: 1.963 acc_real: 0.990 acc_fake: 0.399 acc_grfake: 0.850 
+learning rate 0.0000800 -> 0.0000800
+End of epoch 8 / 8 	 Time Taken: 493 sec
+Finished training, model is saved
