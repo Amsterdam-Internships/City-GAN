@@ -68,7 +68,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--D_threshold', type=float, default=0.6, help=
                 "when the accuracy of the discriminator is lower than this \
                 threshold, only train D")
-            parser.add_argument('--val_freq', type=int, default=50, help=
+            parser.add_argument('--val_freq', type=int, default=100, help=
                 "every val_freq batches run the model on validation data, \
                 and obtain accuracies for training schedule.")
             parser.add_argument('--val_batch_size', type=int, default=128,
@@ -298,6 +298,18 @@ class CopyPasteGANModel(BaseModel):
         self.forward()
         print(f"normal forward in {time.time()-start} sec")
 
+
+        # # train D and G in alternating fashion
+        # if self.train_G:
+        #     self.optimizer_G.zero_grad()
+        #     self.backward_G()
+        #     self.optimizer_G.step()
+        # else:
+        #     self.optimizer_D.zero_grad()
+        #     self.backward_D()
+        #     self.optimizer_D.step()
+
+
         # perform gradient accumulation to simulate larger batch size
         # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
         update_freq = self.opt.accumulation_steps
@@ -356,8 +368,7 @@ class CopyPasteGANModel(BaseModel):
         # unpack data from dataset and apply preprocessing
         self.set_input(data)
         # calculate loss functions, get gradients, update network weights
-        with autocast():
-            self.optimize_parameters()
+        self.optimize_parameters()
 
 
     def run_validation(self, val_data):
