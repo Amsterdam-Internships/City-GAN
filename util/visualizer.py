@@ -106,7 +106,7 @@ class Visualizer():
         # Popen(cmd, shell=True)#, stdout=PIPE, stderr=PIPE)
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
-    def display_current_results(self, visuals, epoch, save_result, epoch_batch=0):
+    def display_current_results(self, visuals, epoch, save_result, overall_batch=0):
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -169,13 +169,13 @@ class Visualizer():
             # save images to the disk
             for label, image in visuals.items():
                 image_numpy = util.tensor2im(image)
-                img_path = os.path.join(self.img_dir, 'epoch%.3d_%d_%s.png' % (epoch, epoch_batch, label))
+                img_path = os.path.join(self.img_dir, 'epoch%.3d_%d_%s.png' % (epoch, overall_batch, label))
                 util.save_image(image_numpy, img_path)
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
             for n in range(epoch, 0, -1):
-                for i in range(self.dataset_size, 0, -self.opt.update_html_freq):
+                for i in range(self.overall_batch, 0, -self.opt.update_html_freq):
                     webpage.add_header('epoch [%d], iter [%d]' % (n, i))
                     ims, txts, links = [], [], []
 
