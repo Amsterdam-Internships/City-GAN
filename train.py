@@ -99,7 +99,7 @@ if __name__ == '__main__':
             if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
-                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, epoch_batch=epoch_batch)
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch)
 
 
             # print training losses and save logging information to the disk
