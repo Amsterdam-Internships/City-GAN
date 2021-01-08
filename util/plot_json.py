@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-01-07 13:33
+# @Last Modified time: 2021-01-08 09:01
 
 
 """
@@ -59,10 +59,12 @@ def plot_json(opt):
         losses = [data[epoch][iter_][loss_name] for epoch in data.keys() for iter_ in data['1']]
         if "acc" in loss_name:
             n=1
+            plot_iters= all_iters
         else:
             n = opt.n
+            plot_iters = all_iters[n//2:-(n//2)]
         losses = running_mean(losses, n)
-        plot_iters = all_iters[opt.n//2:-(opt.n//2)]
+
 
         if "acc" in loss_name:
             label = loss_name[4:]
