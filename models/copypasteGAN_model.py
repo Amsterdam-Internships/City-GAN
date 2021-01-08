@@ -210,9 +210,11 @@ class CopyPasteGANModel(BaseModel):
 
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
-        self.anti_sc_src = torch.flip(self.src, [0, 1])
-        self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt,
-            self.g_mask)
+        if not valid:
+            self.anti_sc_src = torch.flip(self.src, [0, 1])
+            self.anti_sc, _ = networks.composite_image(self.anti_sc_src,
+                self.tgt, self.g_mask)
+            self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # get predictions from discriminators for all images (use tgt/src)
         self.pred_real, self.D_mask_real = self.netD(self.tgt)
@@ -222,7 +224,7 @@ class CopyPasteGANModel(BaseModel):
             {self.opt.batch_size})"
 
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-        self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+
         if self.train_on_gf:
             self.pred_gr_fake, self.D_mask_grfake = self.netD(
                 self.grounded_fake)
@@ -386,14 +388,14 @@ class CopyPasteGANModel(BaseModel):
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
 
-                # set accuracies to mean for plotting purposes
+
 
         print(f"all batches in {time.time()-start_time} sec")
 
+        # set accuracies to mean for plotting purposes
         self.acc_grfake = np.mean(acc_gf)
         self.acc_fake = np.mean(acc_fake)
         self.acc_real = np.mean(acc_real)
-
 
         # determine training curriculum for next session
         # performance of discriminator on grounded fakes
