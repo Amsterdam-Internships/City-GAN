@@ -85,9 +85,12 @@ if __name__ == '__main__':
             # run everything on validation set every val_freq batches
             # also run the untrained model (batch = 0), for baseline
             if (overall_batch -1) % opt.val_freq == 0:
-                if opt.verbose:
-                    print(f"running validation set (B:{overall_batch})")
+                val_start_time = time.time()
                 model.run_validation(val_dataset)
+                if opt.verbose:
+                    duration = time.time() - val_start_time
+                    print(f"ran validation set (B:{overall_batch}) in \
+                        {duration}")
 
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
