@@ -296,7 +296,7 @@ class CopyPasteGANModel(BaseModel):
         # perform forward step
         start=time.time()
         self.forward()
-        print(f"normal forward in {time.time()-start} sec")
+        # print(f"normal forward in {time.time()-start} sec")
 
 
         # # train D and G in alternating fashion
