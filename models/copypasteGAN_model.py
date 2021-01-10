@@ -314,13 +314,13 @@ class CopyPasteGANModel(BaseModel):
         # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
         update_freq = self.opt.accumulation_steps
 
-        before_back_time =time.time()
+        # before_back_time =time.time()
         if self.train_G:
             self.backward_G()
             self.count_G += 1
             if self.count_G % update_freq == 0:
                 # self.optimizer_G.step()
-                self.scaler.step(optimizer_G)
+                self.scaler.step(self.optimizer_G)
                 self.scaler.update()
                 self.optimizer_G.zero_grad()
         else:
@@ -328,11 +328,11 @@ class CopyPasteGANModel(BaseModel):
             self.count_D += 1
             if self.count_D % update_freq == 0:
                 # self.optimizer_D.step()
-                self.scaler.step(optimizer_D)
+                self.scaler.step(self.optimizer_D)
                 self.scaler.update()
                 self.optimizer_D.zero_grad()
 
-        print(f"backward in {time.time()-before_back_time} sec")
+        # print(f"backward in {time.time()-before_back_time} sec")
 
 
     def run_batch(self, data, total_iters):
@@ -374,7 +374,7 @@ class CopyPasteGANModel(BaseModel):
     def run_validation(self, val_data):
 
         # reset all conditional parameters
-        start_time = time.time()
+        # start_time = time.time()
         self.train_on_gf = True
         self.D_above_thresh = False
         self.D_gf_perfect = False
@@ -387,12 +387,12 @@ class CopyPasteGANModel(BaseModel):
         # compute accuracy on the validation data
         with torch.no_grad():
             for i, data in enumerate(val_data):
-                batch_start = time.time()
+                # batch_start = time.time()
                 self.set_input(data)
-                print(f"setting input in {time.time()-batch_start} sec")
+                # print(f"setting input in {time.time()-batch_start} sec")
                 with autocast():
                     self.forward(valid=True)
-                print(f"forward in {time.time()-batch_start} sec")
+                # print(f"forward in {time.time()-batch_start} sec")
 
                 # save accuracies
                 acc_gf.append(self.acc_grfake)
@@ -401,7 +401,7 @@ class CopyPasteGANModel(BaseModel):
 
 
 
-        print(f"all batches in {time.time()-start_time} sec")
+        # print(f"all batches in {time.time()-start_time} sec")
 
         # set accuracies to mean for plotting purposes
         self.acc_grfake = np.mean(acc_gf)
@@ -424,7 +424,7 @@ class CopyPasteGANModel(BaseModel):
                 real: {self.acc_real:.2f}\n\
                 fake: {self.acc_fake:.2f}\n")
 
-        print(f"completely done in {time.time()-start_time} sec")
+        # print(f"completely done in {time.time()-start_time} sec")
 
 
 
