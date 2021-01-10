@@ -169,23 +169,22 @@ class Visualizer():
             # save images to the disk
             for label, image in visuals.items():
                 image_numpy = util.tensor2im(image)
-                img_path = os.path.join(self.img_dir, 'epoch%.3d_%d_%s.png' % (epoch, overall_batch, label))
+                img_path = os.path.join(self.img_dir, 'batch_%d_%s.png' % (overall_batch, label))
                 util.save_image(image_numpy, img_path)
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
-            for n in range(epoch, 0, -1):
-                for i in range(overall_batch, 0, -self.opt.update_html_freq):
-                    webpage.add_header('epoch [%d], iter [%d]' % (n, i))
-                    ims, txts, links = [], [], []
+            for i in range(overall_batch, 0, -self.opt.update_html_freq):
+                webpage.add_header('overall batch: %d' % (i))
+                ims, txts, links = [], [], []
 
-                    for label, image_numpy in visuals.items():
-                        image_numpy = util.tensor2im(image)
-                        img_path = 'epoch%.3d_%d_%s.png' % (n, i, label)
-                        ims.append(img_path)
-                        txts.append(label)
-                        links.append(img_path)
-                    webpage.add_images(ims, txts, links, width=self.win_size)
+                for label, image_numpy in visuals.items():
+                    image_numpy = util.tensor2im(image)
+                    img_path = 'batch_%d_%s.png' % (i, label)
+                    ims.append(img_path)
+                    txts.append(label)
+                    links.append(img_path)
+                webpage.add_images(ims, txts, links, width=self.win_size)
             webpage.save()
 
     def plot_current_losses(self, epoch, counter_ratio, losses):
