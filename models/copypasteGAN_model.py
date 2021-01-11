@@ -398,10 +398,10 @@ class CopyPasteGANModel(BaseModel):
 
         # determine training curriculum for next session
         # performance of discriminator on grounded fakes
-        self.D_gf_perfect = self.acc_grfake > 0.99:
+        self.D_gf_perfect = self.acc_grfake > 0.99
 
         # check performance on fakes to determine whether to train G
-        self.D_above_thresh = self.acc_fake > self.opt.D_threshold:
+        self.D_above_thresh = self.acc_fake > self.opt.D_threshold
 
 
         # print validation scores
