@@ -210,7 +210,9 @@ class CopyPasteGANModel(BaseModel):
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
         if not valid:
-            self.anti_sc_src = torch.flip(self.src, [0, 1])
+            # !!here flip(self.src, [0, 1]) was used, which seems wrong now!!
+            # that shuffled the channels, leading to different color combinations in the anti shortcut source
+            self.anti_sc_src = torch.flip(self.src, [0])
             self.anti_sc, _ = networks.composite_image(self.anti_sc_src,
                 self.tgt, self.g_mask)
             self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
@@ -293,9 +295,7 @@ class CopyPasteGANModel(BaseModel):
         """
 
         # perform forward step
-        start=time.time()
         self.forward()
-        # print(f"normal forward in {time.time()-start} sec")
 
 
         # # train D and G in alternating fashion
@@ -313,7 +313,6 @@ class CopyPasteGANModel(BaseModel):
         # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
         update_freq = self.opt.accumulation_steps
 
-        # before_back_time =time.time()
         if self.train_G:
             self.backward_G()
             self.count_G += 1
@@ -330,8 +329,6 @@ class CopyPasteGANModel(BaseModel):
                 self.scaler.step(self.optimizer_D)
                 self.scaler.update()
                 self.optimizer_D.zero_grad()
-
-        # print(f"backward in {time.time()-before_back_time} sec")
 
 
     def run_batch(self, data, total_iters):
@@ -373,7 +370,6 @@ class CopyPasteGANModel(BaseModel):
     def run_validation(self, val_data):
 
         # reset all conditional parameters
-        # start_time = time.time()
         self.train_on_gf = True
         self.D_above_thresh = False
         self.D_gf_perfect = False
@@ -386,21 +382,14 @@ class CopyPasteGANModel(BaseModel):
         # compute accuracy on the validation data
         with torch.no_grad():
             for i, data in enumerate(val_data):
-                # batch_start = time.time()
                 self.set_input(data)
-                # print(f"setting input in {time.time()-batch_start} sec")
                 with autocast():
                     self.forward(valid=True)
-                # print(f"forward in {time.time()-batch_start} sec")
 
                 # save accuracies
                 acc_gf.append(self.acc_grfake)
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
-
-
-
-        # print(f"all batches in {time.time()-start_time} sec")
 
         # set accuracies to mean for plotting purposes
         self.acc_grfake = np.mean(acc_gf)
@@ -409,11 +398,10 @@ class CopyPasteGANModel(BaseModel):
 
         # determine training curriculum for next session
         # performance of discriminator on grounded fakes
-        if self.acc_grfake > 0.99:
-            self.D_gf_perfect = True
+        self.D_gf_perfect = self.acc_grfake > 0.99:
+
         # check performance on fakes to determine whether to train G
-        if self.acc_fake > self.opt.D_threshold:
-            self.D_above_thresh = True
+        self.D_above_thresh = self.acc_fake > self.opt.D_threshold:
 
 
         # print validation scores
@@ -422,8 +410,6 @@ class CopyPasteGANModel(BaseModel):
                 gf: {self.acc_grfake:.2f}\n\
                 real: {self.acc_real:.2f}\n\
                 fake: {self.acc_fake:.2f}\n")
-
-        # print(f"completely done in {time.time()-start_time} sec")
 
 
 
