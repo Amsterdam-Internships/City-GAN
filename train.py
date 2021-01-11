@@ -90,13 +90,11 @@ if __name__ == '__main__':
                 if opt.verbose:
                     duration = time.time() - val_start_time
                     print(f"ran validation set (B:{overall_batch}) in \
-                        {duration}")
+                        {duration:.1f} s.")
 
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
             model.run_batch(data, total_iters)
-
-
 
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:

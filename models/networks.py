@@ -495,7 +495,7 @@ class CopyUNet(nn.Module):
 
         if discriminator:
             if patchGAN:
-                self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=1, kernel_size=3, padding=1), self.sigmoid)
+                self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
             else:
                 self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
                     nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
