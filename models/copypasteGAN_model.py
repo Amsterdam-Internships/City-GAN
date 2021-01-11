@@ -115,11 +115,10 @@ class CopyPasteGANModel(BaseModel):
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
 
-        # for visualization purposes, set G losses to zero in case of headstart
-        if self.D_headstart > 0:
-            self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
-            if opt.confidence_weight > 0:
-                self.loss_G_conf = 0
+        # innit losses
+        self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
+        if opt.confidence_weight > 0:
+            self.loss_G_conf = 0
 
         self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
