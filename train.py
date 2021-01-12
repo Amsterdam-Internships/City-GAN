@@ -28,8 +28,16 @@ import torch
 if __name__ == '__main__':
     # get training options
     opt = TrainOptions().parse()
+    opt_valid = TrainOptions().parse()
     # create a dataset given opt.dataset_mode and other options
     dataset = create_dataset(opt)
+
+    # Create a validation dataset
+    opt_valid.phase = "val"
+    opt_valid.num_threads = 0
+    opt_valid.batch_size = opt.val_batch_size
+    val_dataset = create_dataset(opt_valid)
+
     # get the number of images in the dataset.
     dataset_size = len(dataset)
     opt.dataset_size = dataset_size
@@ -48,6 +56,7 @@ if __name__ == '__main__':
     visualizer = Visualizer(opt)
     # the total number of training iterations
     total_iters = 0
+    overall_batch = 0
 
     # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):
@@ -57,6 +66,7 @@ if __name__ == '__main__':
         iter_data_time = time.time()
         # the number of training iterations in current epoch
         epoch_iter = 0
+        epoch_batch = 0
         # reset the visualizer: make results are saved every epoch
         visualizer.reset()
 
@@ -69,39 +79,42 @@ if __name__ == '__main__':
 
             total_iters += opt.batch_size
             epoch_iter += opt.batch_size
+            epoch_batch += 1
+            overall_batch += 1
+
+            # run everything on validation set every val_freq batches
+            # also run the untrained model (batch = 0), for baseline
+            if (overall_batch -1) % opt.val_freq == 0:
+                val_start_time = time.time()
+                model.run_validation(val_dataset)
+                if opt.verbose:
+                    duration = time.time() - val_start_time
+                    print(f"ran validation set (B:{overall_batch}) in \
+                        {duration:.1f} s.")
 
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
             model.run_batch(data, total_iters)
 
             # display images on visdom and save images to a HTML file
-            if total_iters % opt.display_freq == 0:
+            if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
-                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, epoch_iter=epoch_iter)
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch)
+
 
             # print training losses and save logging information to the disk
-            if total_iters % opt.print_freq == 0:
+            if epoch_batch % opt.print_freq == 0:
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
-                visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
-
-                # print discriminator scores on various batches
-                print(f"D preds: real {torch.mean(model.pred_real):.2f}, fake {torch.mean(model.pred_fake):.2f}, grfake: {torch.mean(model.pred_gr_fake):.2f}")
-                B = model.opt.batch_size
-                # print discriminator accuracies
-                print(f"accuracy: real: {model.acc_real}, fake: {model.acc_fake}, grfake: {model.acc_grfake}\n")
+                visualizer.print_current_losses(epoch, epoch_batch, losses, t_comp, t_data)
 
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
-            # TODO: check if saving the model can be done more effiently
-            # cache our latest model every <save_latest_freq> iterations
-            if total_iters % opt.save_latest_freq == 0:
-                print('saving the latest model (epoch %d, total_iters %d)' % (epoch, total_iters))
-                save_suffix = 'iter_%d' % total_iters if opt.save_by_iter else 'latest'
-                model.save_networks(save_suffix)
+
 
             iter_data_time = time.time()
+
 
         # cache our model every <save_epoch_freq> epochs
         if epoch % opt.save_epoch_freq == 0:

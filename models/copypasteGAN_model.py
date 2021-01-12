@@ -9,6 +9,9 @@ import torch
 import torch.nn.functional as F
 from models.base_model import BaseModel
 import models.networks as networks
+import numpy as np
+from torch.cuda.amp import GradScaler, autocast
+import time
 
 class CopyPasteGANModel(BaseModel):
     @staticmethod
@@ -34,10 +37,10 @@ class CopyPasteGANModel(BaseModel):
 
         # set default options for this model
         parser.set_defaults(dataset_mode='double', name="CopyGAN",
-            load_size=70, crop_size= 64, batch_size=50, lr=1e-4, no_flip=True,
+            load_size=70, crop_size= 64, batch_size=64, lr=1e-4, no_flip=True,
             lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3,
-            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=50,
-            display_freq=1, print_freq=100)
+            netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=10,
+            display_freq=100, print_freq=20)
 
         # define new arguments for this model
         if is_train:
@@ -62,9 +65,25 @@ class CopyPasteGANModel(BaseModel):
                 'Provide an integer for setting the random seed')
             parser.add_argument('--border_zeroing', action='store_false', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
-            parser.add_argument('--D_threshold', default=0.6, help=
+            parser.add_argument('--D_threshold', type=float, default=0.6, help=
                 "when the accuracy of the discriminator is lower than this \
                 threshold, only train D")
+            parser.add_argument('--val_freq', type=int, default=100, help=
+                "every val_freq batches run the model on validation data, \
+                and obtain accuracies for training schedule.")
+            parser.add_argument('--val_batch_size', type=int, default=128,
+                help= "every val_freq batches run the model on validation \
+                data, and obtain accuracies for training schedule.")
+            parser.add_argument('--keep_last_batch', action='store_true',
+                help= "drop last incomplete batch")
+            parser.add_argument('--patch_D', action='store_true',
+                help= "If true, discriminator scores individual patches on \
+                realness, else, two linear layers yield a scalar score")
+            parser.add_argument('--accumulation_steps', type=int, default=4,
+                help= "accumulate gradients for this amount of batches, \
+                before backpropagating, to simulate a larger batch size")
+
+
 
         # nr_object_classes is used to output a multi-layered mask, each
         # channel representing a different object class
@@ -96,15 +115,19 @@ class CopyPasteGANModel(BaseModel):
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
 
-        # for visualization purposes, set G losses to zero in case of headstart
-        if self.D_headstart > 0:
-            self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
-            if opt.confidence_weight > 0:
-                self.loss_G_conf = 0
+        # innit losses
+        self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
+        if opt.confidence_weight > 0:
+            self.loss_G_conf = 0
 
         self.train_on_gf = True
+        self.D_gf_perfect = self.D_above_thresh = False
         self.acc_grfake = self.acc_fake = self.acc_real = 0.0
 
+        # init count for gradient accumulation, simulating lager batch size
+        self.count_D = self.count_G = 0
+
+        self.scaler = GradScaler()
 
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
@@ -129,7 +152,7 @@ class CopyPasteGANModel(BaseModel):
             # only define the discriminator if in training phase
             self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD,
                 norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size,
-                sigma_blur=opt.sigma_blur)
+                sigma_blur=opt.sigma_blur, patchGAN=opt.patch_D)
             self.model_names.append("D")
 
             # define loss functions
@@ -169,7 +192,7 @@ class CopyPasteGANModel(BaseModel):
                 self.src, self.tgt, device=self.device)
 
 
-    def forward(self):
+    def forward(self, valid=False):
         """Run forward pass. This will be called by both functions <
         optimize_parameters> and <test>."""
 
@@ -186,29 +209,34 @@ class CopyPasteGANModel(BaseModel):
 
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
-        self.anti_sc_src = torch.flip(self.src, [0, 1])
-        self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt,
-            self.g_mask)
+        if not valid:
+            # !!here flip(self.src, [0, 1]) was used, which seems wrong now!!
+            # that shuffled the channels, leading to different color combinations in the anti shortcut source
+            self.anti_sc_src = torch.flip(self.src, [0])
+            self.anti_sc, _ = networks.composite_image(self.anti_sc_src,
+                self.tgt, self.g_mask)
+            self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # get predictions from discriminators for all images (use tgt/src)
         self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
-        assert self.pred_real.shape[0] == self.opt.batch_size, f"prediction \
-            shape incorrect ({self.pred_real.shape}, B: {self.opt.batch_size})"
+        assert self.pred_real.shape[0] == self.opt.batch_size or valid,\
+            f"prediction shape incorrect ({self.pred_real.shape}, B: \
+            {self.opt.batch_size})"
 
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-        self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+
         if self.train_on_gf:
             self.pred_gr_fake, self.D_mask_grfake = self.netD(
                 self.grounded_fake)
 
         # also compute the accuracy of discriminator
-        B = self.opt.batch_size
-        self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
-        self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
-        if self.train_on_gf:
+        if valid:
+            B = self.opt.val_batch_size * self.pred_real.shape[-1] ** 2
+            self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
+            self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
             self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
-                < 0.5]) / B
+                    < 0.5]) / B
 
 
     def backward_G(self):
@@ -222,7 +250,6 @@ class CopyPasteGANModel(BaseModel):
         self.loss_G_conf = self.opt.confidence_weight * self.criterionConf(
             self.g_mask)
 
-
         # add up components and compute gradients
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + \
             self.loss_G_conf
@@ -231,7 +258,7 @@ class CopyPasteGANModel(BaseModel):
             self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
             self.loss_G = self.loss_G + self.loss_G_distinct
 
-        self.loss_G.backward()
+        self.scaler.scale(self.loss_G / self.opt.accumulation_steps).backward()
 
 
     def backward_D(self):
@@ -258,32 +285,50 @@ class CopyPasteGANModel(BaseModel):
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # Calculate gradients of discriminator
-        self.loss_D.backward()
+        self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
 
 
     def optimize_parameters(self):
         """Update network weights; it is called in every training iteration.
         only perform  optimizer steps after all backward operations, torch1.5
         gives an error, see https://github.com/pytorch/pytorch/issues/39141
-
-        Arguments:
-            - total_iters: training progress in steps, used to give D a
-            headstart
         """
 
         # perform forward step
         self.forward()
 
-        # train D and G in alternating fashion
-        if self.train_G:
-            self.optimizer_G.zero_grad()
-            self.backward_G()
-            self.optimizer_G.step()
-        else:
-            self.optimizer_D.zero_grad()
-            self.backward_D()
-            self.optimizer_D.step()
 
+        # # train D and G in alternating fashion
+        # if self.train_G:
+        #     self.optimizer_G.zero_grad()
+        #     self.backward_G()
+        #     self.optimizer_G.step()
+        # else:
+        #     self.optimizer_D.zero_grad()
+        #     self.backward_D()
+        #     self.optimizer_D.step()
+
+
+        # perform gradient accumulation to simulate larger batch size
+        # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
+        update_freq = self.opt.accumulation_steps
+
+        if self.train_G:
+            self.backward_G()
+            self.count_G += 1
+            if self.count_G % update_freq == 0:
+                # self.optimizer_G.step()
+                self.scaler.step(self.optimizer_G)
+                self.scaler.update()
+                self.optimizer_G.zero_grad()
+        else:
+            self.backward_D()
+            self.count_D += 1
+            if self.count_D % update_freq == 0:
+                # self.optimizer_D.step()
+                self.scaler.step(self.optimizer_D)
+                self.scaler.update()
+                self.optimizer_D.zero_grad()
 
 
     def run_batch(self, data, total_iters):
@@ -291,18 +336,19 @@ class CopyPasteGANModel(BaseModel):
         This method incorporates the set_input and optimize_parameters
         functions, and does some checks beforehand
 
+        Arguments:
+            - total_iters: training progress in steps, used to give D a
+            headstart
+
         """
+        if total_iters == self.D_headstart:
+            print("Headstart D over")
+
         self.total_iters = total_iters
 
         # sat some boolean variables needed in threshold training curriculum
         self.headstart_over = total_iters >= self.D_headstart
         self.even_batch = (total_iters/self.opt.batch_size) % 2 == 0
-        # is D performing well on the fake images generated by G?
-        self.D_above_thresh = self.acc_fake > self.opt.D_threshold
-        # Does D perform perfectly on the grounded fakes?
-        self.D_gf_perfect = self.acc_grfake > 0.99
-        # every 20 batches, run everything to update accuracies
-        train_all = total_iters % (20 * self.opt.batch_size) == 0
 
         # by default train D (in headstart or performing below threshold:
         self.train_G = False
@@ -312,21 +358,61 @@ class CopyPasteGANModel(BaseModel):
             self.train_G = True
 
         # determine if grounded fakes are still used in training
-        self.train_on_gf = True
         if self.D_gf_perfect and self.headstart_over:
             self.train_on_gf = False
-
-        if total_iters == self.D_headstart:
-            print("Headstart D over, starting G training")
-
-        if train_all:
-            self.train_G = self.train_on_gf = True
-
 
         # unpack data from dataset and apply preprocessing
         self.set_input(data)
         # calculate loss functions, get gradients, update network weights
         self.optimize_parameters()
+
+
+    def run_validation(self, val_data):
+
+        # reset all conditional parameters
+        self.train_on_gf = True
+        self.D_above_thresh = False
+        self.D_gf_perfect = False
+
+        # init average lists
+        acc_gf = []
+        acc_real = []
+        acc_fake = []
+
+        # compute accuracy on the validation data
+        with torch.no_grad():
+            for i, data in enumerate(val_data):
+                self.set_input(data)
+                with autocast():
+                    self.forward(valid=True)
+
+                # save accuracies
+                acc_gf.append(self.acc_grfake)
+                acc_fake.append(self.acc_fake)
+                acc_real.append(self.acc_real)
+
+        # set accuracies to mean for plotting purposes
+        self.acc_grfake = np.mean(acc_gf)
+        self.acc_fake = np.mean(acc_fake)
+        self.acc_real = np.mean(acc_real)
+
+        # determine training curriculum for next session
+        # performance of discriminator on grounded fakes
+        self.D_gf_perfect = self.acc_grfake > 0.99
+
+        # check performance on fakes to determine whether to train G
+        self.D_above_thresh = self.acc_fake > self.opt.D_threshold
+
+
+        # print validation scores
+        if self.opt.verbose:
+            print(f"validation accuracies:\n\
+                gf: {self.acc_grfake:.2f}\n\
+                real: {self.acc_real:.2f}\n\
+                fake: {self.acc_fake:.2f}\n")
+
+
+
 
 
 

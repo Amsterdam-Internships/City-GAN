@@ -167,7 +167,8 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
-    'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0):
+    'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
+    patchGAN=False):
     """Create a discriminator
 
     Parameters:
@@ -218,7 +219,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
         net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True,
-            img_dim=img_dim, sigma_blur=sigma_blur)
+            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -428,7 +429,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64, patchGAN=False):
         """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -490,11 +491,15 @@ class CopyUNet(nn.Module):
 
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
-        self.avg_pool = nn.AvgPool2d(8, stride=2)
-        self.fc = nn.Linear(512, 1)
-        self.relu = nn.ReLU()
 
 
+        if discriminator:
+            if patchGAN:
+                self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+            else:
+                self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
+                    nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
+                    nn.Linear(256, 1), self.sigmoid)
 
     def forward(self, input):
         """Standard forward, return decoder output and encoder output if in
@@ -546,9 +551,7 @@ class CopyUNet(nn.Module):
 
         # return the encoder output (realness score) if in discriminator mode
         if self.discriminator:
-            enc_out = self.avg_pool(enc4).squeeze()
-            linear_out = self.fc(enc_out)
-            realness_score = self.sigmoid(linear_out)
+            realness_score = self.avg(enc4)
             out = [realness_score, copy_mask]
         else:
             out = copy_mask
