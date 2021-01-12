@@ -292,7 +292,7 @@ def composite_image(src, tgt, mask=None, device='cpu'):
 
         # create polygon mask, values are between 0.5 and 1
         mask = get_polygon_mask(w, h, b).to(device)
-        noise = torch.rand(mask.shape) / 2 + 0.5
+        noise = torch.rand(mask.shape, device=device) / 2 + 0.5
         mask *= noise
 
         # apply gaussian blur to the gfake
