@@ -232,11 +232,15 @@ class CopyPasteGANModel(BaseModel):
 
         # also compute the accuracy of discriminator
         if valid:
-            B = self.opt.val_batch_size * self.pred_real.shape[-1] ** 2
-            self.acc_real = len(self.pred_real[self.pred_real > 0.5]) / B
-            self.acc_fake = len(self.pred_fake[self.pred_fake < 0.5]) / B
-            self.acc_grfake = len(self.pred_gr_fake[self.pred_gr_fake
-                    < 0.5]) / B
+
+            fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3))
+            fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3))
+            fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3))
+
+            B = self.opt.val_batch_size
+            self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
+            self.acc_fake = len(fakest_patch_fake[fakest_patch_fake < 0.5]) / B
+            self.acc_grfake = len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
 
 
     def backward_G(self):

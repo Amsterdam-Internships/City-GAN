@@ -539,6 +539,7 @@ class CopyUNet(nn.Module):
                 dec1 = layer(dec1)
 
         # decoder output: the copy-mask
+        copy_mask = self.sigmoid(dec1)
 
         # clamp the borders of the copy mask to 0 (anti shortcut measure)
         if self.border_zeroing and not self.discriminator:
