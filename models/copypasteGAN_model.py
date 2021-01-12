@@ -120,7 +120,8 @@ class CopyPasteGANModel(BaseModel):
             self.loss_names.append("loss_G_distinct")
 
         # innit losses
-        self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
+        self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = \
+            self.loss_G = self.loss_D_gr_fake = 0
 
         self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
