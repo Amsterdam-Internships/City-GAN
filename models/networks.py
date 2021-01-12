@@ -471,7 +471,7 @@ class CopyUNet(nn.Module):
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
                 self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1))
+                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
 
             self.downscale = nn.Sequential(*self.downscale)
             self.upscale = nn.Sequential(*self.upscale)
@@ -487,7 +487,8 @@ class CopyUNet(nn.Module):
         self.dec4 = DecoderBlock(512, 256)
         self.dec3 = DecoderBlock(512, 128)
         self.dec2 = DecoderBlock(256, 64)
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=True)
+        # this being the last layer depends on possible upsampling operations
+        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)))
 
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
@@ -538,7 +539,6 @@ class CopyUNet(nn.Module):
                 dec1 = layer(dec1)
 
         # decoder output: the copy-mask
-        copy_mask = self.sigmoid(dec1)
 
         # clamp the borders of the copy mask to 0 (anti shortcut measure)
         if self.border_zeroing and not self.discriminator:
