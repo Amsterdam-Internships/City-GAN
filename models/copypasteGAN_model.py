@@ -111,14 +111,16 @@ class CopyPasteGANModel(BaseModel):
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
             "loss_D", "acc_real", "acc_fake", "acc_grfake"]
-        # add confidence loss if specified
+
+        # add other losses if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
+            self.loss_G_conf = 0
+        if self.multi_layered:
+            self.loss_names.append("loss_G_distinct")
 
         # innit losses
         self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = self.loss_G = 0
-        if opt.confidence_weight > 0:
-            self.loss_G_conf = 0
 
         self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
@@ -127,17 +129,15 @@ class CopyPasteGANModel(BaseModel):
         # init count for gradient accumulation, simulating lager batch size
         self.count_D = self.count_G = 0
 
+        # init gradient scaler from cuda AMP
         self.scaler = GradScaler()
 
-        if self.multi_layered:
-            self.loss_names.append("loss_G_distinct")
-
-        # specify the images you want to save and display (via
-        # base_model.get_current_visuals)
+        # specify the images that are saved and displayed
+        # (via base_model.get_current_visuals)
         self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
-            'composite', "D_mask_fake", 'grounded_fake', "mask_gf",
-            "D_mask_grfake", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
-             "D_mask_real"]
+            'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
+            "mask_gf", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
+            "D_mask_real"]
 
         # define generator, output_nc is set to nr of object classes
         self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes,
@@ -145,7 +145,7 @@ class CopyPasteGANModel(BaseModel):
             border_zeroing=opt.border_zeroing, gpu_ids=self.gpu_ids,
             img_dim=opt.crop_size)
 
-        # specify which models to save to disk
+        # G must be saved to disk
         self.model_names = ['G']
 
         if self.isTrain:
@@ -232,7 +232,6 @@ class CopyPasteGANModel(BaseModel):
 
         # also compute the accuracy of discriminator
         if valid:
-
             fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3))
             fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3))
             fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3))
