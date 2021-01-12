@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=24
+run=29
 echo "starting training run $run"
 
 #Create output directory on scratch
@@ -37,12 +37,12 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --sigma_blur 1 \
     --load_size 70\
     --crop_size 64\
-    --D_headstart 1000\
-    --confidence_weight 0.0\
-    --patch_D\
+    --D_headstart 0\
+    --confidence_weight 1.0\
     --val_batch_size 128\
     --accumulation_steps 1\
     --display_id 0\
+    --patch_D\
 
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/run"${run}"
