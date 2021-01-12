@@ -502,7 +502,15 @@ class CopyUNet(nn.Module):
 
         if discriminator:
             if patchGAN:
-                self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+                # variant with one conv-layer
+                # self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+
+                # variant with two conv layers (output is same shape)
+                self.avg = nn.Sequential(
+                    EncoderBlock(512, 128, 3, 2, 1),
+                    nn.Conv2d(128, 1, 3, 1, 1),
+                    self.sigmoid)
+
             else:
                 self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
                     nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
@@ -575,7 +583,7 @@ class EncoderBlock(nn.Module):
     normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, stride=2, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=2, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
         """Construct a Unet encoder block
         Parameters:
             input_nc (int)  -- (int) the number of channels in input images
@@ -613,7 +621,7 @@ class DecoderBlock(nn.Module):
     a convolutional layer, normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, stride=1, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=1, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
         """Construct a Unet encoder block
         Parameters:
             input_nc (int)  -- (int) the number of channels in input images
