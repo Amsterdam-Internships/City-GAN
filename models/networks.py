@@ -286,10 +286,16 @@ def composite_image(src, tgt, mask=None, device='cpu'):
     # check input shapes
     assert src.shape == tgt.shape
 
+    # generate a grounded fake using polygon mask
     if not torch.is_tensor(mask):
-        grounded_fake = True
-        b, w, h = src.shape[0], src.shape[2], src.shape[3]
+        b, _, w, h = src.shape
+
+        # create polygon mask, values are between 0.5 and 1
         mask = get_polygon_mask(w, h, b).to(device)
+        noise = torch.rand(mask.shape) / 2 + 0.5
+        mask *= noise
+
+        # apply gaussian blur to the gfake
         blur = transforms.GaussianBlur(3, sigma=(0.5, 2.0))
         mask = blur(mask)
 
