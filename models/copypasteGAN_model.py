@@ -44,7 +44,7 @@ class CopyPasteGANModel(BaseModel):
 
         # define new arguments for this model
         if is_train:
-            parser.add_argument('--lambda_aux', type=float, default=0.2,
+            parser.add_argument('--lambda_aux', type=float, default=0.1,
                 help='weight for the auxiliary mask loss')
             parser.add_argument('--confidence_weight', type=float, default=0.0,
                 help='weight for the confidence loss for generator')
@@ -63,7 +63,7 @@ class CopyPasteGANModel(BaseModel):
                 prevent overfitting')
             parser.add_argument('--seed', type=int, default=42, help=
                 'Provide an integer for setting the random seed')
-            parser.add_argument('--border_zeroing', action='store_false', help=
+            parser.add_argument('--no_border_zeroing', action='store_true', help=
                 'default: clamp borders of generated mask to 0 (store_false)')
             parser.add_argument('--D_threshold', type=float, default=0.6, help=
                 "when the accuracy of the discriminator is lower than this \
@@ -75,18 +75,13 @@ class CopyPasteGANModel(BaseModel):
                 help= "every val_freq batches run the model on validation \
                 data, and obtain accuracies for training schedule.")
             parser.add_argument('--keep_last_batch', action='store_true',
-                help= "drop last incomplete batch")
+                help= "drop last incomplete batch by default")
             parser.add_argument('--patch_D', action='store_true',
                 help= "If true, discriminator scores individual patches on \
                 realness, else, two linear layers yield a scalar score")
             parser.add_argument('--accumulation_steps', type=int, default=4,
                 help= "accumulate gradients for this amount of batches, \
                 before backpropagating, to simulate a larger batch size")
-
-
-
-        # nr_object_classes is used to output a multi-layered mask, each
-        # channel representing a different object class
 
 
         return parser
@@ -118,6 +113,7 @@ class CopyPasteGANModel(BaseModel):
             self.loss_G_conf = 0
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
+            self.loss_G_distinct = 0
 
         # innit losses
         self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = \
@@ -143,7 +139,7 @@ class CopyPasteGANModel(BaseModel):
         # define generator, output_nc is set to nr of object classes
         self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes,
             ngf=opt.ngf, netG=opt.netG, norm=opt.norm,
-            border_zeroing=opt.border_zeroing, gpu_ids=self.gpu_ids,
+            border_zeroing=not opt.no_border_zeroing, gpu_ids=self.gpu_ids,
             img_dim=opt.crop_size)
 
         # G must be saved to disk
@@ -200,6 +196,8 @@ class CopyPasteGANModel(BaseModel):
         # generate output image given the input batch
         self.g_mask_layered = self.netG(self.src)
         self.g_mask = torch.max(self.g_mask_layered, dim=1, keepdim=True)[0]
+
+        breakpoint()
 
         # binary mask for visualization
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
