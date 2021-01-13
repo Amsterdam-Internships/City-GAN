@@ -197,8 +197,6 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_layered = self.netG(self.src)
         self.g_mask = torch.max(self.g_mask_layered, dim=1, keepdim=True)[0]
 
-        breakpoint()
-
         # binary mask for visualization
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 

@@ -637,7 +637,6 @@ class DecoderBlock(nn.Module):
         super(DecoderBlock, self).__init__()
 
         layers = []
-        # nn.ConvTranspose2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
         if not last_layer:
             layers += [nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
                        nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding)]
