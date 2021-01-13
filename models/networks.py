@@ -296,8 +296,8 @@ def composite_image(src, tgt, mask=None, device='cpu'):
         mask *= noise
 
         # apply gaussian blur to the gfake
-        blur = transforms.GaussianBlur(3, sigma=(0.5, 2.0))
-        mask = blur(mask)
+        blur = transforms.GaussianBlur(7, sigma=(4.0, 5.0))
+        mask = blur(blur(blur(mask)))
 
     # compute the composite image based on the mask and inverse mask
     inv_mask = 1 - mask
