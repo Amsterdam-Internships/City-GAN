@@ -104,24 +104,25 @@ class CopyPasteGANModel(BaseModel):
         # specify the training losses you want to print out.
         # base_model.get_current_losses is used for plotting and saving these
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
-            'loss_D_real', 'loss_D_fake', "loss_D_gr_fake", "loss_AUX",
+            'loss_D_real', 'loss_D_fake', "loss_D_gr_fake",
             "loss_D", "acc_real", "acc_fake", "acc_grfake"]
 
         # add other losses if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
-            self.loss_G_conf = 0
+        if opt.lambda_aux > 0:
+            self.loss_names.append("loss_AUX")
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
-            self.loss_G_distinct = 0
 
-        # innit losses
-        self.loss_G_comp = self.loss_G_conf = self.loss_G_anti_sc = \
-            self.loss_G = self.loss_D_gr_fake = 0
 
+        # init all losses and accs that are used at 0 for plotting
+        for loss in self.loss_names:
+            setattr(self, loss, 0)
+
+        # init for training curriculum
         self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
-        self.acc_grfake = self.acc_fake = self.acc_real = 0.0
 
         # init count for gradient accumulation, simulating lager batch size
         self.count_D = self.count_G = 0
