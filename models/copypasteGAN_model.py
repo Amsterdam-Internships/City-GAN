@@ -249,7 +249,7 @@ class CopyPasteGANModel(BaseModel):
         self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
         self.loss_G_anti_sc = self.criterionGAN(self.pred_anti_sc, False)
         self.loss_G_conf = self.opt.confidence_weight * self.criterionConf(
-            self.g_mask)
+            self.g_mask) if self.opt.confidence_weight > 0 else 0
 
         # add up components and compute gradients
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + \
@@ -277,7 +277,8 @@ class CopyPasteGANModel(BaseModel):
         self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
             self.D_mask_real, self.D_mask_fake.detach(),
             self.D_mask_antisc.detach(), self.D_mask_grfake,
-            self.g_mask.detach(), self.mask_gf, use_gf=self.train_on_gf)
+            self.g_mask.detach(), self.mask_gf,
+            use_gf=self.train_on_gf) if self.opt.lambda_aux > 0 else 0
 
         # sum the losses
         self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_AUX
