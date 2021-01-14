@@ -107,7 +107,8 @@ class CopyPasteGANModel(BaseModel):
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake",
             "loss_D", "acc_real", "acc_fake", "acc_grfake"]
 
-        # add other losses if specified
+
+    # add other losses if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
         if opt.lambda_aux > 0:
@@ -123,6 +124,7 @@ class CopyPasteGANModel(BaseModel):
         # init for training curriculum
         self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
+        self.aux = opt.lambda_aux > 0
 
         # init count for gradient accumulation, simulating lager batch size
         self.count_D = self.count_G = 0
@@ -132,10 +134,19 @@ class CopyPasteGANModel(BaseModel):
 
         # specify the images that are saved and displayed
         # (via base_model.get_current_visuals)
-        self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
+        if self.aux:
+            # self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
+            # 'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
+            # "mask_gf", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
+            # "D_mask_real"]
+            self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
             'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
             "mask_gf", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
             "D_mask_real"]
+        else:
+            self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
+            'composite', 'grounded_fake', "mask_gf", 'anti_sc_src', 'anti_sc']
+
 
         # define generator, output_nc is set to nr of object classes
         self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes,
@@ -150,7 +161,8 @@ class CopyPasteGANModel(BaseModel):
             # only define the discriminator if in training phase
             self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD,
                 norm=opt.norm, gpu_ids=self.gpu_ids, img_dim=opt.crop_size,
-                sigma_blur=opt.sigma_blur, patchGAN=opt.patch_D)
+                sigma_blur=opt.sigma_blur, patchGAN=opt.patch_D,
+                aux=self.aux)
             self.model_names.append("D")
 
             # define loss functions
@@ -190,12 +202,22 @@ class CopyPasteGANModel(BaseModel):
                 self.src, self.tgt, device=self.device)
 
 
+    # def run_discriminator(self, input):
+    #     out = self.netD(input)
+    #     realness_pred = out["realness_score"]
+    #     if self.aux:
+    #         mask_pred = out["copy_mask"]
+    #         return realness_pred, mask_pred
+    #     return realness_pred
+
+
+
     def forward(self, valid=False):
         """Run forward pass. This will be called by both functions <
         optimize_parameters> and <test>."""
 
         # generate output image given the input batch
-        self.g_mask_layered = self.netG(self.src)
+        self.g_mask_layered = self.netG(self.src)["copy_mask"]
         self.g_mask = torch.max(self.g_mask_layered, dim=1, keepdim=True)[0]
 
         # binary mask for visualization
@@ -208,36 +230,60 @@ class CopyPasteGANModel(BaseModel):
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
         if not valid:
-            # !!here flip(self.src, [0, 1]) was used, which seems wrong now!!
-            # that shuffled the channels, leading to different color combinations in the anti shortcut source
+            # use flip to "shuffle" the batch and get new combinations
             self.anti_sc_src = torch.flip(self.src, [0])
             self.anti_sc, _ = networks.composite_image(self.anti_sc_src,
                 self.tgt, self.g_mask)
-            self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+            self.pred_D_antisc_dict = self.netD(self.anti_sc)
+            self.pred_anti_sc = self.pred_D_antisc_dict["realness_score"]
 
         # get predictions from discriminators for all images (use tgt/src)
-        self.pred_real, self.D_mask_real = self.netD(self.tgt)
+        self.pred_D_real_dict = self.netD(self.tgt)
+        self.pred_real = self.pred_D_real_dict["realness_score"]
 
         assert self.pred_real.shape[0] == self.opt.batch_size or valid,\
             f"prediction shape incorrect ({self.pred_real.shape}, B: \
             {self.opt.batch_size})"
 
-        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+        self.pred_D_fake_dict = self.netD(self.composite)
+        self.pred_fake = self.pred_D_fake_dict["realness_score"]
 
         if self.train_on_gf:
-            self.pred_gr_fake, self.D_mask_grfake = self.netD(
-                self.grounded_fake)
+            self.pred_D_grfake_dict = self.netD(self.grounded_fake)
+            self.pred_gr_fake = self.pred_D_grfake_dict["realness_score"]
 
         # also compute the accuracy of discriminator
         if valid:
-            fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3))
-            fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3))
-            fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3))
+            self.compute_accs()
 
-            B = self.opt.val_batch_size
-            self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
-            self.acc_fake = len(fakest_patch_fake[fakest_patch_fake < 0.5]) / B
-            self.acc_grfake = len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
+        if self.aux:
+            self.save_masks_D()
+
+
+    def compute_accs(self):
+        """
+        Computes the accuracies of the discriminator
+        """
+        fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3))
+        fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3))
+        fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3))
+
+        B = self.opt.val_batch_size
+        self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
+        self.acc_fake = len(fakest_patch_fake[fakest_patch_fake < 0.5]) / B
+        self.acc_grfake = len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
+
+
+    def save_masks_D(self):
+        """
+        If the auxiliary loss is used, the predicted masks from the
+        discriminator are saved for the visualizer
+        """
+        self.D_mask_real = self.pred_D_real_dict["copy_mask"]
+        self.D_mask_antisc = self.pred_D_antisc_dict["copy_mask"]
+        self.D_mask_grfake = self.pred_D_grfake_dict["copy_mask"]
+        self.D_mask_fake = self.pred_D_fake_dict["copy_mask"]
+
 
 
     def backward_G(self):
@@ -275,10 +321,12 @@ class CopyPasteGANModel(BaseModel):
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
         self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
-            self.D_mask_real, self.D_mask_fake.detach(),
-            self.D_mask_antisc.detach(), self.D_mask_grfake,
+            self.pred_D_real_dict["copy_mask"],
+            self.pred_D_fake_dict["copy_mask"].detach(),
+            self.pred_D_antisc_dict["copy_mask"].detach(),
+            self.pred_D_grfake_dict["copy_mask"],
             self.g_mask.detach(), self.mask_gf,
-            use_gf=self.train_on_gf) if self.opt.lambda_aux > 0 else 0
+            use_gf=self.train_on_gf) if self.aux > 0 else 0
 
         # sum the losses
         self.loss_D = self.loss_D_real + self.loss_D_fake + self.loss_AUX

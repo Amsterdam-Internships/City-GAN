@@ -168,7 +168,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    patchGAN=False):
+    patchGAN=False, aux=True):
     """Create a discriminator
 
     Parameters:
@@ -219,7 +219,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
         net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True,
-            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN)
+            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN, aux=aux)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -435,7 +435,7 @@ class CopyUNet(nn.Module):
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64, patchGAN=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64, patchGAN=False, aux=True):
         """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -459,6 +459,8 @@ class CopyUNet(nn.Module):
         self.discriminator = discriminator
         self.border_zeroing = border_zeroing
         self.img_dim = img_dim
+        self.aux = aux
+
         if discriminator and sigma_blur:
             self.blur_filter = create_gaussian_filter(sigma_blur)
         else:
@@ -517,11 +519,14 @@ class CopyUNet(nn.Module):
                     nn.Linear(256, 1), self.sigmoid)
 
     def forward(self, input):
-        """Standard forward, return decoder output and encoder output if in
-        discriminator mode"""
+        """Standard forward, return a dictionary with the mask if generator,
+        and the realness prediction and predicted mask if in discriminator
+        mode (dependend on if auxiliary loss is  used)"""
 
         # check if the image dimensions are correct
         assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
+
+        out = dict()
 
         # if necessary, downscale the input to 64x64
         if self.downscale:
@@ -541,6 +546,10 @@ class CopyUNet(nn.Module):
         enc2 = self.enc2(enc1)
         enc3 = self.enc3(enc2)
         enc4 = self.enc4(enc3)
+
+        if self.discriminator and not self.aux:
+            out["realness_score"] = self.avg(enc4)
+            return out
 
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
@@ -567,10 +576,9 @@ class CopyUNet(nn.Module):
         # return the encoder output (realness score) if in discriminator mode
         if self.discriminator:
             realness_score = self.avg(enc4)
-            out = [realness_score, copy_mask]
-        else:
-            out = copy_mask
+            out["realness_score"] = realness_score
 
+        out["copy_mask"] = copy_mask
 
         return out
 
