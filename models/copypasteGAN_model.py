@@ -264,9 +264,11 @@ class CopyPasteGANModel(BaseModel):
         """
         Computes the accuracies of the discriminator
         """
-        fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3))
-        fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3))
-        fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3))
+        # assign the fakest patch in case of patch discriminator, else use the scaler prediction
+        patch = self.opt.patch_D
+        fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3)) if patch else self.pred_fake
+        fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3)) if patch else self.pred_real
+        fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3)) if patch else self.pred_gr_fake
 
         B = self.opt.val_batch_size
         self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
