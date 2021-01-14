@@ -505,13 +505,13 @@ class CopyUNet(nn.Module):
         if discriminator:
             if patchGAN:
                 # variant with one conv-layer
-                # self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+                self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
 
                 # variant with two conv layers (output is same shape)
-                self.avg = nn.Sequential(
-                    EncoderBlock(512, 128, 3, 2, 1),
-                    nn.Conv2d(128, 1, 3, 1, 1),
-                    self.sigmoid)
+                # self.avg = nn.Sequential(
+                    # EncoderBlock(512, 128, 3, 2, 1),
+                    # nn.Conv2d(128, 1, 3, 1, 1),
+                    # self.sigmoid)
 
             else:
                 self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
