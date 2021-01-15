@@ -107,6 +107,12 @@ class CopyPasteGANModel(BaseModel):
             'loss_D_real', 'loss_D_fake', "loss_D_gr_fake",
             "loss_D", "acc_real", "acc_fake", "acc_grfake"]
 
+        # if the model is not copy, we cannot use the auxiliary loss
+        if opt.netD != "copy" and opt.lambda_aux > 0:
+            print(f"CopyDiscriminator not used, auxiliary weight set to 0 \
+                (instead of {opt.lambda_aux})")
+            opt.lambda_aux = 0
+
 
     # add other losses if specified
         if opt.confidence_weight > 0:
@@ -202,22 +208,12 @@ class CopyPasteGANModel(BaseModel):
                 self.src, self.tgt, device=self.device)
 
 
-    # def run_discriminator(self, input):
-    #     out = self.netD(input)
-    #     realness_pred = out["realness_score"]
-    #     if self.aux:
-    #         mask_pred = out["copy_mask"]
-    #         return realness_pred, mask_pred
-    #     return realness_pred
-
-
-
     def forward(self, valid=False):
         """Run forward pass. This will be called by both functions <
         optimize_parameters> and <test>."""
 
         # generate output image given the input batch
-        self.g_mask_layered = self.netG(self.src)["copy_mask"]
+        self.g_mask_layered = self.netG(self.src)
         self.g_mask = torch.max(self.g_mask_layered, dim=1, keepdim=True)[0]
 
         # binary mask for visualization
@@ -234,30 +230,23 @@ class CopyPasteGANModel(BaseModel):
             self.anti_sc_src = torch.flip(self.src, [0])
             self.anti_sc, _ = networks.composite_image(self.anti_sc_src,
                 self.tgt, self.g_mask)
-            self.pred_D_antisc_dict = self.netD(self.anti_sc)
-            self.pred_anti_sc = self.pred_D_antisc_dict["realness_score"]
+            self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # get predictions from discriminators for all images (use tgt/src)
-        self.pred_D_real_dict = self.netD(self.tgt)
-        self.pred_real = self.pred_D_real_dict["realness_score"]
+        self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
         assert self.pred_real.shape[0] == self.opt.batch_size or valid,\
             f"prediction shape incorrect ({self.pred_real.shape}, B: \
             {self.opt.batch_size})"
 
-        self.pred_D_fake_dict = self.netD(self.composite)
-        self.pred_fake = self.pred_D_fake_dict["realness_score"]
+        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
 
         if self.train_on_gf:
-            self.pred_D_grfake_dict = self.netD(self.grounded_fake)
-            self.pred_gr_fake = self.pred_D_grfake_dict["realness_score"]
+            self.pred_grfake,self.D_mask_grfake = self.netD(self.grounded_fake)
 
         # also compute the accuracy of discriminator
         if valid:
             self.compute_accs()
-
-        if self.aux:
-            self.save_masks_D()
 
 
     def compute_accs(self):
@@ -265,10 +254,10 @@ class CopyPasteGANModel(BaseModel):
         Computes the accuracies of the discriminator
         """
         # assign the fakest patch in case of patch discriminator, else use the scaler prediction
-        patch = self.opt.patch_D
+        patch = self.pred_real.dim() > 2
         fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3)) if patch else self.pred_fake
         fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3)) if patch else self.pred_real
-        fakest_patch_grfake = torch.amin(self.pred_gr_fake, dim=(2, 3)) if patch else self.pred_gr_fake
+        fakest_patch_grfake = torch.amin(self.pred_grfake, dim=(2, 3)) if patch else self.pred_grfake
 
         B = self.opt.val_batch_size
         self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
@@ -276,15 +265,7 @@ class CopyPasteGANModel(BaseModel):
         self.acc_grfake = len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
 
 
-    def save_masks_D(self):
-        """
-        If the auxiliary loss is used, the predicted masks from the
-        discriminator are saved for the visualizer
-        """
-        self.D_mask_real = self.pred_D_real_dict["copy_mask"]
-        self.D_mask_antisc = self.pred_D_antisc_dict["copy_mask"]
-        self.D_mask_grfake = self.pred_D_grfake_dict["copy_mask"]
-        self.D_mask_fake = self.pred_D_fake_dict["copy_mask"]
+
 
 
 
@@ -318,7 +299,7 @@ class CopyPasteGANModel(BaseModel):
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
         self.loss_D_fake = self.criterionGAN(self.pred_fake.detach(), False)
         if self.train_on_gf:
-            self.loss_D_gr_fake = self.criterionGAN(self.pred_gr_fake, False)
+            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
