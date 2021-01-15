@@ -82,6 +82,11 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--accumulation_steps', type=int, default=4,
                 help= "accumulate gradients for this amount of batches, \
                 before backpropagating, to simulate a larger batch size")
+            parser.add_argument('--rotate_img', action='store_true',
+                help= "If true, all images will be randomly rotated \
+                (data augmentation)")
+            parser.add_argument('--no_grfakes', action='store_true',
+                help= "If true, no grounded fakes will be used in training")
 
 
         return parser
@@ -104,8 +109,7 @@ class CopyPasteGANModel(BaseModel):
         # specify the training losses you want to print out.
         # base_model.get_current_losses is used for plotting and saving these
         self.loss_names = ['loss_G_comp', 'loss_G_anti_sc', 'loss_G',
-            'loss_D_real', 'loss_D_fake', "loss_D_gr_fake",
-            "loss_D", "acc_real", "acc_fake", "acc_grfake"]
+            'loss_D_real', 'loss_D_fake', "loss_D", "acc_real", "acc_fake"]
 
         # if the model is not copy, we cannot use the auxiliary loss
         if opt.netD != "copy" and opt.lambda_aux > 0:
@@ -121,6 +125,11 @@ class CopyPasteGANModel(BaseModel):
             self.loss_names.append("loss_AUX")
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
+        if not opt.no_grfakes:
+            self.loss_names.extend(["loss_D_gr_fake", "acc_grfake"])
+            self.train_on_gf = False
+        else:
+            self.train_on_gf = True
 
 
         # init all losses and accs that are used at 0 for plotting
@@ -128,12 +137,14 @@ class CopyPasteGANModel(BaseModel):
             setattr(self, loss, 0)
 
         # init for training curriculum
-        self.train_on_gf = True
         self.D_gf_perfect = self.D_above_thresh = False
         self.aux = opt.lambda_aux > 0
 
         # init count for gradient accumulation, simulating lager batch size
         self.count_D = self.count_G = 0
+
+        # init at zero, in case no training is being done on grfakes
+        self.acc_grfake = 0
 
         # init gradient scaler from cuda AMP
         self.scaler = GradScaler()
@@ -141,17 +152,17 @@ class CopyPasteGANModel(BaseModel):
         # specify the images that are saved and displayed
         # (via base_model.get_current_visuals)
         if self.aux:
-            # self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
-            # 'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
-            # "mask_gf", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
-            # "D_mask_real"]
             self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
-            'composite', "D_mask_fake", 'grounded_fake', "D_mask_grfake",
-            "mask_gf", 'anti_sc_src', 'anti_sc', "D_mask_antisc",
-            "D_mask_real"]
+                'composite', "D_mask_fake", 'anti_sc_src', 'anti_sc',
+                "D_mask_antisc", "D_mask_real"]
+            if not opt.no_grfakes:
+                self.visual_names.extend(['grounded_fake', "D_mask_grfake",
+                    "mask_gf"])
         else:
             self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
-            'composite', 'grounded_fake', "mask_gf", 'anti_sc_src', 'anti_sc']
+                'composite', 'anti_sc_src', 'anti_sc']
+            if not opt.no_grfakes:
+                self.visual_names.extemd(['grounded_fake', "mask_gf"])
 
 
         # define generator, output_nc is set to nr of object classes
@@ -202,8 +213,15 @@ class CopyPasteGANModel(BaseModel):
         self.src = input['src'].to(self.device)
         self.tgt = input['tgt'].to(self.device)
 
+        if self.opt.rotate_img:
+            import torchvision.transforms.functional as TF
+            angle_src = np.random.choice([0, 90, 180, 270])
+            self.src = TF.rotate(self.src, angle_src)
+            angle_tgt = np.random.choice([0, 90, 180, 270])
+            self.tgt = TF.rotate(self.tgt, angle_tgt)
+
         # create a grounded fake, the function samples a random polygon mask
-        if self.train_on_gf:
+        if self.train_on_gf and not self.opt.no_grfakes:
             self.grounded_fake, self.mask_gf = networks.composite_image(
                 self.src, self.tgt, device=self.device)
 
@@ -257,15 +275,15 @@ class CopyPasteGANModel(BaseModel):
         patch = self.pred_real.dim() > 2
         fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3)) if patch else self.pred_fake
         fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3)) if patch else self.pred_real
-        fakest_patch_grfake = torch.amin(self.pred_grfake, dim=(2, 3)) if patch else self.pred_grfake
+
 
         B = self.opt.val_batch_size
         self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
         self.acc_fake = len(fakest_patch_fake[fakest_patch_fake < 0.5]) / B
-        self.acc_grfake = len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
 
-
-
+        if self.train_on_gf:
+            fakest_patch_grfake = torch.amin(self.pred_grfake, dim=(2, 3)) if patch else self.pred_grfake
+            self.acc_grfake = len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
 
 
 
@@ -330,18 +348,6 @@ class CopyPasteGANModel(BaseModel):
         # perform forward step
         self.forward()
 
-
-        # # train D and G in alternating fashion
-        # if self.train_G:
-        #     self.optimizer_G.zero_grad()
-        #     self.backward_G()
-        #     self.optimizer_G.step()
-        # else:
-        #     self.optimizer_D.zero_grad()
-        #     self.backward_D()
-        #     self.optimizer_D.step()
-
-
         # perform gradient accumulation to simulate larger batch size
         # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
         update_freq = self.opt.accumulation_steps
@@ -403,7 +409,7 @@ class CopyPasteGANModel(BaseModel):
     def run_validation(self, val_data):
 
         # reset all conditional parameters
-        self.train_on_gf = True
+        self.train_on_gf = not self.opt.no_grfakes
         self.D_above_thresh = False
         self.D_gf_perfect = False
 
