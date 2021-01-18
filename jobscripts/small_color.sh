@@ -33,7 +33,7 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --print_freq 20\
     --update_html 100 \
     --display_freq 100\
-    --verbose\
+    --verbose \
     --sigma_blur 1 \
     --load_size 70\
     --crop_size 64\
