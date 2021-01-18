@@ -219,9 +219,10 @@ class CopyPasteGANModel(BaseModel):
 
         if self.opt.rotate_img:
             import torchvision.transforms.functional as TF
-            angle_src = np.random.choice([0, 90, 180, 270])
+            angle_src = int(np.random.choice([0, 90, 180, 270]))
+            breakpoint()
             self.src = TF.rotate(self.src, angle_src)
-            angle_tgt = np.random.choice([0, 90, 180, 270])
+            angle_tgt = int(np.random.choice([0, 90, 180, 270]))
             self.tgt = TF.rotate(self.tgt, angle_tgt)
 
         # create a grounded fake, the function samples a random polygon mask
