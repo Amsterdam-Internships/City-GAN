@@ -117,11 +117,15 @@ class CopyPasteGANModel(BaseModel):
                 (instead of {opt.lambda_aux})")
             opt.lambda_aux = 0
 
+        # make sure invalid combination cannot be used
+        self.aux = opt.lambda_aux > 0
+        if opt.no_grfakes and self.aux:
+            raise Exception("invalid options combination. If grounded fakes are not used, auxiliary loss cannot be used either.\n Exiting...")
 
     # add other losses if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
-        if opt.lambda_aux > 0:
+        if self.aux:
             self.loss_names.append("loss_AUX")
         if self.multi_layered:
             self.loss_names.append("loss_G_distinct")
@@ -138,7 +142,7 @@ class CopyPasteGANModel(BaseModel):
 
         # init for training curriculum
         self.D_gf_perfect = self.D_above_thresh = False
-        self.aux = opt.lambda_aux > 0
+
 
         # init count for gradient accumulation, simulating lager batch size
         self.count_D = self.count_G = 0
