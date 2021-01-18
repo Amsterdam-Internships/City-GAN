@@ -162,7 +162,7 @@ class CopyPasteGANModel(BaseModel):
             self.visual_names = ['src', 'tgt', 'g_mask', "g_mask_binary",
                 'composite', 'anti_sc_src', 'anti_sc']
             if not opt.no_grfakes:
-                self.visual_names.extemd(['grounded_fake', "mask_gf"])
+                self.visual_names.extend(['grounded_fake', "mask_gf"])
 
 
         # define generator, output_nc is set to nr of object classes
@@ -322,10 +322,10 @@ class CopyPasteGANModel(BaseModel):
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
         self.loss_AUX = self.opt.lambda_aux * self.criterionMask(
-            self.pred_D_real_dict["copy_mask"],
-            self.pred_D_fake_dict["copy_mask"].detach(),
-            self.pred_D_antisc_dict["copy_mask"].detach(),
-            self.pred_D_grfake_dict["copy_mask"],
+            self.pred_real,
+            self.pred_fake.detach(),
+            self.pred_antisc.detach(),
+            self.pred_grfake,
             self.g_mask.detach(), self.mask_gf,
             use_gf=self.train_on_gf) if self.aux > 0 else 0
 
