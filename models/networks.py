@@ -753,7 +753,6 @@ class DecoderBlock(nn.Module):
 
     def forward(self, input):
         """Standard forward"""
-        # print("Input shape decoder block:", input.shape)
         return self.model(input)
 
 
