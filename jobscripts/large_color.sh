@@ -42,7 +42,7 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --val_batch_size 128\
     --accumulation_steps 1\
     --display_id 0\
-    --lambda_aux 0\
+    --lambda_aux 0.1\
 
 
 # copy checkpoints to home directory
