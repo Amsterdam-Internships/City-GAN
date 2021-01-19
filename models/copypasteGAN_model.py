@@ -252,7 +252,7 @@ class CopyPasteGANModel(BaseModel):
             self.anti_sc_src = torch.flip(self.src, [0])
             self.anti_sc, _ = networks.composite_image(self.anti_sc_src,
                 self.tgt, self.g_mask)
-            self.pred_anti_sc, self.D_mask_antisc = self.netD(self.anti_sc)
+            self.pred_antisc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # get predictions from discriminators for all images (use tgt/src)
         self.pred_real, self.D_mask_real = self.netD(self.tgt)
@@ -298,7 +298,7 @@ class CopyPasteGANModel(BaseModel):
 
         # stimulate the generator to fool discriminator
         self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
-        self.loss_G_anti_sc = self.criterionGAN(self.pred_anti_sc, False)
+        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc, False)
         self.loss_G_conf = self.opt.confidence_weight * self.criterionConf(
             self.g_mask) if self.opt.confidence_weight > 0 else 0
 
