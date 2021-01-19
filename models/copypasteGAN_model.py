@@ -33,7 +33,6 @@ class CopyPasteGANModel(BaseModel):
         # batch size of 80 per GPU is used (and 4 GPUs)
         # norm is instance by default (as in paper)
         # do not flip the images
-        #
 
         # set default options for this model
         parser.set_defaults(dataset_mode='double', name="CopyGAN",
@@ -122,7 +121,7 @@ class CopyPasteGANModel(BaseModel):
         if opt.no_grfakes and self.aux:
             raise Exception("invalid options combination. If grounded fakes are not used, auxiliary loss cannot be used either.\n Exiting...")
 
-    # add other losses if specified
+        # add other losses if specified
         if opt.confidence_weight > 0:
             self.loss_names.append("loss_G_conf")
         if self.aux:
@@ -143,12 +142,8 @@ class CopyPasteGANModel(BaseModel):
         # init for training curriculum
         self.D_gf_perfect = self.D_above_thresh = False
 
-
-        # init count for gradient accumulation, simulating lager batch size
+        # init count for gradient accumulation, simulating larger batch size
         self.count_D = self.count_G = 0
-
-        # init at zero, in case no training is being done on grfakes
-        self.acc_grfake = 0
 
         # init gradient scaler from cuda AMP
         self.scaler = GradScaler()
@@ -169,7 +164,7 @@ class CopyPasteGANModel(BaseModel):
                 self.visual_names.extend(['grounded_fake', "mask_gf"])
 
 
-        # define generator, output_nc is set to nr of object classes
+        # define generator, output_nc is set to nr of object classes (1)
         self.netG = networks.define_G(opt.input_nc, opt.nr_obj_classes,
             ngf=opt.ngf, netG=opt.netG, norm=opt.norm,
             border_zeroing=not opt.no_border_zeroing, gpu_ids=self.gpu_ids,
@@ -191,6 +186,8 @@ class CopyPasteGANModel(BaseModel):
                 target_real_label=opt.real_target).to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
+
+            # not used at the moment
             if self.multi_layered:
                 self.criterionDist = networks.DistinctMaskLoss(
                     opt.nr_obj_classes).to(self.device)
@@ -217,6 +214,7 @@ class CopyPasteGANModel(BaseModel):
         self.src = input['src'].to(self.device)
         self.tgt = input['tgt'].to(self.device)
 
+        # all images in the batch can be rotated (by the same angle)
         if self.opt.rotate_img:
             import torchvision.transforms.functional as TF
             angle_src = int(np.random.choice([0, 90, 180, 270]))
@@ -232,7 +230,11 @@ class CopyPasteGANModel(BaseModel):
 
     def forward(self, valid=False):
         """Run forward pass. This will be called by both functions <
-        optimize_parameters> and <test>."""
+        optimize_parameters> and <test>.
+        Parameters:
+            valid: if running the validations set, anti shortcut is not
+                computed, and the accuracies are computed
+        """
 
         # generate output image given the input batch
         self.g_mask_layered = self.netG(self.src)
@@ -257,16 +259,19 @@ class CopyPasteGANModel(BaseModel):
         # get predictions from discriminators for all images (use tgt/src)
         self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
+        # make sure the predictions are the right size
         assert self.pred_real.shape[0] == self.opt.batch_size or valid,\
             f"prediction shape incorrect ({self.pred_real.shape}, B: \
             {self.opt.batch_size})"
 
+        # get discriminators prediction on the generated image
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+
 
         if self.train_on_gf:
             self.pred_grfake,self.D_mask_grfake = self.netD(self.grounded_fake)
 
-        # also compute the accuracy of discriminator
+        # compute accuracy of discriminator if in validation mode
         if valid:
             self.compute_accs()
 
@@ -280,7 +285,7 @@ class CopyPasteGANModel(BaseModel):
         fakest_patch_fake = torch.amin(self.pred_fake, dim=(2, 3)) if patch else self.pred_fake
         fakest_patch_real = torch.amin(self.pred_real, dim=(2, 3)) if patch else self.pred_real
 
-
+        # predictions above 0.5 are classified as "real"
         B = self.opt.val_batch_size
         self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
         self.acc_fake = len(fakest_patch_fake[fakest_patch_fake < 0.5]) / B
@@ -296,20 +301,22 @@ class CopyPasteGANModel(BaseModel):
         every training iteration. Discriminator predictions have been computed
         in the backward_D"""
 
-        # stimulate the generator to fool discriminator
+        # compute generator losses
         self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
         self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc, False)
         self.loss_G_conf = self.opt.confidence_weight * self.criterionConf(
             self.g_mask) if self.opt.confidence_weight > 0 else 0
 
-        # add up components and compute gradients
+        # sum components
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + \
             self.loss_G_conf
 
+        # not used atm
         if self.multi_layered:
             self.loss_G_distinct = self.criterionDist(self.g_mask_layered)
             self.loss_G = self.loss_G + self.loss_G_distinct
 
+        # scale the loss and perform backward step
         self.scaler.scale(self.loss_G / self.opt.accumulation_steps).backward()
 
 
@@ -340,7 +347,7 @@ class CopyPasteGANModel(BaseModel):
         if self.train_on_gf:
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
-        # Calculate gradients of discriminator
+        # scale gradients and perform backward step
         self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
 
 
@@ -357,6 +364,7 @@ class CopyPasteGANModel(BaseModel):
         # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
         update_freq = self.opt.accumulation_steps
 
+        # either train G or D, using the AMP scaler
         if self.train_G:
             self.backward_G()
             self.count_G += 1
@@ -412,6 +420,10 @@ class CopyPasteGANModel(BaseModel):
 
 
     def run_validation(self, val_data):
+        """
+        Run the complete validation set, and set booleans describing the model
+        performance. These are used to determine the training schedule.
+        """
 
         # reset all conditional parameters
         self.train_on_gf = not self.opt.no_grfakes
@@ -446,7 +458,6 @@ class CopyPasteGANModel(BaseModel):
 
         # check performance on fakes to determine whether to train G
         self.D_above_thresh = self.acc_fake > self.opt.D_threshold
-
 
         # print validation scores
         if self.opt.verbose:
