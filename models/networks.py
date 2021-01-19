@@ -158,8 +158,8 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer,
             use_dropout=use_dropout)
     elif netG == 'copy':
-        net = CopyUNet(input_nc, output_nc, norm_layer=norm_layer, dropout=
-            use_dropout, border_zeroing=border_zeroing, img_dim=img_dim)
+        net = CopyGenerator(input_nc, output_nc, norm_layer=norm_layer,
+            dropout=use_dropout, border_zeroing=border_zeroing,img_dim=img_dim)
     else:
         raise NotImplementedError(f'Generator model name [{netG}] is not \
             recognized')
@@ -168,7 +168,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    patchGAN=False):
+    patchGAN=False, aux=True):
     """Create a discriminator
 
     Parameters:
@@ -218,8 +218,8 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     elif netD == 'pixel':     # classify if each pixel is real or fake
         net = PixelDiscriminator(input_nc, ndf, norm_layer=norm_layer)
     elif netD == "copy":
-        net = CopyUNet(input_nc, 1, norm_layer=norm_layer, discriminator=True,
-            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN)
+        net = CopyDiscriminator(input_nc, 1, norm_layer=norm_layer,
+            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN, aux=aux)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -286,12 +286,18 @@ def composite_image(src, tgt, mask=None, device='cpu'):
     # check input shapes
     assert src.shape == tgt.shape
 
+    # generate a grounded fake using polygon mask
     if not torch.is_tensor(mask):
-        grounded_fake = True
-        b, w, h = src.shape[0], src.shape[2], src.shape[3]
+        b, _, w, h = src.shape
+
+        # create polygon mask, values are between 0.5 and 1
         mask = get_polygon_mask(w, h, b).to(device)
-        blur = transforms.GaussianBlur(3, sigma=(0.5, 2.0))
-        mask = blur(mask)
+        noise = torch.rand(mask.shape, device=device) / 2 + 0.5
+        mask *= noise
+
+        # apply gaussian blur to the gfake
+        blur = transforms.GaussianBlur(7, sigma=(4.0, 5.0))
+        mask = blur(blur(blur(mask)))
 
     # compute the composite image based on the mask and inverse mask
     inv_mask = 1 - mask
@@ -422,14 +428,14 @@ class GANLoss(nn.Module):
 # COPYGAN UNET ARCHITECTURE
 ######################################
 
-class CopyUNet(nn.Module):
+class CopyGenerator(nn.Module):
     """
     Generator architecture that follows the paper from Arandjelovic et al. 2019
     This implements the CopyPaste architecture from the
     implementation details in the paper
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, discriminator=False, sigma_blur=0, img_dim=64, patchGAN=False):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, border_zeroing=False, img_dim=64):
         """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -437,10 +443,6 @@ class CopyUNet(nn.Module):
             norm_layer      -- normalization layer
             dropout         -- Use dropout or not
             border_zeroing  -- Set borders of mask to 0
-            discriminator   -- in Discriminator mode, score and predicted copy
-                                mask are returned
-            sigma_blur      -- sigma for gaussian blurring of discriminator
-                                input
             img_dim         -- image dimensions, must be square of 2, used for
                                 down and upscaling
 
@@ -448,15 +450,10 @@ class CopyUNet(nn.Module):
         The U-net is constructed from encoder and decoder building blocks
         Inspired from https://github.com/zijundeng/pytorch-semantic-segmentation/blob/master/models/u_net.py
         """
-        super(CopyUNet, self).__init__()
+        super(CopyGenerator, self).__init__()
 
-        self.discriminator = discriminator
         self.border_zeroing = border_zeroing
         self.img_dim = img_dim
-        if discriminator and sigma_blur:
-            self.blur_filter = create_gaussian_filter(sigma_blur)
-        else:
-            self.blur_filter = None
 
         self.downscale = []
         self.upscale = []
@@ -494,17 +491,11 @@ class CopyUNet(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
 
-        if discriminator:
-            if patchGAN:
-                self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
-            else:
-                self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
-                    nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
-                    nn.Linear(256, 1), self.sigmoid)
 
     def forward(self, input):
-        """Standard forward, return decoder output and encoder output if in
-        discriminator mode"""
+        """Standard forward, return a dictionary with the mask if generator,
+        and the realness prediction and predicted mask if in discriminator
+        mode (dependend on if auxiliary loss is  used)"""
 
         # check if the image dimensions are correct
         assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
@@ -513,10 +504,6 @@ class CopyUNet(nn.Module):
         if self.downscale:
             for layer in self.downscale:
                 input = layer(input)
-
-        # initialize the Gaussian blur filter
-        if self.blur_filter:
-            input = self.blur_filter(input)
 
         # check downscaling and blurring operations in terms of dimensions
         assert input.shape[-1] == 64, "incorrect image shape after \
@@ -539,9 +526,10 @@ class CopyUNet(nn.Module):
                 dec1 = layer(dec1)
 
         # decoder output: the copy-mask
+        copy_mask = self.sigmoid(dec1)
 
         # clamp the borders of the copy mask to 0 (anti shortcut measure)
-        if self.border_zeroing and not self.discriminator:
+        if self.border_zeroing:
             border_array = torch.ones_like(copy_mask)
             border_array[:, 0, 0, :] = 0
             border_array[:, 0, -1, :] = 0
@@ -549,16 +537,144 @@ class CopyUNet(nn.Module):
             border_array[:, 0, :, -1] = 0
             copy_mask = copy_mask * border_array
 
-        # return the encoder output (realness score) if in discriminator mode
-        if self.discriminator:
-            realness_score = self.avg(enc4)
-            out = [realness_score, copy_mask]
+        return copy_mask
+
+
+
+
+class CopyDiscriminator(nn.Module):
+    """
+    Discriminator architecture that follows the paper from Arandjelovic et al.
+    2019. This implements the CopyPaste architecture from the
+    implementation details in the paper.
+    """
+
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, patchGAN=False, aux=True):
+        """Construct a Unet generator from encoder and decoding building blocks
+        Parameters:
+            input_nc (int)  -- the number of channels in input images
+            output_nc (int) -- the number of channels in output images
+            norm_layer      -- normalization layer
+            dropout         -- Use dropout or not
+            sigma_blur      -- sigma for gaussian blurring of discriminator
+                                input
+            img_dim         -- image dimensions, must be square of 2, used for
+                                down and upscaling
+
+
+        The network is constructed from encoder and decoder building blocks
+        Inspired from https://github.com/zijundeng/pytorch-semantic-segmentation/blob/master/models/u_net.py
+        """
+        super(CopyDiscriminator, self).__init__()
+
+        self.img_dim = img_dim
+        self.aux = aux
+
+        if sigma_blur:
+            self.blur_filter = create_gaussian_filter(sigma_blur)
         else:
-            out = copy_mask
+            self.blur_filter = None
+
+        self.downscale = []
+        self.upscale = []
+
+        # if the input size differs from default 64, create down- and
+        # upscaling layers before the encoder and after the decoder
+        if self.img_dim != 64:
+            assert log(self.img_dim, 2).is_integer(), "Image size should be power of 2"
+
+            nr_scale_ops = int(log(self.img_dim, 2) - 6)
+
+            # create enough down- and upsampling layers
+            for i in range(nr_scale_ops):
+                self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
+                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+
+            self.downscale = nn.Sequential(*self.downscale)
+            self.upscale = nn.Sequential(*self.upscale)
+
+        # set up encoder layers
+        self.enc1 = EncoderBlock(input_nc, 64, stride=1)
+        self.enc2 = EncoderBlock(64, 128)
+        self.enc3 = EncoderBlock(128, 256)
+        self.enc4 = EncoderBlock(256, 512)
+
+        # set up decoder layers
+        self.dec4 = DecoderBlock(512, 256)
+        self.dec3 = DecoderBlock(512, 128)
+        self.dec2 = DecoderBlock(256, 64)
+        # this being the last layer depends on possible upsampling operations
+        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)))
+
+        # init other layers needed
+        self.sigmoid = nn.Sigmoid()
+
+        if patchGAN:
+            # variant with one conv-layer
+            self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+
+            # variant with two conv layers (output is same shape)
+            # self.avg = nn.Sequential(
+                # EncoderBlock(512, 128, 3, 2, 1),
+                # nn.Conv2d(128, 1, 3, 1, 1),
+                # self.sigmoid)
+        else:
+            self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
+                nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
+                nn.Linear(256, 1), self.sigmoid)
 
 
-        return out
+    def forward(self, input):
+        """Standard forward, return a dictionary with the mask if generator,
+        and the realness prediction and predicted mask if in discriminator
+        mode (dependend on if auxiliary loss is  used)"""
 
+        # check if the image dimensions are correct
+        assert input.shape[-1] == self.img_dim, f"Image shape is {input.shape} instead of {self.img_dim}"
+
+        out = dict()
+
+        # if necessary, downscale the input to 64x64
+        if self.downscale:
+            for layer in self.downscale:
+                input = layer(input)
+
+        # initialize the Gaussian blur filter
+        if self.blur_filter:
+            input = self.blur_filter(input)
+
+        # check downscaling and blurring operations in terms of dimensions
+        assert input.shape[-1] == 64, "incorrect image shape after \
+            downscaling and blurring"
+
+        # forward pass through the model
+        enc1 = self.enc1(input)
+        enc2 = self.enc2(enc1)
+        enc3 = self.enc3(enc2)
+        enc4 = self.enc4(enc3)
+
+        # if auxiliary loss is not used, return score and skip decoder
+        if  not self.aux:
+            realness_score = self.avg(enc4)
+            return realness_score, None
+
+        dec4 = self.dec4(enc4)
+        dec3 = self.dec3(torch.cat([enc3, dec4], 1))
+        dec2 = self.dec2(torch.cat([enc2, dec3], 1))
+        dec1 = self.dec1(torch.cat([enc1, dec2], 1))
+
+        # upscale the output if necessary
+        if self.upscale:
+            for layer in self.upscale:
+                dec1 = layer(dec1)
+
+        # decoder output: the copy-mask
+        copy_mask = self.sigmoid(dec1)
+
+        # return the encoder output (realness score)
+        realness_score = self.avg(enc4)
+
+        return realness_score, copy_mask
 
 
 class EncoderBlock(nn.Module):
@@ -568,7 +684,7 @@ class EncoderBlock(nn.Module):
     normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, stride=2, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=2, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
         """Construct a Unet encoder block
         Parameters:
             input_nc (int)  -- (int) the number of channels in input images
@@ -606,7 +722,7 @@ class DecoderBlock(nn.Module):
     a convolutional layer, normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, stride=1, kernel=3, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=1, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
         """Construct a Unet encoder block
         Parameters:
             input_nc (int)  -- (int) the number of channels in input images
@@ -622,7 +738,6 @@ class DecoderBlock(nn.Module):
         super(DecoderBlock, self).__init__()
 
         layers = []
-        # nn.ConvTranspose2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
         if not last_layer:
             layers += [nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
                        nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding)]
@@ -787,9 +902,103 @@ class MaskLoss(nn.Module):
 
 
 
+
+
+class DotLoss(nn.Module):
+    """
+    The Dot loss penalizes whether a dot given by the user (an object should be there), is present in te mask
+
+    """
+
+    def __init__(self):
+        """
+        Initialize MaskLoss class
+        """
+        super(DotLoss, self).__init__()
+
+
+    def __call__(self, mask, list_of_dots=[]):
+        """Calculate loss given Discriminator's output and ground truth labels.
+
+        Parameters:
+            - mask: mask generated by the generator
+            - list of dots: tuples with dot coordinates
+
+        Returns:
+            the calculated dot loss
+        """
+
+        # for every dot (x, y), the mask should be as close to one as possible
+        # we have to take into account that mask is a 4D minibatch tensor
+        loss = 0
+        num_dots = 0
+
+        for i, img in enumerate(list_of_dots):
+            for dot in img:
+                (x, y) = dot
+                loss = loss + (1 - mask[b, 0, x, y])
+                num_dots += 1
+
+
+        return loss / num_dots
+
+
 ######################################
 # OTHER ARCHITECTURES
 ######################################
+
+
+
+
+class NLayerDiscriminator(nn.Module):
+    """Defines a PatchGAN discriminator"""
+
+    def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d):
+        """Construct a PatchGAN discriminator
+        Parameters:
+            input_nc (int)  -- the number of channels in input images
+            ndf (int)       -- the number of filters in the last conv layer
+            n_layers (int)  -- the number of conv layers in the discriminator
+            norm_layer      -- normalization layer
+        """
+        super(NLayerDiscriminator, self).__init__()
+        if type(norm_layer) == functools.partial:  # no need to use bias as BatchNorm2d has affine parameters
+            use_bias = norm_layer.func == nn.InstanceNorm2d
+        else:
+            use_bias = norm_layer == nn.InstanceNorm2d
+
+        kw = 4
+        padw = 1
+        sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
+        nf_mult = 1
+        nf_mult_prev = 1
+        for n in range(1, n_layers):  # gradually increase the number of filters
+            nf_mult_prev = nf_mult
+            nf_mult = min(2 ** n, 8)
+            sequence += [
+                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=2, padding=padw, bias=use_bias),
+                norm_layer(ndf * nf_mult),
+                nn.LeakyReLU(0.2, True)
+            ]
+
+        nf_mult_prev = nf_mult
+        nf_mult = min(2 ** n_layers, 8)
+        sequence += [
+            nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=1, padding=padw, bias=use_bias),
+            norm_layer(ndf * nf_mult),
+            nn.LeakyReLU(0.2, True)
+        ]
+
+        sequence += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
+
+        sequence += [nn.Sigmoid()]
+
+        self.model = nn.Sequential(*sequence)
+
+    def forward(self, input):
+        """Standard forward."""
+        return self.model(input), None
+
 
 
 class UnetGenerator(nn.Module):
