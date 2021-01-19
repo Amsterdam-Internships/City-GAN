@@ -467,8 +467,10 @@ class CopyGenerator(nn.Module):
 
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
-                self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
+                next_nc = 64 // (nr_scale_ops - i)
+                self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
                 self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+                input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
             self.upscale = nn.Sequential(*self.upscale)
@@ -587,8 +589,10 @@ class CopyDiscriminator(nn.Module):
 
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
-                self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+                next_nc = 64 // (nr_scale_ops - i)
+                self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
+                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i == nr_scale_ops - 1)))
+                input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
             self.upscale = nn.Sequential(*self.upscale)
@@ -624,6 +628,11 @@ class CopyDiscriminator(nn.Module):
                 nn.Linear(256, 1), self.sigmoid)
 
 
+            # Maybe try both, first prediction per patch, feed through linear layer for scaler prediction
+
+            # 2 GAN losses; patch and complete image
+
+
     def forward(self, input):
         """Standard forward, return a dictionary with the mask if generator,
         and the realness prediction and predicted mask if in discriminator
@@ -634,14 +643,15 @@ class CopyDiscriminator(nn.Module):
 
         out = dict()
 
+
+        # apply Gaussian blur filter
+        if self.blur_filter:
+            input = self.blur_filter(input)
+
         # if necessary, downscale the input to 64x64
         if self.downscale:
             for layer in self.downscale:
                 input = layer(input)
-
-        # initialize the Gaussian blur filter
-        if self.blur_filter:
-            input = self.blur_filter(input)
 
         # check downscaling and blurring operations in terms of dimensions
         assert input.shape[-1] == 64, "incorrect image shape after \
