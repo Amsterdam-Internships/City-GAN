@@ -36,7 +36,7 @@ class CopyPasteGANModel(BaseModel):
 
         # set default options for this model
         parser.set_defaults(dataset_mode='double', name="CopyGAN",
-            load_size=70, crop_size= 64, batch_size=64, lr=1e-4, no_flip=True,
+            load_size=70, crop_size= 64, batch_size=64, lr=1e-4,
             lr_policy="step", direction=None, n_epochs=1, n_epochs_decay=3,
             netG="copy", netD="copy", dataroot="datasets", save_epoch_freq=10,
             display_freq=100, print_freq=20)
@@ -57,7 +57,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--sigma_blur', type=float, default=1.0,
                 help='Sigma used in Gaussian filter used for blurring \
                 discriminator input')
-            parser.add_argument('--real_target', type=float, default=1.0,
+            parser.add_argument('--real_target', type=float, default=0.8,
                 help='Target label for the discriminator, can be set <1 to \
                 prevent overfitting')
             parser.add_argument('--seed', type=int, default=42, help=
@@ -81,9 +81,6 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument('--accumulation_steps', type=int, default=4,
                 help= "accumulate gradients for this amount of batches, \
                 before backpropagating, to simulate a larger batch size")
-            parser.add_argument('--rotate_img', action='store_true',
-                help= "If true, all images will be randomly rotated \
-                (data augmentation)")
             parser.add_argument('--no_grfakes', action='store_true',
                 help= "If true, no grounded fakes will be used in training")
 
@@ -213,14 +210,6 @@ class CopyPasteGANModel(BaseModel):
         # put image data on device
         self.src = input['src'].to(self.device)
         self.tgt = input['tgt'].to(self.device)
-
-        # all images in the batch can be rotated (by the same angle)
-        if self.opt.rotate_img:
-            import torchvision.transforms.functional as TF
-            angle_src = int(np.random.choice([0, 90, 180, 270]))
-            self.src = TF.rotate(self.src, angle_src)
-            angle_tgt = int(np.random.choice([0, 90, 180, 270]))
-            self.tgt = TF.rotate(self.tgt, angle_tgt)
 
         # create a grounded fake, the function samples a random polygon mask
         if self.train_on_gf and not self.opt.no_grfakes:
