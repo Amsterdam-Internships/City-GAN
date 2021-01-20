@@ -318,34 +318,94 @@ def mask_to_binary(mask):
     return bin_mask
 
 
-def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
-    in_out=3):
-    """
-    this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
-    """
+# def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
+#     in_out=3):
+#     """
+#     this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
+#     """
 
-    bs_round = int(sigma_blur)
-    kernel_size = bs_round * 2 + 1
-    x_cord = torch.arange(kernel_size)
-    x_grid = x_cord.repeat(kernel_size).view(kernel_size, kernel_size)
-    y_grid = x_grid.t()
-    xy_grid = torch.stack([x_grid, y_grid], dim=-1)
-    mean = (kernel_size - 1.0) / 2.0
-    variance = sigma_blur ** 2.0
-    gaussian_kernel = (1./(2.*np.pi*variance)) *\
-                    torch.exp(
-                        -torch.sum((xy_grid - mean)**2., dim=-1) /\
-                        (2*variance)
-                    )
-    gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
-    gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
-    gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
-    gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size,
-        padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
-    gaussian_filter.weight.data = gaussian_kernel
-    gaussian_filter.weight.requires_grad = False
+#     bs_round = int(sigma_blur)
+#     kernel_size = bs_round * 2 + 1
+#     x_cord = torch.arange(kernel_size)
+#     x_grid = x_cord.repeat(kernel_size).view(kernel_size, kernel_size)
+#     y_grid = x_grid.t()
+#     xy_grid = torch.stack([x_grid, y_grid], dim=-1)
+#     mean = (kernel_size - 1.0) / 2.0
+#     variance = sigma_blur ** 2.0
+#     gaussian_kernel = (1./(2.*np.pi*variance)) *\
+#                     torch.exp(
+#                         -torch.sum((xy_grid - mean)**2., dim=-1) /\
+#                         (2*variance)
+#                     )
 
-    return gaussian_filter
+#     # make sure sum of kernel equals 1
+#     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
+#     # reshape the kernel
+#     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
+#     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
+#     gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size,
+#         padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
+#     gaussian_filter.weight.data = gaussian_kernel
+#     gaussian_filter.weight.requires_grad = False
+
+#     print("in filter creation", gaussian_filter.weight.data)
+
+
+#     return gaussian_filter
+
+
+
+class GaussianSmoothing(nn.Module):
+    """
+    Apply gaussian smoothing on a
+    1d, 2d or 3d tensor. Filtering is performed seperately for each channel
+    in the input using a depthwise convolution.
+    Arguments:
+        channels (int, sequence): Number of channels of the input tensors. Output will
+            have this number of channels as well.
+        kernel_size (int, sequence): Size of the gaussian kernel.
+        sigma (float, sequence): Standard deviation of the gaussian kernel.
+        dim (int, optional): The number of dimensions of the data.
+            Default value is 2 (spatial).
+    """
+    def __init__(self, channels=3, kernel_size=(3, 3), sigma=(1.0, 1.0)):
+        super(GaussianSmoothing, self).__init__()
+
+        # The gaussian kernel is the product of the
+        # gaussian function of each dimension.
+        kernel = 1
+        meshgrids = torch.meshgrid(
+            [
+                torch.arange(size, dtype=torch.float32)
+                for size in kernel_size
+            ]
+        )
+        for size, std, mgrid in zip(kernel_size, sigma, meshgrids):
+            mean = (size - 1) / 2
+            kernel *= torch.exp(-((mgrid - mean) / std) ** 2 / 2)
+
+        # Make sure sum of values in gaussian kernel equals 1.
+        kernel = kernel / torch.sum(kernel)
+
+        # Reshape to depthwise convolutional weight
+        kernel = kernel.view(1, 1, *kernel.size())
+        kernel = kernel.repeat(channels, *[1] * (kernel.dim() - 1))
+
+        self.register_buffer('weight', kernel)
+        self.groups = channels
+
+        self.conv = F.conv2d
+
+
+    def forward(self, input):
+        """
+        Apply gaussian filter to input.
+        Arguments:
+            input (torch.Tensor): Input to apply gaussian filter on.
+        Returns:
+            filtered (torch.Tensor): Filtered output.
+        """
+        return self.conv(input, weight=self.weight, groups=self.groups, padding=1)
 
 
 
@@ -573,9 +633,12 @@ class CopyDiscriminator(nn.Module):
         self.aux = aux
 
         if sigma_blur:
-            self.blur_filter = create_gaussian_filter(sigma_blur)
+            # self.blur_filter = create_gaussian_filter(sigma_blur)
+            self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
         else:
             self.blur_filter = None
+
+        breakpoint()
 
         self.downscale = []
         self.upscale = []
@@ -643,10 +706,12 @@ class CopyDiscriminator(nn.Module):
 
         out = dict()
 
-
         # apply Gaussian blur filter
         if self.blur_filter:
+            breakpoint()
             input = self.blur_filter(input)
+
+        print("in forward", torch.sum(self.blur_filter.weight.data) , self.blur_filter.weight.data)
 
         # if necessary, downscale the input to 64x64
         if self.downscale:
