@@ -130,3 +130,4 @@ if __name__ == '__main__':
 
     model.save_networks('latest')
     print("Finished training, model is saved")
+    print(f"Batches trained - G: {model.count_G}, D: {model.count_D} ")

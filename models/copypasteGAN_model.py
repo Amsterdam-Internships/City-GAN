@@ -358,7 +358,6 @@ class CopyPasteGANModel(BaseModel):
             self.backward_G()
             self.count_G += 1
             if self.count_G % update_freq == 0:
-                # self.optimizer_G.step()
                 self.scaler.step(self.optimizer_G)
                 self.scaler.update()
                 self.optimizer_G.zero_grad()
@@ -366,7 +365,6 @@ class CopyPasteGANModel(BaseModel):
             self.backward_D()
             self.count_D += 1
             if self.count_D % update_freq == 0:
-                # self.optimizer_D.step()
                 self.scaler.step(self.optimizer_D)
                 self.scaler.update()
                 self.optimizer_D.zero_grad()
