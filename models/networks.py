@@ -784,6 +784,8 @@ class ConfidenceLoss(nn.Module):
     def __call__(self, pred_mask):
         """Calculate loss given mask.
 
+        Works as follows: elementwise, the minimum value is taken from either the pred_mask or the inverse pred_mask, resulting in a tensor with the same size as pred_mask, with the min value at each position. This is closest to zero when the pred_mask is either close to 0 or to 1, and high (max 0.5) if all pred_mask values are 0.5 (and the mask is not confident)
+
         Parameters:
             predicted mask (tensor) - predicted mask by generator
         Returns:
