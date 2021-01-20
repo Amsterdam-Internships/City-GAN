@@ -357,22 +357,19 @@ def mask_to_binary(mask):
 
 class GaussianSmoothing(nn.Module):
     """
-    Apply gaussian smoothing on a
-    1d, 2d or 3d tensor. Filtering is performed seperately for each channel
-    in the input using a depthwise convolution.
+    Apply gaussian smoothing on a 2d tensor. Taken and adapted from
+    https://discuss.pytorch.org/t/is-there-anyway-to-do-gaussian-filtering-for-
+    an-image-2d-3d-in-pytorch/12351/8
     Arguments:
-        channels (int, sequence): Number of channels of the input tensors. Output will
+        channels (int): Number of channels of the input tensors. Output will
             have this number of channels as well.
-        kernel_size (int, sequence): Size of the gaussian kernel.
-        sigma (float, sequence): Standard deviation of the gaussian kernel.
-        dim (int, optional): The number of dimensions of the data.
-            Default value is 2 (spatial).
+        kernel_size (int, tuple): Size of the gaussian kernel.
+        sigma (float, tuple): Standard deviation of the gaussian kernel.
     """
     def __init__(self, channels=3, kernel_size=(3, 3), sigma=(1.0, 1.0)):
+
         super(GaussianSmoothing, self).__init__()
 
-        # The gaussian kernel is the product of the
-        # gaussian function of each dimension.
         kernel = 1
         meshgrids = torch.meshgrid(
             [
@@ -638,8 +635,6 @@ class CopyDiscriminator(nn.Module):
         else:
             self.blur_filter = None
 
-        breakpoint()
-
         self.downscale = []
         self.upscale = []
 
@@ -708,10 +703,7 @@ class CopyDiscriminator(nn.Module):
 
         # apply Gaussian blur filter
         if self.blur_filter:
-            breakpoint()
             input = self.blur_filter(input)
-
-        print("in forward", torch.sum(self.blur_filter.weight.data) , self.blur_filter.weight.data)
 
         # if necessary, downscale the input to 64x64
         if self.downscale:
