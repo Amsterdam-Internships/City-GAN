@@ -74,7 +74,7 @@ def get_params(opt, size):
     y = random.randint(0, np.maximum(0, new_h - opt.crop_size))
 
     flipH = random.random() > 0.5
-    flipV = random.random() > 0.5
+    flipV = random.random() > 0.5 if opt.flip_vertical else False
 
     return {'crop_pos': (x, y), 'flipH': flipH, 'flipV': flipV}
 
@@ -102,11 +102,13 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
         if params is None:
             transform_list.append(transforms.RandomHorizontalFlip())
             transform_list.append(transforms.RandomVerticalFlip())
-        elif params['flipH'] and params['flipV']:
-            transform_list.append(transforms.Lambda(lambda img:
-                __flip_horizontal(img, params['flipH'])))
-            transform_list.append(transforms.Lambda(lambda img:
-                __flip_vertical(img, params['flipV'])))
+        else:
+            if params['flipH']:
+                transform_list.append(transforms.Lambda(lambda img:
+                    __flip_horizontal(img, params['flipH'])))
+            if params['flipV']:
+                transform_list.append(transforms.Lambda(lambda img:
+                    __flip_vertical(img, params['flipV'])))
 
     if convert:
         transform_list += [transforms.ToTensor()]
