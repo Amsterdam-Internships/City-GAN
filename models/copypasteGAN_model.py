@@ -613,7 +613,7 @@ class CopyPasteGANModel(BaseModel):
                 real: {self.acc_real:.2f}\n\
                 fake: {self.acc_fake:.2f}\n"
             )
-        snapshot = tracemalloc.take_snapshot()
+        # snapshot = tracemalloc.take_snapshot()
 
         # print("validation memory")
         # self.print_snapshot(snapshot.statistics('lineno'))
