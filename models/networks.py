@@ -704,6 +704,7 @@ class CopyDiscriminator(nn.Module):
         # apply Gaussian blur filter
         if self.blur_filter:
             input = self.blur_filter(input)
+            # print(self.blur_filter.weight)
 
         # if necessary, downscale the input to 64x64
         if self.downscale:
@@ -926,7 +927,7 @@ class MaskLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, target_real_label=1.0, target_fake_label=0.0):
+    def __init__(self):
         """
         Initialize MaskLoss class
         """
@@ -935,11 +936,8 @@ class MaskLoss(nn.Module):
         self.BCELoss = nn.BCELoss()
 
     def get_mask_loss(self, pred_mask, mask):
-
-        # TODO: should be cross entropy loss, but unofficial github uses MSE
-        # compute average pixel-wise loss between two images
+        """the the mask loss, due to possible permutation (background can be copied or foreground, we take the minimum of the two losses."""
         loss = torch.min(self.BCELoss(pred_mask, mask), self.BCELoss(pred_mask, (1-mask)))
-
 
         return loss
 
@@ -967,8 +965,6 @@ class MaskLoss(nn.Module):
             total_loss = total_loss + L_gr_fake
 
         return total_loss
-
-
 
 
 

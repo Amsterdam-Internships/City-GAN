@@ -7,11 +7,16 @@ You can specify '--model copypasteGAN' to use this model.
 
 import torch
 import torch.nn.functional as F
-from models.base_model import BaseModel
-import models.networks as networks
 import numpy as np
 from torch.cuda.amp import GradScaler, autocast
-import time
+
+# imports for memory management
+import tracemalloc
+import linecache
+import os
+
+from models.base_model import BaseModel
+import models.networks as networks
 
 
 class CopyPasteGANModel(BaseModel):
@@ -78,7 +83,7 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument(
                 "--D_headstart",
                 type=int,
-                default=80000,
+                default=1000,
                 help="First train only discriminator for D_headstart iterations \
                 (images, independent on batchsize",
             )
@@ -111,28 +116,29 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument(
                 "--no_border_zeroing",
                 action="store_true",
-                help="default: clamp borders of generated mask to 0 (store_false)",
+                help="default: clamp borders of generated mask to 0 \
+                    (store_false)",
             )
             parser.add_argument(
                 "--D_threshold",
                 type=float,
                 default=0.6,
-                help="when the accuracy of the discriminator is lower than this \
-                threshold, only train D",
+                help="when the accuracy of the discriminator is lower than \
+                    this threshold, only train D",
             )
             parser.add_argument(
                 "--val_freq",
                 type=int,
                 default=100,
-                help="every val_freq batches run the model on validation data, \
-                and obtain accuracies for training schedule.",
+                help="every val_freq batches run the model on validation data,\
+                    and obtain accuracies for training schedule.",
             )
             parser.add_argument(
                 "--val_batch_size",
                 type=int,
                 default=128,
                 help="every val_freq batches run the model on validation \
-                data, and obtain accuracies for training schedule.",
+                    data, and obtain accuracies for training schedule.",
             )
             parser.add_argument(
                 "--keep_last_batch",
@@ -143,19 +149,24 @@ class CopyPasteGANModel(BaseModel):
                 "--patch_D",
                 action="store_true",
                 help="If true, discriminator scores individual patches on \
-                realness, else, two linear layers yield a scalar score",
+                    realness, else, two linear layers yield a scalar score",
             )
             parser.add_argument(
                 "--accumulation_steps",
                 type=int,
                 default=4,
                 help="accumulate gradients for this amount of batches, \
-                before backpropagating, to simulate a larger batch size",
+                    before backpropagating, to simulate a larger batch size",
             )
             parser.add_argument(
                 "--no_grfakes",
                 action="store_true",
                 help="If true, no grounded fakes will be used in training",
+            )
+            parser.add_argument(
+                "-flip_vertical",
+                action="store_true",
+                help="If specified, the data will be flipped vertically",
             )
 
         return parser
@@ -200,7 +211,8 @@ class CopyPasteGANModel(BaseModel):
         self.aux = opt.lambda_aux > 0
         if opt.no_grfakes and self.aux:
             raise Exception(
-                "invalid options combination. If grounded fakes are not used, auxiliary loss cannot be used either.\n Exiting..."
+                "invalid options combination. If grounded fakes are not used,\
+                 auxiliary loss cannot be used either.\n Exiting..."
             )
 
         # add other losses if specified
@@ -501,7 +513,7 @@ class CopyPasteGANModel(BaseModel):
                 self.scaler.update()
                 self.optimizer_D.zero_grad()
 
-    def run_batch(self, data, total_iters):
+    def run_batch(self, data, total_batches):
         """
         This method incorporates the set_input and optimize_parameters
         functions, and does some checks beforehand
@@ -511,14 +523,14 @@ class CopyPasteGANModel(BaseModel):
             headstart
 
         """
-        if total_iters == self.D_headstart:
+
+        # tracemalloc.start()
+        if total_batches == self.D_headstart:
             print("Headstart D over")
 
-        self.total_iters = total_iters
-
         # sat some boolean variables needed in threshold training curriculum
-        self.headstart_over = total_iters >= self.D_headstart
-        self.even_batch = (total_iters / self.opt.batch_size) % 2 == 0
+        self.headstart_over = total_batches >= self.D_headstart
+        self.even_batch = total_batches % 2 == 0
 
         # by default train D (in headstart or performing below threshold:
         self.train_G = False
@@ -536,11 +548,28 @@ class CopyPasteGANModel(BaseModel):
         # calculate loss functions, get gradients, update network weights
         self.optimize_parameters()
 
+        # "train memory"
+        # snapshot = tracemalloc.take_snapshot()
+        # self.print_snapshot(snapshot.statistics('lineno'))
+
+    def print_snapshot(self, top_stats):
+        for index, stat in enumerate(top_stats[:3], 1):
+            frame = stat.traceback[0]
+            # replace "/path/to/module/file.py" with "module/file.py"
+            filename = os.sep.join(frame.filename.split(os.sep)[-2:])
+            print("#%s: %s:%s: %.1f KiB"
+                  % (index, filename, frame.lineno, stat.size / 1024))
+            line = linecache.getline(frame.filename, frame.lineno).strip()
+            if line:
+                print('    %s' % line)
+
     def run_validation(self, val_data):
         """
         Run the complete validation set, and set booleans describing the model
         performance. These are used to determine the training schedule.
         """
+
+        # tracemalloc.start()
 
         # reset all conditional parameters
         self.train_on_gf = not self.opt.no_grfakes
@@ -584,3 +613,15 @@ class CopyPasteGANModel(BaseModel):
                 real: {self.acc_real:.2f}\n\
                 fake: {self.acc_fake:.2f}\n"
             )
+        snapshot = tracemalloc.take_snapshot()
+
+        # print("validation memory")
+        # self.print_snapshot(snapshot.statistics('lineno'))
+
+
+
+
+
+
+
+

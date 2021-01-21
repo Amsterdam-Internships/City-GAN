@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
-            model.run_batch(data, total_iters)
+            model.run_batch(data, overall_batch)
 
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:
