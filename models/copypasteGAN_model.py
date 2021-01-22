@@ -364,12 +364,11 @@ class CopyPasteGANModel(BaseModel):
 
         # create the composite mask from src and tgt images, and predicted mask
         # this is only done when D is trained,
-        if not generator or valid:
-            self.composite, _ = networks.composite_image(
+        self.composite, _ = networks.composite_image(
                 self.src, self.tgt, self.g_mask, device=self.device
             )
             # get discriminators prediction on the generated image
-            self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
 
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
