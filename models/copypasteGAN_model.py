@@ -18,6 +18,9 @@ import os
 from models.base_model import BaseModel
 import models.networks as networks
 
+torch.auto\
+grad.set_detect_anomaly(True)
+
 
 class CopyPasteGANModel(BaseModel):
     @staticmethod
