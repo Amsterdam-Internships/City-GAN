@@ -686,9 +686,22 @@ class CopyDiscriminator(nn.Module):
                 nn.Linear(256, 1), self.sigmoid)
 
 
+        if False:
             # Maybe try both, first prediction per patch, feed through linear layer for scaler prediction
 
             # 2 GAN losses; patch and complete image
+
+            # that would first be two conv layers:
+            self.D_conv = nn.Sequential(
+                EncoderBlock(512, 128, 3, 2, 1),
+                nn.Conv2d(128, 1, 3, 1, 1))
+
+            # and then a linear layer that takes the patch prediction
+            self.D_fc = nn.Sequential(nn.Flatten(), nn.Linear(16, 1))
+
+            # forward pass should be:
+            patch_out = self.sigmoid(self.D_conv(input))
+            single_out = self.sigmoid(self.D_fc(input))
 
 
     def forward(self, input):
