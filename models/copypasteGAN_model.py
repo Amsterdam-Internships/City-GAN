@@ -164,10 +164,11 @@ class CopyPasteGANModel(BaseModel):
                 help="If true, no grounded fakes will be used in training",
             )
             parser.add_argument(
-                "-flip_vertical",
+                "--flip_vertical",
                 action="store_true",
                 help="If specified, the data will be flipped vertically",
             )
+
 
         return parser
 
@@ -344,7 +345,7 @@ class CopyPasteGANModel(BaseModel):
                 self.src, self.tgt, device=self.device
             )
 
-    def forward(self, valid=False):
+    def forward(self, valid=False, generator=False):
         """Run forward pass. This will be called by both functions <
         optimize_parameters> and <test>.
         Parameters:
@@ -360,9 +361,13 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
-        self.composite, _ = networks.composite_image(
-            self.src, self.tgt, self.g_mask, device=self.device
-        )
+        # this is only done when D is trained,
+        if not generator or valid:
+            self.composite, _ = networks.composite_image(
+                self.src, self.tgt, self.g_mask, device=self.device
+            )
+            # get discriminators prediction on the generated image
+            self.pred_fake, self.D_mask_fake = self.netD(self.composite)
 
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
@@ -375,18 +380,15 @@ class CopyPasteGANModel(BaseModel):
             self.pred_antisc, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # get predictions from discriminators for all images (use tgt/src)
-        self.pred_real, self.D_mask_real = self.netD(self.tgt)
+        if not generator or valid:
+            self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
         # make sure the predictions are the right size
-        assert (
-            self.pred_real.shape[0] == self.opt.batch_size or valid
-        ), f"prediction shape incorrect ({self.pred_real.shape}, B: \
+        assert (valid or self.pred_real.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_real.shape}, B: \
             {self.opt.batch_size})"
 
-        # get discriminators prediction on the generated image
-        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
 
-        if self.train_on_gf:
+        if (self.train_on_gf and not generator) or valid:
             self.pred_grfake, self.D_mask_grfake = self.netD(
                 self.grounded_fake
             )
@@ -491,7 +493,7 @@ class CopyPasteGANModel(BaseModel):
         """
 
         # perform forward step
-        self.forward()
+        self.forward(generator=self.train_G)
 
         # perform gradient accumulation to simulate larger batch size
         # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
