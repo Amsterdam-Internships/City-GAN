@@ -49,7 +49,7 @@ class CopyPasteGANModel(BaseModel):
             load_size=70,
             crop_size=64,
             batch_size=64,
-            lr=1e-4,
+            lr=2e-4,
             lr_policy="step",
             direction=None,
             n_epochs=1,
@@ -185,6 +185,7 @@ class CopyPasteGANModel(BaseModel):
 
         self.multi_layered = opt.nr_obj_classes != 1
         self.D_headstart = opt.D_headstart
+        self.patch = opt.patch_D
 
         # specify random seed
         torch.manual_seed(opt.seed)
@@ -359,6 +360,9 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_layered = self.netG(self.src)
         self.g_mask = torch.max(self.g_mask_layered, dim=1, keepdim=True)[0]
 
+        # set mask as attribute of loss class
+        self.criterionGAN.set_copy_mask(self.g_mask)
+
         # binary mask for visualization
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 
@@ -368,7 +372,7 @@ class CopyPasteGANModel(BaseModel):
                 self.src, self.tgt, self.g_mask, device=self.device
             )
             # get discriminators prediction on the generated image
-        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+        self.pred_fake_single, self.pred_fake_patch, self.D_mask_fake = self.netD(self.composite)
 
         # apply the masks on different source images, should be labeled false
         # we reverse the src images over the batch dimension
@@ -378,32 +382,34 @@ class CopyPasteGANModel(BaseModel):
             self.anti_sc, _ = networks.composite_image(
                 self.anti_sc_src, self.tgt, self.g_mask
             )
-            self.pred_antisc, self.D_mask_antisc = self.netD(self.anti_sc)
+            self.pred_antisc_single, self.pred_antisc_patch, self.D_mask_antisc = self.netD(self.anti_sc)
 
         # get predictions from discriminators for all images (use tgt/src)
         if not generator or valid:
-            self.pred_real, self.D_mask_real = self.netD(self.tgt)
+            self.pred_real_single, self.pred_real_patch, self.D_mask_real = self.netD(self.tgt)
 
         # make sure the predictions are the right size
-        assert (valid or self.pred_real.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_real.shape}, B: \
+        assert (valid or self.pred_real_single.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_real_single.shape}, B: \
             {self.opt.batch_size})"
 
 
         if (self.train_on_gf and not generator) or valid:
-            self.pred_grfake, self.D_mask_grfake = self.netD(
+            self.pred_grfake_single, self.pred_grfake_patch, self.D_mask_grfake = self.netD(
                 self.grounded_fake
             )
 
         # compute accuracy of discriminator if in validation mode
         if valid:
-            self.compute_accs()
+            self.compute_single_accs()
 
     def compute_accs(self):
         """
         Computes the accuracies of the discriminator
+
+        # NB: not used at the moment, compute_single_accs() is used.
         """
         # assign the fakest patch in case of patch discriminator, else use the scaler prediction
-        patch = self.pred_real.dim() > 2
+        patch = self.pred_real_pathc.dim() > 2
         fakest_patch_fake = (
             torch.amin(self.pred_fake, dim=(2, 3)) if patch else self.pred_fake
         )
@@ -426,14 +432,29 @@ class CopyPasteGANModel(BaseModel):
                 len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
             )
 
+    def compute_single_accs(self):
+        B = self.opt.val_batch_size
+
+        self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
+        self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
+
+        if self.train_on_gf:
+            self.acc_grfake = (
+                len(self.pred_grfake_single[self.pred_grfake_single < 0.5]) / B
+            )
+
+
+
+
+
     def backward_G(self):
         """Calculate losses, gradients, and update network weights; called in
         every training iteration. Discriminator predictions have been computed
         in the backward_D"""
 
         # compute generator losses
-        self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
-        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc, False)
+        self.loss_G_comp = self.criterionGAN(self.pred_fake_patch, True, self.patch)
+        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc_patch, False, self.patch)
         self.loss_G_conf = (
             self.opt.confidence_weight * self.criterionConf(self.g_mask)
             if self.opt.confidence_weight > 0
@@ -456,10 +477,11 @@ class CopyPasteGANModel(BaseModel):
         every training iteration"""
 
         # compute the GAN losses using predictions from forward pass
-        self.loss_D_real = self.criterionGAN(self.pred_real, True)
-        self.loss_D_fake = self.criterionGAN(self.pred_fake.detach(), False)
+        # real is not computed using patch, as all patches are real
+        self.loss_D_real = self.criterionGAN(self.pred_real_patch, True, False)
+        self.loss_D_fake = self.criterionGAN(self.pred_fake_patch.detach(), False, self.patch)
         if self.train_on_gf:
-            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake, False)
+            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake_patch, False, self.patch)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G

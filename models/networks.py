@@ -442,7 +442,7 @@ class GANLoss(nn.Module):
         else:
             raise NotImplementedError('gan mode %s not implemented' % gan_mode)
 
-    def get_target_tensor(self, prediction, target_is_real):
+    def get_target_tensor(self, prediction, target_is_real, patch=False):
         """Create label tensors with the same size as the input.
 
         Parameters:
@@ -453,13 +453,23 @@ class GANLoss(nn.Module):
             A label tensor filled with ground truth label, and with the size of the input
         """
 
-        if target_is_real:
+
+        if patch:
+            maxpool = nn.MaxPool2d(16, 16)
+            max_mask = maxpool(self.mask)
+            min_mask = -maxpool(-self.mask)
+
+            target_tensor = torch.logical_or((min_mask>0.05), (max_mask<0.05)).int() * self.real_label
+        elif target_is_real:
             target_tensor = self.real_label
         else:
             target_tensor = self.fake_label
         return target_tensor.expand_as(prediction)
 
-    def __call__(self, prediction, target_is_real):
+    def set_copy_mask(self, copy_mask):
+        self.mask = copy_mask
+
+    def __call__(self, prediction, target_is_real, patch):
         """Calculate loss given Discriminator's output and grount truth labels.
 
         Parameters:
@@ -470,7 +480,7 @@ class GANLoss(nn.Module):
             the calculated loss.
         """
         if self.gan_mode in ['lsgan', 'vanilla']:
-            target_tensor = self.get_target_tensor(prediction, target_is_real)
+            target_tensor = self.get_target_tensor(prediction, target_is_real, patch=patch)
             loss = self.loss(prediction, target_tensor)
         elif self.gan_mode == 'wgangp':
             if target_is_real:
@@ -628,6 +638,7 @@ class CopyDiscriminator(nn.Module):
 
         self.img_dim = img_dim
         self.aux = aux
+        self.patchGAN = patchGAN
 
         if sigma_blur:
             self.blur_filter = create_gaussian_filter(sigma_blur)
@@ -671,37 +682,50 @@ class CopyDiscriminator(nn.Module):
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
 
-        if patchGAN:
-            # variant with one conv-layer
-            # self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+        # if patchGAN:
+        #     # variant with one conv-layer
+        #     # self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
 
-            # variant with two conv layers (output is same shape)
-            self.avg = nn.Sequential(
+        #     # variant with two conv layers (output is same shape)
+        #     self.avg = nn.Sequential(
+        #         EncoderBlock(512, 128, 3, 2, 1),
+        #         nn.Conv2d(128, 1, 3, 1, 1),
+        #         self.sigmoid)
+        #     self.fc =
+        # else:
+        #     self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
+        #         nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
+        #         nn.Linear(256, 1), self.sigmoid)
+
+
+        if self.patchGAN:
+            # define conv layers for patch prediction
+            self.patch_conv = nn.Sequential(
                 EncoderBlock(512, 128, 3, 2, 1),
-                nn.Conv2d(128, 1, 3, 1, 1),
+                nn.Conv2d(128, 1, 3, 1, 1))
+
+            # define linear layer for scaler prediction
+            self.patch_fc = nn.Sequential(nn.Flatten(), nn.Linear(16, 1),
                 self.sigmoid)
+
         else:
-            self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
+            # define average pooling, followed by two linear layers
+            self.pool = nn.Sequential(nn.AvgPool2d(8, stride=2),
                 nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
                 nn.Linear(256, 1), self.sigmoid)
 
 
-        if False:
-            # Maybe try both, first prediction per patch, feed through linear layer for scaler prediction
+    def get_realness_score(self, enc_out, patch=False):
+        if patch:
+            conv_out = self.patch_conv(enc_out)
+            single_out = self.patch_fc(conv_out)
+            patch_out = self.sigmoid(conv_out)
+        else:
+            single_out = self.pool(enc_out)
+            patch_out = None
 
-            # 2 GAN losses; patch and complete image
+        return single_out, patch_out
 
-            # that would first be two conv layers:
-            self.D_conv = nn.Sequential(
-                EncoderBlock(512, 128, 3, 2, 1),
-                nn.Conv2d(128, 1, 3, 1, 1))
-
-            # and then a linear layer that takes the patch prediction
-            self.D_fc = nn.Sequential(nn.Flatten(), nn.Linear(16, 1))
-
-            # forward pass should be:
-            patch_out = self.sigmoid(self.D_conv(input))
-            single_out = self.sigmoid(self.D_fc(input))
 
 
     def forward(self, input):
@@ -734,10 +758,12 @@ class CopyDiscriminator(nn.Module):
         enc3 = self.enc3(enc2)
         enc4 = self.enc4(enc3)
 
+        # compute realness scores
+        single_out, patch_out = self.get_realness_score(enc4, self.patchGAN)
+
         # if auxiliary loss is not used, return score and skip decoder
-        if  not self.aux:
-            realness_score = self.avg(enc4)
-            return realness_score, None
+        if not self.aux:
+            return single_out, patch_out, None
 
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
@@ -752,10 +778,7 @@ class CopyDiscriminator(nn.Module):
         # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
 
-        # return the encoder output (realness score)
-        realness_score = self.avg(enc4)
-
-        return realness_score, copy_mask
+        return single_out, patch_out, copy_mask
 
 
 class EncoderBlock(nn.Module):
@@ -869,9 +892,8 @@ class ConfidenceLoss(nn.Module):
 
 
 class DistinctMaskLoss(nn.Module):
-    """Defines the confidence loss, inspired from https://github.com/FLoosli/CP_GAN/blob/master/CP_GAN_models.py
-
-     Penalizes values that are not close to zero or one.
+    """
+    Not used at the moment
     """
     def __init__(self, nr_obj_classes=3):
         super(DistinctMaskLoss, self).__init__()
