@@ -577,7 +577,7 @@ class CopyGenerator(nn.Module):
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
-        dec1 = self.dec1(torch.cat([e nc1, dec2], 1))
+        dec1 = self.dec1(torch.cat([enc1, dec2], 1))
 
         # upscale the output if necessary
         if self.upscale:
