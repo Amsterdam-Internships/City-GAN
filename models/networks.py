@@ -318,40 +318,40 @@ def mask_to_binary(mask):
     return bin_mask
 
 
-# def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
-#     in_out=3):
-#     """
-#     this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
-#     """
+def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
+    in_out=3):
+    """
+    this function is taken from https://github.com/basilevh/object-discovery-cp-gan/blob/master/cpgan_model.py
+    """
 
-#     bs_round = int(sigma_blur)
-#     kernel_size = bs_round * 2 + 1
-#     x_cord = torch.arange(kernel_size)
-#     x_grid = x_cord.repeat(kernel_size).view(kernel_size, kernel_size)
-#     y_grid = x_grid.t()
-#     xy_grid = torch.stack([x_grid, y_grid], dim=-1)
-#     mean = (kernel_size - 1.0) / 2.0
-#     variance = sigma_blur ** 2.0
-#     gaussian_kernel = (1./(2.*np.pi*variance)) *\
-#                     torch.exp(
-#                         -torch.sum((xy_grid - mean)**2., dim=-1) /\
-#                         (2*variance)
-#                     )
+    bs_round = int(sigma_blur)
+    kernel_size = bs_round * 2 + 1
+    x_cord = torch.arange(kernel_size)
+    x_grid = x_cord.repeat(kernel_size).view(kernel_size, kernel_size)
+    y_grid = x_grid.t()
+    xy_grid = torch.stack([x_grid, y_grid], dim=-1)
+    mean = (kernel_size - 1.0) / 2.0
+    variance = sigma_blur ** 2.0
+    gaussian_kernel = (1./(2.*np.pi*variance)) *\
+                    torch.exp(
+                        -torch.sum((xy_grid - mean)**2., dim=-1) /\
+                        (2*variance)
+                    )
 
-#     # make sure sum of kernel equals 1
-#     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
-#     # reshape the kernel
-#     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
-#     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
-#     gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size,
-#         padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
-#     gaussian_filter.weight.data = gaussian_kernel
-#     gaussian_filter.weight.requires_grad = False
+    # make sure sum of kernel equals 1
+    gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
+    # reshape the kernel
+    gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
+    gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
+    gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size,
+        padding=bs_round, groups=groups, bias=False, padding_mode=padding_mode)
+    gaussian_filter.weight.data = gaussian_kernel
+    gaussian_filter.weight.requires_grad = False
 
-#     print("in filter creation", gaussian_filter.weight.data)
+    print("in filter creation", gaussian_filter.weight.data)
 
 
-#     return gaussian_filter
+    return gaussian_filter
 
 
 
@@ -577,7 +577,7 @@ class CopyGenerator(nn.Module):
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
-        dec1 = self.dec1(torch.cat([enc1, dec2], 1))
+        dec1 = self.dec1(torch.cat([e nc1, dec2], 1))
 
         # upscale the output if necessary
         if self.upscale:
@@ -630,8 +630,8 @@ class CopyDiscriminator(nn.Module):
         self.aux = aux
 
         if sigma_blur:
-            # self.blur_filter = create_gaussian_filter(sigma_blur)
-            self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
+            self.blur_filter = create_gaussian_filter(sigma_blur)
+            # self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
         else:
             self.blur_filter = None
 
