@@ -641,8 +641,8 @@ class CopyDiscriminator(nn.Module):
         self.patchGAN = patchGAN
 
         if sigma_blur:
-            self.blur_filter = create_gaussian_filter(sigma_blur)
-            # self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
+            # self.blur_filter = create_gaussian_filter(sigma_blur)
+            self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
         else:
             self.blur_filter = None
 
