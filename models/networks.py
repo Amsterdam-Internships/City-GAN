@@ -453,7 +453,8 @@ class GANLoss(nn.Module):
             A label tensor filled with ground truth label, and with the size of the input
         """
         if patch:
-            maxpool = nn.MaxPool2d(16, 16)
+            s = self.mask.shape[-1]//4
+            maxpool = nn.MaxPool2d(s, s)
             max_mask = maxpool(self.mask)
             min_mask = -maxpool(-self.mask)
 
@@ -465,7 +466,7 @@ class GANLoss(nn.Module):
             # target_tensor = self.logical_mask * self.real_label
 
             # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the patches
-            target_tensor = self.logical_mask * prediction
+            target_tensor = self.logical_mask * 0.5
 
         # if patch is not used, set to the real/fake label
         elif target_is_real:
@@ -530,6 +531,8 @@ class CopyGenerator(nn.Module):
 
         self.border_zeroing = border_zeroing
         self.img_dim = img_dim
+        dec1_channels = output_nc
+        upscale = False
 
         self.downscale = []
         self.upscale = []
@@ -539,17 +542,24 @@ class CopyGenerator(nn.Module):
         if self.img_dim != 64:
             assert log(self.img_dim, 2).is_integer(), "Image size should be power of 2"
 
+
             nr_scale_ops = int(log(self.img_dim, 2) - 6)
+            upscale = True
+            dec1_channels = (64//nr_scale_ops) * 2
 
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
                 next_nc = 64 // (nr_scale_ops - i)
+
                 self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+                # self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+
+                self.upscale.append(DecoderBlock(next_nc*2, 1 if i==0 else input_nc, stride=1, kernel=3, padding=1))
                 input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
             self.upscale = nn.Sequential(*self.upscale)
+
 
 
         # set up encoder layers
@@ -563,7 +573,7 @@ class CopyGenerator(nn.Module):
         self.dec3 = DecoderBlock(512, 128)
         self.dec2 = DecoderBlock(256, 64)
         # this being the last layer depends on possible upsampling operations
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)))
+        self.dec1 = DecoderBlock(128, dec1_channels, last_layer=True)
 
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
@@ -580,8 +590,12 @@ class CopyGenerator(nn.Module):
 
         # if necessary, downscale the input to 64x64
         if self.downscale:
-            for layer in self.downscale:
+            downscale_outs = []
+            for i, layer in enumerate(self.downscale):
                 input = layer(input)
+                downscale_outs.append(input)
+            downscale_outs = downscale_outs[::-1]
+
 
         # check downscaling and blurring operations in terms of dimensions
         assert input.shape[-1] == 64, "incorrect image shape after \
@@ -593,6 +607,7 @@ class CopyGenerator(nn.Module):
         enc3 = self.enc3(enc2)
         enc4 = self.enc4(enc3)
 
+
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
@@ -600,8 +615,9 @@ class CopyGenerator(nn.Module):
 
         # upscale the output if necessary
         if self.upscale:
-            for layer in self.upscale:
-                dec1 = layer(dec1)
+            for i, layer in enumerate(self.upscale[::-1]):
+                # dec1 = layer(dec1)
+                dec1 = layer(torch.cat([downscale_outs[i], dec1], 1))
 
         # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
