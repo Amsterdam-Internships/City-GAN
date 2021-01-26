@@ -450,9 +450,6 @@ class CopyPasteGANModel(BaseModel):
             )
 
 
-
-
-
     def backward_G(self):
         """Calculate losses, gradients, and update network weights; called in
         every training iteration. Discriminator predictions have been computed
@@ -478,13 +475,13 @@ class CopyPasteGANModel(BaseModel):
         # scale the loss and perform backward step
         self.scaler.scale(self.loss_G / self.opt.accumulation_steps).backward()
 
+
     def backward_D(self):
         """Calculate losses, gradients, and update network weights; called in
         every training iteration"""
 
         # compute the GAN losses using predictions from forward pass
         # real is not computed using patch, as all patches are real
-        print(type(self.pred_real_patch))
         self.loss_D_real = self.criterionGAN(self.pred_real_patch, True, False)
         self.loss_D_fake = self.criterionGAN(self.pred_fake_patch.detach(), False, self.patch)
         if self.train_on_gf:
