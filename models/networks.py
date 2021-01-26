@@ -444,7 +444,7 @@ class GANLoss(nn.Module):
 
     def get_target_tensor(self, prediction, target_is_real, patch=False):
         """Create label tensors with the same size as the input.
-
+ 
         Parameters:
             prediction (tensor) - - typically the prediction from a discriminator
             target_is_real (bool) - - if the ground truth label is for real images or fake images
@@ -452,18 +452,27 @@ class GANLoss(nn.Module):
         Returns:
             A label tensor filled with ground truth label, and with the size of the input
         """
-
-
         if patch:
             maxpool = nn.MaxPool2d(16, 16)
             max_mask = maxpool(self.mask)
             min_mask = -maxpool(-self.mask)
 
-            target_tensor = torch.logical_or((min_mask>0.05), (max_mask<0.05)).int() * self.real_label
+            # self.logical_mask = torch.logical_or((min_mask>0.05), (max_mask<0.05)).int()
+
+            self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
+
+            # this sets the unchanged patches to the real label;
+            # target_tensor = self.logical_mask * self.real_label
+
+            # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the patches
+            target_tensor = self.logical_mask * prediction
+
+        # if patch is not used, set to the real/fake label
         elif target_is_real:
             target_tensor = self.real_label
         else:
             target_tensor = self.fake_label
+
         return target_tensor.expand_as(prediction)
 
     def set_copy_mask(self, copy_mask):
@@ -916,42 +925,6 @@ class DistinctMaskLoss(nn.Module):
 
         return fraction_over_one
 
-
-
-# TODO implement this
-class FeatureMatchingLoss(nn.Module):
-    """Define different GAN objectives.
-
-    The FeatureMatchingLoss class abstracts away the need to create the target label tensor
-    that has the same size as the input.
-    """
-
-    # TODO: set real label to 0.95/0.7 (in the paper) instead of 1 to prevent overconfidence?
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
-        """ Initialize the FeatureMatchingLoss class.
-
-        Parameters:
-            gan_mode (str) - - the type of GAN objective. It currently supports vanilla, lsgan, and wgangp.
-            target_real_label (bool) - - label for a real image
-            target_fake_label (bool) - - label of a fake image
-
-        Note: Do not use sigmoid as the last layer of Discriminator.
-        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
-        """
-        super(FeatureMatchingLoss, self).__init__()
-
-
-    def __call__(self, prediction, target_is_real):
-        """
-
-        Parameters:
-
-        Returns:
-            the calculated loss.
-        """
-        loss = 0
-
-        return loss
 
 
 
