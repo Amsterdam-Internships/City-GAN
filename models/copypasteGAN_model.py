@@ -112,8 +112,9 @@ class CopyPasteGANModel(BaseModel):
             parser.add_argument(
                 "--seed",
                 type=int,
-                default=42,
-                help="Provide an integer for setting the random seed",
+                default=0,
+                help="Provide an integer for setting the random seed. Set to \
+                    0 for random seed",
             )
             parser.add_argument(
                 "--no_border_zeroing",
@@ -188,7 +189,12 @@ class CopyPasteGANModel(BaseModel):
         self.patch = opt.patch_D
 
         # specify random seed
+        if opt.seed == 0:
+            opt.seed = np.random.randint(0, 42)
+            print(f"Random seed is set to {opt.seed}")
+
         torch.manual_seed(opt.seed)
+
 
         # specify the training losses you want to print out.
         # base_model.get_current_losses is used for plotting and saving these
@@ -478,6 +484,7 @@ class CopyPasteGANModel(BaseModel):
 
         # compute the GAN losses using predictions from forward pass
         # real is not computed using patch, as all patches are real
+        print(type(self.pred_real_patch))
         self.loss_D_real = self.criterionGAN(self.pred_real_patch, True, False)
         self.loss_D_fake = self.criterionGAN(self.pred_fake_patch.detach(), False, self.patch)
         if self.train_on_gf:
