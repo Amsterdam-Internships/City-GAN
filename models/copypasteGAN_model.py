@@ -315,8 +315,7 @@ class CopyPasteGANModel(BaseModel):
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(
-                gan_mode="vanilla", target_real_label=opt.real_target
-            ).to(self.device)
+                gan_mode="vanilla", target_real_label=opt.real_target, patch=self.patch).to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
 
@@ -456,8 +455,8 @@ class CopyPasteGANModel(BaseModel):
         in the backward_D"""
 
         # compute generator losses
-        self.loss_G_comp = self.criterionGAN(self.pred_fake_patch, True, self.patch)
-        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc_patch, False, self.patch)
+        self.loss_G_comp = self.criterionGAN(self.pred_fake_patch, True)
+        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc_patch, False)
         self.loss_G_conf = (
             self.opt.confidence_weight * self.criterionConf(self.g_mask)
             if self.opt.confidence_weight > 0
@@ -482,10 +481,10 @@ class CopyPasteGANModel(BaseModel):
 
         # compute the GAN losses using predictions from forward pass
         # real is not computed using patch, as all patches are real
-        self.loss_D_real = self.criterionGAN(self.pred_real_patch, True, False)
-        self.loss_D_fake = self.criterionGAN(self.pred_fake_patch.detach(), False, self.patch)
+        self.loss_D_real = self.criterionGAN(self.pred_real_patch, True)
+        self.loss_D_fake = self.criterionGAN(self.pred_fake_patch.detach(), False)
         if self.train_on_gf:
-            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake_patch, False, self.patch)
+            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake_patch, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
