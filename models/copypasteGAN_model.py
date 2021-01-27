@@ -334,6 +334,7 @@ class CopyPasteGANModel(BaseModel):
             )
             self.optimizers = [self.optimizer_G, self.optimizer_D]
 
+
     def set_input(self, input):
         """Unpack input data from the dataloader and perform necessary
         pre-processing steps.
@@ -352,6 +353,7 @@ class CopyPasteGANModel(BaseModel):
             self.grounded_fake, self.mask_gf = networks.composite_image(
                 self.src, self.tgt, device=self.device
             )
+
 
     def forward(self, valid=False, generator=False):
         """Run forward pass. This will be called by both functions <
@@ -406,6 +408,7 @@ class CopyPasteGANModel(BaseModel):
         # compute accuracy of discriminator if in validation mode
         if valid:
             self.compute_single_accs()
+
 
     def compute_accs(self):
         """
@@ -512,6 +515,7 @@ class CopyPasteGANModel(BaseModel):
         # scale gradients and perform backward step
         self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
 
+
     def optimize_parameters(self):
         """Update network weights; it is called in every training iteration.
         only perform  optimizer steps after all backward operations, torch1.5
@@ -540,6 +544,7 @@ class CopyPasteGANModel(BaseModel):
                 self.scaler.step(self.optimizer_D)
                 self.scaler.update()
                 self.optimizer_D.zero_grad()
+
 
     def run_batch(self, data, total_batches):
         """
@@ -580,6 +585,7 @@ class CopyPasteGANModel(BaseModel):
         # snapshot = tracemalloc.take_snapshot()
         # self.print_snapshot(snapshot.statistics('lineno'))
 
+
     def print_snapshot(self, top_stats):
         for index, stat in enumerate(top_stats[:3], 1):
             frame = stat.traceback[0]
@@ -590,6 +596,7 @@ class CopyPasteGANModel(BaseModel):
             line = linecache.getline(frame.filename, frame.lineno).strip()
             if line:
                 print('    %s' % line)
+
 
     def run_validation(self, val_data):
         """

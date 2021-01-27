@@ -463,7 +463,7 @@ class GANLoss(nn.Module):
             # target_tensor = self.logical_mask * self.real_label
 
             # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the patches
-            target_tensor = self.logical_mask * 0.5
+            target_tensor = self.logical_mask * self.fake_label
         else:
             target_tensor = self.fake_label
 
