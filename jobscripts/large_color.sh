@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 10:00:00
+#SBATCH -t 5:00:00
 #SBATCH -p gpu_shared
 
 #SBATCH --mail-type=BEGIN,END
@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=36
+run=38
 echo "starting training run $run"
 
 #Create output directory on scratch
@@ -25,7 +25,7 @@ cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_co
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
-    --batch_size 64\
+    --batch_size 32\
     --n_epochs 20\
     --n_epochs_decay 10\
     --save_epoch_freq 15\
@@ -42,7 +42,7 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --val_batch_size 128\
     --accumulation_steps 1\
     --display_id 0\
-    --lambda_aux 0.1\
+    --lambda_aux 0.2\
 
 
 # copy checkpoints to home directory

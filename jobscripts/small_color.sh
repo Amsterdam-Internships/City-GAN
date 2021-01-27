@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 10:00:00
+#SBATCH -t 5:00:00
 #SBATCH -p gpu_shared
 
 #SBATCH --mail-type=BEGIN,END
@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=37
+run=53
 echo "starting training run $run"
 
 #Create output directory on scratch
@@ -34,18 +34,21 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --update_html 100 \
     --display_freq 100\
     --verbose \
-    --sigma_blur 1 \
+    --sigma_blur 0.0\
     --load_size 70\
     --crop_size 64\
     --D_headstart 0\
-    --confidence_weight 1.0\
+    --confidence_weight 0.0\
     --val_batch_size 128\
     --accumulation_steps 1\
     --display_id 0\
-    --lambda_aux 0\
-    --netD basic\
-    --rotate_img\
-
+    --lambda_aux 0.1\
+    --D_threshold 0.5\
+    --netD copy\
+    --real_target 0.8\
+    --patch_D\
+    --seed 42
+    
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/run"${run}"
 cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run"${run}"

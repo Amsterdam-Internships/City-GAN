@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
-            model.run_batch(data, total_iters)
+            model.run_batch(data, overall_batch)
 
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:
@@ -128,5 +128,11 @@ if __name__ == '__main__':
 
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
 
+        try:
+            print(f"Gaussian filter weight at end of epoch {epoch}: {model.netD.module.blur_filter.weight}")
+        except:
+            pass
+
     model.save_networks('latest')
     print("Finished training, model is saved")
+    print(f"Batches trained - G: {model.count_G}, D: {model.count_D} ")

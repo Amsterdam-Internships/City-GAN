@@ -337,7 +337,10 @@ def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
                         -torch.sum((xy_grid - mean)**2., dim=-1) /\
                         (2*variance)
                     )
+
+    # make sure sum of kernel equals 1
     gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
+    # reshape the kernel
     gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
     gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
     gaussian_filter = nn.Conv2d(in_out, in_out, kernel_size=kernel_size,
@@ -345,7 +348,61 @@ def create_gaussian_filter(sigma_blur, padding_mode="replicate", groups=3,
     gaussian_filter.weight.data = gaussian_kernel
     gaussian_filter.weight.requires_grad = False
 
+    print("in filter creation", gaussian_filter.weight.data)
+
+
     return gaussian_filter
+
+
+
+class GaussianSmoothing(nn.Module):
+    """
+    Apply gaussian smoothing on a 2d tensor. Taken and adapted from
+    https://discuss.pytorch.org/t/is-there-anyway-to-do-gaussian-filtering-for-
+    an-image-2d-3d-in-pytorch/12351/8
+    Arguments:
+        channels (int): Number of channels of the input tensors. Output will
+            have this number of channels as well.
+        kernel_size (int, tuple): Size of the gaussian kernel.
+        sigma (float, tuple): Standard deviation of the gaussian kernel.
+    """
+    def __init__(self, channels=3, kernel_size=(3, 3), sigma=(1.0, 1.0)):
+
+        super(GaussianSmoothing, self).__init__()
+
+        kernel = 1
+        meshgrids = torch.meshgrid(
+            [
+                torch.arange(size, dtype=torch.float32)
+                for size in kernel_size
+            ]
+        )
+        for size, std, mgrid in zip(kernel_size, sigma, meshgrids):
+            mean = (size - 1) / 2
+            kernel *= torch.exp(-((mgrid - mean) / std) ** 2 / 2)
+
+        # Make sure sum of values in gaussian kernel equals 1.
+        kernel = kernel / torch.sum(kernel)
+
+        # Reshape to depthwise convolutional weight
+        kernel = kernel.view(1, 1, *kernel.size())
+        kernel = kernel.repeat(channels, *[1] * (kernel.dim() - 1))
+
+        self.register_buffer('weight', kernel)
+        self.groups = channels
+
+        self.conv = F.conv2d
+
+
+    def forward(self, input):
+        """
+        Apply gaussian filter to input.
+        Arguments:
+            input (torch.Tensor): Input to apply gaussian filter on.
+        Returns:
+            filtered (torch.Tensor): Filtered output.
+        """
+        return self.conv(input, weight=self.weight, groups=self.groups, padding=1)
 
 
 
@@ -360,7 +417,7 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0, patch=False):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -375,6 +432,7 @@ class GANLoss(nn.Module):
         self.register_buffer('real_label', torch.tensor(target_real_label))
         self.register_buffer('fake_label', torch.tensor(target_fake_label))
         self.gan_mode = gan_mode
+        self.patch = patch
         if gan_mode == 'lsgan':
             self.loss = nn.MSELoss()
         elif gan_mode == 'vanilla':
@@ -387,7 +445,7 @@ class GANLoss(nn.Module):
 
     def get_target_tensor(self, prediction, target_is_real):
         """Create label tensors with the same size as the input.
-
+ 
         Parameters:
             prediction (tensor) - - typically the prediction from a discriminator
             target_is_real (bool) - - if the ground truth label is for real images or fake images
@@ -396,11 +454,35 @@ class GANLoss(nn.Module):
             A label tensor filled with ground truth label, and with the size of the input
         """
 
+
+        # if patch is not used, set to the real/fake label
         if target_is_real:
             target_tensor = self.real_label
+        elif self.patch:
+            # this sets the unchanged patches to the real label;
+            # target_tensor = self.logical_mask * self.real_label
+
+            # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the patches
+            target_tensor = self.logical_mask * self.fake_label
         else:
             target_tensor = self.fake_label
+
         return target_tensor.expand_as(prediction)
+
+
+    def set_copy_mask(self, copy_mask):
+        self.mask = copy_mask
+        if self.patch:
+            s = self.mask.shape[-1]//4
+            maxpool = nn.MaxPool2d(s, s)
+            max_mask = maxpool(self.mask)
+            min_mask = -maxpool(-self.mask)
+
+            # self.logical_mask = torch.logical_or((min_mask>0.05), (max_mask<0.05)).int()
+
+            self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
+
+
 
     def __call__(self, prediction, target_is_real):
         """Calculate loss given Discriminator's output and grount truth labels.
@@ -413,7 +495,7 @@ class GANLoss(nn.Module):
             the calculated loss.
         """
         if self.gan_mode in ['lsgan', 'vanilla']:
-            target_tensor = self.get_target_tensor(prediction, target_is_real)
+            target_tensor = self.get_target_tensor(prediction.detach(), target_is_real)
             loss = self.loss(prediction, target_tensor)
         elif self.gan_mode == 'wgangp':
             if target_is_real:
@@ -454,6 +536,8 @@ class CopyGenerator(nn.Module):
 
         self.border_zeroing = border_zeroing
         self.img_dim = img_dim
+        dec1_channels = output_nc
+        upscale = False
 
         self.downscale = []
         self.upscale = []
@@ -463,15 +547,24 @@ class CopyGenerator(nn.Module):
         if self.img_dim != 64:
             assert log(self.img_dim, 2).is_integer(), "Image size should be power of 2"
 
+
             nr_scale_ops = int(log(self.img_dim, 2) - 6)
+            upscale = True
+            dec1_channels = (64//nr_scale_ops) * 2
 
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
-                self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+                next_nc = 64 // (nr_scale_ops - i)
+
+                self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
+                # self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+
+                self.upscale.append(DecoderBlock(next_nc*2, 1 if i==0 else input_nc, stride=1, kernel=3, padding=1))
+                input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
             self.upscale = nn.Sequential(*self.upscale)
+
 
 
         # set up encoder layers
@@ -485,7 +578,7 @@ class CopyGenerator(nn.Module):
         self.dec3 = DecoderBlock(512, 128)
         self.dec2 = DecoderBlock(256, 64)
         # this being the last layer depends on possible upsampling operations
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)))
+        self.dec1 = DecoderBlock(128, dec1_channels, last_layer=True)
 
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
@@ -502,8 +595,12 @@ class CopyGenerator(nn.Module):
 
         # if necessary, downscale the input to 64x64
         if self.downscale:
-            for layer in self.downscale:
+            downscale_outs = []
+            for i, layer in enumerate(self.downscale):
                 input = layer(input)
+                downscale_outs.append(input)
+            downscale_outs = downscale_outs[::-1]
+
 
         # check downscaling and blurring operations in terms of dimensions
         assert input.shape[-1] == 64, "incorrect image shape after \
@@ -515,6 +612,7 @@ class CopyGenerator(nn.Module):
         enc3 = self.enc3(enc2)
         enc4 = self.enc4(enc3)
 
+
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
         dec2 = self.dec2(torch.cat([enc2, dec3], 1))
@@ -522,8 +620,9 @@ class CopyGenerator(nn.Module):
 
         # upscale the output if necessary
         if self.upscale:
-            for layer in self.upscale:
-                dec1 = layer(dec1)
+            for i, layer in enumerate(self.upscale[::-1]):
+                # dec1 = layer(dec1)
+                dec1 = layer(torch.cat([downscale_outs[i], dec1], 1))
 
         # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
@@ -569,9 +668,11 @@ class CopyDiscriminator(nn.Module):
 
         self.img_dim = img_dim
         self.aux = aux
+        self.patchGAN = patchGAN
 
         if sigma_blur:
-            self.blur_filter = create_gaussian_filter(sigma_blur)
+            # self.blur_filter = create_gaussian_filter(sigma_blur)
+            self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
         else:
             self.blur_filter = None
 
@@ -587,8 +688,10 @@ class CopyDiscriminator(nn.Module):
 
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
-                self.downscale.append(EncoderBlock(input_nc, input_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i==nr_scale_ops-1)))
+                next_nc = 64 // (nr_scale_ops - i)
+                self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
+                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i == nr_scale_ops - 1)))
+                input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
             self.upscale = nn.Sequential(*self.upscale)
@@ -609,19 +712,50 @@ class CopyDiscriminator(nn.Module):
         # init other layers needed
         self.sigmoid = nn.Sigmoid()
 
-        if patchGAN:
-            # variant with one conv-layer
-            self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
+        # if patchGAN:
+        #     # variant with one conv-layer
+        #     # self.avg = nn.Sequential(nn.Conv2d(512, 1, stride=2, kernel_size=3, padding=1), self.sigmoid)
 
-            # variant with two conv layers (output is same shape)
-            # self.avg = nn.Sequential(
-                # EncoderBlock(512, 128, 3, 2, 1),
-                # nn.Conv2d(128, 1, 3, 1, 1),
-                # self.sigmoid)
+        #     # variant with two conv layers (output is same shape)
+        #     self.avg = nn.Sequential(
+        #         EncoderBlock(512, 128, 3, 2, 1),
+        #         nn.Conv2d(128, 1, 3, 1, 1),
+        #         self.sigmoid)
+        #     self.fc =
+        # else:
+        #     self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
+        #         nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
+        #         nn.Linear(256, 1), self.sigmoid)
+
+
+        if self.patchGAN:
+            # define conv layers for patch prediction
+            self.patch_conv = nn.Sequential(
+                EncoderBlock(512, 128, 3, 2, 1),
+                nn.Conv2d(128, 1, 3, 1, 1))
+
+            # define linear layer for scaler prediction
+            self.patch_fc = nn.Sequential(nn.Flatten(), nn.Linear(16, 1),
+                self.sigmoid)
+
         else:
-            self.avg = nn.Sequential(nn.AvgPool2d(8, stride=2),
+            # define average pooling, followed by two linear layers
+            self.pool = nn.Sequential(nn.AvgPool2d(8, stride=2),
                 nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
                 nn.Linear(256, 1), self.sigmoid)
+
+
+    def get_realness_score(self, enc_out, patch=False):
+        if patch:
+            conv_out = self.patch_conv(enc_out)
+            single_out = self.patch_fc(conv_out)
+            patch_out = self.sigmoid(conv_out)
+        else:
+            single_out = self.pool(enc_out)
+            patch_out = None
+
+        return single_out, patch_out
+
 
 
     def forward(self, input):
@@ -634,14 +768,15 @@ class CopyDiscriminator(nn.Module):
 
         out = dict()
 
+        # apply Gaussian blur filter
+        if self.blur_filter:
+            input = self.blur_filter(input)
+            # print(self.blur_filter.weight)
+
         # if necessary, downscale the input to 64x64
         if self.downscale:
             for layer in self.downscale:
                 input = layer(input)
-
-        # initialize the Gaussian blur filter
-        if self.blur_filter:
-            input = self.blur_filter(input)
 
         # check downscaling and blurring operations in terms of dimensions
         assert input.shape[-1] == 64, "incorrect image shape after \
@@ -653,10 +788,12 @@ class CopyDiscriminator(nn.Module):
         enc3 = self.enc3(enc2)
         enc4 = self.enc4(enc3)
 
+        # compute realness scores
+        single_out, patch_out = self.get_realness_score(enc4, self.patchGAN)
+
         # if auxiliary loss is not used, return score and skip decoder
-        if  not self.aux:
-            realness_score = self.avg(enc4)
-            return realness_score, None
+        if not self.aux:
+            return single_out, patch_out, None
 
         dec4 = self.dec4(enc4)
         dec3 = self.dec3(torch.cat([enc3, dec4], 1))
@@ -671,10 +808,7 @@ class CopyDiscriminator(nn.Module):
         # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
 
-        # return the encoder output (realness score)
-        realness_score = self.avg(enc4)
-
-        return realness_score, copy_mask
+        return single_out, patch_out, copy_mask
 
 
 class EncoderBlock(nn.Module):
@@ -753,7 +887,6 @@ class DecoderBlock(nn.Module):
 
     def forward(self, input):
         """Standard forward"""
-        # print("Input shape decoder block:", input.shape)
         return self.model(input)
 
 
@@ -775,6 +908,8 @@ class ConfidenceLoss(nn.Module):
     def __call__(self, pred_mask):
         """Calculate loss given mask.
 
+        Works as follows: elementwise, the minimum value is taken from either the pred_mask or the inverse pred_mask, resulting in a tensor with the same size as pred_mask, with the min value at each position. This is closest to zero when the pred_mask is either close to 0 or to 1, and high (max 0.5) if all pred_mask values are 0.5 (and the mask is not confident)
+
         Parameters:
             predicted mask (tensor) - predicted mask by generator
         Returns:
@@ -787,9 +922,8 @@ class ConfidenceLoss(nn.Module):
 
 
 class DistinctMaskLoss(nn.Module):
-    """Defines the confidence loss, inspired from https://github.com/FLoosli/CP_GAN/blob/master/CP_GAN_models.py
-
-     Penalizes values that are not close to zero or one.
+    """
+    Not used at the moment
     """
     def __init__(self, nr_obj_classes=3):
         super(DistinctMaskLoss, self).__init__()
@@ -814,42 +948,6 @@ class DistinctMaskLoss(nn.Module):
 
 
 
-# TODO implement this
-class FeatureMatchingLoss(nn.Module):
-    """Define different GAN objectives.
-
-    The FeatureMatchingLoss class abstracts away the need to create the target label tensor
-    that has the same size as the input.
-    """
-
-    # TODO: set real label to 0.95/0.7 (in the paper) instead of 1 to prevent overconfidence?
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
-        """ Initialize the FeatureMatchingLoss class.
-
-        Parameters:
-            gan_mode (str) - - the type of GAN objective. It currently supports vanilla, lsgan, and wgangp.
-            target_real_label (bool) - - label for a real image
-            target_fake_label (bool) - - label of a fake image
-
-        Note: Do not use sigmoid as the last layer of Discriminator.
-        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
-        """
-        super(FeatureMatchingLoss, self).__init__()
-
-
-    def __call__(self, prediction, target_is_real):
-        """
-
-        Parameters:
-
-        Returns:
-            the calculated loss.
-        """
-        loss = 0
-
-        return loss
-
-
 
 class MaskLoss(nn.Module):
     """Define different GAN objectives.
@@ -858,7 +956,7 @@ class MaskLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, target_real_label=1.0, target_fake_label=0.0):
+    def __init__(self):
         """
         Initialize MaskLoss class
         """
@@ -867,11 +965,8 @@ class MaskLoss(nn.Module):
         self.BCELoss = nn.BCELoss()
 
     def get_mask_loss(self, pred_mask, mask):
-
-        # TODO: should be cross entropy loss, but unofficial github uses MSE
-        # compute average pixel-wise loss between two images
+        """the the mask loss, due to possible permutation (background can be copied or foreground, we take the minimum of the two losses."""
         loss = torch.min(self.BCELoss(pred_mask, mask), self.BCELoss(pred_mask, (1-mask)))
-
 
         return loss
 
@@ -899,8 +994,6 @@ class MaskLoss(nn.Module):
             total_loss = total_loss + L_gr_fake
 
         return total_loss
-
-
 
 
 
