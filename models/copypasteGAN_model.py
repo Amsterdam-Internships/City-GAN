@@ -374,11 +374,11 @@ class CopyPasteGANModel(BaseModel):
         self.g_mask_binary = networks.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
-        # this is only done when D is trained,
         self.composite, _ = networks.composite_image(
                 self.src, self.tgt, self.g_mask, device=self.device
             )
-            # get discriminators prediction on the generated image
+
+        # get discriminators prediction on the generated image
         self.pred_fake_single, self.pred_fake_patch, self.D_mask_fake = self.netD(self.composite)
 
         # apply the masks on different source images, should be labeled false
@@ -396,14 +396,12 @@ class CopyPasteGANModel(BaseModel):
             self.pred_real_single, self.pred_real_patch, self.D_mask_real = self.netD(self.tgt)
 
         # make sure the predictions are the right size
-        assert (valid or self.pred_real_single.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_real_single.shape}, B: \
+        assert (valid or self.pred_fake_single.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_fake_single.shape}, B: \
             {self.opt.batch_size})"
 
 
         if (self.train_on_gf and not generator) or valid:
-            self.pred_grfake_single, self.pred_grfake_patch, self.D_mask_grfake = self.netD(
-                self.grounded_fake
-            )
+            self.pred_grfake_single, self.pred_grfake_patch, self.D_mask_grfake = self.netD(self.grounded_fake)
 
         # compute accuracy of discriminator if in validation mode
         if valid:
