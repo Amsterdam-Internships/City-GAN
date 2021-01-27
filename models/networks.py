@@ -417,7 +417,7 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0, patch=False):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -432,6 +432,7 @@ class GANLoss(nn.Module):
         self.register_buffer('real_label', torch.tensor(target_real_label))
         self.register_buffer('fake_label', torch.tensor(target_fake_label))
         self.gan_mode = gan_mode
+        self.patch = patch
         if gan_mode == 'lsgan':
             self.loss = nn.MSELoss()
         elif gan_mode == 'vanilla':
@@ -442,7 +443,7 @@ class GANLoss(nn.Module):
         else:
             raise NotImplementedError('gan mode %s not implemented' % gan_mode)
 
-    def get_target_tensor(self, prediction, target_is_real, patch=False):
+    def get_target_tensor(self, prediction, target_is_real):
         """Create label tensors with the same size as the input.
  
         Parameters:
@@ -452,7 +453,26 @@ class GANLoss(nn.Module):
         Returns:
             A label tensor filled with ground truth label, and with the size of the input
         """
-        if patch:
+
+
+        # if patch is not used, set to the real/fake label
+        if target_is_real:
+            target_tensor = self.real_label
+        elif self.patch:
+            # this sets the unchanged patches to the real label;
+            # target_tensor = self.logical_mask * self.real_label
+
+            # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the patches
+            target_tensor = self.logical_mask * 0.5
+        else:
+            target_tensor = self.fake_label
+
+        return target_tensor.expand_as(prediction)
+
+
+    def set_copy_mask(self, copy_mask):
+        self.mask = copy_mask
+        if self.patch:
             s = self.mask.shape[-1]//4
             maxpool = nn.MaxPool2d(s, s)
             max_mask = maxpool(self.mask)
@@ -462,24 +482,9 @@ class GANLoss(nn.Module):
 
             self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
 
-            # this sets the unchanged patches to the real label;
-            # target_tensor = self.logical_mask * self.real_label
 
-            # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the patches
-            target_tensor = self.logical_mask * 0.5
 
-        # if patch is not used, set to the real/fake label
-        elif target_is_real:
-            target_tensor = self.real_label
-        else:
-            target_tensor = self.fake_label
-
-        return target_tensor.expand_as(prediction)
-
-    def set_copy_mask(self, copy_mask):
-        self.mask = copy_mask
-
-    def __call__(self, prediction, target_is_real, patch):
+    def __call__(self, prediction, target_is_real):
         """Calculate loss given Discriminator's output and grount truth labels.
 
         Parameters:
@@ -490,7 +495,7 @@ class GANLoss(nn.Module):
             the calculated loss.
         """
         if self.gan_mode in ['lsgan', 'vanilla']:
-            target_tensor = self.get_target_tensor(prediction.detach(), target_is_real, patch=patch)
+            target_tensor = self.get_target_tensor(prediction.detach(), target_is_real)
             loss = self.loss(prediction, target_tensor)
         elif self.gan_mode == 'wgangp':
             if target_is_real:
