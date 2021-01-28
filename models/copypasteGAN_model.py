@@ -171,6 +171,14 @@ class CopyPasteGANModel(BaseModel):
                 action="store_true",
                 help="If specified, the data will be flipped vertically",
             )
+            parser.add_argument(
+                "--no_alternate",
+                action="store_true",
+                help="If specified, G and D will not be trained in alternating\
+                    fashion, but sequentially",
+            )
+
+
 
 
         return parser
@@ -444,6 +452,9 @@ class CopyPasteGANModel(BaseModel):
         self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
         self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
 
+        self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
+        self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
+
         if self.train_on_gf:
             self.acc_grfake = (
                 len(self.pred_grfake_single[self.pred_grfake_single < 0.5]) / B
@@ -566,9 +577,13 @@ class CopyPasteGANModel(BaseModel):
         # by default train D (in headstart or performing below threshold:
         self.train_G = False
 
-        # G is trained
-        if self.headstart_over and self.even_batch and self.D_above_thresh:
+        # determin if G can be trained
+        batch_right = self.even_batch or self.opt.no_alternate
+
+        if self.headstart_over and self.D_above_thresh and batch_right:
             self.train_G = True
+
+        # print("trainG:", self.train_G)
 
         # determine if grounded fakes are still used in training
         if self.D_gf_perfect and self.headstart_over:
