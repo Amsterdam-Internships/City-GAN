@@ -4,6 +4,7 @@ import torch
 import numpy as np
 from PIL import Image
 import os
+import linecache
 
 
 
@@ -11,6 +12,8 @@ import os
 def compute_accs(self):
     """
     Computes the accuracies of the discriminator based on patch predictions
+    NB: self is here the model class, to access all predictions. Not used atm,
+    should be moved to inside the model class to be used.
     """
 
     # assign the fakest patch in case of patch discriminator, else use the scaler prediction
@@ -37,22 +40,9 @@ def compute_accs(self):
             len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
         )
 
-def compute_single_accs(self):
-    B = self.opt.val_batch_size
-
-    self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
-    self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
-
-    self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
-    self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
-
-    if self.train_on_gf:
-        self.acc_grfake = (
-            len(self.pred_grfake_single[self.pred_grfake_single < 0.5]) / B
-        )
 
 
-def print_snapshot(self, snapshot):
+def print_snapshot(snapshot):
     """
     can be used to print snapshot from tracemalloc
     snapshot can be taken using tracemalloc.take_snapshot()
