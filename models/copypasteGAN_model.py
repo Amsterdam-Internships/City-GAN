@@ -362,7 +362,7 @@ class CopyPasteGANModel(BaseModel):
         self.criterionGAN.set_copy_mask(self.g_mask)
 
         # binary mask for visualization
-        self.g_mask_binary = networks.mask_to_binary(self.g_mask)
+        self.g_mask_binary = util.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
         self.composite, _ = networks.composite_image(
@@ -395,6 +395,7 @@ class CopyPasteGANModel(BaseModel):
         # compute accuracy of discriminator if in validation mode
         if valid:
             self.compute_single_accs()
+
 
     def compute_single_accs(self):
         B = self.opt.val_batch_size
