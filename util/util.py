@@ -1,12 +1,23 @@
 """This module contains simple helper functions """
 from __future__ import print_function
 import torch
+import torch.nn.functional as F
 import numpy as np
 from PIL import Image
 import os
 import linecache
 
 
+
+def mask_to_binary(mask):
+    """
+    Convert a mask in [0, 1] to binary ( in {0, 1})
+    """
+
+    assert (mask.min().item() >= 0) and (mask.max().item() <= 1)
+    bin_mask = F.relu(torch.sign(mask - 0.5))
+
+    return bin_mask
 
 
 def compute_accs(self):
