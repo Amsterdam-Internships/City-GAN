@@ -180,6 +180,7 @@ class CopyPasteGANModel(BaseModel):
 
 
 
+
         return parser
 
     def __init__(self, opt):
@@ -447,6 +448,9 @@ class CopyPasteGANModel(BaseModel):
 
     def compute_single_accs(self):
         B = self.opt.val_batch_size
+
+        self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
+        self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
 
         self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
         self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
