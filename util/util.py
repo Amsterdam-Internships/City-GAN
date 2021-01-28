@@ -6,6 +6,69 @@ from PIL import Image
 import os
 
 
+
+
+def compute_accs(self):
+    """
+    Computes the accuracies of the discriminator based on patch predictions
+    """
+
+    # assign the fakest patch in case of patch discriminator, else use the scaler prediction
+    patch = self.pred_real_patch.dim() > 2
+    fakest_patch_fake = (
+        torch.amin(self.pred_fake, dim=(2, 3)) if patch else self.pred_fake
+    )
+    fakest_patch_real = (
+        torch.amin(self.pred_real, dim=(2, 3)) if patch else self.pred_real
+    )
+
+    # predictions above 0.5 are classified as "real"
+    B = self.opt.val_batch_size
+    self.acc_real = len(fakest_patch_real[fakest_patch_real > 0.5]) / B
+    self.acc_fake = len(fakest_patch_fake[fakest_patch_fake < 0.5]) / B
+
+    if self.train_on_gf:
+        fakest_patch_grfake = (
+            torch.amin(self.pred_grfake, dim=(2, 3))
+            if patch
+            else self.pred_grfake
+        )
+        self.acc_grfake = (
+            len(fakest_patch_grfake[fakest_patch_grfake < 0.5]) / B
+        )
+
+def compute_single_accs(self):
+    B = self.opt.val_batch_size
+
+    self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
+    self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
+
+    self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
+    self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
+
+    if self.train_on_gf:
+        self.acc_grfake = (
+            len(self.pred_grfake_single[self.pred_grfake_single < 0.5]) / B
+        )
+
+
+def print_snapshot(self, snapshot):
+    """
+    can be used to print snapshot from tracemalloc
+    snapshot can be taken using tracemalloc.take_snapshot()
+    """
+    top_stats = snapshot.statistics('lineno')
+
+    for index, stat in enumerate(top_stats[:3], 1):
+        frame = stat.traceback[0]
+        filename = os.sep.join(frame.filename.split(os.sep)[-2:])
+        print("#%s: %s:%s: %.1f KiB"
+              % (index, filename, frame.lineno, stat.size / 1024))
+        line = linecache.getline(frame.filename, frame.lineno).strip()
+        if line:
+            print('    %s' % line)
+
+
 def tensor2im(input_image, imtype=np.uint8):
     """"Converts a Tensor array into a numpy image array.
 
