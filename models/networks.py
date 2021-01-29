@@ -344,7 +344,7 @@ class CopyGenerator(nn.Module):
 
             nr_scale_ops = int(log(self.img_dim, 2) - 6)
             upscale = True
-            dec1_channels = (64//nr_scale_ops) * 2
+            dec1_channels = 64
 
             # create enough down- and upsampling layers
             for i in range(nr_scale_ops):
