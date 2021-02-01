@@ -525,7 +525,9 @@ class CopyPasteGANModel(BaseModel):
         self.train_G = False
 
         # determine if G can be trained
-        batch_right = self.even_batch or self.opt.no_alternate
+        # G and D are trained sequentially for eval_freq batches
+        alt_cond = self.opt.no_alternate and ((total_batches // 100) % 2 == 0)
+        batch_right = self.even_batch or alt_cond
         if self.headstart_over and self.D_above_thresh and batch_right:
             self.train_G = True
 
@@ -584,6 +586,7 @@ class CopyPasteGANModel(BaseModel):
         self.acc_fake = np.mean(acc_fake)
         self.acc_real = np.mean(acc_real)
 
+        # set all training curriculum booleans for the coming eval_freq batches
         # performance of discriminator on grounded fakes
         self.D_gf_perfect = self.acc_grfake > 0.99
 
