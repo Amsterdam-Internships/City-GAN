@@ -528,8 +528,11 @@ class CopyPasteGANModel(BaseModel):
         # G and D are trained sequentially for eval_freq batches
         alt_cond = self.opt.no_alternate and ((total_batches // 100) % 2 == 0)
         batch_right = self.even_batch or alt_cond
+
         if self.headstart_over and self.D_above_thresh and batch_right:
             self.train_G = True
+
+        # print("trainG:", self.train_G)
 
         # determine if grounded fakes are still used in training
         if self.D_gf_perfect and self.headstart_over:
