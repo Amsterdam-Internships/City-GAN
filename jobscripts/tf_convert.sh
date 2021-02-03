@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 1
-#SBATCH -t 5:00:00
+#SBATCH -t 30:00:00
 #SBATCH -p gpu_shared
 
 #SBATCH --mail-type=BEGIN,END
@@ -10,6 +10,7 @@
 #Loading modules
 module load 2020
 module load Python
+module load TensorFlow
 
 
 # Create output directory on scratch
@@ -19,7 +20,7 @@ mkdir "$TMPDIR"/datasets
 cp -r $HOME/City-GAN/datasets/ROOM "$TMPDIR"/datasets/
 
 # execute conversion script
-python tf_convert.py --data_dir "datasets/ROOM/test"
+python tf_convert.py --data_dir "datasets/ROOM/train"
 
 # copy files to home directory
-cp -r "$TMPDIR"/datasets/ROOM/test/* $HOME/City-GAN/datasets/ROOM/test/
+cp -r "$TMPDIR"/datasets/ROOM/train/* $HOME/City-GAN/datasets/ROOM/train/

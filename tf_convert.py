@@ -1,7 +1,6 @@
 import os
 import tensorflow as tf
 import data.objects_room as room
-import tqdm
 import argparse
 import glob
 
@@ -33,7 +32,7 @@ if __name__ == '__main__':
         image_dir = os.path.join(flags.data_dir, f"images_{dataset_variant}")
         os.makedirs(image_dir, exist_ok=True)
 
-        for i, item in tqdm.tqdm(enumerate(iterator)):
+        for i, item in enumerate(iterator):
             image = item['image']
             masks = (item['mask'])
             tf.keras.preprocessing.image.save_img(
