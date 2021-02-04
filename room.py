@@ -32,7 +32,6 @@ if __name__ == '__main__':
     total_iters = 0
     overall_batch = 0
 
-    breakpoint()
 
     # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):
@@ -44,7 +43,7 @@ if __name__ == '__main__':
         epoch_iter = 0
         epoch_batch = 0
         # reset the visualizer: make results are saved every epoch
-        visualizer.reset()
+        # visualizer.reset()
 
         # inner loop within one epoch, iterating over batches
         for i, data in enumerate(dataset):
@@ -60,7 +59,11 @@ if __name__ == '__main__':
 
             # this includes setting and preprocessing the data, and optimizing
             # the parameters
-            model.optimize_params(data, overall_batch)
+
+            # for now, call inference here
+            original, moved = model.inference(data, type_="random")
+
+            model.optimize_parameters(data, overall_batch)
 
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:

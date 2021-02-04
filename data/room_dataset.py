@@ -23,7 +23,8 @@ class RoomDataset(BaseDataset):
         input_nc = self.opt.output_nc if self.opt.direction == 'BtoA' else self.opt.input_nc
 
         # check if the transform is the same if used multiple times (the random components)
-        self.transform = get_transform(opt, grayscale=(input_nc == 1))
+        self.transform_img = get_transform(opt, grayscale=(input_nc == 1))
+        self.transform_mask = get_transform(opt, grayscale=True)
 
 
         # incorporate the max length in here?
@@ -47,7 +48,7 @@ class RoomDataset(BaseDataset):
         mask_paths = glob.glob(os.path.join(self.data_dir, f"{index}_mask_*.jpg"))
 
         img = Image.open(img_path).convert('RGB')
-        img = self.transform(img)
+        img = self.transform_img(img)
 
         out_dict = dict()
         out_dict['img'] = img
@@ -55,8 +56,10 @@ class RoomDataset(BaseDataset):
 
         for i, p in enumerate(mask_paths):
             mask = Image.open(p).convert("1")
-            mask = self.transform(mask)
+            mask = self.transform_mask(mask)
             out_dict[f"mask{i}"] = mask
+
+        out_dict["nr_masks"] = i+1
 
         return out_dict
 

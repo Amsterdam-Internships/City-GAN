@@ -100,13 +100,6 @@ class CopyPasteGANModel(BaseModel):
                 prevent overfitting",
             )
             parser.add_argument(
-                "--seed",
-                type=int,
-                default=0,
-                help="Provide an integer for setting the random seed. Set to \
-                    0 for random seed",
-            )
-            parser.add_argument(
                 "--no_border_zeroing",
                 action="store_true",
                 help="default: clamp borders of generated mask to 0 \
@@ -132,11 +125,6 @@ class CopyPasteGANModel(BaseModel):
                 default=128,
                 help="every val_freq batches run the model on validation \
                     data, and obtain accuracies for training schedule",
-            )
-            parser.add_argument(
-                "--keep_last_batch",
-                action="store_true",
-                help="drop last incomplete batch by default",
             )
             parser.add_argument(
                 "--patch_D",

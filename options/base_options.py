@@ -54,6 +54,12 @@ class BaseOptions():
         parser.add_argument('--load_iter', type=int, default='0', help='which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]')
         parser.add_argument('--verbose', action='store_true', help='if specified, print more debugging information')
         parser.add_argument('--suffix', default='', type=str, help='customized suffix: opt.name = opt.name + suffix: e.g., {model}_{netG}_size{load_size}')
+        # added by me
+        parser.add_argument( "--keep_last_batch", action="store_true",
+                help="drop last incomplete batch by default")
+        parser.add_argument("--seed", type=int, default=0,
+                help="Provide an integer for setting the random seed. Set to \
+                    0 for random seed")
         self.initialized = True
         return parser
 

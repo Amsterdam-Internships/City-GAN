@@ -50,24 +50,41 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
-        self.loss_names = ['loss_G']
+        self.loss_names = []
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
-        self.visual_names = ['data_A', 'data_B', 'output']
+        self.visual_names = []
         # specify the models you want to save to the disk. The program will call base_model.save_networks and base_model.load_networks to save and load networks.
         # you can use opt.isTrain to specify different behaviors for training and test. For example, some networks will not be used during test, and you don't need to load them.
-        self.model_names = ['G']
+        self.model_names = []
         # define networks; you can use opt.isTrain to specify different behaviors for training and test.
-        self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG, gpu_ids=self.gpu_ids)
+        # self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf, opt.netG, gpu_ids=self.gpu_ids)
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
             # We also provide a GANLoss class "networks.GANLoss". self.criterionGAN = networks.GANLoss().to(self.device)
             self.criterionLoss = torch.nn.L1Loss()
             # define and initialize optimizers. You can define one optimizer for each network.
             # If two networks are updated at the same time, you can use itertools.chain to group them. See cycle_gan_model.py for an example.
-            self.optimizer = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
-            self.optimizers = [self.optimizer]
+            # self.optimizer = torch.optim.Adam(self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+            # self.optimizers = [self.optimizer]
 
         # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
+
+
+    def inference(self, data, type_='random'):
+
+        self.set_input(data)
+
+
+        if type_=="random":
+            pass
+
+        elif type_=="scanline":
+            pass
+        else:
+            raise AssertionError(f"Type {type_} note recognized, choose from \"random\" or \"scanline\"")
+
+
+
 
     def set_input(self, input):
         """Unpack input data from the dataloader and perform necessary pre-processing steps.
@@ -75,10 +92,14 @@ class MoveModel(BaseModel):
         Parameters:
             input: a dictionary that contains the data itself and its metadata information.
         """
-        AtoB = self.opt.direction == 'AtoB'  # use <direction> to swap data_A and data_B
-        self.data_A = input['A' if AtoB else 'B'].to(self.device)  # get image data A
-        self.data_B = input['B' if AtoB else 'A'].to(self.device)  # get image data B
-        self.image_paths = input['A_paths' if AtoB else 'B_paths']  # get image paths
+        self.img = input['img']
+        self.nr_masks = int(input["nr_masks"])
+
+        # conca
+        self.masks = torch.cat([input[f"mask{i}"] for i
+            in range(self.nr_masks)], 1)
+
+        breakpoint()
 
     def forward(self):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
@@ -91,9 +112,11 @@ class MoveModel(BaseModel):
         self.loss_G = self.criterionLoss(self.output, self.data_B) * self.opt.lambda_regression
         self.loss_G.backward()       # calculate gradients of network G w.r.t. loss_G
 
-    def optimize_parameters(self, overall_batch):
+    def optimize_parameters(self, data, overall_batch):
         """Update network weights; it will be called in every training iteration."""
         self.forward()               # first call forward to calculate intermediate results
+
+        breakpoint()
         self.optimizer.zero_grad()   # clear network G's existing gradients
         self.backward()              # calculate gradients for network G
         self.optimizer.step()        # update gradients for network G
