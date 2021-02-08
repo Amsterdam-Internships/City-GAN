@@ -45,7 +45,7 @@ class RoomDataset(BaseDataset):
 
         img_path = os.path.join(self.data_dir, f"{index}_img.jpg")
 
-        mask_paths = glob.glob(os.path.join(self.data_dir, f"{index}_mask_*.jpg"))
+        mask_paths = sorted(glob.glob(os.path.join(self.data_dir, f"{index}_mask_*.jpg")))
 
         img = Image.open(img_path).convert('RGB')
         img = self.transform_img(img)
