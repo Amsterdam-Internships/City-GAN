@@ -16,8 +16,13 @@ You need to implement the following functions:
     <optimize_parameters>: Update network weights; it will be called in every training iteration.
 """
 import torch
+import numpy as np
 from .base_model import BaseModel
+from util import util
 from . import networks
+
+from torchvision.transforms.functional import affine
+import matplotlib.pyplot as plt
 
 
 class MoveModel(BaseModel):
@@ -32,7 +37,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room')  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize_and_crop", load_size=64, crop_size=64, no_flip=True, )  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--lambda_regression', type=float, default=1.0, help='weight for the regression loss')  # You can define new arguments for this model.
 
@@ -52,7 +57,7 @@ class MoveModel(BaseModel):
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
         self.loss_names = []
         # specify the images you want to save and display. The program will call base_model.get_current_visuals to save and display these images.
-        self.visual_names = []
+        self.visual_names = ["img", "moved"]
         # specify the models you want to save to the disk. The program will call base_model.save_networks and base_model.load_networks to save and load networks.
         # you can use opt.isTrain to specify different behaviors for training and test. For example, some networks will not be used during test, and you don't need to load them.
         self.model_names = []
@@ -70,18 +75,72 @@ class MoveModel(BaseModel):
         # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
 
 
-    def inference(self, data, type_='random'):
+    def inference(self, data, obj_idx = -1, type_='random'):
+
+        assert type_ in {"random", "scanline"}, f"Type {type_} not recognized, choose from \"random\" or \"scanline\""
 
         self.set_input(data)
 
+        # edge case, what if the user sets the obdj_idx in [0, 4]?
+        if obj_idx == -1:
+            # set the minimum mask to 4, as first floor are walls, floor, sky
+            obj_idx = np.random.randint(4, self.nr_masks)
+            # obj_idx = 9
+        print("object idx", obj_idx)
+
+        img_width, img_height = self.img.shape[2:4]
+
+        # obj_mask = self.masks[:, obj_idx]
+        obj_mask = getattr(self, f"mask_{obj_idx}")
+        obj_mask_binary = (obj_mask > 0).int()
+        obj_width = int(torch.max(torch.sum(obj_mask>0, axis=2)))
+        obj_height = int(torch.max(torch.sum(obj_mask>0, axis=1)))
+
+        obj_size_approx = obj_width * obj_height
+
+        # divide the image into segments
+        # background includes the object to be moved
+        background = (1-obj_mask_binary) * self.img
+        obj = obj_mask_binary * self.img
+
+
+        # x translation is always used
+        # x_translation = np.random.randint(obj_width, img_width - obj_width)
+        x_translation = obj_width
+
 
         if type_=="random":
-            pass
+            y_translation = -obj_height
 
         elif type_=="scanline":
-            pass
-        else:
-            raise AssertionError(f"Type {type_} note recognized, choose from \"random\" or \"scanline\"")
+            # we want to obtain x_min and x_max of the object, and the width of the object (x_max-x_min). Then we move the object to the right with at least width, and maximally (img_width - width), and modulo the transformation with img_width
+
+            if obj_width >= img_width:
+                print("object is too large, to be implemented (returns None)")
+                return None, None
+
+            y_translation = 0
+
+
+        moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)
+        new_background = 1 - (moved_obj != 0).int()
+        self.moved = new_background  * self.img + moved_obj
+
+        print(x_translation, y_translation)
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+        ax1.imshow(util.tensor2im(self.img), origin="upper")
+        ax1.set_title("original")
+        ax2.imshow(util.tensor2im(obj), origin="upper")
+        ax2.set_title("object")
+        ax3.imshow(util.tensor2im(moved_obj), origin="upper")
+        ax3.set_title("moved_obj")
+        ax4.imshow(util.tensor2im(self.moved), origin="upper")
+        ax4.set_title("result")
+        plt.tight_layout()
+        plt.show()
+
+
+        return self.img, self.moved
 
 
 
@@ -95,11 +154,14 @@ class MoveModel(BaseModel):
         self.img = input['img']
         self.nr_masks = int(input["nr_masks"])
 
-        # conca
-        self.masks = torch.cat([input[f"mask{i}"] for i
-            in range(self.nr_masks)], 1)
+        # concatenate the masks into one
+        #
+        for i in range(self.nr_masks):
+            setattr(self, f"mask_{i}", input[f"mask{i}"])
+        # self.masks = torch.cat([input[f"mask{i}"] for i
+            # in range(self.nr_masks)], 1)
 
-        breakpoint()
+
 
     def forward(self):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
