@@ -1,9 +1,8 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 5:00:00
+#SBATCH -t 10:00:00
 #SBATCH -p gpu_shared
-
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=tom.lotze@gmail.com
 
@@ -18,17 +17,30 @@ echo "starting ROOM training run $run"
 #Create output directory on scratch
 mkdir "$TMPDIR"/datasets
 mkdir "$TMPDIR"/datasets/ROOM
+mkdir "$TMPDIR"/datasets/ROOM/images
+mkdir "$TMPDIR"/datasets/ROOM/images/train
+mkdir "$TMPDIR"/datasets/ROOM/images/val
 
 #Copy data file to scratch
-cp -r $HOME/City-GAN/datasets/ROOM/ "$TMPDIR"/datasets/ROOM
+
+
+for i in {0..9}; do
+    cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/99"$i"*.jpg "$TMPDIR"/datasets/ROOM/images/train/
+done
+
+cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/111**.jpg "$TMPDIR"/datasets/ROOM/images/val/
+
+
+echo "data copied to scratch"
 
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
     --dataroot "$TMPDIR"/datasets/ROOM/images\
+    --max_dataset_size 1000\
     --name CopyGAN_room\
-    --batch_size 128\
-    --n_epochs 1\
-    --n_epochs_decay 1\
+    --batch_size 64\
+    --n_epochs 10\
+    --n_epochs_decay 5\
     --save_epoch_freq 5\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --print_freq 20\
@@ -36,11 +48,12 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --display_freq 100\
     --verbose \
     --sigma_blur 0.0\
-    --load_size 70\
+    --load_size 64\
     --crop_size 64\
     --D_headstart 0\
     --confidence_weight 1.0\
     --val_batch_size 128\
+    --val_freq 200\
     --accumulation_steps 1\
     --display_id 0\
     --lambda_aux 0.1\
