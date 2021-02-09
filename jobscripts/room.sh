@@ -23,20 +23,33 @@ mkdir "$TMPDIR"/datasets/ROOM/images/val
 
 #Copy data file to scratch
 
-
+# old way of copying, in loops
 for i in {0..9}; do
     cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/99"$i"*.jpg "$TMPDIR"/datasets/ROOM/images/train/
 done
 
-cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/111**.jpg "$TMPDIR"/datasets/ROOM/images/val/
+# perhaps this can be done using tar file:
+# create tar file from training data, move to scratch, and unzip the archive
+
+# this tar file is already in the home folder
+# tar -zcf tar_train.tar.gz $HOME/City-GAN/datasets/ROOM/images/train/images_train/
+
+# move the tar file in home to scratch
+cp $HOME/City-GAN/datasets/ROOM/images/train/tar_room_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
+
+# unpack the tar on scratch
+tar -zxf "$TMPDIR"/datasets/ROOM/images/train/tar_room_train.tar.gz
+
+# old way of copying
+cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/999**.jpg "$TMPDIR"/datasets/ROOM/images/val/
 
 
 echo "data copied to scratch"
 
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
-    --dataroot "$TMPDIR"/datasets/ROOM/images\
-    --max_dataset_size 1000\
+    --dataroot "$TMPDIR"/datasets/ROOM/images/tar_room_train\
+    --max_dataset_size 10000\
     --name CopyGAN_room\
     --batch_size 64\
     --n_epochs 10\
