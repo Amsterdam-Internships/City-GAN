@@ -43,7 +43,7 @@ echo "Current time : $now"
 echo
 
 # unpack the tar on scratch
-tar -zxf "$TMPDIR"/datasets/ROOM/images/train/tar_room_train.tar.gz --strip-components 1
+tar -zxf "$TMPDIR"/datasets/ROOM/images/train/10k_train.tar.gz --strip-components 1
 
 echo "Tar file extracted on scratch"
 now=$(date +"%T")
