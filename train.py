@@ -99,14 +99,14 @@ if __name__ == '__main__':
             model.run_batch(data, overall_batch)
 
             # display images on visdom and save images to a HTML file
-            if epoch_batch % opt.display_freq == 0:
+            if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch)
 
 
             # print training losses and save logging information to the disk
-            if overall_batch % opt.print_freq == 0:
+            if epoch_batch % opt.print_freq == 0:
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_batch, losses, t_comp, t_data)
