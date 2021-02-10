@@ -24,9 +24,9 @@ mkdir "$TMPDIR"/datasets/ROOM/images/val
 #Copy data file to scratch
 
 # old way of copying, in loops
-for i in {0..9}; do
-    cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/99"$i"*.jpg "$TMPDIR"/datasets/ROOM/images/train/
-done
+# for i in {0..9}; do
+  #  cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/99"$i"*.jpg "$TMPDIR"/datasets/ROOM/images/train/
+#done
 
 # perhaps this can be done using tar file:
 # create tar file from training data, move to scratch, and unzip the archive
@@ -37,14 +37,26 @@ done
 # move the tar file in home to scratch
 cp $HOME/City-GAN/datasets/ROOM/images/train/tar_room_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
 
+echo "Tar file moved to scratch"
+now=$(date +"%T")
+echo "Current time : $now"
+echo
+
 # unpack the tar on scratch
 tar -zxf "$TMPDIR"/datasets/ROOM/images/train/tar_room_train.tar.gz
+
+echo "Tar file extracted on scratch"
+now=$(date +"%T")
+echo "Current time : $now"
+echo
 
 # old way of copying
 cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/999**.jpg "$TMPDIR"/datasets/ROOM/images/val/
 
-
-echo "data copied to scratch"
+echo "validation data copied to scratch"
+now=$(date +"%T")
+echo "Current time : $now"
+echo
 
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
