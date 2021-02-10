@@ -40,8 +40,10 @@ if __name__ == '__main__':
 
     # get the number of images in the dataset.
     dataset_size = len(dataset)
+    val_dataset_size = len(val_dataset)
     opt.dataset_size = dataset_size
     print(f'The number of training images = {dataset_size}')
+    print(f'The number of validation images = {val_dataset_size}')
     total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
     print(f'The number of epochs to run = {total_nr_epochs}')
 
