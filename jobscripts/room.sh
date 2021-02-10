@@ -43,7 +43,7 @@ echo "Current time : $now"
 echo
 
 # unpack the tar on scratch
-tar -zxf "$TMPDIR"/datasets/ROOM/images/train/10k_train.tar.gz --strip-components 1
+tar -zxf "$TMPDIR"/datasets/ROOM/images/train/10k_train.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/train/
 
 echo "Tar file extracted on scratch"
 now=$(date +"%T")
@@ -51,16 +51,26 @@ echo "Current time : $now"
 echo
 
 # old way of copying
-cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/111**.jpg "$TMPDIR"/datasets/ROOM/images/val/
+# cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/111**.jpg "$TMPDIR"/datasets/ROOM/images/val/
 
-echo "validation data copied to scratch"
+cp cp $HOME/City-GAN/datasets/ROOM/images/val/1k_val.tar.gz "$TMPDIR"/datasets/ROOM/images/val/
+
+echo "Validation tar copied to scratch"
+now=$(date +"%T")
+echo "Current time : $now"
+echo
+
+tar -zxf "$TMPDIR"/datasets/ROOM/images/val/1k_val.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/val/
+
+
+echo "validation tar extracted on scratch"
 now=$(date +"%T")
 echo "Current time : $now"
 echo
 
 # execute training script
 python $HOME/City-GAN/train.py --model copypasteGAN \
-    --dataroot "$TMPDIR"/datasets/ROOM/images/10k_train\
+    --dataroot "$TMPDIR"/datasets/ROOM/images/\
     --max_dataset_size 10000\
     --name CopyGAN_room\
     --batch_size 64\
