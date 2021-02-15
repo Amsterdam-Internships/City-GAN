@@ -241,7 +241,7 @@ def render_scene(args,
       bpy.context.preferences.system.compute_device = 'CUDA_0'
     else:
       bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
-      
+
 
   # Some CYCLES-specific stuff
   bpy.data.worlds['World'].cycles.sample_as_light = True
@@ -253,7 +253,7 @@ def render_scene(args,
     bpy.context.scene.cycles.device = 'GPU'
 
   print(f"Device used: {bpy.context.preferences.addons['cycles'].preferences.get_devices()}")
-    
+
   # This will give ground-truth information about the scene and its objects
   scene_struct = {
       'split': output_split,
@@ -311,6 +311,10 @@ def render_scene(args,
 
   # Now make some random objects
   objects, blender_objects = add_random_objects(scene_struct, num_objects, args, camera)
+
+
+  ##### to generate masks, use the following:
+  render_shadeless(blender_objects, path=output_image[:-4]+'_mask.png')
 
 
   ##### added by me, for random colors #############
