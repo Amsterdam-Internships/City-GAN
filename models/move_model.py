@@ -37,9 +37,10 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize_and_crop", load_size=64, crop_size=64, no_flip=True, )  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic')  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
-            parser.add_argument('--lambda_regression', type=float, default=1.0, help='weight for the regression loss')  # You can define new arguments for this model.
+            parser.add_argument('--theta_dim', type=int, default=6, help=
+                "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
 
         return parser
 
@@ -61,13 +62,14 @@ class MoveModel(BaseModel):
         self.visual_names = ["tgt", "obj", "composite"]
 
         # define the convnet that predicts theta
-        self.ConvNet = networks.MoveConvNET()
+        # perhaps we should treat the object and target separately first
+        self.netConv = networks.MoveConvNET(opt.input_nc+1, opt.ndf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
 
-        self.model_names = ["ConvNet"]
+        self.model_names = ["Conv"]
 
         if self.isTrain:  # only defined during training time
-            self.netD = networks.define_D(opt.input_nc, ndf, opt.netD)
-            self.model_names.append("netD")
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD)
+            self.model_names.append("D")
 
             self.criterionGAN = networks.GANLoss("vanilla")
 
@@ -115,14 +117,14 @@ class MoveModel(BaseModel):
         tgt_obj_concat = torch.cat(self.tgt, self.obj, 1)
 
         # compute theta using the convolutional network
-        self.theta = self.ConvNet(tgt_obj_concat)
+        self.theta = self.netConv(tgt_obj_concat)
 
         # make sure theta is scaled: preventing object from moving outside img
 
         # use theta to transform the object and the mask
         # is affine the correct function? perhaps we should use affine_grid
-        self.transf_obj = affine(self.obj, angle=, scale=, shear=)
-        self.transf_obj_mask = affine(self.obj_mask, angle=, scale=, shear=)
+        self.transf_obj = affine(self.obj, angle=0, scale=0, shear=0)
+        self.transf_obj_mask = affine(self.obj_mask, angle=0, scale=0, shear=0)
 
 
         # composite the moved object with the background from the target
@@ -160,10 +162,6 @@ class MoveModel(BaseModel):
         self.optimizer.zero_grad()   # clear network G's existing gradients
         self.backward()              # calculate gradients for network G
         self.optimizer.step()        # update gradients for network G
-
-
-
-
 
 
 
