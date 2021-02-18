@@ -80,24 +80,11 @@ class CopyPasteGANModel(BaseModel):
                 help="First train only discriminator for D_headstart batches",
             )
             parser.add_argument(
-                "--beta2",
-                type=int,
-                default=0.999,
-                help="beta2 parameter for the adam optimizer",
-            )
-            parser.add_argument(
                 "--sigma_blur",
                 type=float,
                 default=1.0,
                 help="Sigma used in Gaussian filter used for blurring \
                 discriminator input",
-            )
-            parser.add_argument(
-                "--real_target",
-                type=float,
-                default=0.8,
-                help="Target label for the discriminator, can be set <1 to \
-                prevent overfitting",
             )
             parser.add_argument(
                 "--no_border_zeroing",
