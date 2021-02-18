@@ -929,8 +929,46 @@ class DotLoss(nn.Module):
 
 
 ######################################
-# SPATIAL TRANSFORMER
+# SPATIAL TRANSFORMER + OTHER MOVE ARCHITECTURES
 ######################################
+
+
+class MoveConvNET(nn.Module):
+    """
+    """
+    def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
+        super(MoveConvNET, self).__init__()
+
+        layers = []
+        norm_layer = get_norm_layer(norm_type=norm)
+
+        use_bias = norm_layer.func == nn.InstanceNorm2d
+
+        nf_mult_prev = nf_mult = 1
+
+        for n in range(1, n_layers+1):  # gradually increase the number of filters
+            nf_mult_prev = nf_mult
+            nf_mult = min(2 ** n, 8)
+            layers += [
+                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=1, padding=1, bias=use_bias),
+                norm_layer(ndf * nf_mult),
+                nn.LeakyReLU(0.2, True)
+            ]
+
+        layers.append(nn.Linear(ndf*nf_mult, theta_dim))
+
+        layers.append(nn.Sigmoid())
+
+        self.model = nn.Sequential(*layers)
+
+
+    def forward(self, input):
+        return self.model(input)
+
+
+
+
+
 
 class STN(nn.Module):
     def __init__(self):
