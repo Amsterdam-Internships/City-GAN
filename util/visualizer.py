@@ -68,7 +68,6 @@ class Visualizer():
         self.name = opt.name
         self.port = opt.display_port
         self.saved = False
-        self.dataset_size = opt.dataset_size
 
         if self.display_id > 0:  # connect to a visdom server given <display_port> and <display_server>
             import visdom
