@@ -12,7 +12,7 @@ module load Python
 
 # declare run
 run=1
-echo "starting ROOM training run $run"
+echo "starting Move room training run $run"
 
 #Create output directory on scratch
 mkdir "$TMPDIR"/datasets
@@ -53,51 +53,28 @@ echo
 # old way of copying
 # cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/111**.jpg "$TMPDIR"/datasets/ROOM/images/val/
 
-cp cp $HOME/City-GAN/datasets/ROOM/images/val/1k_val.tar.gz "$TMPDIR"/datasets/ROOM/images/val/
+# cp cp $HOME/City-GAN/datasets/ROOM/images/val/1k_val.tar.gz "$TMPDIR"/datasets/ROOM/images/val/
 
-echo "Validation tar copied to scratch"
-now=$(date +"%T")
-echo "Current time : $now"
-echo
+# echo "Validation tar copied to scratch"
+# now=$(date +"%T")
+# echo "Current time : $now"
+# echo
 
-tar -zxf "$TMPDIR"/datasets/ROOM/images/val/1k_val.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/val/
+# tar -zxf "$TMPDIR"/datasets/ROOM/images/val/1k_val.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/val/
 
 
-echo "validation tar extracted on scratch"
-now=$(date +"%T")
-echo "Current time : $now"
-echo
+# echo "validation tar extracted on scratch"
+# now=$(date +"%T")
+# echo "Current time : $now"
+# echo
 
 # execute training script
-python $HOME/City-GAN/move.py --model copypasteGAN \
+python $HOME/City-GAN/train_move.py --model move \
     --dataroot "$TMPDIR"/datasets/ROOM/images/\
-    --max_dataset_size 10000\
-    --name CopyGAN_room\
-    --batch_size 64\
-    --n_epochs 10\
-    --n_epochs_decay 5\
-    --save_epoch_freq 5\
-    --checkpoints_dir "$TMPDIR"/checkpoints\
-    --print_freq 20\
-    --update_html 100 \
-    --display_freq 100\
-    --verbose \
-    --sigma_blur 0.0\
-    --load_size 64\
-    --crop_size 64\
-    --D_headstart 0\
-    --confidence_weight 1.0\
-    --val_batch_size 128\
-    --val_freq 200\
-    --accumulation_steps 1\
-    --display_id 0\
-    --lambda_aux 0.1\
-    --D_threshold 0.5\
-    --netD copy\
-    --real_target 0.8\
-    --patch_D\
-    --seed 42\
-    --no_alternate
+    --name Move\
+    --batch_size 32\
+    --epochs 20
+
 
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/room/run"${run}"
