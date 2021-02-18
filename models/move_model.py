@@ -39,7 +39,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init="xavier")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init="xavier", name="MoveModel")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, help=
                 "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
@@ -256,24 +256,18 @@ class MoveModel(BaseModel):
 
 
 
-    def baseline(self, data, obj_idx = -1, type_='random'):
+    def baseline(self, data, type_='random'):
 
         assert type_ in {"random", "scanline"}, f"Type {type_} not recognized, choose from \"random\" or \"scanline\""
 
+        assert self.opt.batch_size == 1,"for baselines, batch size should be 1"
+
         self.set_input(data)
 
-        # edge case, what if the user sets the obdj_idx in [0, 4]?
-        if obj_idx == -1:
-            # set the minimum mask to 4, as first floor are walls, floor, sky
-            obj_idx = np.random.randint(4, self.nr_masks)
-            # obj_idx = 9
-        print("object idx", obj_idx)
+        img_width, img_height = self.src.shape[2:4]
 
-        img_width, img_height = self.img.shape[2:4]
-
-        # obj_mask = self.masks[:, obj_idx]
         obj_mask = getattr(self, f"mask_{obj_idx}")
-        obj_mask_binary = (obj_mask > 0).int()
+        obj_mask_binary = (self.obj_mask > 0).int()
         obj_width = int(torch.max(torch.sum(obj_mask>0, axis=2)))
         obj_height = int(torch.max(torch.sum(obj_mask>0, axis=3)))
 
@@ -281,8 +275,8 @@ class MoveModel(BaseModel):
 
         # divide the image into segments
         # background includes the object to be moved
-        background = (1-obj_mask_binary) * self.img
-        obj = obj_mask_binary * self.img
+        background = (1-obj_mask_binary) * self.tgt
+        obj = obj_mask_binary * self.src
 
 
         # x translation is always used
@@ -304,11 +298,11 @@ class MoveModel(BaseModel):
 
         moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)
         new_background = 1 - (moved_obj != 0).int()
-        self.moved = new_background  * self.img + moved_obj
+        self.moved = new_background  * self.tgt + moved_obj
 
         print(x_translation, y_translation)
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
-        ax1.imshow(util.tensor2im(self.img), origin="upper")
+        ax1.imshow(util.tensor2im(self.tgt), origin="upper")
         ax1.set_title("original")
         ax2.imshow(util.tensor2im(obj), origin="upper")
         ax2.set_title("object")
@@ -320,4 +314,4 @@ class MoveModel(BaseModel):
         plt.show()
 
 
-        return self.img, self.moved
+        return self.tgt, self.moved
