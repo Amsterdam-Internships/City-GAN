@@ -35,7 +35,7 @@ mkdir "$TMPDIR"/datasets/ROOM/images/val
 # tar -zcf tar_train.tar.gz $HOME/City-GAN/datasets/ROOM/images/train/images_train/
 
 # move the tar file in home to scratch
-cp $HOME/City-GAN/datasets/ROOM/images/train/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
+cp $HOME/City-GAN/datasets/ROOM/images/train/20k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
 
 echo "Tar file moved to scratch"
 now=$(date +"%T")

@@ -26,9 +26,9 @@ blender --background -noaudio --python data/render_images.py -- \
 	--filename_prefix "CLEVR_color"\
 	--split ""\
 	--min_objects 1\
-	--max_objects 4\
-	--num_images 2000\
-	--start_idx 15000\
+	--max_objects 6\
+	--num_images 100\
+	--start_idx 28000\
 	--use_gpu 1\
 	--render_num_samples 20\
 	--render_min_bounces 0\
@@ -45,5 +45,5 @@ ls "$TMPDIR"/datasets/CLEVR_colorized
 mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized
 mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized/images
 mkdir -p $HOME/City-GAN/datasets/CLEVR_colorized/jsons
-cp -r "$TMPDIR"/datasets/CLEVR_colorized/images/* $HOME/City-GAN/datasets/CLEVR_colorized/images/val/
+cp -r "$TMPDIR"/datasets/CLEVR_colorized/images/* $HOME/City-GAN/datasets/CLEVR_colorized/images/with_masks/
 cp -r "$TMPDIR"/datasets/CLEVR_colorized/jsons/* $HOME/City-GAN/datasets/CLEVR_colorized/jsons/
