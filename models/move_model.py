@@ -23,6 +23,8 @@ from . import networks
 
 from torchvision.transforms.functional import affine
 import matplotlib.pyplot as plt
+from torch.cuda.amp import GradScaler, autocast
+import random
 
 
 class MoveModel(BaseModel):
@@ -37,10 +39,11 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic')  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init="xavier")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
-            parser.add_argument('--theta_dim', type=int, default=6, help=
+            parser.add_argument('--theta_dim', type=int, default=2, help=
                 "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
+
 
         return parser
 
@@ -56,29 +59,84 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = []
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv"]
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj_mask", "obj", "composite"]
+
+        self.scaler = GradScaler()
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.MoveConvNET(opt.input_nc+1, opt.ndf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
+        self.netConv = networks.MoveConvNET(opt.input_nc*2, opt.ndf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
 
         self.model_names = ["Conv"]
 
-        if self.isTrain:  # only defined during training time
+        if self.isTrain:
+            # define Discriminator
             self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD)
             self.model_names.append("D")
 
-            self.criterionGAN = networks.GANLoss("vanilla")
+            # define loss functions
+            self.criterionGAN = networks.GANLoss("vanilla", target_real_label=opt.real_target)
+
+            # define optimizers
+            self.optimizer_Conv = torch.optim.Adam(
+                self.netConv.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2))
+            self.optimizer_D = torch.optim.Adam(
+                self.netD.parameters(), lr=opt.lr, betas=(opt.beta1,opt.beta2))
+            self.optimizers = [self.optimizer_Conv, self.optimizer_D]
 
 
-        # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
+        # The program will automatically call <model.setup> to define schedulers, load networks, and print networks
 
 
 
+    def center_object(self, mask):
+        """
+        This function performs the following steps:
+        - A valid mask from the mask_dict is selected
+        - Mask is used to extract the object from the source image
+        - The object and corresponding mask are centered
+        """
 
+        self.mask_binary = (mask > 0).int()
+        surface = self.mask_binary.sum().item()
+        # center and return the object
+        # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
+        mask_pdist = self.mask_binary/surface
+
+        [B, _, self.w, self.h] = mask_pdist.shape
+        assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
+        x_center, y_center = self.w//2, self.h//2
+
+        # marginal distributions
+        dx = torch.sum(mask_pdist, 3)
+        dy = torch.sum(mask_pdist, 2)
+
+        # expected values
+        cx = torch.sum(dy * np.arange(self.h)).item()
+        cy = torch.sum(dx * np.arange(self.w)).item()
+
+        # print("cx, cy", cx, cy)
+
+        # compute necessary translations
+        x_t = x_center - cx
+        y_t = y_center - cy
+
+        # print("x_t, y_t", x_t, y_t)
+
+        # extract object from src
+        obj = (self.mask_binary) * self.src
+
+        # translate the object and mask
+        obj_centered = affine(obj, 0, [x_t, y_t], 1, 0)
+        obj_mask = affine(self.mask_binary, 0, [x_t, y_t], 1, 0)
+
+        return obj_centered, obj_mask
+
+        # if none of the objects is large enough, raise exception
+        raise Exception("No valid mask could be found!")
 
 
 
@@ -91,18 +149,14 @@ class MoveModel(BaseModel):
             - target image
 
         """
-        self.img = input['img']
-        self.nr_masks = int(input["nr_masks"])
 
-        self.tgt = None
-        self.obj = None
-        self.src = None
-        self.obj_mask = None
+        self.src = input['src']
+        self.tgt = input['tgt']
+        self.mask = input['mask']
 
 
-        # assign the masks to the model
-        for i in range(self.nr_masks):
-            setattr(self, f"mask_{i}", input[f"mask{i}"])
+        # find a suitable object to move from src to target
+        self.obj, self.obj_mask = self.center_object(self.mask)
 
 
     def forward(self):
@@ -114,17 +168,23 @@ class MoveModel(BaseModel):
             - the transformed object and object masks are composited --> output img
         """
         # concatenate the target and object on channel dimension
-        tgt_obj_concat = torch.cat(self.tgt, self.obj, 1)
+        tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
 
         # compute theta using the convolutional network
-        self.theta = self.netConv(tgt_obj_concat)
+        self.theta = self.netConv(tgt_obj_concat).squeeze()
 
+        # print("theta:", self.theta)
         # make sure theta is scaled: preventing object from moving outside img
+
+        scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2])).int().view(-1, self.opt.theta_dim)
+
+        # print("scaled_theta:", scaled_theta)
 
         # use theta to transform the object and the mask
         # is affine the correct function? perhaps we should use affine_grid
-        self.transf_obj = affine(self.obj, angle=0, scale=0, shear=0)
-        self.transf_obj_mask = affine(self.obj_mask, angle=0, scale=0, shear=0)
+
+        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=1, scale=1, shear=0) for obj, theta in zip(self.obj, scaled_theta)], 0)
+        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=1, scale=1, shear=0) for mask, theta in zip(self.obj_mask, scaled_theta)], 0)
 
 
         # composite the moved object with the background from the target
@@ -133,35 +193,66 @@ class MoveModel(BaseModel):
         # get the prediction on the fake image
         self.pred_fake = self.netD(self.composite)
 
-        # get the prediction on the real image
-        self.pred_real = self.netD(self.src)
 
 
 
-
-    def backward(self):
+    def backward_D(self):
         """
         todo here
             - compute the losses (GAN loss real fake and possibly more)
             - backward over the loss for D
+        """
+
+        # get the prediction on the real image
+        self.pred_real = self.netD(self.src)
+
+
+        self.loss_D_real = self.criterionGAN(self.pred_real, True)
+        self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
+
+        self.loss_D = (self.loss_D_fake + self.loss_D_real) / 2
+
+        self.scaler.scale(self.loss_D).backward()
+
+
+
+    def backward_Conv(self):
+        """
+        todo here
+            - compute the losses (GAN loss real fake and possibly more)
             - backward over the loss to update the ConvNet
-            - perhaps use AMP scaler again?
 
         """
 
-        pass
+        self.loss_Conv = self.criterionGAN(self.pred_fake, True)
+
+        self.scaler.scale(self.loss_Conv).backward()
 
 
     def optimize_parameters(self, data, overall_batch):
         """Update network weights; it will be called in every training iteration.
         """
+
+        self.set_input(data)
+
         # run the forward pass
         self.forward()
 
+        # train discriminator
+        if overall_batch % 2 == 0:
+            # print("Training D")
+            self.optimizer_D.zero_grad()
+            self.backward_D()
+            self.scaler.step(self.optimizer_D)
+            self.scaler.update()
 
-        self.optimizer.zero_grad()   # clear network G's existing gradients
-        self.backward()              # calculate gradients for network G
-        self.optimizer.step()        # update gradients for network G
+        # train convnet predicting theta
+        else:
+            # print("Training Convnet")
+            self.optimizer_Conv.zero_grad()
+            self.backward_Conv()
+            self.scaler.step(self.optimizer_Conv)
+            self.scaler.update()
 
 
 
