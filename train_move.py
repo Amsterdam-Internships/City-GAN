@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # regular setup: load and print networks; create schedulers
     model.setup(opt)
     # create a visualizer that display/save images and plots
-    # visualizer = Visualizer(opt)
+    visualizer = Visualizer(opt)
     # the total number of training iterations
     total_iters = 0
     overall_batch = 0
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         epoch_iter = 0
         epoch_batch = 0
         # reset the visualizer: make results are saved every epoch
-        # visualizer.reset()
+        visualizer.reset()
 
         # inner loop within one epoch, iterating over batches
         for i, data in enumerate(dataset):
@@ -61,7 +61,7 @@ if __name__ == '__main__':
             # the parameters
 
             # for now, call inference here
-            original, moved = model.inference(data, type_="random")
+            # original, moved = model.baseline(data, type_="random")
 
             model.optimize_parameters(data, overall_batch)
 
