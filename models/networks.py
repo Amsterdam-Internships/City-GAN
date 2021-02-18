@@ -939,34 +939,29 @@ class MoveConvNET(nn.Module):
     def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
         super(MoveConvNET, self).__init__()
 
-        layers = []
+        layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
         norm_layer = get_norm_layer(norm_type=norm)
 
         use_bias = norm_layer.func == nn.InstanceNorm2d
 
         nf_mult_prev = nf_mult = 1
 
-        for n in range(1, n_layers+1):  # gradually increase the number of filters
+        for n in range(1, n_layers+1):
             nf_mult_prev = nf_mult
             nf_mult = min(2 ** n, 8)
             layers += [
-                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=1, padding=1, bias=use_bias),
+                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
                 norm_layer(ndf * nf_mult),
                 nn.LeakyReLU(0.2, True)
             ]
 
-        layers.append(nn.Linear(ndf*nf_mult, theta_dim))
-
-        layers.append(nn.Sigmoid())
+        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, theta_dim), nn.Tanh()]
 
         self.model = nn.Sequential(*layers)
 
 
     def forward(self, input):
         return self.model(input)
-
-
-
 
 
 
@@ -1062,7 +1057,7 @@ class NLayerDiscriminator(nn.Module):
         sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
         nf_mult = 1
         nf_mult_prev = 1
-        for n in range(1, n_layers):  # gradually increase the number of filters
+        for n in range(1, n_layers+1):  # gradually increase the number of filters
             nf_mult_prev = nf_mult
             nf_mult = min(2 ** n, 8)
             sequence += [
@@ -1087,7 +1082,7 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, input):
         """Standard forward."""
-        return self.model(input), None
+        return self.model(input)
 
 
 
