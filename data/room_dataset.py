@@ -1,5 +1,5 @@
 from data.base_dataset import BaseDataset, get_transform
-from data.image_folder import make_dataset
+from data.image_folder import is_image_file
 from PIL import Image
 import torch
 import os
@@ -21,8 +21,32 @@ class RoomDataset(BaseDataset):
         """
         BaseDataset.__init__(self, opt)
 
+        IMG_EXTENSIONS = [
+            '.jpg', '.JPG', '.jpeg', '.JPEG',
+            '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
+            '.tif', '.TIF', '.tiff', '.TIFF',
+        ]
+
         # images can be found directly in the phase folder
         self.data_dir = os.path.join(opt.dataroot, opt.phase)
+
+        assert os.path.isdir(self.data_dir), f"{self.data_dir} is not a valid dir"
+
+        count = 0
+        self.paths = []
+        too_large=False
+
+        for root, _, fnames in sorted(os.walk(self.data_dir)):
+            for fname in fnames:
+                if "img" in fname and is_image_file(fname):
+                    path = os.path.join(root, fname)
+                    self.paths.append(path)
+                    count += 1
+                if count >= opt.max_dataset_size:
+                    break
+            if count >= opt.max_dataset_size:
+                break
+                too_large=True
 
         # check if the transform is the same if used multiple times (the random components)
         self.transform_img = get_transform(opt, grayscale=False)
@@ -31,7 +55,7 @@ class RoomDataset(BaseDataset):
         self.min_obj_surface = opt.min_obj_surface
 
         # incorporate the max length in here?
-        self.length = min(len(glob.glob1(self.data_dir,"*img*")), opt.max_dataset_size)
+        self.length = opt.max_dataset_size if too_large else len(self.paths)
 
 
 
@@ -55,10 +79,16 @@ class RoomDataset(BaseDataset):
 
         out_dict = dict()
 
-        # extract source image based on index, and random target image
-        img_path_src = os.path.join(self.data_dir, f"{index}_img.jpg")
+        img_path_src = self.paths[index]
         index_tgt =(index + random.randint(1, self.length-1)) % self.length
-        img_path_tgt = os.path.join(self.data_dir, f"{index_tgt}_img.jpg")
+        img_path_tgt = self.paths[index_tgt]
+
+        mask_idx = int(os.path.basename(img_path_src).split("_")[0])
+
+        # # extract source image based on index, and random target image
+        # img_path_src = os.path.join(self.data_dir, f"{index}_img.jpg")
+        # index_tgt =(index + random.randint(1, self.length-1)) % self.length
+        # img_path_tgt = os.path.join(self.data_dir, f"{index_tgt}_img.jpg")
 
         # open and convert images
         img_src = Image.open(img_path_src).convert('RGB')
@@ -67,7 +97,7 @@ class RoomDataset(BaseDataset):
         out_dict['tgt'] = self.transform_img(img_tgt)
 
         # extract all src masks
-        mask_paths = sorted(glob.glob(os.path.join(self.data_dir, f"{index}_mask_*.jpg")))[4:]
+        mask_paths = sorted(glob.glob(os.path.join(self.data_dir, f"{mask_idx}_mask_*.jpg")))[4:]
 
         random.shuffle(mask_paths)
 
