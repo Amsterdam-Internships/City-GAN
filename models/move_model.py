@@ -100,7 +100,7 @@ class MoveModel(BaseModel):
         - The object and corresponding mask are centered
         """
 
-        self.mask_binary = (mask > 0).int()
+
         surface = self.mask_binary.sum().item()
         # center and return the object
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
@@ -153,6 +153,8 @@ class MoveModel(BaseModel):
         self.src = input['src']
         self.tgt = input['tgt']
         self.mask = input['mask']
+
+        self.mask_binary = (self.mask > 0).int()
 
 
         # find a suitable object to move from src to target
@@ -266,17 +268,15 @@ class MoveModel(BaseModel):
 
         img_width, img_height = self.src.shape[2:4]
 
-        obj_mask = getattr(self, f"mask_{obj_idx}")
-        obj_mask_binary = (self.obj_mask > 0).int()
-        obj_width = int(torch.max(torch.sum(obj_mask>0, axis=2)))
-        obj_height = int(torch.max(torch.sum(obj_mask>0, axis=3)))
+        obj_width = int(torch.max(torch.sum(self.obj_mask>0, axis=2)))
+        obj_height = int(torch.max(torch.sum(self.obj_mask>0, axis=3)))
 
         obj_size_approx = obj_width * obj_height
 
         # divide the image into segments
         # background includes the object to be moved
-        background = (1-obj_mask_binary) * self.tgt
-        obj = obj_mask_binary * self.src
+        background = (1-self.mask_binary) * self.src
+        obj = self.mask_binary * self.src
 
 
         # x translation is always used
@@ -298,11 +298,11 @@ class MoveModel(BaseModel):
 
         moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)
         new_background = 1 - (moved_obj != 0).int()
-        self.moved = new_background  * self.tgt + moved_obj
+        self.moved = new_background  * self.src + moved_obj
 
         print(x_translation, y_translation)
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
-        ax1.imshow(util.tensor2im(self.tgt), origin="upper")
+        ax1.imshow(util.tensor2im(self.src), origin="upper")
         ax1.set_title("original")
         ax2.imshow(util.tensor2im(obj), origin="upper")
         ax2.set_title("object")
