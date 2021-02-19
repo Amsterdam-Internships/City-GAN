@@ -38,7 +38,7 @@ class RoomDataset(BaseDataset):
 
         for root, _, fnames in sorted(os.walk(self.data_dir)):
             for fname in fnames:
-                if "img" in fname and is_image_file(fname):
+                if "img" in fname and fname.endswith('jpg'):
                     path = os.path.join(root, fname)
                     self.paths.append(path)
                     count += 1
@@ -84,6 +84,8 @@ class RoomDataset(BaseDataset):
         img_path_tgt = self.paths[index_tgt]
 
         mask_idx = int(os.path.basename(img_path_src).split("_")[0])
+
+        print("mask idx", mask_idx)
 
         # # extract source image based on index, and random target image
         # img_path_src = os.path.join(self.data_dir, f"{index}_img.jpg")
