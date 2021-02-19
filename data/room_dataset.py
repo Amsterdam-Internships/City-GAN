@@ -48,15 +48,15 @@ class RoomDataset(BaseDataset):
                 break
                 too_large=True
 
+        print(self.paths)
+
         # check if the transform is the same if used multiple times (the random components)
         self.transform_img = get_transform(opt, grayscale=False)
         self.transform_mask = get_transform(opt, grayscale=True)
 
         self.min_obj_surface = opt.min_obj_surface
 
-        # incorporate the max length in here?
-        self.length = opt.max_dataset_size if too_large else len(self.paths)
-
+        self.length = self.__len__()
 
 
     def __getitem__(self, index):
@@ -80,12 +80,12 @@ class RoomDataset(BaseDataset):
         out_dict = dict()
 
         img_path_src = self.paths[index]
+        print("src img path:", img_path_src)
         index_tgt =(index + random.randint(1, self.length-1)) % self.length
         img_path_tgt = self.paths[index_tgt]
 
         mask_idx = int(os.path.basename(img_path_src).split("_")[0])
 
-        print("mask idx", mask_idx)
 
         # # extract source image based on index, and random target image
         # img_path_src = os.path.join(self.data_dir, f"{index}_img.jpg")
@@ -129,4 +129,4 @@ class RoomDataset(BaseDataset):
 
     def __len__(self):
         """Return the total number of images in the dataset."""
-        return self.length
+        return len(self.paths)
