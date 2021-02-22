@@ -78,7 +78,7 @@ class MoveModel(BaseModel):
             self.model_names.append("D")
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss("vanilla", target_real_label=opt.real_target)
+            self.criterionGAN = networks.GANLoss("vanilla", target_real_label=opt.real_target).to(self.device)
 
             # define optimizers
             self.optimizer_Conv = torch.optim.Adam(
@@ -150,11 +150,11 @@ class MoveModel(BaseModel):
 
         """
 
-        self.src = input['src']
-        self.tgt = input['tgt']
-        self.mask = input['mask']
+        self.src = input['src'].to(self.device)
+        self.tgt = input['tgt'].to(self.device)
+        self.mask = input['mask'].to(self.device)
 
-        self.mask_binary = (self.mask > 0).int()
+        self.mask_binary = (self.mask > 0).int().to(self.device)
 
 
         # find a suitable object to move from src to target
