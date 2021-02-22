@@ -114,7 +114,7 @@ class RoomDataset(BaseDataset):
                 out_dict["mask"] = mask
                 return out_dict
 
-        out_dict["mask"] = None
+        out_dict = None
 
         # # concatenate version:
         # out_dict["src_masks"] = torch.cat([self.transform_mask(Image.open(p).convert("1")) for p in mask_paths[4:]])

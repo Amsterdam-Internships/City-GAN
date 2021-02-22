@@ -76,8 +76,17 @@ class CustomDatasetDataLoader():
             batch_size=opt.batch_size,
             shuffle=not opt.serial_batches,
             num_workers=int(opt.num_threads),
-            drop_last=not opt.keep_last_batch)
+            drop_last=not opt.keep_last_batch,
+            collate_fn=self.my_collate)
         print("dataset [%s] and dataloder are created" % type(self.dataset).__name__)
+
+    def my_collate(self, batch):
+        """Filters out Nones from the batch"""
+        batch = list(filter(lambda x : x is not None, batch))
+
+        assert len(batch) > 0, "batch becomes empty. Increase min_obj_surface, or pick a larger batch size"
+
+        return torch.utils.data.dataloader.default_collate(batch)
 
     def load_data(self):
         return self

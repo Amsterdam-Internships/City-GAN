@@ -39,7 +39,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init="xavier", name="MoveModel")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init="xavier", name="MoveModel", lr_policy="step", gan_mode="vanilla")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, help=
                 "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
@@ -80,7 +80,7 @@ class MoveModel(BaseModel):
             self.model_names.append("D")
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss("vanilla", target_real_label=opt.real_target).to(self.device)
+            self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label=opt.real_target).to(self.device)
 
             # define optimizers
             self.optimizer_Conv = torch.optim.Adam(
@@ -108,8 +108,9 @@ class MoveModel(BaseModel):
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
         mask_pdist = self.mask_binary/surface
 
-        [B, _, self.w, self.h] = list(mask_pdist.shape)
-        assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
+        [self.B, _, self.w, self.h] = list(mask_pdist.shape)
+        # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
+
         x_center, y_center = self.w//2, self.h//2
 
         # marginal distributions
