@@ -599,6 +599,8 @@ def render_shadeless(blender_objects, path='flat.png'):
     while True:
       r, g = [random.random() for _ in range(2)]
       b_channel = float(i) / num_objects
+      if (r, g, b_channel) not in object_colors: break
+      
     object_colors.add((r, g, b_channel))
     mat.diffuse_color = [r, g, b_channel, 1.0]
 
