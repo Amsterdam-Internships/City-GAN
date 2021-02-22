@@ -588,11 +588,20 @@ def render_shadeless(blender_objects, path='flat.png'):
     bpy.ops.material.new()
     mat = bpy.data.materials['Material']
     mat.name = 'Material_%d' % i
+    # while True:
+    #   r, g, b = [random.random() for _ in range(3)]
+    #   if (r, g, b) not in object_colors: break
+    # object_colors.add((r, g, b))
+    # mat.diffuse_color = [r, g, b, 1.0]
+
+    # this codeblock comes from Relja Arandjelovic, above is original
     while True:
-      r, g, b = [random.random() for _ in range(3)]
-      if (r, g, b) not in object_colors: break
-    object_colors.add((r, g, b))
-    mat.diffuse_color = [r, g, b, 1.0]
+      r, g = [random.random() for _ in range(2)]
+      b_channel = float(i) / num_objects
+    object_colors.add((r, g, b_channel))
+    mat.diffuse_color = [r, g, b_channel, 1.0]
+
+
     mat.shadow_method = "NONE"
     obj.data.materials[0] = mat
 
