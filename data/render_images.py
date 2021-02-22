@@ -582,6 +582,7 @@ def render_shadeless(blender_objects, path='flat.png'):
 
   # Add random shadeless materials to all objects
   object_colors = set()
+  num_objects = len(blender_objects)
   old_materials = []
   for i, obj in enumerate(blender_objects):
     old_materials.append(obj.data.materials[0])
