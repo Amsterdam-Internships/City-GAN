@@ -1,0 +1,153 @@
+starting Move room training run 1
+Tar file moved to scratch
+Current time : 15:06:35
+
+10k_train.tar.gz
+990000_img.jpg
+990000_mask_0.jpg
+990000_mask_1.jpg
+990000_mask_2.jpg
+Tar file extracted on scratch
+Current time : 15:06:40
+
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/ROOM/images/	[default: None]
+             dataset_mode: room                          
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                     init: xavier                        
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 80                            	[default: 100]
+                    model: move                          	[default: cycle_gan]
+                 n_epochs: 5                             	[default: 100]
+           n_epochs_decay: 2                             	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize                        
+               print_freq: 20                            
+              real_target: 0.8                           
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 0                             
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 2                             
+         update_html_freq: 100                           
+                  verbose: False                         
+----------------- End -------------------
+dataset [RoomDataset] and dataloder are created
+gpu_ids [0]
+initialize network with xavier
+gpu_ids [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+[Network Conv] Total number of parameters : 3.929 M
+[Network D] Total number of parameters : 6.960 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+(epoch: 1, batches: 20, time: 0.004, data: 0.006) loss_D_real: 0.917 loss_D_fake: 0.580 loss_D: 0.748 loss_Conv: 0.894 
+(epoch: 1, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.836 loss_D_fake: 0.530 loss_D: 0.683 loss_Conv: 0.932 
+(epoch: 1, batches: 60, time: 0.004, data: 13.993) loss_D_real: 0.872 loss_D_fake: 0.578 loss_D: 0.725 loss_Conv: 0.907 
+(epoch: 1, batches: 80, time: 0.009, data: 4.280) loss_D_real: 0.810 loss_D_fake: 0.486 loss_D: 0.648 loss_Conv: 0.962 
+(epoch: 1, batches: 100, time: 0.006, data: 0.001) loss_D_real: 0.824 loss_D_fake: 0.547 loss_D: 0.686 loss_Conv: 0.921 
+(epoch: 1, batches: 120, time: 0.004, data: 5.952) loss_D_real: 1.212 loss_D_fake: 0.284 loss_D: 0.748 loss_Conv: 1.430 
+(epoch: 1, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.864 loss_D_fake: 0.469 loss_D: 0.667 loss_Conv: 1.027 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 7 	 Time Taken: 587 sec
+(epoch: 2, batches: 20, time: 0.004, data: 1.028) loss_D_real: 0.715 loss_D_fake: 0.573 loss_D: 0.644 loss_Conv: 0.893 
+(epoch: 2, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.851 loss_D_fake: 0.420 loss_D: 0.635 loss_Conv: 1.114 
+(epoch: 2, batches: 60, time: 0.003, data: 0.001) loss_D_real: 1.081 loss_D_fake: 0.326 loss_D: 0.703 loss_Conv: 1.337 
+(epoch: 2, batches: 80, time: 0.004, data: 0.001) loss_D_real: 0.997 loss_D_fake: 0.385 loss_D: 0.691 loss_Conv: 1.353 
+(epoch: 2, batches: 100, time: 0.004, data: 8.654) loss_D_real: 0.760 loss_D_fake: 0.449 loss_D: 0.605 loss_Conv: 1.021 
+(epoch: 2, batches: 120, time: 0.004, data: 5.511) loss_D_real: 0.822 loss_D_fake: 0.362 loss_D: 0.592 loss_Conv: 1.189 
+(epoch: 2, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.875 loss_D_fake: 0.476 loss_D: 0.675 loss_Conv: 1.380 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 7 	 Time Taken: 581 sec
+(epoch: 3, batches: 20, time: 0.002, data: 0.001) loss_D_real: 1.046 loss_D_fake: 0.220 loss_D: 0.633 loss_Conv: 1.573 
+(epoch: 3, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.681 loss_D_fake: 0.477 loss_D: 0.579 loss_Conv: 1.244 
+(epoch: 3, batches: 60, time: 0.004, data: 0.001) loss_D_real: 0.676 loss_D_fake: 0.401 loss_D: 0.539 loss_Conv: 1.032 
+(epoch: 3, batches: 80, time: 0.004, data: 0.001) loss_D_real: 0.687 loss_D_fake: 0.332 loss_D: 0.509 loss_Conv: 1.123 
+(epoch: 3, batches: 100, time: 0.004, data: 0.001) loss_D_real: 0.763 loss_D_fake: 0.345 loss_D: 0.554 loss_Conv: 1.431 
+(epoch: 3, batches: 120, time: 0.005, data: 16.653) loss_D_real: 0.757 loss_D_fake: 0.429 loss_D: 0.593 loss_Conv: 1.514 
+(epoch: 3, batches: 140, time: 0.005, data: 4.649) loss_D_real: 0.725 loss_D_fake: 0.429 loss_D: 0.577 loss_Conv: 1.315 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 7 	 Time Taken: 573 sec
+(epoch: 4, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.725 loss_D_fake: 0.313 loss_D: 0.519 loss_Conv: 1.782 
+(epoch: 4, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.636 loss_D_fake: 0.460 loss_D: 0.548 loss_Conv: 1.451 
+(epoch: 4, batches: 60, time: 0.004, data: 1.193) loss_D_real: 0.685 loss_D_fake: 0.322 loss_D: 0.504 loss_Conv: 1.957 
+(epoch: 4, batches: 80, time: 0.005, data: 0.001) loss_D_real: 0.805 loss_D_fake: 0.263 loss_D: 0.534 loss_Conv: 1.940 
+(epoch: 4, batches: 100, time: 0.004, data: 6.629) loss_D_real: 0.738 loss_D_fake: 0.276 loss_D: 0.507 loss_Conv: 1.843 
+(epoch: 4, batches: 120, time: 0.004, data: 0.001) loss_D_real: 1.017 loss_D_fake: 0.163 loss_D: 0.590 loss_Conv: 2.229 
+(epoch: 4, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.618 loss_D_fake: 0.343 loss_D: 0.481 loss_Conv: 1.587 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 7 	 Time Taken: 581 sec
+(epoch: 5, batches: 20, time: 0.004, data: 2.481) loss_D_real: 0.829 loss_D_fake: 0.229 loss_D: 0.529 loss_Conv: 2.390 
+(epoch: 5, batches: 40, time: 0.004, data: 10.633) loss_D_real: 0.651 loss_D_fake: 0.271 loss_D: 0.461 loss_Conv: 2.068 
+(epoch: 5, batches: 60, time: 0.004, data: 8.074) loss_D_real: 0.594 loss_D_fake: 0.363 loss_D: 0.478 loss_Conv: 1.724 
+(epoch: 5, batches: 80, time: 0.004, data: 8.695) loss_D_real: 0.599 loss_D_fake: 0.336 loss_D: 0.468 loss_Conv: 2.061 
+(epoch: 5, batches: 100, time: 0.005, data: 15.358) loss_D_real: 0.632 loss_D_fake: 0.488 loss_D: 0.560 loss_Conv: 1.731 
+(epoch: 5, batches: 120, time: 0.004, data: 4.872) loss_D_real: 0.669 loss_D_fake: 0.276 loss_D: 0.472 loss_Conv: 1.693 
+(epoch: 5, batches: 140, time: 0.004, data: 12.345) loss_D_real: 0.664 loss_D_fake: 0.303 loss_D: 0.484 loss_Conv: 2.131 
+saving the model at the end of epoch 5, iters 49920
+learning rate 0.0002000 -> 0.0001600
+End of epoch 5 / 7 	 Time Taken: 574 sec
+(epoch: 6, batches: 20, time: 0.005, data: 1.536) loss_D_real: 0.620 loss_D_fake: 0.372 loss_D: 0.496 loss_Conv: 2.281 
+(epoch: 6, batches: 40, time: 0.004, data: 10.512) loss_D_real: 0.619 loss_D_fake: 0.212 loss_D: 0.415 loss_Conv: 2.385 
+(epoch: 6, batches: 60, time: 0.004, data: 3.638) loss_D_real: 0.559 loss_D_fake: 0.458 loss_D: 0.509 loss_Conv: 2.251 
+(epoch: 6, batches: 80, time: 0.004, data: 0.912) loss_D_real: 0.647 loss_D_fake: 0.201 loss_D: 0.424 loss_Conv: 2.317 
+(epoch: 6, batches: 100, time: 0.004, data: 0.512) loss_D_real: 0.666 loss_D_fake: 0.218 loss_D: 0.442 loss_Conv: 2.648 
+(epoch: 6, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.669 loss_D_fake: 0.310 loss_D: 0.490 loss_Conv: 2.362 
+(epoch: 6, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.558 loss_D_fake: 0.434 loss_D: 0.496 loss_Conv: 2.105 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 6 / 7 	 Time Taken: 580 sec
+(epoch: 7, batches: 20, time: 0.004, data: 10.812) loss_D_real: 0.624 loss_D_fake: 0.295 loss_D: 0.460 loss_Conv: 2.506 
+(epoch: 7, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.820 loss_D_fake: 0.246 loss_D: 0.533 loss_Conv: 2.865 
+(epoch: 7, batches: 60, time: 0.004, data: 4.406) loss_D_real: 0.639 loss_D_fake: 0.380 loss_D: 0.509 loss_Conv: 2.727 
+(epoch: 7, batches: 80, time: 0.004, data: 14.741) loss_D_real: 0.669 loss_D_fake: 0.207 loss_D: 0.438 loss_Conv: 2.652 
+(epoch: 7, batches: 100, time: 0.004, data: 5.557) loss_D_real: 0.667 loss_D_fake: 0.236 loss_D: 0.452 loss_Conv: 2.476 
+(epoch: 7, batches: 120, time: 0.004, data: 0.006) loss_D_real: 0.791 loss_D_fake: 0.212 loss_D: 0.502 loss_Conv: 2.402 
+(epoch: 7, batches: 140, time: 0.005, data: 0.001) loss_D_real: 0.936 loss_D_fake: 0.170 loss_D: 0.553 loss_Conv: 3.131 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 7 / 7 	 Time Taken: 579 sec
+Finished training, model is saved
