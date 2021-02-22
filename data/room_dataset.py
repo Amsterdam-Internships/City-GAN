@@ -48,8 +48,6 @@ class RoomDataset(BaseDataset):
                 break
                 too_large=True
 
-        print(self.paths)
-
         # check if the transform is the same if used multiple times (the random components)
         self.transform_img = get_transform(opt, grayscale=False)
         self.transform_mask = get_transform(opt, grayscale=True)
@@ -80,7 +78,7 @@ class RoomDataset(BaseDataset):
         out_dict = dict()
 
         img_path_src = self.paths[index]
-        print("src img path:", img_path_src)
+        # print("src img path:", img_path_src)
         index_tgt =(index + random.randint(1, self.length-1)) % self.length
         img_path_tgt = self.paths[index_tgt]
 
@@ -103,15 +101,15 @@ class RoomDataset(BaseDataset):
 
         random.shuffle(mask_paths)
 
-        print("mask_paths:", mask_paths)
-        
+        # print("mask_paths:", mask_paths)
+
         # find suitable mask
 
         for p in mask_paths:
             mask = self.transform_mask(Image.open(p).convert("1"))
             mask_binary = (mask > 0).int()
             surface = mask_binary.sum().item()
-            print("surface:", surface)
+            # print("surface:", surface)
             if surface > self.opt.min_obj_surface:
                 out_dict["mask"] = mask
                 return out_dict
