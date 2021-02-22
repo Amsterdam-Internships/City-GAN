@@ -115,8 +115,8 @@ class MoveModel(BaseModel):
         dy = torch.sum(mask_pdist, 2)
 
         # expected values
-        cx = torch.sum(dy * np.arange(self.h)).item()
-        cy = torch.sum(dx * np.arange(self.w)).item()
+        cx = torch.sum(dy * torch.arange(self.h)).item()
+        cy = torch.sum(dx * torch.arange(self.w)).item()
 
         # print("cx, cy", cx, cy)
 
