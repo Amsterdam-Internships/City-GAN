@@ -216,7 +216,8 @@ class MoveModel(BaseModel):
 
         self.loss_D = (self.loss_D_fake + self.loss_D_real) / 2
 
-        self.scaler.scale(self.loss_D).backward()
+        # self.scaler.scale(self.loss_D).backward()
+        self.loss_D.backward()
 
 
 
@@ -230,7 +231,8 @@ class MoveModel(BaseModel):
 
         self.loss_Conv = self.criterionGAN(self.pred_fake, True)
 
-        self.scaler.scale(self.loss_Conv).backward()
+        # self.scaler.scale(self.loss_Conv).backward()
+        self.loss_Conv.backward()
 
 
     def optimize_parameters(self, data, overall_batch):
@@ -247,16 +249,18 @@ class MoveModel(BaseModel):
             # print("Training D")
             self.optimizer_D.zero_grad()
             self.backward_D()
-            self.scaler.step(self.optimizer_D)
-            self.scaler.update()
+            # self.scaler.step(self.optimizer_D)
+            # self.scaler.update()
+            self.optimizer_D.step()
 
         # train convnet predicting theta
         else:
             # print("Training Convnet")
             self.optimizer_Conv.zero_grad()
             self.backward_Conv()
-            self.scaler.step(self.optimizer_Conv)
-            self.scaler.update()
+            # self.scaler.step(self.optimizer_Conv)
+            # self.scaler.update()
+            self.optimizer_Conv.step()
 
 
 
