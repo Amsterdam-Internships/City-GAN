@@ -37,6 +37,8 @@ mkdir "$TMPDIR"/datasets/ROOM/images/val
 # move the tar file in home to scratch
 cp $HOME/City-GAN/datasets/ROOM/images/train/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
 
+ls  "$TMPDIR"/datasets/ROOM/images/train | head -n 5
+
 echo "Tar file moved to scratch"
 now=$(date +"%T")
 echo "Current time : $now"
@@ -44,6 +46,8 @@ echo
 
 # unpack the tar on scratch
 tar -zxf "$TMPDIR"/datasets/ROOM/images/train/10k_train.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/train/
+
+ls "$TMPDIR/datasets/ROOM/images/train"
 
 echo "Tar file extracted on scratch"
 now=$(date +"%T")
@@ -72,8 +76,13 @@ echo
 python $HOME/City-GAN/train_move.py --model move \
     --dataroot "$TMPDIR"/datasets/ROOM/images/\
     --name Move\
-    --batch_size 32\
-    --epochs 20
+    --max_dataset_size 10\
+    --batch_size 5\
+    --epoch 20\
+    --checkpoints_dir "$TMPDIR"/checkpoints\
+    --display_id 0\
+    --num_threads 1\
+    --min_obj_surface 55
 
 
 # copy checkpoints to home directory

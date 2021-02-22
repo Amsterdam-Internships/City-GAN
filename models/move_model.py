@@ -106,7 +106,7 @@ class MoveModel(BaseModel):
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
         mask_pdist = self.mask_binary/surface
 
-        [B, _, self.w, self.h] = mask_pdist.shape
+        [B, _, self.w, self.h] = list(mask_pdist.shape)
         assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
         x_center, y_center = self.w//2, self.h//2
 

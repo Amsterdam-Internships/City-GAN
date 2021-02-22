@@ -103,13 +103,15 @@ class RoomDataset(BaseDataset):
 
         random.shuffle(mask_paths)
 
+        print("mask_paths:", mask_paths)
+        
         # find suitable mask
 
         for p in mask_paths:
             mask = self.transform_mask(Image.open(p).convert("1"))
             mask_binary = (mask > 0).int()
             surface = mask_binary.sum().item()
-
+            print("surface:", surface)
             if surface > self.opt.min_obj_surface:
                 out_dict["mask"] = mask
                 return out_dict
