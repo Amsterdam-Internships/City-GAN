@@ -606,6 +606,7 @@ def render_shadeless(blender_objects, path='flat.png'):
 
     mat.shadow_method = "NONE"
     obj.data.materials[0] = mat
+    obj.active_material = mat
 
   # Render the scene
   bpy.ops.render.render(write_still=True)
