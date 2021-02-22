@@ -180,7 +180,7 @@ class MoveModel(BaseModel):
         # print("theta:", self.theta)
         # make sure theta is scaled: preventing object from moving outside img
 
-        scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2])).int().view(-1, self.opt.theta_dim)
+        scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, self.opt.theta_dim)
 
         # print("scaled_theta:", scaled_theta)
 
