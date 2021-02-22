@@ -68,7 +68,7 @@ class MoveModel(BaseModel):
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, norm=opt.norm, init_type=opt.init, theta_dim=opt.theta_dim)
+        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init, theta_dim=opt.theta_dim)
 
         # self.netConv = networks.MoveConvNET(opt.input_nc*2, opt.ngf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
 
@@ -76,7 +76,7 @@ class MoveModel(BaseModel):
 
         if self.isTrain:
             # define Discriminator
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD)
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids)
             self.model_names.append("D")
 
             # define loss functions
