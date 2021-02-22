@@ -168,7 +168,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    patchGAN=False, aux=True):
+    patchGAN=False, aux=True, theta_dim=2):
     """
     Returns a discriminator
 
@@ -214,6 +214,8 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     elif netD == 'n_layers':  # more options
         net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
             norm_layer=norm_layer)
+    elif netD == "move":
+        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, theta_dim=theta_dim)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')

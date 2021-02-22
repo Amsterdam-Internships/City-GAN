@@ -68,7 +68,9 @@ class MoveModel(BaseModel):
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.MoveConvNET(opt.input_nc*2, opt.ndf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
+        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
+
+        # self.netConv = networks.MoveConvNET(opt.input_nc*2, opt.ngf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
 
         self.model_names = ["Conv"]
 
@@ -115,8 +117,8 @@ class MoveModel(BaseModel):
         dy = torch.sum(mask_pdist, 2)
 
         # expected values
-        cx = torch.sum(dy * torch.arange(self.h)).item()
-        cy = torch.sum(dx * torch.arange(self.w)).item()
+        cx = torch.sum(dy * torch.arange(self.h).to(self.device)).item()
+        cy = torch.sum(dx * torch.arange(self.w).to(self.device)).item()
 
         # print("cx, cy", cx, cy)
 
