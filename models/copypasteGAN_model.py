@@ -100,20 +100,6 @@ class CopyPasteGANModel(BaseModel):
                     this threshold, only train D",
             )
             parser.add_argument(
-                "--val_freq",
-                type=int,
-                default=100,
-                help="every val_freq batches run the model on validation data,\
-                    and obtain accuracies for training schedule.",
-            )
-            parser.add_argument(
-                "--val_batch_size",
-                type=int,
-                default=128,
-                help="every val_freq batches run the model on validation \
-                    data, and obtain accuracies for training schedule",
-            )
-            parser.add_argument(
                 "--patch_D",
                 action="store_true",
                 help="If true, discriminator scores individual patches on \
@@ -142,18 +128,13 @@ class CopyPasteGANModel(BaseModel):
                 help="If specified, G and D will not be trained in alternating\
                     fashion, but sequentially (for val_freq batches each)",
             )
-            parser.add_argument(
-                "--tracemalloc",
-                action="store_true",
-                help="If specified, largest memory allocations are printed",
-            )
 
         return parser
 
     def __init__(self, opt):
         """Initialize this model class.
 
-        Parameters:
+        Parameters: cal
             opt -- training/test options
 
         """
@@ -374,9 +355,6 @@ class CopyPasteGANModel(BaseModel):
 
     def compute_single_accs(self):
         B = self.opt.val_batch_size
-
-        self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
-        self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
 
         self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
         self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
