@@ -1,6 +1,6 @@
 starting Move room training run 1
 Tar file moved to scratch
-Current time : 15:06:35
+Current time : 20:18:46
 
 10k_train.tar.gz
 990000_img.jpg
@@ -8,7 +8,13 @@ Current time : 15:06:35
 990000_mask_1.jpg
 990000_mask_2.jpg
 Tar file extracted on scratch
-Current time : 15:06:40
+Current time : 20:18:52
+
+Validation tar copied to scratch
+Current time : 20:18:52
+
+validation tar extracted on scratch
+Current time : 20:18:52
 
 ----------------- Options ---------------
                batch_size: 64                            	[default: 1]
@@ -31,7 +37,6 @@ Current time : 15:06:40
               epoch_count: 1                             
                  gan_mode: vanilla                       
                   gpu_ids: 0                             
-                     init: xavier                        
                 init_gain: 0.02                          
                 init_type: normal                        
                  input_nc: 3                             
@@ -72,13 +77,20 @@ Current time : 15:06:40
            serial_batches: False                         
                    suffix:                               
                 theta_dim: 2                             
+              tracemalloc: False                         
          update_html_freq: 100                           
+           val_batch_size: 128                           
+                 val_freq: 100                           
                   verbose: False                         
 ----------------- End -------------------
 dataset [RoomDataset] and dataloder are created
-gpu_ids [0]
-initialize network with xavier
-gpu_ids [0]
+dataset [RoomDataset] and dataloder are created
+The number of training images = 10000
+The number of validation images = 1111
+The number of epochs to run = 7
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
 initialize network with normal
 model [MoveModel] was created
 ---------- Networks initialized -------------
@@ -86,68 +98,68 @@ model [MoveModel] was created
 [Network D] Total number of parameters : 6.960 M
 -----------------------------------------------
 create web directory /scratch/checkpoints/Move/web...
-(epoch: 1, batches: 20, time: 0.004, data: 0.006) loss_D_real: 0.917 loss_D_fake: 0.580 loss_D: 0.748 loss_Conv: 0.894 
-(epoch: 1, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.836 loss_D_fake: 0.530 loss_D: 0.683 loss_Conv: 0.932 
-(epoch: 1, batches: 60, time: 0.004, data: 13.993) loss_D_real: 0.872 loss_D_fake: 0.578 loss_D: 0.725 loss_Conv: 0.907 
-(epoch: 1, batches: 80, time: 0.009, data: 4.280) loss_D_real: 0.810 loss_D_fake: 0.486 loss_D: 0.648 loss_Conv: 0.962 
-(epoch: 1, batches: 100, time: 0.006, data: 0.001) loss_D_real: 0.824 loss_D_fake: 0.547 loss_D: 0.686 loss_Conv: 0.921 
-(epoch: 1, batches: 120, time: 0.004, data: 5.952) loss_D_real: 1.212 loss_D_fake: 0.284 loss_D: 0.748 loss_Conv: 1.430 
-(epoch: 1, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.864 loss_D_fake: 0.469 loss_D: 0.667 loss_Conv: 1.027 
+(epoch: 1, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.956 loss_D_fake: 0.597 loss_D: 0.776 loss_Conv: 0.864 acc_real: 0.451 acc_fake: 0.534 scaled_theta_X: -28.000 scaled_theta_Y: 27.000 
+(epoch: 1, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.825 loss_D_fake: 0.661 loss_D: 0.743 loss_Conv: 0.876 acc_real: 0.451 acc_fake: 0.534 scaled_theta_X: -29.000 scaled_theta_Y: 4.000 
+(epoch: 1, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.849 loss_D_fake: 0.664 loss_D: 0.756 loss_Conv: 0.776 acc_real: 0.451 acc_fake: 0.534 scaled_theta_X: -28.000 scaled_theta_Y: 5.000 
+(epoch: 1, batches: 80, time: 0.007, data: 0.001) loss_D_real: 0.837 loss_D_fake: 0.560 loss_D: 0.698 loss_Conv: 0.851 acc_real: 0.451 acc_fake: 0.534 scaled_theta_X: -30.000 scaled_theta_Y: 31.000 
+(epoch: 1, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.870 loss_D_fake: 0.553 loss_D: 0.711 loss_Conv: 0.873 acc_real: 0.451 acc_fake: 0.534 scaled_theta_X: -30.000 scaled_theta_Y: 28.000 
+(epoch: 1, batches: 120, time: 0.002, data: 0.002) loss_D_real: 0.877 loss_D_fake: 0.572 loss_D: 0.724 loss_Conv: 0.879 acc_real: 0.253 acc_fake: 0.759 scaled_theta_X: -19.000 scaled_theta_Y: 31.000 
+(epoch: 1, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.860 loss_D_fake: 0.598 loss_D: 0.729 loss_Conv: 0.882 acc_real: 0.253 acc_fake: 0.759 scaled_theta_X: -29.000 scaled_theta_Y: -10.000 
 learning rate 0.0002000 -> 0.0002000
-End of epoch 1 / 7 	 Time Taken: 587 sec
-(epoch: 2, batches: 20, time: 0.004, data: 1.028) loss_D_real: 0.715 loss_D_fake: 0.573 loss_D: 0.644 loss_Conv: 0.893 
-(epoch: 2, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.851 loss_D_fake: 0.420 loss_D: 0.635 loss_Conv: 1.114 
-(epoch: 2, batches: 60, time: 0.003, data: 0.001) loss_D_real: 1.081 loss_D_fake: 0.326 loss_D: 0.703 loss_Conv: 1.337 
-(epoch: 2, batches: 80, time: 0.004, data: 0.001) loss_D_real: 0.997 loss_D_fake: 0.385 loss_D: 0.691 loss_Conv: 1.353 
-(epoch: 2, batches: 100, time: 0.004, data: 8.654) loss_D_real: 0.760 loss_D_fake: 0.449 loss_D: 0.605 loss_Conv: 1.021 
-(epoch: 2, batches: 120, time: 0.004, data: 5.511) loss_D_real: 0.822 loss_D_fake: 0.362 loss_D: 0.592 loss_Conv: 1.189 
-(epoch: 2, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.875 loss_D_fake: 0.476 loss_D: 0.675 loss_Conv: 1.380 
+End of epoch 1 / 7 	 Time Taken: 429 sec
+(epoch: 2, batches: 20, time: 0.002, data: 0.001) loss_D_real: 0.907 loss_D_fake: 0.476 loss_D: 0.692 loss_Conv: 0.902 acc_real: 0.253 acc_fake: 0.759 scaled_theta_X: -31.000 scaled_theta_Y: 25.000 
+(epoch: 2, batches: 40, time: 0.002, data: 0.001) loss_D_real: 0.940 loss_D_fake: 0.445 loss_D: 0.693 loss_Conv: 0.959 acc_real: 0.253 acc_fake: 0.759 scaled_theta_X: -23.000 scaled_theta_Y: 28.000 
+(epoch: 2, batches: 60, time: 0.002, data: 0.003) loss_D_real: 0.882 loss_D_fake: 0.522 loss_D: 0.702 loss_Conv: 0.922 acc_real: 0.263 acc_fake: 0.759 scaled_theta_X: -25.000 scaled_theta_Y: -6.000 
+(epoch: 2, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.947 loss_D_fake: 0.473 loss_D: 0.710 loss_Conv: 0.914 acc_real: 0.263 acc_fake: 0.759 scaled_theta_X: 29.000 scaled_theta_Y: 30.000 
+(epoch: 2, batches: 100, time: 0.002, data: 0.001) loss_D_real: 0.929 loss_D_fake: 0.505 loss_D: 0.717 loss_Conv: 0.906 acc_real: 0.263 acc_fake: 0.759 scaled_theta_X: -12.000 scaled_theta_Y: 20.000 
+(epoch: 2, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.882 loss_D_fake: 0.519 loss_D: 0.700 loss_Conv: 0.898 acc_real: 0.263 acc_fake: 0.759 scaled_theta_X: 14.000 scaled_theta_Y: 27.000 
+(epoch: 2, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.811 loss_D_fake: 0.544 loss_D: 0.677 loss_Conv: 0.832 acc_real: 0.263 acc_fake: 0.759 scaled_theta_X: -26.000 scaled_theta_Y: 13.000 
 learning rate 0.0002000 -> 0.0002000
-End of epoch 2 / 7 	 Time Taken: 581 sec
-(epoch: 3, batches: 20, time: 0.002, data: 0.001) loss_D_real: 1.046 loss_D_fake: 0.220 loss_D: 0.633 loss_Conv: 1.573 
-(epoch: 3, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.681 loss_D_fake: 0.477 loss_D: 0.579 loss_Conv: 1.244 
-(epoch: 3, batches: 60, time: 0.004, data: 0.001) loss_D_real: 0.676 loss_D_fake: 0.401 loss_D: 0.539 loss_Conv: 1.032 
-(epoch: 3, batches: 80, time: 0.004, data: 0.001) loss_D_real: 0.687 loss_D_fake: 0.332 loss_D: 0.509 loss_Conv: 1.123 
-(epoch: 3, batches: 100, time: 0.004, data: 0.001) loss_D_real: 0.763 loss_D_fake: 0.345 loss_D: 0.554 loss_Conv: 1.431 
-(epoch: 3, batches: 120, time: 0.005, data: 16.653) loss_D_real: 0.757 loss_D_fake: 0.429 loss_D: 0.593 loss_Conv: 1.514 
-(epoch: 3, batches: 140, time: 0.005, data: 4.649) loss_D_real: 0.725 loss_D_fake: 0.429 loss_D: 0.577 loss_Conv: 1.315 
+End of epoch 2 / 7 	 Time Taken: 427 sec
+(epoch: 3, batches: 20, time: 0.003, data: 0.135) loss_D_real: 0.854 loss_D_fake: 0.504 loss_D: 0.679 loss_Conv: 0.829 acc_real: 0.332 acc_fake: 0.732 scaled_theta_X: -25.000 scaled_theta_Y: 25.000 
+(epoch: 3, batches: 40, time: 0.002, data: 0.222) loss_D_real: 0.842 loss_D_fake: 0.496 loss_D: 0.669 loss_Conv: 0.892 acc_real: 0.332 acc_fake: 0.732 scaled_theta_X: 4.000 scaled_theta_Y: 23.000 
+(epoch: 3, batches: 60, time: 0.002, data: 0.237) loss_D_real: 0.810 loss_D_fake: 0.536 loss_D: 0.673 loss_Conv: 0.825 acc_real: 0.332 acc_fake: 0.732 scaled_theta_X: -30.000 scaled_theta_Y: 23.000 
+(epoch: 3, batches: 80, time: 0.003, data: 0.296) loss_D_real: 0.832 loss_D_fake: 0.513 loss_D: 0.672 loss_Conv: 0.841 acc_real: 0.332 acc_fake: 0.732 scaled_theta_X: 0.000 scaled_theta_Y: 15.000 
+(epoch: 3, batches: 100, time: 0.003, data: 0.172) loss_D_real: 0.926 loss_D_fake: 0.438 loss_D: 0.682 loss_Conv: 0.971 acc_real: 0.014 acc_fake: 0.990 scaled_theta_X: -27.000 scaled_theta_Y: 31.000 
+(epoch: 3, batches: 120, time: 0.002, data: 0.335) loss_D_real: 0.824 loss_D_fake: 0.515 loss_D: 0.670 loss_Conv: 0.845 acc_real: 0.014 acc_fake: 0.990 scaled_theta_X: -29.000 scaled_theta_Y: 31.000 
+(epoch: 3, batches: 140, time: 0.002, data: 0.410) loss_D_real: 0.811 loss_D_fake: 0.510 loss_D: 0.660 loss_Conv: 0.841 acc_real: 0.014 acc_fake: 0.990 scaled_theta_X: -31.000 scaled_theta_Y: 31.000 
 learning rate 0.0002000 -> 0.0002000
-End of epoch 3 / 7 	 Time Taken: 573 sec
-(epoch: 4, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.725 loss_D_fake: 0.313 loss_D: 0.519 loss_Conv: 1.782 
-(epoch: 4, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.636 loss_D_fake: 0.460 loss_D: 0.548 loss_Conv: 1.451 
-(epoch: 4, batches: 60, time: 0.004, data: 1.193) loss_D_real: 0.685 loss_D_fake: 0.322 loss_D: 0.504 loss_Conv: 1.957 
-(epoch: 4, batches: 80, time: 0.005, data: 0.001) loss_D_real: 0.805 loss_D_fake: 0.263 loss_D: 0.534 loss_Conv: 1.940 
-(epoch: 4, batches: 100, time: 0.004, data: 6.629) loss_D_real: 0.738 loss_D_fake: 0.276 loss_D: 0.507 loss_Conv: 1.843 
-(epoch: 4, batches: 120, time: 0.004, data: 0.001) loss_D_real: 1.017 loss_D_fake: 0.163 loss_D: 0.590 loss_Conv: 2.229 
-(epoch: 4, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.618 loss_D_fake: 0.343 loss_D: 0.481 loss_Conv: 1.587 
+End of epoch 3 / 7 	 Time Taken: 425 sec
+(epoch: 4, batches: 20, time: 0.002, data: 0.003) loss_D_real: 0.838 loss_D_fake: 0.504 loss_D: 0.671 loss_Conv: 0.873 acc_real: 0.014 acc_fake: 0.990 scaled_theta_X: -31.000 scaled_theta_Y: 30.000 
+(epoch: 4, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.837 loss_D_fake: 0.489 loss_D: 0.663 loss_Conv: 0.884 acc_real: 0.005 acc_fake: 0.997 scaled_theta_X: -28.000 scaled_theta_Y: 31.000 
+(epoch: 4, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.843 loss_D_fake: 0.499 loss_D: 0.671 loss_Conv: 0.855 acc_real: 0.005 acc_fake: 0.997 scaled_theta_X: -31.000 scaled_theta_Y: 31.000 
+(epoch: 4, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.821 loss_D_fake: 0.535 loss_D: 0.678 loss_Conv: 0.819 acc_real: 0.005 acc_fake: 0.997 scaled_theta_X: 9.000 scaled_theta_Y: -8.000 
+(epoch: 4, batches: 100, time: 0.002, data: 0.001) loss_D_real: 0.863 loss_D_fake: 0.502 loss_D: 0.683 loss_Conv: 0.921 acc_real: 0.005 acc_fake: 0.997 scaled_theta_X: -30.000 scaled_theta_Y: 28.000 
+(epoch: 4, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.870 loss_D_fake: 0.507 loss_D: 0.689 loss_Conv: 0.856 acc_real: 0.005 acc_fake: 0.997 scaled_theta_X: -30.000 scaled_theta_Y: 23.000 
+(epoch: 4, batches: 140, time: 0.002, data: 0.002) loss_D_real: 0.870 loss_D_fake: 0.473 loss_D: 0.671 loss_Conv: 0.908 acc_real: 0.041 acc_fake: 0.972 scaled_theta_X: -31.000 scaled_theta_Y: 0.000 
 learning rate 0.0002000 -> 0.0002000
-End of epoch 4 / 7 	 Time Taken: 581 sec
-(epoch: 5, batches: 20, time: 0.004, data: 2.481) loss_D_real: 0.829 loss_D_fake: 0.229 loss_D: 0.529 loss_Conv: 2.390 
-(epoch: 5, batches: 40, time: 0.004, data: 10.633) loss_D_real: 0.651 loss_D_fake: 0.271 loss_D: 0.461 loss_Conv: 2.068 
-(epoch: 5, batches: 60, time: 0.004, data: 8.074) loss_D_real: 0.594 loss_D_fake: 0.363 loss_D: 0.478 loss_Conv: 1.724 
-(epoch: 5, batches: 80, time: 0.004, data: 8.695) loss_D_real: 0.599 loss_D_fake: 0.336 loss_D: 0.468 loss_Conv: 2.061 
-(epoch: 5, batches: 100, time: 0.005, data: 15.358) loss_D_real: 0.632 loss_D_fake: 0.488 loss_D: 0.560 loss_Conv: 1.731 
-(epoch: 5, batches: 120, time: 0.004, data: 4.872) loss_D_real: 0.669 loss_D_fake: 0.276 loss_D: 0.472 loss_Conv: 1.693 
-(epoch: 5, batches: 140, time: 0.004, data: 12.345) loss_D_real: 0.664 loss_D_fake: 0.303 loss_D: 0.484 loss_Conv: 2.131 
+End of epoch 4 / 7 	 Time Taken: 421 sec
+(epoch: 5, batches: 20, time: 0.003, data: 9.904) loss_D_real: 0.798 loss_D_fake: 0.515 loss_D: 0.657 loss_Conv: 0.890 acc_real: 0.041 acc_fake: 0.972 scaled_theta_X: -31.000 scaled_theta_Y: 31.000 
+(epoch: 5, batches: 40, time: 0.002, data: 10.145) loss_D_real: 0.821 loss_D_fake: 0.489 loss_D: 0.655 loss_Conv: 0.931 acc_real: 0.041 acc_fake: 0.972 scaled_theta_X: -13.000 scaled_theta_Y: 30.000 
+(epoch: 5, batches: 60, time: 0.002, data: 10.179) loss_D_real: 0.783 loss_D_fake: 0.551 loss_D: 0.667 loss_Conv: 0.824 acc_real: 0.041 acc_fake: 0.972 scaled_theta_X: -31.000 scaled_theta_Y: 31.000 
+(epoch: 5, batches: 80, time: 0.003, data: 10.147) loss_D_real: 0.818 loss_D_fake: 0.531 loss_D: 0.674 loss_Conv: 0.865 acc_real: 0.270 acc_fake: 0.821 scaled_theta_X: -23.000 scaled_theta_Y: 31.000 
+(epoch: 5, batches: 100, time: 0.002, data: 9.282) loss_D_real: 0.904 loss_D_fake: 0.443 loss_D: 0.673 loss_Conv: 0.929 acc_real: 0.270 acc_fake: 0.821 scaled_theta_X: -22.000 scaled_theta_Y: 16.000 
+(epoch: 5, batches: 120, time: 0.002, data: 9.490) loss_D_real: 0.854 loss_D_fake: 0.482 loss_D: 0.668 loss_Conv: 0.918 acc_real: 0.270 acc_fake: 0.821 scaled_theta_X: -17.000 scaled_theta_Y: 31.000 
+(epoch: 5, batches: 140, time: 0.002, data: 9.651) loss_D_real: 0.758 loss_D_fake: 0.622 loss_D: 0.690 loss_Conv: 0.798 acc_real: 0.270 acc_fake: 0.821 scaled_theta_X: -31.000 scaled_theta_Y: 31.000 
 saving the model at the end of epoch 5, iters 49920
 learning rate 0.0002000 -> 0.0001600
-End of epoch 5 / 7 	 Time Taken: 574 sec
-(epoch: 6, batches: 20, time: 0.005, data: 1.536) loss_D_real: 0.620 loss_D_fake: 0.372 loss_D: 0.496 loss_Conv: 2.281 
-(epoch: 6, batches: 40, time: 0.004, data: 10.512) loss_D_real: 0.619 loss_D_fake: 0.212 loss_D: 0.415 loss_Conv: 2.385 
-(epoch: 6, batches: 60, time: 0.004, data: 3.638) loss_D_real: 0.559 loss_D_fake: 0.458 loss_D: 0.509 loss_Conv: 2.251 
-(epoch: 6, batches: 80, time: 0.004, data: 0.912) loss_D_real: 0.647 loss_D_fake: 0.201 loss_D: 0.424 loss_Conv: 2.317 
-(epoch: 6, batches: 100, time: 0.004, data: 0.512) loss_D_real: 0.666 loss_D_fake: 0.218 loss_D: 0.442 loss_Conv: 2.648 
-(epoch: 6, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.669 loss_D_fake: 0.310 loss_D: 0.490 loss_Conv: 2.362 
-(epoch: 6, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.558 loss_D_fake: 0.434 loss_D: 0.496 loss_Conv: 2.105 
+End of epoch 5 / 7 	 Time Taken: 419 sec
+(epoch: 6, batches: 20, time: 0.003, data: 0.005) loss_D_real: 0.809 loss_D_fake: 0.504 loss_D: 0.657 loss_Conv: 0.868 acc_real: 0.270 acc_fake: 0.821 scaled_theta_X: -29.000 scaled_theta_Y: 31.000 
+(epoch: 6, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.827 loss_D_fake: 0.503 loss_D: 0.665 loss_Conv: 0.920 acc_real: 0.187 acc_fake: 0.877 scaled_theta_X: 0.000 scaled_theta_Y: 28.000 
+(epoch: 6, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.892 loss_D_fake: 0.458 loss_D: 0.675 loss_Conv: 0.948 acc_real: 0.187 acc_fake: 0.877 scaled_theta_X: -3.000 scaled_theta_Y: 29.000 
+(epoch: 6, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.796 loss_D_fake: 0.521 loss_D: 0.658 loss_Conv: 0.897 acc_real: 0.187 acc_fake: 0.877 scaled_theta_X: -30.000 scaled_theta_Y: 30.000 
+(epoch: 6, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.742 loss_D_fake: 0.582 loss_D: 0.662 loss_Conv: 0.881 acc_real: 0.187 acc_fake: 0.877 scaled_theta_X: -26.000 scaled_theta_Y: 31.000 
+(epoch: 6, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.846 loss_D_fake: 0.448 loss_D: 0.647 loss_Conv: 0.973 acc_real: 0.187 acc_fake: 0.877 scaled_theta_X: -25.000 scaled_theta_Y: 26.000 
+(epoch: 6, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.733 loss_D_fake: 0.598 loss_D: 0.665 loss_Conv: 0.868 acc_real: 0.300 acc_fake: 0.823 scaled_theta_X: -30.000 scaled_theta_Y: 28.000 
 learning rate 0.0001600 -> 0.0001600
-End of epoch 6 / 7 	 Time Taken: 580 sec
-(epoch: 7, batches: 20, time: 0.004, data: 10.812) loss_D_real: 0.624 loss_D_fake: 0.295 loss_D: 0.460 loss_Conv: 2.506 
-(epoch: 7, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.820 loss_D_fake: 0.246 loss_D: 0.533 loss_Conv: 2.865 
-(epoch: 7, batches: 60, time: 0.004, data: 4.406) loss_D_real: 0.639 loss_D_fake: 0.380 loss_D: 0.509 loss_Conv: 2.727 
-(epoch: 7, batches: 80, time: 0.004, data: 14.741) loss_D_real: 0.669 loss_D_fake: 0.207 loss_D: 0.438 loss_Conv: 2.652 
-(epoch: 7, batches: 100, time: 0.004, data: 5.557) loss_D_real: 0.667 loss_D_fake: 0.236 loss_D: 0.452 loss_Conv: 2.476 
-(epoch: 7, batches: 120, time: 0.004, data: 0.006) loss_D_real: 0.791 loss_D_fake: 0.212 loss_D: 0.502 loss_Conv: 2.402 
-(epoch: 7, batches: 140, time: 0.005, data: 0.001) loss_D_real: 0.936 loss_D_fake: 0.170 loss_D: 0.553 loss_Conv: 3.131 
+End of epoch 6 / 7 	 Time Taken: 422 sec
+(epoch: 7, batches: 20, time: 0.002, data: 0.042) loss_D_real: 0.694 loss_D_fake: 0.615 loss_D: 0.655 loss_Conv: 0.834 acc_real: 0.300 acc_fake: 0.823 scaled_theta_X: -31.000 scaled_theta_Y: 26.000 
+(epoch: 7, batches: 40, time: 0.002, data: 0.054) loss_D_real: 0.806 loss_D_fake: 0.495 loss_D: 0.650 loss_Conv: 0.934 acc_real: 0.300 acc_fake: 0.823 scaled_theta_X: -29.000 scaled_theta_Y: 30.000 
+(epoch: 7, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.823 loss_D_fake: 0.458 loss_D: 0.640 loss_Conv: 0.990 acc_real: 0.300 acc_fake: 0.823 scaled_theta_X: -29.000 scaled_theta_Y: 27.000 
+(epoch: 7, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.725 loss_D_fake: 0.636 loss_D: 0.680 loss_Conv: 0.907 acc_real: 0.150 acc_fake: 0.894 scaled_theta_X: 27.000 scaled_theta_Y: -29.000 
+(epoch: 7, batches: 100, time: 0.002, data: 0.002) loss_D_real: 0.742 loss_D_fake: 0.572 loss_D: 0.657 loss_Conv: 0.900 acc_real: 0.150 acc_fake: 0.894 scaled_theta_X: 14.000 scaled_theta_Y: -20.000 
+(epoch: 7, batches: 120, time: 0.003, data: 0.003) loss_D_real: 0.957 loss_D_fake: 0.397 loss_D: 0.677 loss_Conv: 1.099 acc_real: 0.150 acc_fake: 0.894 scaled_theta_X: -27.000 scaled_theta_Y: -26.000 
+(epoch: 7, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.835 loss_D_fake: 0.504 loss_D: 0.669 loss_Conv: 1.006 acc_real: 0.150 acc_fake: 0.894 scaled_theta_X: -30.000 scaled_theta_Y: 10.000 
 learning rate 0.0001600 -> 0.0001600
-End of epoch 7 / 7 	 Time Taken: 579 sec
+End of epoch 7 / 7 	 Time Taken: 424 sec
 Finished training, model is saved
