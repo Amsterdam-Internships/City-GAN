@@ -5,6 +5,7 @@ from data import create_dataset
 from models import create_model
 from util.visualizer import Visualizer
 import torch
+import copy
 
 if __name__ == '__main__':
     # get training options
@@ -12,12 +13,19 @@ if __name__ == '__main__':
 
     dataset = create_dataset(opt)
 
+    opt_valid = copy.copy(opt)
+    opt_valid.phase = "val"
+    opt_valid.batch_size = opt.val_batch_size
+    val_dataset = create_dataset(opt_valid)
+
+
     # # get the number of images in the dataset.
-    # dataset_size = len(dataset)
-    # opt.dataset_size = dataset_size
-    # print(f'The number of training images = {dataset_size}')
-    # total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
-    # print(f'The number of epochs to run = {total_nr_epochs}')
+    dataset_size = len(dataset)
+    opt.dataset_size = dataset_size
+    print(f'The number of training images = {dataset_size}')
+    print(f'The number of validation images = {len(val_dataset)}')
+    total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
+    print(f'The number of epochs to run = {total_nr_epochs}')
 
     # set random seeds for reproducibility
     torch.manual_seed(opt.seed)
@@ -57,8 +65,16 @@ if __name__ == '__main__':
             epoch_batch += 1
             overall_batch += 1
 
-            # this includes setting and preprocessing the data, and optimizing
-            # the parameters
+            # run everything on validation set every val_freq batches
+            # also run the untrained model (batch = 0), for baseline
+            if (overall_batch -1) % opt.val_freq == 0:
+                val_start_time = time.time()
+                model.run_validation(val_dataset)
+                if opt.verbose:
+                    duration = time.time() - val_start_time
+                    print(f"ran validation set (B:{overall_batch}) in \
+                        {duration:.1f} s.")
+
 
             # for now, call inference here
             # original, moved = model.baseline(data, type_="random")

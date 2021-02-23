@@ -39,7 +39,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init="xavier", name="MoveModel", lr_policy="step", gan_mode="vanilla")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, help=
                 "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
@@ -59,16 +59,22 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv"]
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv", "acc_real", "acc_fake", "scaled_theta_X", "scaled_theta_Y"]
+
+        for loss in self.loss_names:
+            setattr(self, loss, 0)
 
         # define variables for plotting and saving
         self.visual_names = ["tgt", "src", "mask_binary", "obj_mask", "obj", "composite"]
 
         self.scaler = GradScaler()
 
+        if opt.tracemalloc:
+            import tracemalloc
+
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init, theta_dim=opt.theta_dim)
+        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, theta_dim=opt.theta_dim)
 
         # self.netConv = networks.MoveConvNET(opt.input_nc*2, opt.ngf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
 
@@ -164,7 +170,7 @@ class MoveModel(BaseModel):
         self.obj, self.obj_mask = self.center_object(self.mask)
 
 
-    def forward(self):
+    def forward(self, valid=False):
         """
         what needs to be done:
             - target image and centered object are fed to convnet (initialized in the init)
@@ -181,15 +187,21 @@ class MoveModel(BaseModel):
         # print("theta:", self.theta)
         # make sure theta is scaled: preventing object from moving outside img
 
-        scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, self.opt.theta_dim)
+        self.scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, self.opt.theta_dim)
 
-        # print("scaled_theta:", scaled_theta)
+        # for plotting and printing purposes
+        self.scaled_theta_X = self.scaled_theta[0][0]
+        self.scaled_theta_Y = self.scaled_theta[0][1]
+
+        breakpoint()
+
+        # print("scaled_theta:", self.scaled_theta)
 
         # use theta to transform the object and the mask
         # is affine the correct function? perhaps we should use affine_grid
 
-        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=1, scale=1, shear=0) for obj, theta in zip(self.obj, scaled_theta)], 0)
-        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=1, scale=1, shear=0) for mask, theta in zip(self.obj_mask, scaled_theta)], 0)
+        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=1, scale=1, shear=0) for obj, theta in zip(self.obj, self.scaled_theta)], 0)
+        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=1, scale=1, shear=0) for mask, theta in zip(self.obj_mask, self.scaled_theta)], 0)
 
 
         # composite the moved object with the background from the target
@@ -198,7 +210,18 @@ class MoveModel(BaseModel):
         # get the prediction on the fake image
         self.pred_fake = self.netD(self.composite)
 
+        if valid:
+            self.pred_real = self.netD(self.src)
+            self.compute_accs()
 
+
+    def compute_accs(self):
+        [B, _, d, _] = self.pred_real.shape
+
+        total = B * d ** 2
+
+        self.acc_real = len(self.pred_real[self.pred_real>0.5]) / total
+        self.acc_fake = len(self.pred_fake[self.pred_fake<0.5]) / total
 
 
     def backward_D(self):
@@ -322,3 +345,50 @@ class MoveModel(BaseModel):
 
 
         return self.tgt, self.moved
+
+
+    def run_validation(self, val_data):
+        """
+        Run the complete validation set, and set booleans describing the model
+        performance. These are used to determine the training schedule.
+
+        Arguments:
+            - val_data: batch of validation data
+        """
+
+        if self.opt.tracemalloc:
+            tracemalloc.start()
+
+        # init average lists
+        acc_real = []
+        acc_fake = []
+
+        # compute accuracy on the validation data
+        with torch.no_grad():
+            for i, data in enumerate(val_data):
+                # preprocess data and perform forward pass
+                self.set_input(data)
+                with autocast():
+                    self.forward(valid=True)
+
+                # save accuracies
+                acc_fake.append(self.acc_fake)
+                acc_real.append(self.acc_real)
+
+        # set accuracies to mean for plotting purposes
+        self.acc_fake = np.mean(acc_fake)
+        self.acc_real = np.mean(acc_real)
+
+
+        # print validation scores
+        if self.opt.verbose:
+            print(
+                f"validation accuracies:\n\
+                real: {self.acc_real:.2f}\n\
+                fake: {self.acc_fake:.2f}\n"
+            )
+
+        if self.opt.tracemalloc:
+            snapshot = tracemalloc.take_snapshot()
+            print("Tracemalloc: validation memory")
+            util.print_snapshot(snapshot)
