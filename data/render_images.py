@@ -605,7 +605,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     mat.diffuse_color = [r, g, b_channel, 1.0]
 
 
-    mat.shadow_method = "NONE"
+    # mat.shadow_method = "NONE"
     obj.data.materials[0] = mat
     obj.active_material = mat
 
