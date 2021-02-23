@@ -596,11 +596,12 @@ def render_shadeless(blender_objects, path='flat.png'):
     # mat.diffuse_color = [r, g, b, 1.0]
 
     # this codeblock comes from Relja Arandjelovic, above is original
-    r, g = [random.random() for _ in range(2)]
+    # r, g = [random.random() for _ in range(2)]
+    r, g = 0.6, 0.6
     b_channel = float(i) / num_objects
 
 
-    object_colors.add((r, g, b_channel))
+    # object_colors.add((r, g, b_channel))
     mat.diffuse_color = [r, g, b_channel, 1.0]
 
 
