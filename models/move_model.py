@@ -65,7 +65,7 @@ class MoveModel(BaseModel):
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj_mask", "obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj", "composite"]
 
         self.scaler = GradScaler()
 
@@ -123,9 +123,10 @@ class MoveModel(BaseModel):
         dx = torch.sum(mask_pdist, 3)
         dy = torch.sum(mask_pdist, 2)
 
+
         # expected values
-        cx = torch.sum(dy * torch.arange(self.h).to(self.device)).item()
-        cy = torch.sum(dx * torch.arange(self.w).to(self.device)).item()
+        cx = torch.sum(dy * torch.arange(self.h).to(self.device), 2)
+        cy = torch.sum(dx * torch.arange(self.w).to(self.device), 2)
 
         # print("cx, cy", cx, cy)
 
@@ -139,8 +140,14 @@ class MoveModel(BaseModel):
         obj = (self.mask_binary) * self.src
 
         # translate the object and mask
-        obj_centered = affine(obj, 0, [x_t, y_t], 1, 0)
-        obj_mask = affine(self.mask_binary, 0, [x_t, y_t], 1, 0)
+        # this should be done in a loop: see torch.stack below
+        obj_centered = torch.stack([affine(o, 0, [x, y], 1, 0) for o, x, y in zip(obj, x_t, y_t)], 0)
+
+        obj_mask = torch.stack([affine(m, 0, [x, y], 1, 0) for m, x, y in zip(self.mask_binary, x_t, y_t)], 0)
+
+
+        # obj_centered = affine(obj, 0, [x_t, y_t], 1, 0)
+        # obj_mask = affine(self.mask_binary, 0, [x_t, y_t], 1, 0)
 
         return obj_centered, obj_mask
 
