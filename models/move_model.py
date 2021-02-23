@@ -193,8 +193,6 @@ class MoveModel(BaseModel):
         self.scaled_theta_X = self.scaled_theta[0][0]
         self.scaled_theta_Y = self.scaled_theta[0][1]
 
-        breakpoint()
-
         # print("scaled_theta:", self.scaled_theta)
 
         # use theta to transform the object and the mask
