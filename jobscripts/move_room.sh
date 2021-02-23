@@ -21,18 +21,6 @@ mkdir "$TMPDIR"/datasets/ROOM/images
 mkdir "$TMPDIR"/datasets/ROOM/images/train
 mkdir "$TMPDIR"/datasets/ROOM/images/val
 
-#Copy data file to scratch
-
-# old way of copying, in loops
-# for i in {0..9}; do
-  #  cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/99"$i"*.jpg "$TMPDIR"/datasets/ROOM/images/train/
-#done
-
-# perhaps this can be done using tar file:
-# create tar file from training data, move to scratch, and unzip the archive
-
-# this tar file is already in the home folder
-# tar -zcf tar_train.tar.gz $HOME/City-GAN/datasets/ROOM/images/train/images_train/
 
 # move the tar file in home to scratch
 cp $HOME/City-GAN/datasets/ROOM/images/train/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
@@ -53,9 +41,6 @@ echo "Tar file extracted on scratch"
 now=$(date +"%T")
 echo "Current time : $now"
 echo
-
-# old way of copying
-# cp -r $HOME/City-GAN/datasets/ROOM/images/train/images_train/111**.jpg "$TMPDIR"/datasets/ROOM/images/val/
 
 cp $HOME/City-GAN/datasets/ROOM/images/val/1k_val.tar.gz "$TMPDIR"/datasets/ROOM/images/val/
 
@@ -87,7 +72,6 @@ python $HOME/City-GAN/train_move.py --model move \
     --print_freq 20\
     --display_freq 100\
     --update_html 100\
-    
 
 
 # copy checkpoints to home directory
