@@ -108,11 +108,11 @@ class MoveModel(BaseModel):
         - The object and corresponding mask are centered
         """
 
-
-        surface = self.mask_binary.sum().item()
+        # get the surface per mask in the batch
+        surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
         # center and return the object
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
-        mask_pdist = self.mask_binary/surface
+        mask_pdist = self.mask_binary / surface
 
         [self.B, _, self.w, self.h] = list(mask_pdist.shape)
         # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
@@ -120,13 +120,13 @@ class MoveModel(BaseModel):
         x_center, y_center = self.w//2, self.h//2
 
         # marginal distributions
-        dx = torch.sum(mask_pdist, 3)
-        dy = torch.sum(mask_pdist, 2)
+        dx = torch.sum(mask_pdist, 2).squeeze()
+        dy = torch.sum(mask_pdist, 3).squeeze()
 
 
         # expected values
-        cx = torch.sum(dy * torch.arange(self.h).to(self.device), 2)
-        cy = torch.sum(dx * torch.arange(self.w).to(self.device), 2)
+        cx = torch.sum(dx * torch.arange(self.w).to(self.device), 1)
+        cy = torch.sum(dy * torch.arange(self.h).to(self.device), 1)
 
         # print("cx, cy", cx, cy)
 
@@ -140,20 +140,11 @@ class MoveModel(BaseModel):
         obj = (self.mask_binary) * self.src
 
         # translate the object and mask
-        # this should be done in a loop: see torch.stack below
-        obj_centered = torch.stack([affine(o, 0, [x, y], 1, 0) for o, x, y in zip(obj, x_t, y_t)], 0)
+        obj_centered = torch.stack([affine(o, shear=0, translate=[x, y], scale=1, angle=0) for o, x, y in zip(obj, x_t, y_t)], 0)
 
-        obj_mask = torch.stack([affine(m, 0, [x, y], 1, 0) for m, x, y in zip(self.mask_binary, x_t, y_t)], 0)
-
-
-        # obj_centered = affine(obj, 0, [x_t, y_t], 1, 0)
-        # obj_mask = affine(self.mask_binary, 0, [x_t, y_t], 1, 0)
+        obj_mask = torch.stack([affine(m, shear=0, translate=[x, y], scale=1, angle=0) for m, x, y in zip(self.mask_binary, x_t, y_t)], 0)
 
         return obj_centered, obj_mask
-
-        # if none of the objects is large enough, raise exception
-        raise Exception("No valid mask could be found!")
-
 
 
     def set_input(self, input):
@@ -172,9 +163,9 @@ class MoveModel(BaseModel):
 
         self.mask_binary = (self.mask > 0).int().to(self.device)
 
-
         # find a suitable object to move from src to target
         self.obj, self.obj_mask = self.center_object(self.mask)
+
 
 
     def forward(self, valid=False):
@@ -205,8 +196,8 @@ class MoveModel(BaseModel):
         # use theta to transform the object and the mask
         # is affine the correct function? perhaps we should use affine_grid
 
-        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=1, scale=1, shear=0) for obj, theta in zip(self.obj, self.scaled_theta)], 0)
-        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=1, scale=1, shear=0) for mask, theta in zip(self.obj_mask, self.scaled_theta)], 0)
+        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=0, scale=1, shear=0) for obj, theta in zip(self.obj, self.scaled_theta)], 0)
+        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=0, scale=1, shear=0) for mask, theta in zip(self.obj_mask, self.scaled_theta)], 0)
 
 
         # composite the moved object with the background from the target
