@@ -555,6 +555,7 @@ def check_visibility(blender_objects, min_pixels_per_object):
   return True
 
 
+
 def render_shadeless(blender_objects, path='flat.png'):
   """
   Render a version of the scene with shading disabled and unique materials
@@ -586,9 +587,7 @@ def render_shadeless(blender_objects, path='flat.png'):
   old_materials = []
   for i, obj in enumerate(blender_objects):
     old_materials.append(obj.data.materials[0])
-    bpy.ops.material.new()
-    mat = bpy.data.materials['Material']
-    mat.name = 'Material_%d' % i
+    mat = bpy.ops.material.new(name=f"mat{i}")
     # while True:
     #   r, g, b = [random.random() for _ in range(3)]
     #   if (r, g, b) not in object_colors: break
@@ -606,7 +605,7 @@ def render_shadeless(blender_objects, path='flat.png'):
 
 
     # mat.shadow_method = "NONE"
-    obj.data.materials[0] = mat
+    # obj.data.materials[0] = mat
     obj.active_material = mat
 
   # Render the scene
@@ -629,7 +628,6 @@ def render_shadeless(blender_objects, path='flat.png'):
   #render_args.use_antialiasing = old_use_antialiasing
 
   return object_colors
-
 
 
 
