@@ -610,6 +610,10 @@ def render_shadeless(blender_objects, path='flat.png'):
     obj.active_material = mat
 
   # Render the scene
+
+  for mat in bpy.data.materials:
+    mat.use_nodes = False
+
   bpy.ops.render.render(write_still=True)
 
   # Undo the above; first restore the materials to objects
