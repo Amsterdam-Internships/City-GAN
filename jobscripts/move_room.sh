@@ -63,8 +63,8 @@ python $HOME/City-GAN/train_move.py --model move \
     --name Move\
     --max_dataset_size 10000\
     --batch_size 64\
-    --n_epochs 5\
-    --n_epochs_decay 2\
+    --n_epochs 10\
+    --n_epochs_decay 5\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\

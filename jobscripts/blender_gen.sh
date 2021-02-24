@@ -27,7 +27,7 @@ blender --background -noaudio --python data/render_images.py -- \
 	--split ""\
 	--min_objects 1\
 	--max_objects 6\
-	--num_images 100\
+	--num_images 10\
 	--start_idx 28000\
 	--use_gpu 1\
 	--render_num_samples 20\
