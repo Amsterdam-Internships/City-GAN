@@ -587,7 +587,8 @@ def render_shadeless(blender_objects, path='flat.png'):
   old_materials = []
   for i, obj in enumerate(blender_objects):
     old_materials.append(obj.data.materials[0])
-    mat = bpy.ops.material.new(name=f"mat{i}")
+    mat = bpy.data.materials.new(name=f'{i}')
+
     # while True:
     #   r, g, b = [random.random() for _ in range(3)]
     #   if (r, g, b) not in object_colors: break
