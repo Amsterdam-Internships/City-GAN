@@ -313,9 +313,6 @@ def render_scene(args,
   objects, blender_objects = add_random_objects(scene_struct, num_objects, args, camera)
 
 
-  ##### to generate masks, use the following:
-  render_shadeless(blender_objects, path=output_image[:-4]+'_mask.png')
-
 
   ##### added by me, for random colors #############
 
@@ -373,6 +370,12 @@ def render_scene(args,
 
   if output_blendfile is not None:
     bpy.ops.wm.save_as_mainfile(filepath=output_blendfile)
+
+
+
+  ##### to generate masks, use the following:
+  render_shadeless(blender_objects, path=output_image[:-4]+'_mask.png')
+
 
 
 def add_random_objects(scene_struct, num_objects, args, camera):
@@ -590,7 +593,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     mat = bpy.data.materials.new(name=f'{i}')
 
     print("object type", obj.type)
-    print("object use nodes:", obj.data.materials[0])
+    print("object material:", obj.data.materials[0])
     print("object use nodes:", obj.data.materials[0].use_nodes)
     mat.use_nodes = True
     try:
@@ -625,6 +628,10 @@ def render_shadeless(blender_objects, path='flat.png'):
     # set activer material to your new material
     bpy.context.object.active_material = mat
 
+    try:
+      print("node tree after emission", mat.node_tree)
+    except:
+      print("node tree gives an error")
 
     # object_colors.add((r, g, b_channel))
     # mat.diffuse_color = [r, g, b_channel, 1.0]
@@ -645,13 +652,13 @@ def render_shadeless(blender_objects, path='flat.png'):
   for mat, obj in zip(old_materials, blender_objects):
     obj.data.materials[0] = mat
     set_render(obj, True)
-    obj.data.materials[0].use_nodes = True
 
   # Move the lights and ground back to layer 0
   set_render(bpy.data.objects['Lamp_Key'], True)
   set_render(bpy.data.objects['Lamp_Fill'], True)
   set_render(bpy.data.objects['Lamp_Back'], True)
   set_render(bpy.data.objects['Ground'], True)
+
 
   # Set the render settings back to what they were
   render_args.filepath = old_filepath
