@@ -588,12 +588,18 @@ def render_shadeless(blender_objects, path='flat.png'):
   for i, obj in enumerate(blender_objects):
     old_materials.append(obj.data.materials[0])
     mat = bpy.data.materials.new(name=f'{i}')
+
     print("object type", obj.type)
     print("object use nodes:", obj.data.materials[0])
+    print("object use nodes:", obj.data.materials[0].use_nodes)
+
+    # set use nodes to false before choosing a color
+    obj.data.materials[0].use_nodes = False
     try:
-      print("object use nodes:", obj.data.materials[0].use_nodes)
+      print("node tree", mat.node_tree)
     except:
-      print("use nodes does not work")
+      print(node tree gives an error)
+
       # while True:
     #   r, g, b = [random.random() for _ in range(3)]
     #   if (r, g, b) not in object_colors: break
@@ -615,7 +621,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     obj.active_material = mat
 
   # Render the scene
-  
+  # this only changes the colors in the normal image, not in the mask
   #for mat in bpy.data.materials:
    # mat.use_nodes = False
   bpy.context.scene.cycles.samples = 1
