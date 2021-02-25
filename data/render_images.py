@@ -601,26 +601,29 @@ def render_shadeless(blender_objects, path='flat.png'):
     # set use nodes to false before choosing a color
     # obj.data.materials[0].use_nodes = False
 
-    mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
-    material_output = mat.node_tree.nodes.get('Material Output')
-    emission = material.node_tree.nodes.new('ShaderNodeEmission')
-    emission.inputs['Strength'].default_value = 1.0
-
-
-      # while True:
-    #   r, g, b = [random.random() for _ in range(3)]
-    #   if (r, g, b) not in object_colors: break
-    # object_colors.add((r, g, b))
-    # mat.diffuse_color = [r, g, b, 1.0]
 
     # this codeblock comes from Relja Arandjelovic, above is original
     r, g = [random.random() for _ in range(2)]
     # r, g = 0.6, 0.6
     b_channel = float(i) / num_objects
+    obj_color = (r, g, b_channel, 1.0)
+
+    mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
+    material_output = mat.node_tree.nodes.get('Material Output')
+    emission = mat.node_tree.nodes.new('ShaderNodeEmission')
+    emission.inputs['Strength'].default_value = 1.0
+
+    diffuse.inputs['Color'].default_value = obj_color #defined above
+
+    # link diffuse shader to material
+    material.node_tree.links.new(material_output.inputs[0], diffuse.outputs[0])
+
+    # set activer material to your new material
+    bpy.context.object.active_material = mat
 
 
     # object_colors.add((r, g, b_channel))
-    mat.diffuse_color = [r, g, b_channel, 1.0]
+    # mat.diffuse_color = [r, g, b_channel, 1.0]
 
 
     # mat.shadow_method = "NONE"
