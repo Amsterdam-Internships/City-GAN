@@ -588,8 +588,13 @@ def render_shadeless(blender_objects, path='flat.png'):
   for i, obj in enumerate(blender_objects):
     old_materials.append(obj.data.materials[0])
     mat = bpy.data.materials.new(name=f'{i}')
-
-    # while True:
+    print("object type", obj.type)
+    print("object use nodes:", obj.data.materials[0])
+    try:
+      print("object use nodes:", obj.data.materials[0].use_nodes)
+    except:
+      print("use nodes does not work")
+      # while True:
     #   r, g, b = [random.random() for _ in range(3)]
     #   if (r, g, b) not in object_colors: break
     # object_colors.add((r, g, b))
@@ -613,7 +618,7 @@ def render_shadeless(blender_objects, path='flat.png'):
 
   for mat in bpy.data.materials:
     mat.use_nodes = False
-
+  bpy.context.scene.cycles.samples = 1
   bpy.ops.render.render(write_still=True)
 
   # Undo the above; first restore the materials to objects
@@ -631,6 +636,7 @@ def render_shadeless(blender_objects, path='flat.png'):
   render_args.filepath = old_filepath
   render_args.engine = old_engine
   #render_args.use_antialiasing = old_use_antialiasing
+  bpy.context.scene.cycles.samples = args.render_num_samples
 
   return object_colors
 
