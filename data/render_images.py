@@ -608,7 +608,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     b_channel = float(i) / num_objects
     obj_color = (r, g, b_channel, 1.0)
 
-    diffuse = material.node_tree.nodes.new('ShaderNodeBsdfDiffuse')
+    #diffuse = material.node_tree.nodes.new('ShaderNodeBsdfDiffuse')
 
     # mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
     material_output = mat.node_tree.nodes.get('Material Output')
@@ -620,7 +620,7 @@ def render_shadeless(blender_objects, path='flat.png'):
 
     # link diffuse shader to material
     # material.node_tree.links.new(material_output.inputs[0], diffuse.outputs[0])
-    material.node_tree.links.new(material_output.inputs[0], emission.outputs[0])
+    mat.node_tree.links.new(material_output.inputs[0], emission.outputs[0])
 
     # set activer material to your new material
     bpy.context.object.active_material = mat

@@ -265,7 +265,7 @@ class MoveModel(BaseModel):
         self.forward()
 
         # train discriminator
-        if overall_batch % 2 == 0:
+        if overall_batch % 3 == 0:
             # print("Training D")
             self.optimizer_D.zero_grad()
             self.backward_D()

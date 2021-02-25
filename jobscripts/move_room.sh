@@ -11,7 +11,7 @@ module load 2020
 module load Python
 
 # declare run
-run=1
+run=2
 echo "starting Move room training run $run"
 
 #Create output directory on scratch
@@ -68,7 +68,7 @@ python $HOME/City-GAN/train_move.py --model move \
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
-    --min_obj_surface 80\
+    --min_obj_surface 60\
     --print_freq 20\
     --display_freq 100\
     --update_html 100\
