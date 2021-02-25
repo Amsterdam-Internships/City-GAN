@@ -592,8 +592,8 @@ def render_shadeless(blender_objects, path='flat.png'):
     print("object type", obj.type)
     print("object use nodes:", obj.data.materials[0])
     print("object use nodes:", obj.data.materials[0].use_nodes)
-
-        try:
+    mat.use_nodes = True
+    try:
       print("node tree", mat.node_tree)
     except:
       print("node tree gives an error")
@@ -608,7 +608,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     b_channel = float(i) / num_objects
     obj_color = (r, g, b_channel, 1.0)
 
-    mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
+    # mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
     material_output = mat.node_tree.nodes.get('Material Output')
     emission = mat.node_tree.nodes.new('ShaderNodeEmission')
     emission.inputs['Strength'].default_value = 1.0
