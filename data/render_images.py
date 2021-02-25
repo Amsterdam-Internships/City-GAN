@@ -593,12 +593,19 @@ def render_shadeless(blender_objects, path='flat.png'):
     print("object use nodes:", obj.data.materials[0])
     print("object use nodes:", obj.data.materials[0].use_nodes)
 
-    # set use nodes to false before choosing a color
-    obj.data.materials[0].use_nodes = False
-    try:
+        try:
       print("node tree", mat.node_tree)
     except:
       print("node tree gives an error")
+
+    # set use nodes to false before choosing a color
+    # obj.data.materials[0].use_nodes = False
+
+    mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
+    material_output = mat.node_tree.nodes.get('Material Output')
+    emission = material.node_tree.nodes.new('ShaderNodeEmission')
+    emission.inputs['Strength'].default_value = 1.0
+
 
       # while True:
     #   r, g, b = [random.random() for _ in range(3)]
@@ -631,6 +638,7 @@ def render_shadeless(blender_objects, path='flat.png'):
   for mat, obj in zip(old_materials, blender_objects):
     obj.data.materials[0] = mat
     set_render(obj, True)
+    obj.data.materials[0].use_nodes = True
 
   # Move the lights and ground back to layer 0
   set_render(bpy.data.objects['Lamp_Key'], True)
