@@ -598,7 +598,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     try:
       print("node tree", mat.node_tree)
     except:
-      print(node tree gives an error)
+      print("node tree gives an error")
 
       # while True:
     #   r, g, b = [random.random() for _ in range(3)]
