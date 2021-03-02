@@ -592,14 +592,14 @@ def render_shadeless(blender_objects, path='flat.png'):
     old_materials.append(obj.data.materials[0])
     mat = bpy.data.materials.new(name=f'{i}')
 
-    print("object type", obj.type)
-    print("object material:", obj.data.materials[0])
-    print("object use nodes:", obj.data.materials[0].use_nodes)
+#    print("object type", obj.type)
+ #   print("object material:", obj.data.materials[0])
+  #  print("object use nodes:", obj.data.materials[0].use_nodes)
     mat.use_nodes = True
-    try:
-      print("node tree", mat.node_tree)
-    except:
-      print("node tree gives an error")
+   # try:
+    #  print("node tree", mat.node_tree)
+    #xcept:
+      #print("node tree gives an error")
 
     # set use nodes to false before choosing a color
     # obj.data.materials[0].use_nodes = False
@@ -628,10 +628,10 @@ def render_shadeless(blender_objects, path='flat.png'):
     # set activer material to your new material
     bpy.context.object.active_material = mat
 
-    try:
-      print("node tree after emission", mat.node_tree)
-    except:
-      print("node tree gives an error")
+    #try:
+     # print("node tree after emission", mat.node_tree)
+    #except:
+    #  print("node tree gives an error")
 
     # object_colors.add((r, g, b_channel))
     # mat.diffuse_color = [r, g, b_channel, 1.0]
