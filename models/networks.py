@@ -115,6 +115,7 @@ def init_net(net, init_type='normal', init_gain=0.02, gpu_ids=[]):
 
     Return an initialized network.
     """
+    print(f"gpu_ids: {gpu_ids}")
     if len(gpu_ids) > 0:
         assert(torch.cuda.is_available())
         net.to(gpu_ids[0])
@@ -168,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    patchGAN=False, aux=True):
+    patchGAN=False, aux=True, theta_dim=2):
     """
     Returns a discriminator
 
@@ -214,6 +215,8 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     elif netD == 'n_layers':  # more options
         net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
             norm_layer=norm_layer)
+    elif netD == "move":
+        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, theta_dim=theta_dim)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -719,7 +722,6 @@ class GaussianSmoothing(nn.Module):
         return self.conv(input, weight=self.weight, groups=self.groups, padding=1)
 
 
-
 ######################################
 # COPYGAN LOSS FUNCTIONS
 ######################################
@@ -928,6 +930,107 @@ class DotLoss(nn.Module):
         return loss / num_dots
 
 
+
+######################################
+# SPATIAL TRANSFORMER + OTHER MOVE ARCHITECTURES
+######################################
+
+
+class MoveConvNET(nn.Module):
+    """
+    """
+    def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
+        super(MoveConvNET, self).__init__()
+
+        layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
+        norm_layer = get_norm_layer(norm_type=norm)
+
+        use_bias = norm_layer.func == nn.InstanceNorm2d
+
+        nf_mult_prev = nf_mult = 1
+
+        for n in range(1, n_layers+1):
+            nf_mult_prev = nf_mult
+            nf_mult = min(2 ** n, 8)
+            layers += [
+                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
+                norm_layer(ndf * nf_mult),
+                nn.LeakyReLU(0.2, True)
+            ]
+
+        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, theta_dim), nn.Tanh()]
+
+        self.model = nn.Sequential(*layers)
+
+
+    def forward(self, input):
+        return self.model(input)
+
+
+
+class STN(nn.Module):
+    def __init__(self):
+        super(STN, self).__init__()
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(320, 50)
+        self.fc2 = nn.Linear(50, 10)
+
+        # Spatial transformer localization-network
+        self.localization = nn.Sequential(
+            nn.Conv2d(1, 8, kernel_size=7),
+            nn.MaxPool2d(2, stride=2),
+            nn.ReLU(True),
+            nn.Conv2d(8, 10, kernel_size=5),
+            nn.MaxPool2d(2, stride=2),
+            nn.ReLU(True)
+        )
+
+        # Regressor for the 3 * 2 affine matrix
+        self.fc_loc = nn.Sequential(
+            nn.Linear(10 * 3 * 3, 32),
+            nn.ReLU(True),
+            nn.Linear(32, 3 * 2)
+        )
+
+        # Initialize the weights/bias with identity transformation
+        self.fc_loc[2].weight.data.zero_()
+        self.fc_loc[2].bias.data.copy_(torch.tensor([1, 0, 0, 0, 1, 0], dtype=torch.float))
+
+        # this is the theta
+
+    # Spatial transformer network forward function
+    def get_theta(self):
+        return self.fc_loc[2].bias.data
+
+
+    def stn_forward(self, x):
+        xs = self.localization(x)
+        xs = xs.view(-1, 10 * 3 * 3)
+        theta = self.fc_loc(xs)
+        theta = theta.view(-1, 2, 3)
+
+        grid = F.affine_grid(theta, x.size())
+        x = F.grid_sample(x, grid)
+
+        return x
+
+    def forward(self, x):
+        # transform the input
+        x = self.stn_forward(x)
+
+        # Perform the usual forward pass
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = x.view(-1, 320)
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
+
+
+
 ######################################
 # OTHER ARCHITECTURES FROM PIX2PIX
 ######################################
@@ -957,7 +1060,7 @@ class NLayerDiscriminator(nn.Module):
         sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
         nf_mult = 1
         nf_mult_prev = 1
-        for n in range(1, n_layers):  # gradually increase the number of filters
+        for n in range(1, n_layers+1):  # gradually increase the number of filters
             nf_mult_prev = nf_mult
             nf_mult = min(2 ** n, 8)
             sequence += [
@@ -982,7 +1085,7 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, input):
         """Standard forward."""
-        return self.model(input), None
+        return self.model(input)
 
 
 

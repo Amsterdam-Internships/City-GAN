@@ -241,7 +241,7 @@ def render_scene(args,
       bpy.context.preferences.system.compute_device = 'CUDA_0'
     else:
       bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
-      
+
 
   # Some CYCLES-specific stuff
   bpy.data.worlds['World'].cycles.sample_as_light = True
@@ -253,7 +253,7 @@ def render_scene(args,
     bpy.context.scene.cycles.device = 'GPU'
 
   print(f"Device used: {bpy.context.preferences.addons['cycles'].preferences.get_devices()}")
-    
+
   # This will give ground-truth information about the scene and its objects
   scene_struct = {
       'split': output_split,
@@ -313,6 +313,7 @@ def render_scene(args,
   objects, blender_objects = add_random_objects(scene_struct, num_objects, args, camera)
 
 
+
   ##### added by me, for random colors #############
 
   bg_mat = bpy.data.materials.new(name='bg_mat')
@@ -369,6 +370,12 @@ def render_scene(args,
 
   if output_blendfile is not None:
     bpy.ops.wm.save_as_mainfile(filepath=output_blendfile)
+
+
+
+  ##### to generate masks, use the following:
+  render_shadeless(blender_objects, path=output_image[:-4]+'_mask.png')
+
 
 
 def add_random_objects(scene_struct, num_objects, args, camera):
@@ -551,6 +558,7 @@ def check_visibility(blender_objects, min_pixels_per_object):
   return True
 
 
+
 def render_shadeless(blender_objects, path='flat.png'):
   """
   Render a version of the scene with shading disabled and unique materials
@@ -578,21 +586,66 @@ def render_shadeless(blender_objects, path='flat.png'):
 
   # Add random shadeless materials to all objects
   object_colors = set()
+  num_objects = len(blender_objects)
   old_materials = []
   for i, obj in enumerate(blender_objects):
     old_materials.append(obj.data.materials[0])
-    bpy.ops.material.new()
-    mat = bpy.data.materials['Material']
-    mat.name = 'Material_%d' % i
-    while True:
-      r, g, b = [random.random() for _ in range(3)]
-      if (r, g, b) not in object_colors: break
-    object_colors.add((r, g, b))
-    mat.diffuse_color = [r, g, b, 1.0]
-    mat.shadow_method = "NONE"
-    obj.data.materials[0] = mat
+    mat = bpy.data.materials.new(name=f'{i}')
+
+#    print("object type", obj.type)
+ #   print("object material:", obj.data.materials[0])
+  #  print("object use nodes:", obj.data.materials[0].use_nodes)
+    mat.use_nodes = True
+   # try:
+    #  print("node tree", mat.node_tree)
+    #xcept:
+      #print("node tree gives an error")
+
+    # set use nodes to false before choosing a color
+    # obj.data.materials[0].use_nodes = False
+
+
+    # this codeblock comes from Relja Arandjelovic, above is original
+    r, g = [random.random() for _ in range(2)]
+    # r, g = 0.6, 0.6
+    b_channel = float(i) / num_objects
+    obj_color = (r, g, b_channel, 1.0)
+
+    #diffuse = material.node_tree.nodes.new('ShaderNodeBsdfDiffuse')
+
+    # mat.node_tree.nodes.remove(mat.node_tree.nodes.get('Diffuse BSDF'))
+    material_output = mat.node_tree.nodes.get('Material Output')
+    emission = mat.node_tree.nodes.new('ShaderNodeEmission')
+    emission.inputs['Strength'].default_value = 1.0
+
+    # diffuse.inputs['Color'].default_value = obj_color #defined above
+    emission.inputs['Color'].default_value = obj_color
+
+    # link diffuse shader to material
+    # material.node_tree.links.new(material_output.inputs[0], diffuse.outputs[0])
+    mat.node_tree.links.new(material_output.inputs[0], emission.outputs[0])
+
+    # set activer material to your new material
+    bpy.context.object.active_material = mat
+
+    #try:
+     # print("node tree after emission", mat.node_tree)
+    #except:
+    #  print("node tree gives an error")
+
+    # object_colors.add((r, g, b_channel))
+    # mat.diffuse_color = [r, g, b_channel, 1.0]
+
+
+    # mat.shadow_method = "NONE"
+    # obj.data.materials[0] = mat
+    obj.active_material = mat
 
   # Render the scene
+  # this only changes the colors in the normal image, not in the mask
+  #for mat in bpy.data.materials:
+   # mat.use_nodes = False
+  bpy.context.scene.cycles.samples = 1
   bpy.ops.render.render(write_still=True)
 
   # Undo the above; first restore the materials to objects
@@ -606,13 +659,14 @@ def render_shadeless(blender_objects, path='flat.png'):
   set_render(bpy.data.objects['Lamp_Back'], True)
   set_render(bpy.data.objects['Ground'], True)
 
+
   # Set the render settings back to what they were
   render_args.filepath = old_filepath
   render_args.engine = old_engine
   #render_args.use_antialiasing = old_use_antialiasing
+  bpy.context.scene.cycles.samples = args.render_num_samples
 
   return object_colors
-
 
 
 

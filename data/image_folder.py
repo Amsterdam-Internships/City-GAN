@@ -17,7 +17,7 @@ IMG_EXTENSIONS = [
 
 
 def is_image_file(filename):
-    return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
+    return any(filename.endswith(extension) for extension in IMG_EXTENSIONS) and "mask" not in filename
 
 
 def make_dataset(dir, max_dataset_size=float("inf")):
