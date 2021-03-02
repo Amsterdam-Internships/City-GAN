@@ -43,17 +43,17 @@ Let people know if there are weird dependencies - if so feel free to add links t
     pip install -r requirements.txt
     ```
 3) Create a ./datasets directory with following structure:
-    ├── datasets
+    └── datasets
         ├── CLEVR
-        │   ├── images
+        │   └── images
         |       ├── train
         |       ├── val
-        |       ├── test
-        ├── ROOM
-            ├── images
+        |       └── test
+        └── ROOM
+            └── images
                 ├── train
                 ├── val
-                ├── test
+                └── test
 
 ---
 
