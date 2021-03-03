@@ -84,8 +84,8 @@ if __name__ == '__main__':
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
-                model.compute_visuals()
-                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch)
+                D_fake = model.pred_fake[0].detach().squeeze().numpy().round(2)
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fake=D_fake)
 
 
             # print training losses and save logging information to the disk

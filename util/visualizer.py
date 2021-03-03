@@ -105,7 +105,7 @@ class Visualizer():
         # Popen(cmd, shell=True)#, stdout=PIPE, stderr=PIPE)
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
-    def display_current_results(self, visuals, epoch, save_result, overall_batch=0):
+    def display_current_results(self, visuals, epoch, save_result, overall_batch=0, D_fake=None):
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -149,6 +149,9 @@ class Visualizer():
                     label_html = '<table>%s</table>' % label_html
                     self.vis.text(table_css + label_html, win=self.display_id + 2,
                                   opts=dict(title=title + ' labels'))
+
+                    self.vis.text(f"D prediction composite:\n {[r for r in D_fake]}", win=self.display_id + 3,
+                                  opts=dict(title=f"D prediction composite"))
                 except VisdomExceptionBase:
                     self.create_visdom_connections()
 
@@ -174,7 +177,7 @@ class Visualizer():
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
             for i in range(overall_batch, 0, -self.opt.update_html_freq):
-                webpage.add_header('overall batch: %d' % (i))
+                webpage.add_header(f'Overall batch: {i} (composite pred: {D_fake})')
                 ims, txts, links = [], [], []
 
                 for label, image_numpy in visuals.items():
