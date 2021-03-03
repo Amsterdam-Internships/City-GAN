@@ -119,9 +119,10 @@ class MoveModel(BaseModel):
 
         x_center, y_center = self.w//2, self.h//2
 
+
         # marginal distributions
-        dx = torch.sum(mask_pdist, 2).squeeze()
-        dy = torch.sum(mask_pdist, 3).squeeze()
+        dx = torch.sum(mask_pdist, 2).view(-1, self.w)
+        dy = torch.sum(mask_pdist, 3).view(-1, self.h)
 
 
         # expected values
