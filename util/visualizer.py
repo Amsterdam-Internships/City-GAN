@@ -105,7 +105,7 @@ class Visualizer():
         # Popen(cmd, shell=True)#, stdout=PIPE, stderr=PIPE)
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
-    def display_current_results(self, visuals, epoch, save_result, overall_batch=0, D_fake=None):
+    def display_current_results(self, visuals, epoch, save_result, overall_batch=0, D_fakes=None):
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -149,8 +149,8 @@ class Visualizer():
                     label_html = '<table>%s</table>' % label_html
                     self.vis.text(table_css + label_html, win=self.display_id + 2,
                                   opts=dict(title=title + ' labels'))
-                    if D_fake:
-                        self.vis.text(f"D prediction composite:\n {[r for r in D_fake]}", win=self.display_id + 3,
+                    if D_fakes:
+                        self.vis.text(f"D prediction composite:\n {[list(r) for r in D_fakes[-1]]}", win=self.display_id + 3,
                                   opts=dict(title=f"D prediction composite"))
                 except VisdomExceptionBase:
                     self.create_visdom_connections()
@@ -176,10 +176,10 @@ class Visualizer():
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
-            for i in range(overall_batch, 0, -self.opt.update_html_freq):
+            for idx, i in enumerate(range(overall_batch, 0, -self.opt.update_html_freq)):
                 header = f'Overall batch: {i}'
-                if D_fake:
-                    header += f" (composite pred: {D_fake})"
+                if D_fakes:
+                    header += f" (composite pred: {D_fakes[-idx]})"
                 webpage.add_header(header)
                 ims, txts, links = [], [], []
 

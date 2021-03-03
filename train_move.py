@@ -39,6 +39,7 @@ if __name__ == '__main__':
     # the total number of training iterations
     total_iters = 0
     overall_batch = 0
+    D_fakes = []
 
 
     # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
@@ -85,7 +86,8 @@ if __name__ == '__main__':
             if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
                 D_fake = model.pred_fake[0].detach().squeeze().numpy().round(2)
-                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fake=D_fake)
+                D_fakes.append(D_fake)
+                visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fakes=D_fakes)
 
 
             # print training losses and save logging information to the disk
