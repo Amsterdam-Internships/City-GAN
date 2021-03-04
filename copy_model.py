@@ -1,6 +1,6 @@
-""" CopyPasteGAN model
+""" CopyGAN model
 
-You can specify '--model copypasteGAN' to use this model.
+You can specify '--model copy' to use this model.
 
 Author: Tom Lotze
 
@@ -24,7 +24,7 @@ from util import util
 
 
 
-class CopyPasteGANModel(BaseModel):
+class CopyModel(BaseModel):
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
         """Add new model-specific options and rewrite default values for

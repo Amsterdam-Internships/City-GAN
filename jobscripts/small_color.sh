@@ -23,7 +23,7 @@ mkdir "$TMPDIR"/datasets/CLEVR_colorized
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
 # execute training script
-python $HOME/City-GAN/train.py --model copypasteGAN \
+python $HOME/City-GAN/train.py --model copy \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
     --batch_size 64\
     --n_epochs 20\
@@ -49,7 +49,7 @@ python $HOME/City-GAN/train.py --model copypasteGAN \
     --patch_D\
     --seed 42\
     --no_alternate
-    
+
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/run"${run}"
 cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run"${run}"

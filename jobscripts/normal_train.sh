@@ -19,7 +19,7 @@ mkdir "$TMPDIR"/datasets/CLEVR_default
 cp -r $HOME/City-GAN/datasets/CLEVR_default/images "$TMPDIR"/datasets/CLEVR_default/
 
 # execute training script
-python $HOME/City-GAN/train.py --model copypasteGAN \
+python $HOME/City-GAN/train.py --model copy \
        --dataroot "$TMPDIR"/datasets/CLEVR_default/images\
        --batch_size 50 --n_epochs 5 --save_epoch_freq 1 \
        --checkpoints_dir "$TMPDIR"/checkpoints\
