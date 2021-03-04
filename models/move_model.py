@@ -67,6 +67,8 @@ class MoveModel(BaseModel):
         # define variables for plotting and saving
         self.visual_names = ["tgt", "src", "mask_binary", "obj", "composite"]
 
+        self.count_G = self.count_D = 0
+
         self.scaler = GradScaler()
 
         if opt.tracemalloc:
@@ -273,6 +275,7 @@ class MoveModel(BaseModel):
             # self.scaler.step(self.optimizer_D)
             # self.scaler.update()
             self.optimizer_D.step()
+            self.count_D += 1
 
         # train convnet predicting theta
         else:
@@ -282,6 +285,7 @@ class MoveModel(BaseModel):
             # self.scaler.step(self.optimizer_Conv)
             # self.scaler.update()
             self.optimizer_Conv.step()
+            model.count_G += 1
 
 
 
