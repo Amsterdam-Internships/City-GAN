@@ -256,7 +256,7 @@ class MoveModel(BaseModel):
         self.loss_Conv.backward()
 
 
-    def optimize_parameters(self, data, overall_batch):
+    def optimize_parameters(self, data):
         """Update network weights; it will be called in every training iteration.
         """
 
@@ -266,7 +266,7 @@ class MoveModel(BaseModel):
         self.forward()
 
         # train discriminator
-        if overall_batch % 3 == 0:
+        if self.overall_batch % 3 == 0:
             # print("Training D")
             self.optimizer_D.zero_grad()
             self.backward_D()
@@ -342,6 +342,15 @@ class MoveModel(BaseModel):
 
 
         return self.tgt, self.moved
+
+
+    def run_batch(self, data, overall_batch):
+        """
+        Wrapper function for optimize_parameters, general compatibility
+        """
+        self.overall_batch = overall_batch
+        self.optimize_parameters(data)
+
 
 
     def run_validation(self, val_data):
