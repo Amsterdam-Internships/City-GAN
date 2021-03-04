@@ -58,7 +58,7 @@ echo "Current time : $now"
 echo
 
 # execute training script
-python $HOME/City-GAN/train_move.py --model move \
+python $HOME/City-GAN/train.py --model move \
     --dataroot "$TMPDIR"/datasets/ROOM/images/\
     --name Move\
     --max_dataset_size 10000\
