@@ -958,13 +958,19 @@ class MoveConvNET(nn.Module):
                 nn.LeakyReLU(0.2, True)
             ]
 
-        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, theta_dim), nn.Tanh()]
+        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, theta_dim)]
+
+        self.tanh = nn.Tanh()
 
         self.model = nn.Sequential(*layers)
 
 
     def forward(self, input):
-        return self.model(input)
+        raw_out =  self.model(input)
+
+        out = self.tanh(raw_out)
+        # print(raw_out, out, "\n")
+        return out
 
 
 

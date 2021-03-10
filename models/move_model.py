@@ -285,7 +285,7 @@ class MoveModel(BaseModel):
             # self.scaler.step(self.optimizer_Conv)
             # self.scaler.update()
             self.optimizer_Conv.step()
-            model.count_G += 1
+            self.count_G += 1
 
 
 
