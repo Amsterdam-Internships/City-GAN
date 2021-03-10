@@ -60,76 +60,77 @@ class CopyModel(BaseModel):
         )
 
         # define new arguments for this model
-        if is_train:
-            parser.add_argument(
-                "--lambda_aux",
-                type=float,
-                default=0.1,
-                help="weight for the auxiliary mask loss",
-            )
-            parser.add_argument(
-                "--confidence_weight",
-                type=float,
-                default=0.0,
-                help="weight for the confidence loss for generator",
-            )
-            parser.add_argument(
-                "--D_headstart",
-                type=int,
-                default=0,
-                help="First train only discriminator for D_headstart batches",
-            )
-            parser.add_argument(
-                "--sigma_blur",
-                type=float,
-                default=1.0,
-                help="Sigma used in Gaussian filter used for blurring \
-                discriminator input",
-            )
-            parser.add_argument(
-                "--no_border_zeroing",
-                action="store_true",
-                help="default: clamp borders of generated mask to 0 \
-                    (store_false)",
-            )
-            parser.add_argument(
-                "--D_threshold",
-                type=float,
-                default=0.5,
-                help="when the accuracy of the discriminator is lower than \
-                    this threshold, only train D",
-            )
-            parser.add_argument(
-                "--patch_D",
-                action="store_true",
-                help="If true, discriminator scores individual patches on \
-                    realness, else, two linear layers yield a scalar score",
-            )
-            parser.add_argument(
-                "--accumulation_steps",
-                type=int,
-                default=1,
-                help="accumulate gradients for this amount of batches, \
-                    before backpropagating, to simulate a larger batch size",
-            )
-            parser.add_argument(
-                "--no_grfakes",
-                action="store_true",
-                help="If true, no grounded fakes will be used in training",
-            )
-            parser.add_argument(
-                "--flip_vertical",
-                action="store_true",
-                help="If specified, the data will be flipped vertically",
-            )
-            parser.add_argument(
-                "--no_alternate",
-                action="store_true",
-                help="If specified, G and D will not be trained in alternating\
-                    fashion, but sequentially (for val_freq batches each)",
-            )
+        # if is_train:
+        parser.add_argument(
+            "--lambda_aux",
+            type=float,
+            default=0.1,
+            help="weight for the auxiliary mask loss",
+        )
+        parser.add_argument(
+            "--confidence_weight",
+            type=float,
+            default=0.0,
+            help="weight for the confidence loss for generator",
+        )
+        parser.add_argument(
+            "--D_headstart",
+            type=int,
+            default=0,
+            help="First train only discriminator for D_headstart batches",
+        )
+        parser.add_argument(
+            "--sigma_blur",
+            type=float,
+            default=1.0,
+            help="Sigma used in Gaussian filter used for blurring \
+            discriminator input",
+        )
+        parser.add_argument(
+            "--no_border_zeroing",
+            action="store_true",
+            help="default: clamp borders of generated mask to 0 \
+                (store_false)",
+        )
+        parser.add_argument(
+            "--D_threshold",
+            type=float,
+            default=0.5,
+            help="when the accuracy of the discriminator is lower than \
+                this threshold, only train D",
+        )
+        parser.add_argument(
+            "--patch_D",
+            action="store_true",
+            help="If true, discriminator scores individual patches on \
+                realness, else, two linear layers yield a scalar score",
+        )
+        parser.add_argument(
+            "--accumulation_steps",
+            type=int,
+            default=1,
+            help="accumulate gradients for this amount of batches, \
+                before backpropagating, to simulate a larger batch size",
+        )
+        parser.add_argument(
+            "--no_grfakes",
+            action="store_true",
+            help="If true, no grounded fakes will be used in training",
+        )
+        parser.add_argument(
+            "--flip_vertical",
+            action="store_true",
+            help="If specified, the data will be flipped vertically",
+        )
+        parser.add_argument(
+            "--no_alternate",
+            action="store_true",
+            help="If specified, G and D will not be trained in alternating\
+                fashion, but sequentially (for val_freq batches each)",
+        )
 
         return parser
+
 
     def __init__(self, opt):
         """Initialize this model class.
@@ -205,35 +206,43 @@ class CopyModel(BaseModel):
 
         # specify the images that are saved and displayed
         # (via base_model.get_current_visuals)
-        if self.aux:
-            self.visual_names = [
-                "src",
-                "tgt",
-                "g_mask",
-                "g_mask_binary",
-                "composite",
-                "D_mask_fake",
-                "anti_sc_src",
-                "anti_sc",
-                "D_mask_antisc",
-                "D_mask_real",
-            ]
-            if not opt.no_grfakes:
-                self.visual_names.extend(
-                    ["grounded_fake", "D_mask_grfake", "mask_gf"]
-                )
+        if not self.isTrain:
+            self.visual_names =[
+                    "src",
+                    "tgt",
+                    "g_mask",
+                    "g_mask_binary",
+                    "composite"]
         else:
-            self.visual_names = [
-                "src",
-                "tgt",
-                "g_mask",
-                "g_mask_binary",
-                "composite",
-                "anti_sc_src",
-                "anti_sc",
-            ]
-            if not opt.no_grfakes:
-                self.visual_names.extend(["grounded_fake", "mask_gf"])
+            if self.aux:
+                self.visual_names = [
+                    "src",
+                    "tgt",
+                    "g_mask",
+                    "g_mask_binary",
+                    "composite",
+                    "D_mask_fake",
+                    "anti_sc_src",
+                    "anti_sc",
+                    "D_mask_antisc",
+                    "D_mask_real",
+                ]
+                if not opt.no_grfakes:
+                    self.visual_names.extend(
+                        ["grounded_fake", "D_mask_grfake", "mask_gf"]
+                    )
+            else:
+                self.visual_names = [
+                    "src",
+                    "tgt",
+                    "g_mask",
+                    "g_mask_binary",
+                    "composite",
+                    "anti_sc_src",
+                    "anti_sc",
+                ]
+                if not opt.no_grfakes:
+                    self.visual_names.extend(["grounded_fake", "mask_gf"])
 
         # define generator, output_nc is set to 1 (binary mask)
         self.netG = networks.define_G(
@@ -562,6 +571,19 @@ class CopyModel(BaseModel):
             snapshot = tracemalloc.take_snapshot()
             print("Tracemalloc: validation memory")
             util.print_snapshot(snapshot)
+
+
+    def test(self):
+        self.g_mask = self.netG(self.src)
+
+        # binary mask for visualization
+        self.g_mask_binary = util.mask_to_binary(self.g_mask)
+
+        # create the composite mask from src and tgt images, and predicted mask
+        self.composite, _ = networks.composite_image(
+                self.src, self.tgt, self.g_mask, device=self.device)
+
+
 
 
 
