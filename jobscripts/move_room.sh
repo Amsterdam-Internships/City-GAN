@@ -11,8 +11,8 @@ module load 2020
 module load Python
 
 # declare run
-run=2
-echo "starting Move room training run $run"
+run=3
+echo "starting MoveGAN training run $run"
 
 #Create output directory on scratch
 mkdir "$TMPDIR"/datasets

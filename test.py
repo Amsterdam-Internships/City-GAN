@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-03-11 13:33
+# @Last Modified time: 2021-03-11 14:29
 
 """
 This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. It loads the model from memory instead.
@@ -22,39 +22,6 @@ from PIL import Image
 import torchvision.transforms as transforms
 import torch
 import numpy as np
-
-
-def split_mask(mask):
-    """
-    extract the number of different values for
-    the b_channel (3rd channel)
-
-    assume mask is a 3 channel tensor
-
-    the output is a 4D tensor, with each mask over the batch dimension
-
-    """
-
-    assert mask.shape[0] == 3
-    dim = mask.shape[-1]
-
-    # extract the blue channel
-    b_channel = mask[2, :, : ]
-    # find the unique values in the tensor, these correspond to the masks
-    values = torch.unique(b_channel)
-    # initialize the 4D output tensor
-    out = torch.zeros(values.size()[0], 1, dim, dim)
-
-    for i, v in enumerate(values):
-        # skip background
-        if v == 0:
-            continue
-        # extract the object mask from blue channel
-        binary_mask = torch.where(b_channel == v, 1, 0)
-        # set in output batch
-        out[i, 0, :, :] = binary_mask
-
-    return out
 
 
 

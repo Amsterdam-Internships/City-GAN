@@ -20,6 +20,35 @@ def mask_to_binary(mask):
     return bin_mask
 
 
+def split_mask(mask):
+    """
+    extract the number of different values for
+    the b_channel (3rd channel)
+    the output is a 4D tensor, with each mask over the batch dimension
+    """
+
+    assert mask.shape[0] == 3
+    dim = mask.shape[-1]
+
+    # extract the blue channel
+    b_channel = mask[2, :, : ]
+    # find the unique values in the tensor, these correspond to the masks
+    values = torch.unique(b_channel)
+    # initialize the 4D output tensor
+    out = torch.zeros(values.size()[0], 1, dim, dim)
+
+    for i, v in enumerate(values):
+        # skip background
+        if v == 0:
+            continue
+        # extract the object mask from blue channel
+        binary_mask = torch.where(b_channel == v, 1, 0)
+        # set in output batch
+        out[i, 0, :, :] = binary_mask
+
+    return out
+
+
 def compute_accs(self):
     """
     Computes the accuracies of the discriminator based on patch predictions
