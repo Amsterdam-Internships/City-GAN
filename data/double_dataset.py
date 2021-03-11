@@ -26,11 +26,17 @@ class DoubleDataset(BaseDataset):
 
         self.size = self.__len__()
 
+        self.return_mask = opt.phase == "test"
+
+        if self.return_mask:
+            self.mask_paths = [p[:-4]+"_mask"+p[-4:] for p in self.paths]
+
         # crop_size should be smaller than the size of loaded image
         assert(self.opt.load_size >= self.opt.crop_size)
 
         self.input_nc = self.opt.output_nc if self.opt.direction == 'BtoA' else self.opt.input_nc
         self.output_nc = self.opt.input_nc if self.opt.direction == 'BtoA' else self.opt.output_nc
+
 
 
     def __getitem__(self, index):
@@ -60,7 +66,15 @@ class DoubleDataset(BaseDataset):
         A = A_transform(A)
         B = B_transform(B)
 
-        return {'src': A, 'tgt': B, 'A_paths': pathA, 'B_paths': pathB}
+        out = {'src': A, 'tgt': B, 'src_paths': pathA, 'tgt_paths': pathB}
+
+        if self.return_mask:
+            mask = Image.open(self.mask_paths[index]).convert('RGB')
+            mask = A_transform(mask)
+            out['gt'] = mask
+
+        return out
+
 
     def __len__(self):
         """Return the total number of images in the dataset."""

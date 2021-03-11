@@ -212,6 +212,7 @@ class CopyModel(BaseModel):
                     "tgt",
                     "g_mask",
                     "g_mask_binary",
+                    "ground_truth",
                     "composite"]
         else:
             if self.aux:
@@ -303,6 +304,10 @@ class CopyModel(BaseModel):
         # put image data on device
         self.src = input["src"].to(self.device)
         self.tgt = input["tgt"].to(self.device)
+
+        if not self.isTrain:
+            self.ground_truth = input['gt']
+            self.bin_gt = util.mask_to_binary((self.ground_truth[:, -1]+1)/2)
 
         # create a grounded fake, the function samples a random polygon mask
         if self.train_on_gf and not self.opt.no_grfakes:
@@ -573,15 +578,21 @@ class CopyModel(BaseModel):
             util.print_snapshot(snapshot)
 
 
-    def test(self):
-        self.g_mask = self.netG(self.src)
+    def test(self, data):
+        assert not self.isTrain, "Model should be in testing state"
 
-        # binary mask for visualization
-        self.g_mask_binary = util.mask_to_binary(self.g_mask)
+        with torch.no_grad():
+            self.set_input(data)
 
-        # create the composite mask from src and tgt images, and predicted mask
-        self.composite, _ = networks.composite_image(
-                self.src, self.tgt, self.g_mask, device=self.device)
+            self.g_mask = self.netG(self.src)
+
+            # binary mask for visualization
+            self.g_mask_binary = util.mask_to_binary(self.g_mask)
+
+            # create the composite: Note that the binarized mask is used for visualization purposes
+            self.composite, _ = networks.composite_image(
+                    self.src, self.tgt, self.g_mask_binary, device=self.device)
+
 
 
 
