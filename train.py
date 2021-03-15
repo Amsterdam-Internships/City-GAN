@@ -90,7 +90,7 @@ if __name__ == '__main__':
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
-                if model == "move":
+                if opt.model == "move":
                     D_fake = model.pred_fake[0]
                 else:
                     D_fake = model.pred_fake_single[0]

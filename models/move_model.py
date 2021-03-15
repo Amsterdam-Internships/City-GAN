@@ -1,20 +1,3 @@
-"""Model class template
-
-This module provides a template for users to implement custom models.
-You can specify '--model template' to use this model.
-The class name should be consistent with both the filename and its model option.
-The filename should be <model>_dataset.py
-The class name should be <Model>Dataset.py
-It implements a simple image-to-image translation baseline based on regression loss.
-Given input-output pairs (data_A, data_B), it learns a network netG that can minimize the following L1 loss:
-    min_<netG> ||netG(data_A) - data_B||_1
-You need to implement the following functions:
-    <modify_commandline_options>:　Add model-specific options and rewrite default values for existing options.
-    <__init__>: Initialize this model class.
-    <set_input>: Unpack input data and perform data pre-processing.
-    <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test>.
-    <optimize_parameters>: Update network weights; it will be called in every training iteration.
-"""
 import torch
 import numpy as np
 from .base_model import BaseModel
@@ -41,8 +24,7 @@ class MoveModel(BaseModel):
         """
         parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
-            parser.add_argument('--theta_dim', type=int, default=2, help=
-                "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
+            parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
 
 
         return parser
@@ -59,7 +41,7 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv", "acc_real", "acc_fake", "scaled_theta_X", "scaled_theta_Y"]
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv", "acc_real", "acc_fake"]
 
         for loss in self.loss_names:
             setattr(self, loss, 0)
@@ -183,24 +165,32 @@ class MoveModel(BaseModel):
         tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
 
         # compute theta using the convolutional network
-        self.theta = self.netConv(tgt_obj_concat).squeeze()
+        self.theta = self.netConv(tgt_obj_concat)
+
 
         # print("theta:", self.theta)
         # make sure theta is scaled: preventing object from moving outside img
 
-        self.scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, self.opt.theta_dim)
+        self.scaled_transform = (self.theta[:, :2] * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, 2)
+
+
+        if self.opt.theta_dim == 2:
+            self.theta = torch.cat(self.opt.batch_size * torch.tensor([0, 0, 0, 1, 0, 0]))
+
+        # print(f"theta: {self.theta}")
 
         # for plotting and printing purposes
-        self.scaled_theta_X = self.scaled_theta[0][0]
-        self.scaled_theta_Y = self.scaled_theta[0][1]
+        # self.scaled_transform_X = self.scaled_transform[0][0]
+        # self.scaled_transform_Y = self.scaled_transform[0][1]
 
-        # print("scaled_theta:", self.scaled_theta)
+        # print("scaled_transform:", self.scaled_transform)
 
         # use theta to transform the object and the mask
         # is affine the correct function? perhaps we should use affine_grid
 
-        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=0, scale=1, shear=0) for obj, theta in zip(self.obj, self.scaled_theta)], 0)
-        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=0, scale=1, shear=0) for mask, theta in zip(self.obj_mask, self.scaled_theta)], 0)
+        self.transf_obj = torch.stack([affine(obj, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for obj,transf,theta in zip(self.obj,self.scaled_transform,self.theta)], 0)
+
+        self.transf_obj_mask = torch.stack([affine(mask, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for mask, transf,theta in zip(self.obj_mask,self.scaled_transform,self.theta)], 0)
 
 
         # composite the moved object with the background from the target
