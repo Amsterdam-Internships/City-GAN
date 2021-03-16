@@ -22,6 +22,10 @@ from models.base_model import BaseModel
 import models.networks as networks
 from util import util
 
+# for testing
+from kornia.morphology import erosion, dilation
+from scipy import ndimage
+
 
 
 class CopyModel(BaseModel):
@@ -213,7 +217,10 @@ class CopyModel(BaseModel):
                     "g_mask",
                     "g_mask_binary",
                     "ground_truth",
-                    "composite"]
+                    "eroded_mask",
+                    "composite_eroded",
+                    "composite",
+                    "labelled_mask"]
         else:
             if self.aux:
                 self.visual_names = [
@@ -589,9 +596,26 @@ class CopyModel(BaseModel):
             # binary mask for visualization
             self.g_mask_binary = util.mask_to_binary(self.g_mask)
 
-            # create the composite: Note that the binarized mask is used for visualization purposes
+            # try erosion to remove artefacts
+            # kernel = torch.ones((3,3))
+            # kernel = torch.Tensor([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+
+            kernel_plus = torch.Tensor([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+
+            kernel_ones = torch.ones(3, 3)
+            self.eroded_mask = dilation(erosion(self.g_mask_binary, kernel_plus), kernel_ones)
+
+
+            self.labelled_mask, num_mask = ndimage.label(self.eroded_mask)
+
+            self.labelled_mask = torch.Tensor(self.labelled_mask)
+            self.labelled_mask= (self.labelled_mask / self.labelled_mask.max())
+
             self.composite, _ = networks.composite_image(
                     self.src, self.tgt, self.g_mask_binary, device=self.device)
+
+            self.composite_eroded, _ = networks.composite_image(
+                    self.src, self.tgt, self.eroded_mask, device=self.device)
 
 
 
