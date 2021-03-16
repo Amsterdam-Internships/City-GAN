@@ -2,12 +2,11 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-03-11 14:29
+# @Last Modified time: 2021-03-12 15:25
 
 """
-This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. It loads the model from memory instead.
+This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. Instead, the model is loaded from memory.
 """
-
 
 import os
 from options.test_options import TestOptions
@@ -15,25 +14,10 @@ from data import create_dataset
 from models import create_model
 from util.visualizer import save_images
 from util import html, evaluate
-
-
-# for testing purposes
-from PIL import Image
-import torchvision.transforms as transforms
-import torch
 import numpy as np
 
 
-
-
 if __name__ == '__main__':
-
-
-    mask = transforms.ToTensor()(Image.open('datasets/CLEVR_colorized/images/test/CLEVR_color__028002_mask.png').convert('RGB'))
-
-    mask_split = split_mask(mask)
-
-
 
     opt = TestOptions().parse()  # get test options
     # hard-code some parameters for test
@@ -42,17 +26,8 @@ if __name__ == '__main__':
     opt.no_flip = True    # no flip; comment this line if results on flipped images are needed.
     opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
 
-
-    ### temporary
-    opt.batch_size = 1
-    opt.display_freq = 1
-
-
-
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     model = create_model(opt)      # create a model given opt.model and other options
-
-
 
     model.setup(opt)               # regular setup: load and print networks; create schedulers
     # create a website
@@ -62,8 +37,9 @@ if __name__ == '__main__':
     print('creating web directory', web_dir)
     webpage = html.HTML(web_dir, 'Experiment = %s, Phase = %s, Epoch = %s' % (opt.name, opt.phase, opt.epoch))
 
-
+    # init list to keep track of IOUs
     IOU_list = []
+    IOU_list_eroded = []
 
     model.eval()
 
@@ -75,14 +51,15 @@ if __name__ == '__main__':
         img_path = str(i)
 
         # compute IOU
-        batch_iou = evaluate.compute_IOU(model.g_mask_binary, model.bin_gt)
-        IOU_list.extend(batch_iou)
+        IOU_batch = evaluate.compute_IOU(model.g_mask_binary, model.bin_gt)
+        IOU_list.extend(IOU_batch)
+
+        IOU_eroded = evaluate.compute_IOU(model.eroded_mask, model.bin_gt)
+        IOU_list_eroded.extend(IOU_eroded)
 
 
         if i % opt.display_freq == 0:
-            iou= f"{batch_iou[0]:.2f}"
-            # print(f"IOU {i}: {iou}")
-            # print(f'processing and saving {i}-th image... {img_path}')
+            iou= f"{IOU_batch[0]:.2f} / {IOU_eroded[0]:.2f}"
             save_images(webpage, visuals, img_path, aspect_ratio=opt.aspect_ratio, width=opt.display_winsize, score=iou)
     webpage.save()  # save the HTML
 
@@ -90,6 +67,10 @@ if __name__ == '__main__':
     mean, min_, max_, std = np.mean(IOU_list), np.min(IOU_list), np.max(IOU_list), np.std(IOU_list)
 
     print(f"\nMean: {mean:.2f}\nMin: {min_:.2f}\nMax: {max_:.2f}\nSTD: {std:.2f}")
+
+    mean, min_, max_, std = np.mean(IOU_list_eroded), np.min(IOU_list_eroded), np.max(IOU_list_eroded), np.std(IOU_list_eroded)
+
+    print(f"\n\nEroded: \nMean: {mean:.2f}\nMin: {min_:.2f}\nMax: {max_:.2f}\nSTD: {std:.2f}")
 
 
 
