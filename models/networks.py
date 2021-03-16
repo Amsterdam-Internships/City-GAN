@@ -612,7 +612,7 @@ class EncoderBlock(nn.Module):
         super(EncoderBlock, self).__init__()
 
         layers = [
-            nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
+            nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias, padding_mode="replicate"),
             norm_layer(output_nc),
             nn.LeakyReLU(slope, True)
         ]
@@ -652,11 +652,11 @@ class DecoderBlock(nn.Module):
         layers = []
         if not last_layer:
             layers += [nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
-                       nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding)]
+                       nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding, padding_mode="replicate")]
             layers += [norm_layer(output_nc), nn.LeakyReLU(slope, True)]
         # if this is the last layer, don't upsample, only conv layer
         else:
-            layers.append(nn.Conv2d(input_nc, output_nc, stride=1, kernel_size=kernel, padding=padding))
+            layers.append(nn.Conv2d(input_nc, output_nc, stride=1, kernel_size=kernel, padding=padding, padding_mode='replicate'))
 
         if dropout:
             layers.append(nn.Dropout(0.5))
