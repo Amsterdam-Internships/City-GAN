@@ -197,7 +197,7 @@ class MoveModel(BaseModel):
         self.theta[:, :, -1]
 
         # TODO: check if align_corners should be true or false
-        grid = F.affine_grid(self.theta, self.obj.size(), align_corners=False)
+        grid = F.affine_grid(self.theta, self.obj.size(), align_corners=False).float()
         self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)
         self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=False)
 
