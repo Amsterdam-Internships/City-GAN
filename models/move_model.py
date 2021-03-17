@@ -8,6 +8,7 @@ from torchvision.transforms.functional import affine
 import matplotlib.pyplot as plt
 from torch.cuda.amp import GradScaler, autocast
 import random
+import torch.nn.functional as F
 
 
 class MoveModel(BaseModel):
@@ -41,7 +42,7 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv", "acc_real", "acc_fake"]
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_eq", "loss_conv", "acc_real", "acc_fake"]
 
         for loss in self.loss_names:
             setattr(self, loss, 0)
@@ -171,11 +172,11 @@ class MoveModel(BaseModel):
         # print("theta:", self.theta)
         # make sure theta is scaled: preventing object from moving outside img
 
-        self.scaled_transform = (self.theta[:, :2] * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, 2)
+        # self.scaled_transform = (self.theta[:, :2] * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, 2)
 
 
-        if self.opt.theta_dim == 2:
-            self.theta = torch.cat(self.opt.batch_size * torch.tensor([0, 0, 0, 1, 0, 0]))
+        # if self.opt.theta_dim == 2:
+            # self.theta = torch.cat(self.opt.batch_size * torch.tensor([0, 0, 0, 1, 0, 0]), 1)
 
         # print(f"theta: {self.theta}")
 
@@ -188,9 +189,32 @@ class MoveModel(BaseModel):
         # use theta to transform the object and the mask
         # is affine the correct function? perhaps we should use affine_grid
 
-        self.transf_obj = torch.stack([affine(obj, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for obj,transf,theta in zip(self.obj,self.scaled_transform,self.theta)], 0)
+        #########################
 
-        self.transf_obj_mask = torch.stack([affine(mask, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for mask, transf,theta in zip(self.obj_mask,self.scaled_transform,self.theta)], 0)
+        self.theta = self.theta.reshape(-1, 2, 3)
+
+        # normalize translation parameters
+        self.theta[:, :, -1]
+
+        # TODO: check if align_corners should be true or false
+        grid = F.affine_grid(self.theta, self.obj.size(), align_corners=False)
+        self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)
+        self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=False)
+
+
+        # the object seems to be moved outside of the image!
+        # how to make sure the scale is 1 centered, and the others are 0 centeded?
+
+        # perhaps a loss function on the similarity between tgt and composite
+
+        # breakpoint()
+
+
+        #############
+
+        # self.transf_obj = torch.stack([affine(obj, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for obj,transf,theta in zip(self.obj,self.scaled_transform,self.theta)], 0)
+
+        # self.transf_obj_mask = torch.stack([affine(mask, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for mask, transf,theta in zip(self.obj_mask,self.scaled_transform,self.theta)], 0)
 
 
         # composite the moved object with the background from the target
@@ -242,10 +266,13 @@ class MoveModel(BaseModel):
 
         """
 
-        self.loss_Conv = self.criterionGAN(self.pred_fake, True)
+        self.loss_G = self.criterionGAN(self.pred_fake, True)
+        self.loss_eq = 2 * torch.eq(self.composite, self.tgt).all(1).all(2).all(1).float().mean()
 
-        # self.scaler.scale(self.loss_Conv).backward()
-        self.loss_Conv.backward()
+        self.loss_conv = self.loss_G + self.loss_eq
+
+        # self.scaler.scale(self.loss_G).backward()
+        self.loss_conv.backward()
 
 
     def optimize_parameters(self, data):
