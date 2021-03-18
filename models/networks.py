@@ -922,19 +922,25 @@ class MoveConvNET(nn.Module):
                 nn.LeakyReLU(0.2, True)
             ]
 
-        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, theta_dim)]
-
-        self.tanh = nn.Tanh()
-
+        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
         self.model = nn.Sequential(*layers)
+
+        # define two seperate linear layers for final layer
+        self.zero_c = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
+        self.one_c = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
+        self.trans = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
 
 
     def forward(self, input):
-        raw_out =  self.model(input)
+        last_layer =  self.model(input)
 
-        out = self.tanh(raw_out)
-        # print(raw_out, out, "\n")
-        return out
+        # shape: B * 4
+        zero_centered = self.zero_c(last_layer)
+        # shape: B * 2; add one to make it one-centered
+        one_centered = torch.add(self.one_c(last_layer), 1)
+        translation = self.trans(last_layer)
+
+        return zero_centered, one_centered, translation
 
 
 

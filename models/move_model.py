@@ -49,7 +49,7 @@ class MoveModel(BaseModel):
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
 
         self.count_G = self.count_D = 0
 
@@ -155,7 +155,7 @@ class MoveModel(BaseModel):
 
 
 
-    def forward(self, valid=False):
+    def forward(self, valid=False, generator=False):
         """
         what needs to be done:
             - target image and centered object are fed to convnet (initialized in the init)
@@ -167,35 +167,23 @@ class MoveModel(BaseModel):
         tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
 
         # compute theta using the convolutional network
-        self.theta = self.netConv(tgt_obj_concat)
+        zero_centered, one_centered, translation = self.netConv(tgt_obj_concat)
+        B = zero_centered.shape[0]
 
+        torch.clamp(translation, -1, 1)
 
-        # print("theta:", self.theta)
-        # make sure theta is scaled: preventing object from moving outside img
+        # initialize theta
+        theta = torch.zeros(B, 2, 2)
+        # set the diagonal of theta
+        theta[:, torch.eye(2).bool()] = one_centered
+        # concatenate the translation parameters
+        self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
+        # set the other two parameters
+        self.theta[:, 0, 1] = zero_centered[:, 0]
+        self.theta[:, 1, 0] = zero_centered[:, 1]
 
-        # self.scaled_transform = (self.theta[:, :2] * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, 2)
-
-
-        # if self.opt.theta_dim == 2:
-            # self.theta = torch.cat(self.opt.batch_size * torch.tensor([0, 0, 0, 1, 0, 0]), 1)
-
-        # print(f"theta: {self.theta}")
-
-        # for plotting and printing purposes
-        # self.scaled_transform_X = self.scaled_transform[0][0]
-        # self.scaled_transform_Y = self.scaled_transform[0][1]
-
-        # print("scaled_transform:", self.scaled_transform)
-
-        # use theta to transform the object and the mask
-        # is affine the correct function? perhaps we should use affine_grid
 
         #########################
-
-        self.theta = self.theta.reshape(-1, 2, 3)
-
-        # normalize translation parameters
-        self.theta[:, :, -1]
 
         # TODO: check if align_corners should be true or false
         grid = F.affine_grid(self.theta, self.obj.size(), align_corners=False).float()
@@ -208,18 +196,13 @@ class MoveModel(BaseModel):
 
         # perhaps a loss function on the similarity between tgt and composite
 
-        # breakpoint()
-
-
-        #############
-
-        # self.transf_obj = torch.stack([affine(obj, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for obj,transf,theta in zip(self.obj,self.scaled_transform,self.theta)], 0)
-
-        # self.transf_obj_mask = torch.stack([affine(mask, translate=list(transf), angle=float(theta[2]), scale=float(theta[3])+1.5, shear=list(theta[4:])) for mask, transf,theta in zip(self.obj_mask,self.scaled_transform,self.theta)], 0)
-
 
         # composite the moved object with the background from the target
         self.composite, _ = networks.composite_image(self.transf_obj, self.tgt, self.transf_obj_mask)
+
+        # detach composite if we are training the discriminator
+        if not generator:
+            self.composite = self.composite.detach()
 
         # get the prediction on the fake image
         self.pred_fake = self.netD(self.composite)
@@ -250,6 +233,8 @@ class MoveModel(BaseModel):
 
 
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
+
+        # CHECK: detach the fake prediction here?
         self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
 
         self.loss_D = (self.loss_D_fake + self.loss_D_real) / 2
@@ -268,7 +253,11 @@ class MoveModel(BaseModel):
         """
 
         self.loss_G = self.criterionGAN(self.pred_fake, True)
+
+        # TODO: not differentiable?
         self.loss_eq = 2 * torch.eq(self.composite, self.tgt).all(1).all(2).all(1).float().mean()
+        #
+
 
         self.loss_conv = self.loss_G + self.loss_eq
 
@@ -282,11 +271,24 @@ class MoveModel(BaseModel):
 
         self.set_input(data)
 
+        train_G = not(self.overall_batch % 3 == 0)
+
         # run the forward pass
-        self.forward()
+        self.forward(generator=train_G)
+
+        # train convnet predicting theta
+        if train_G:
+            # print("Training Convnet")
+            self.optimizer_Conv.zero_grad()
+            self.backward_Conv()
+
+            # self.scaler.step(self.optimizer_Conv)
+            # self.scaler.update()
+            self.optimizer_Conv.step()
+            self.count_G += 1
 
         # train discriminator
-        if self.overall_batch % 3 == 0:
+        else:
             # print("Training D")
             self.optimizer_D.zero_grad()
             self.backward_D()
@@ -294,17 +296,6 @@ class MoveModel(BaseModel):
             # self.scaler.update()
             self.optimizer_D.step()
             self.count_D += 1
-
-        # train convnet predicting theta
-        else:
-            # print("Training Convnet")
-            self.optimizer_Conv.zero_grad()
-            self.backward_Conv()
-            # self.scaler.step(self.optimizer_Conv)
-            # self.scaler.update()
-            self.optimizer_Conv.step()
-            self.count_G += 1
-
 
 
     def baseline(self, data, type_='random'):
