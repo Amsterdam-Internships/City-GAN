@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-02-23 22:39
+# @Last Modified time: 2021-03-18 16:08
 
 
 """
@@ -53,16 +53,13 @@ def plot_json(opt):
     all_iters = np.arange(step_size, max_iter, step_size)
 
 
-    fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, sharex=True, figsize=(7, 7))
+    fig, (ax1, ax2) = plt.subplots(nrows=2, sharex=True, figsize=(7, 7))
 
     for loss_name in loss_names:
         losses = [data[epoch][iter_][loss_name] for epoch in data.keys() for iter_ in data['1']]
         if "acc" in loss_name:
             n=1
             plot_iters= all_iters
-        elif "theta" in loss_name:
-            n=1
-            plot_iters = all_iters
         else:
             n = opt.n
             plot_iters = all_iters[n//2:-(n//2)]
@@ -72,27 +69,21 @@ def plot_json(opt):
         if "acc" in loss_name:
             label = loss_name[4:]
             ax1.plot(plot_iters, losses, label=label)
-        elif "theta" in loss_name:
-            label = loss_name[-1:]
-            ax3.plot(plot_iters, losses, label=label)
         else:
             label = loss_name[5:]
             ax2.plot(plot_iters, losses, label=label)
 
     ax1.set_title(f"Discriminator accuracy (run {opt.run})")
     ax2.set_title("Losses")
-    ax3.set_title("Thetas over time")
 
-    ax3.set(xlabel=f"Batch ({iters_per_epoch} per epoch)")
     ax1.set(ylabel="Accuracy")
     ax2.set(ylabel="Loss")
-    ax3.set(ylabel="Scaled theta")
     ax1.legend()
     ax2.legend()
-    ax3.legend()
+
     ax1.label_outer()
     ax2.label_outer()
-    ax3.label_outer()
+
 
     plt.tight_layout()
 
