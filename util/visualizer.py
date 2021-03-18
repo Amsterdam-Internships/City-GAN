@@ -151,7 +151,7 @@ class Visualizer():
                     self.vis.text(table_css + label_html, win=self.display_id + 2,
                                   opts=dict(title=title + ' labels'))
                     if D_fakes:
-                        self.vis.text(f"D prediction composite:\n {[list(r) for r in D_fakes[-1]]}", win=self.display_id + 3,
+                        self.vis.text(f"D prediction composite:\n {D_fakes[-1]}", win=self.display_id + 3,
                                   opts=dict(title=f"D prediction composite"))
                 except VisdomExceptionBase:
                     self.create_visdom_connections()

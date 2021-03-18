@@ -104,10 +104,9 @@ class CopyModel(BaseModel):
                 this threshold, only train D",
         )
         parser.add_argument(
-            "--patch_D",
+            "--pool_D",
             action="store_true",
-            help="If true, discriminator scores individual patches on \
-                realness, else, two linear layers yield a scalar score",
+            help="If true, discriminator uses avg pooling to get its prediction, like Arandjelovic, otherwise conv & linear layers are used",
         )
         parser.add_argument(
             "--accumulation_steps",
@@ -146,7 +145,7 @@ class CopyModel(BaseModel):
         BaseModel.__init__(self, opt)
 
         self.D_headstart = opt.D_headstart
-        self.patch = opt.patch_D
+        self.pool = opt.pool_D
 
         # specify random seed
         if opt.seed == 0:
@@ -277,14 +276,14 @@ class CopyModel(BaseModel):
                 gpu_ids=self.gpu_ids,
                 img_dim=opt.crop_size,
                 sigma_blur=opt.sigma_blur,
-                patchGAN=opt.patch_D,
+                pool=opt.pool_D,
                 aux=self.aux,
             )
             self.model_names.append("D")
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(
-                gan_mode="vanilla", target_real_label=opt.real_target, patch=self.patch).to(self.device)
+                gan_mode="vanilla", target_real_label=opt.real_target).to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
 
@@ -336,12 +335,11 @@ class CopyModel(BaseModel):
         self.g_mask = self.netG(self.src)
 
         # set mask as attribute of loss class
-        # TODO check
-        self.criterionGAN.set_copy_mask(self.g_mask)
+        # TODO: can be removed?
+        # self.criterionGAN.set_copy_mask(self.g_mask)
 
         # binary mask for visualization
         self.g_mask_binary = util.mask_to_binary(self.g_mask)
-
 
         # create the composite mask from src and tgt images, and predicted mask
         self.composite, _ = networks.composite_image(
@@ -353,11 +351,11 @@ class CopyModel(BaseModel):
 
 
         # get discriminators prediction on the generated image
-        self.pred_fake_single, self.pred_fake_patch, self.D_mask_fake = self.netD(self.composite)
+        self.pred_fake, self.D_mask_fake = self.netD(self.composite)
 
 
         # make sure the predictions are the right size
-        assert (valid or self.pred_fake_single.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_fake_single.shape}, B: \
+        assert (valid or self.pred_fake.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_fake.shape}, B: \
             {self.opt.batch_size})"
 
         # apply the masks on different source images: anti shortcut images
@@ -370,30 +368,31 @@ class CopyModel(BaseModel):
             if not generator:
                 self.anti_sc = self.anti_sc.detach()
 
-            self.pred_antisc_single, self.pred_antisc_patch, self.D_mask_antisc= self.netD(self.anti_sc)
+            self.pred_antisc, self.D_mask_antisc= self.netD(self.anti_sc)
 
         # get predictions from discriminators for real images (use tgt/src)
         if not generator or valid:
-            self.pred_real_single, self.pred_real_patch, self.D_mask_real = self.netD(self.tgt)
+            self.pred_real, self.D_mask_real = self.netD(self.tgt)
 
         # compute grounded fake predictions
         if (self.train_on_gf and not generator) or valid:
-            self.pred_grfake_single, self.pred_grfake_patch, self.D_mask_grfake = self.netD(self.grounded_fake)
+            self.pred_grfake, self.D_mask_grfake = self.netD(self.grounded_fake)
 
         # compute accuracy of discriminator if in validation mode
         if valid:
-            self.compute_single_accs()
+            # TODO change accuracy computation
+            self.compute_accs()
 
 
-    def compute_single_accs(self):
+    def compute_accs(self):
         B = self.opt.val_batch_size
 
-        self.acc_real = len(self.pred_real_single[self.pred_real_single>0.5])/B
-        self.acc_fake = len(self.pred_fake_single[self.pred_fake_single<0.5])/B
+        self.acc_real = len(self.pred_real[self.pred_real>0.5])/B
+        self.acc_fake = len(self.pred_fake[self.pred_fake<0.5])/B
 
         if self.train_on_gf:
             self.acc_grfake = (
-                len(self.pred_grfake_single[self.pred_grfake_single < 0.5]) / B
+                len(self.pred_grfake[self.pred_grfake < 0.5]) / B
             )
 
 
@@ -403,8 +402,8 @@ class CopyModel(BaseModel):
         Discriminator predictions have been computed in the forward pass"""
 
         # compute adversarial losses
-        self.loss_G_comp = self.criterionGAN(self.pred_fake_patch, True)
-        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc_patch, False)
+        self.loss_G_comp = self.criterionGAN(self.pred_fake, True)
+        self.loss_G_anti_sc = self.criterionGAN(self.pred_antisc, False)
         # compute confidence loss if used
         self.loss_G_conf = (
             self.opt.confidence_weight * self.criterionConf(self.g_mask)
@@ -423,12 +422,12 @@ class CopyModel(BaseModel):
         """Calculate losses and gradients for Disciminator"""
 
         # compute adversarial losses
-        self.loss_D_real = self.criterionGAN(self.pred_real_patch, True)
+        self.loss_D_real = self.criterionGAN(self.pred_real, True)
         self.loss_D_fake = self.criterionGAN(
-            self.pred_fake_patch, False)
+            self.pred_fake, False)
 
         if self.train_on_gf:
-            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake_patch, False)
+            self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake, False)
 
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G

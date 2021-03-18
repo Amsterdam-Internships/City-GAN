@@ -90,10 +90,7 @@ if __name__ == '__main__':
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:
                 save_result = total_iters % opt.update_html_freq == 0
-                if opt.model == "move":
-                    D_fake = model.pred_fake[0]
-                else:
-                    D_fake = model.pred_fake_single[0]
+                D_fake = model.pred_fake[0]
                 D_fake = D_fake.detach().squeeze().cpu().numpy().round(2)
                 D_fakes.append(D_fake)
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fakes=D_fakes)

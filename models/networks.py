@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    patchGAN=False, aux=True, theta_dim=2):
+    pool=False, aux=True, theta_dim=2):
     """
     Returns a discriminator
 
@@ -186,7 +186,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         gpu_ids (int list)  -- which GPUs the network runs on: e.g., 0,1,2
         img_dim (int)       -- image dimension (assume squares)
         sigma_blur (float)  -- sigma used for gaussian blurring
-        patchGAN (bool)     -- whether to use patch verion of D
+        pool (bool)         -- whether to use pooling verion of D
         aux (bool)          -- use auxiliary loss or not, only possible in
                             copy discriminator
 
@@ -208,7 +208,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
 
     if netD == "copy":
         net = CopyDiscriminator(input_nc, 1, norm_layer=norm_layer,
-            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN, aux=aux)
+            img_dim=img_dim, sigma_blur=sigma_blur, pool=pool, aux=aux)
     elif netD == 'basic':  # default PatchGAN classifier
         net = NLayerDiscriminator(input_nc, ndf, n_layers=3,
             norm_layer=norm_layer)
@@ -440,7 +440,7 @@ class CopyDiscriminator(nn.Module):
     implementation details in the paper.
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, patchGAN=False, aux=True):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, pool=False, aux=True):
         """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)      -- the number of channels in input images
@@ -449,7 +449,7 @@ class CopyDiscriminator(nn.Module):
             dropout (bool)      -- Use dropout or not
             sigma_blur (float)  -- sigma for gaussian blur filter
             img_dim (int)       -- image dimension, assume square
-            patchGAN (bool)     -- use patch implementation
+            pool (bool)     -- use patch implementation
             aux (bool)          -- use auxiliary loss
 
         The network is constructed from encoder and decoder building blocks
@@ -459,7 +459,7 @@ class CopyDiscriminator(nn.Module):
 
         self.img_dim = img_dim
         self.aux = aux
-        self.patchGAN = patchGAN
+        self.pool = pool
 
         if sigma_blur:
             self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
@@ -501,41 +501,22 @@ class CopyDiscriminator(nn.Module):
 
         self.sigmoid = nn.Sigmoid()
 
-        if self.patchGAN:
 
-            # TODO: change this into one layer, single prediction output
-            # define conv layers for patch prediction
-            self.patch_conv = nn.Sequential(
-                EncoderBlock(512, 128, 3, 2, 1),
-                nn.Conv2d(128, 1, 3, 1, 1))
 
-            # define linear layer for scaler prediction
-            self.patch_fc = nn.Sequential(nn.Flatten(), nn.Linear(16, 1),
-                self.sigmoid)
-
-        else:
+        if self.pool:
             # define average pooling, followed by two linear layers
-            self.pool = nn.Sequential(nn.AvgPool2d(8, stride=2),
+            self.pred_layers = nn.Sequential(nn.AvgPool2d(8, stride=2),
                 nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
                 nn.Linear(256, 1), self.sigmoid)
-
-
-    def get_realness_score(self, enc_out, patch=False):
-        """
-        Takes the encoder output and computes the realness score.
-        The realness score can be a scalar (patch=False), or a tensor, scoring
-        different patches
-        """
-
-        if patch:
-            conv_out = self.patch_conv(enc_out)
-            single_out = self.patch_fc(conv_out)
-            patch_out = self.sigmoid(conv_out)
         else:
-            single_out = self.pool(enc_out)
-            patch_out = None
+            # outputs a single value too, but uses convolutions
+            self.pred_layers =  nn.Sequential(
+                EncoderBlock(512, 128, 3, 2, 1),
+                nn.Conv2d(128, 1, 3, 1, 1),
+                nn.Flatten(),
+                nn.Linear(16, 1),
+                self.sigmoid)
 
-        return single_out, patch_out
 
 
     def forward(self, input):
@@ -567,11 +548,11 @@ class CopyDiscriminator(nn.Module):
         enc4 = self.enc4(enc3)
 
         # compute realness scores
-        single_out, patch_out = self.get_realness_score(enc4, self.patchGAN)
+        pred = self.pred_layers(enc4)
 
         # if auxiliary loss is not used, return score and skip decoder
         if not self.aux:
-            return single_out, patch_out, None
+            return pred, None
 
         # forward pass (decoder): skip connections are used
         dec4 = self.dec4(enc4)
@@ -587,7 +568,7 @@ class CopyDiscriminator(nn.Module):
         # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
 
-        return single_out, patch_out, copy_mask
+        return pred, copy_mask
 
 
 class EncoderBlock(nn.Module):
@@ -656,6 +637,7 @@ class DecoderBlock(nn.Module):
             layers += [nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
                        nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding, padding_mode="replicate")]
             layers += [norm_layer(output_nc), nn.LeakyReLU(slope, True)]
+
         # if this is the last layer, don't upsample, only conv layer
         else:
             layers.append(nn.Conv2d(input_nc, output_nc, stride=1, kernel_size=kernel, padding=padding, padding_mode='replicate'))
@@ -735,7 +717,7 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0, patch=False):
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -750,7 +732,6 @@ class GANLoss(nn.Module):
         self.register_buffer('real_label', torch.tensor(target_real_label))
         self.register_buffer('fake_label', torch.tensor(target_fake_label))
         self.gan_mode = gan_mode
-        self.patch = patch
         if gan_mode == 'lsgan':
             self.loss = nn.MSELoss()
         elif gan_mode == 'vanilla':
@@ -775,27 +756,21 @@ class GANLoss(nn.Module):
         # if patch is not used, set to the real/fake label
         if target_is_real:
             target_tensor = self.real_label
-        elif self.patch:
-            # this sets the unchanged patches to the real label;
-            # target_tensor = self.logical_mask * self.real_label
-
-            # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the unchanged patches
-            target_tensor = self.logical_mask * self.fake_label
         else:
             target_tensor = self.fake_label
 
         return target_tensor.expand_as(prediction)
 
 
-    def set_copy_mask(self, copy_mask):
-        self.mask = copy_mask
-        if self.patch:
-            s = self.mask.shape[-1]//4
-            maxpool = nn.MaxPool2d(s, s)
-            max_mask = maxpool(self.mask)
-            min_mask = -maxpool(-self.mask)
+    # def set_copy_mask(self, copy_mask):
+    #     self.mask = copy_mask
+    #     if self.patch:
+    #         s = self.mask.shape[-1]//4
+    #         maxpool = nn.MaxPool2d(s, s)
+    #         max_mask = maxpool(self.mask)
+    #         min_mask = -maxpool(-self.mask)
 
-            self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
+    #         self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
 
 
 
