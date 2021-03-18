@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=67
+run=70
 echo "starting training run $run"
 
 #Create output directory on scratch
@@ -34,11 +34,11 @@ python $HOME/City-GAN/train.py --model copy \
     --update_html 100 \
     --display_freq 100\
     --verbose \
-    --sigma_blur 0.1\
+    --sigma_blur 0.5\
     --load_size 70\
     --crop_size 64\
     --D_headstart 0\
-    --confidence_weight 0.1\
+    --confidence_weight 0.0\
     --val_batch_size 128\
     --accumulation_steps 1\
     --display_id 0\
@@ -46,7 +46,6 @@ python $HOME/City-GAN/train.py --model copy \
     --D_threshold 0.5\
     --netD copy\
     --real_target 0.8\
-    --patch_D\
     --seed 42\
     --no_alternate
 
