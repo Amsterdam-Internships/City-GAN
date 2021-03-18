@@ -333,37 +333,26 @@ class CopyModel(BaseModel):
 
         # generate output image given the input batch
         self.g_mask = self.netG(self.src)
-
-        # set mask as attribute of loss class
-        # TODO: can be removed?
-        # self.criterionGAN.set_copy_mask(self.g_mask)
-
         # binary mask for visualization
         self.g_mask_binary = util.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
-        self.composite, _ = networks.composite_image(
-                self.src, self.tgt, self.g_mask, device=self.device)
+        self.composite, _ = networks.composite_image(self.src, self.tgt,
+            self.g_mask, device=self.device)
 
+        # if we are training D, prevent gradient flow back through G
         if not generator:
-            # inplace?
             self.composite = self.composite.detach()
 
-
-        # get discriminators prediction on the generated image
+        # get discriminators prediction on the generated (fake) image
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-
-
-        # make sure the predictions are the right size
-        assert (valid or self.pred_fake.shape[0] == self.opt.batch_size), f"prediction shape incorrect ({self.pred_fake.shape}, B: \
-            {self.opt.batch_size})"
 
         # apply the masks on different source images: anti shortcut images
         if not valid:
             # use flip to "shuffle" the batch and get new combinations
             self.anti_sc_src = torch.flip(self.src, [0])
-            self.anti_sc, _ = networks.composite_image(
-                self.anti_sc_src, self.tgt, self.g_mask)
+            self.anti_sc, _ = networks.composite_image( self.anti_sc_src, self.
+                tgt, self.g_mask)
 
             if not generator:
                 self.anti_sc = self.anti_sc.detach()
@@ -376,24 +365,21 @@ class CopyModel(BaseModel):
 
         # compute grounded fake predictions
         if (self.train_on_gf and not generator) or valid:
-            self.pred_grfake, self.D_mask_grfake = self.netD(self.grounded_fake)
+            self.pred_grfake,self.D_mask_grfake = self.netD(self.grounded_fake)
 
         # compute accuracy of discriminator if in validation mode
         if valid:
-            # TODO change accuracy computation
             self.compute_accs()
 
 
     def compute_accs(self):
         B = self.opt.val_batch_size
-
+        # use 0.5 as cutoff value for accuracy
         self.acc_real = len(self.pred_real[self.pred_real>0.5])/B
         self.acc_fake = len(self.pred_fake[self.pred_fake<0.5])/B
 
         if self.train_on_gf:
-            self.acc_grfake = (
-                len(self.pred_grfake[self.pred_grfake < 0.5]) / B
-            )
+            self.acc_grfake = len(self.pred_grfake[self.pred_grfake < 0.5])/B
 
 
     def backward_G(self):
@@ -515,8 +501,6 @@ class CopyModel(BaseModel):
 
         if self.headstart_over and self.D_above_thresh and batch_right:
             self.train_G = True
-
-        # print("trainG:", self.train_G)
 
         # determine if grounded fakes are still used in training
         if self.D_gf_perfect and self.headstart_over:

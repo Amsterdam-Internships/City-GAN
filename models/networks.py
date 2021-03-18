@@ -762,18 +762,6 @@ class GANLoss(nn.Module):
         return target_tensor.expand_as(prediction)
 
 
-    # def set_copy_mask(self, copy_mask):
-    #     self.mask = copy_mask
-    #     if self.patch:
-    #         s = self.mask.shape[-1]//4
-    #         maxpool = nn.MaxPool2d(s, s)
-    #         max_mask = maxpool(self.mask)
-    #         min_mask = -maxpool(-self.mask)
-
-    #         self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
-
-
-
     def __call__(self, prediction, target_is_real):
         """Calculate loss given Discriminator's output and grount truth labels.
 
