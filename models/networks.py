@@ -502,6 +502,8 @@ class CopyDiscriminator(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
         if self.patchGAN:
+
+            # TODO: change this into one layer, single prediction output
             # define conv layers for patch prediction
             self.patch_conv = nn.Sequential(
                 EncoderBlock(512, 128, 3, 2, 1),
@@ -540,7 +542,7 @@ class CopyDiscriminator(nn.Module):
         """
         Standard forward, return a dictionary with the mask if generator,
         and the realness prediction and predicted mask if in discriminator
-        mode (dependend on if auxiliary loss is  used)
+        mode (dependend on if auxiliary loss is used)
         """
 
         # check if the image dimensions are correct
@@ -844,10 +846,9 @@ class ConfidenceLoss(nn.Module):
 
 
 class MaskLoss(nn.Module):
-    """Define different GAN objectives.
+    """
+    Computes the auxiliary loss, based on the compositing mask, and the predict mask by the discriminator
 
-    The GANLoss class abstracts away the need to create the target label tensor
-    that has the same size as the input.
     """
 
     def __init__(self):

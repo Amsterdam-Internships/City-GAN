@@ -336,14 +336,21 @@ class CopyModel(BaseModel):
         self.g_mask = self.netG(self.src)
 
         # set mask as attribute of loss class
+        # TODO check
         self.criterionGAN.set_copy_mask(self.g_mask)
 
         # binary mask for visualization
         self.g_mask_binary = util.mask_to_binary(self.g_mask)
 
+
         # create the composite mask from src and tgt images, and predicted mask
         self.composite, _ = networks.composite_image(
                 self.src, self.tgt, self.g_mask, device=self.device)
+
+        if not generator:
+            # inplace?
+            self.composite = self.composite.detach()
+
 
         # get discriminators prediction on the generated image
         self.pred_fake_single, self.pred_fake_patch, self.D_mask_fake = self.netD(self.composite)
@@ -359,6 +366,10 @@ class CopyModel(BaseModel):
             self.anti_sc_src = torch.flip(self.src, [0])
             self.anti_sc, _ = networks.composite_image(
                 self.anti_sc_src, self.tgt, self.g_mask)
+
+            if not generator:
+                self.anti_sc = self.anti_sc.detach()
+
             self.pred_antisc_single, self.pred_antisc_patch, self.D_mask_antisc= self.netD(self.anti_sc)
 
         # get predictions from discriminators for real images (use tgt/src)
@@ -414,7 +425,7 @@ class CopyModel(BaseModel):
         # compute adversarial losses
         self.loss_D_real = self.criterionGAN(self.pred_real_patch, True)
         self.loss_D_fake = self.criterionGAN(
-            self.pred_fake_patch.detach(), False)
+            self.pred_fake_patch, False)
 
         if self.train_on_gf:
             self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake_patch, False)
@@ -425,8 +436,8 @@ class CopyModel(BaseModel):
             self.opt.lambda_aux
             * self.criterionMask(
                 self.D_mask_real,
-                self.D_mask_fake.detach(),
-                self.D_mask_antisc.detach(),
+                self.D_mask_fake,
+                self.D_mask_antisc,
                 self.D_mask_grfake,
                 self.g_mask.detach(),
                 self.mask_gf,
