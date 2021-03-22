@@ -689,6 +689,7 @@ class GaussianSmoothing(nn.Module):
         kernel = kernel.view(1, 1, *kernel.size())
         kernel = kernel.repeat(channels, *[1] * (kernel.dim() - 1))
 
+        # regiser weights as buffer, so they are not optimized
         self.register_buffer('weight', kernel)
         self.groups = channels
 
@@ -937,8 +938,8 @@ class MoveConvNET(nn.Module):
         # shape: B * 4
         zero_centered = self.zero_c(last_layer)
         # shape: B * 2; add one to make it one-centered
-        one_centered = torch.add(self.one_c(last_layer), 1)
-        translation = self.trans(last_layer)
+        one_centered = torch.divide(torch.add(self.one_c(last_layer), 4), 4)
+        translation = torch.divide(self.trans(last_layer), 1.2)
 
         return zero_centered, one_centered, translation
 

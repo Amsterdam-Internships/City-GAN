@@ -170,8 +170,6 @@ class MoveModel(BaseModel):
         zero_centered, one_centered, translation = self.netConv(tgt_obj_concat)
         B = zero_centered.shape[0]
 
-        torch.clamp(translation, -1, 1)
-
         # initialize theta
         theta = torch.zeros(B, 2, 2)
         # set the diagonal of theta
@@ -179,8 +177,10 @@ class MoveModel(BaseModel):
         # concatenate the translation parameters
         self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
         # set the other two parameters
-        self.theta[:, 0, 1] = zero_centered[:, 0]
-        self.theta[:, 1, 0] = zero_centered[:, 1]
+        # self.theta[:, 0, 1] = zero_centered[:, 0]
+        # self.theta[:, 1, 0] = zero_centered[:, 1]
+
+        print(self.theta[0])
 
 
         #########################
@@ -192,8 +192,6 @@ class MoveModel(BaseModel):
 
 
         # the object seems to be moved outside of the image!
-        # how to make sure the scale is 1 centered, and the others are 0 centeded?
-
         # perhaps a loss function on the similarity between tgt and composite
 
 
@@ -255,9 +253,9 @@ class MoveModel(BaseModel):
         self.loss_G = self.criterionGAN(self.pred_fake, True)
 
         # TODO: not differentiable?
-        self.loss_eq = 2 * torch.eq(self.composite, self.tgt).all(1).all(2).all(1).float().mean()
+        # self.loss_eq = 2 * torch.eq(self.composite, self.tgt).all(1).all(2).all(1).float().mean()
         #
-
+        self.loss_eq = 0
 
         self.loss_conv = self.loss_G + self.loss_eq
 
