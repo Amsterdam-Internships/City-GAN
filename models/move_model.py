@@ -43,7 +43,7 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_eq", "loss_conv", "acc_real", "acc_fake"]
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "acc_real", "acc_fake"]
 
         for loss in self.loss_names:
             setattr(self, loss, 0)
@@ -255,9 +255,9 @@ class MoveModel(BaseModel):
         # TODO: not differentiable?
         # self.loss_eq = 2 * torch.eq(self.composite, self.tgt).all(1).all(2).all(1).float().mean()
         #
-        self.loss_eq = 0
+        # self.loss_eq = 0
 
-        self.loss_conv = self.loss_G + self.loss_eq
+        self.loss_conv = self.loss_G
 
         # self.scaler.scale(self.loss_G).backward()
         self.loss_conv.backward()
