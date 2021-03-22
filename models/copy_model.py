@@ -340,12 +340,15 @@ class CopyModel(BaseModel):
         self.composite, _ = networks.composite_image(self.src, self.tgt,
             self.g_mask, device=self.device)
 
-        # if we are training D, prevent gradient flow back through G
-        if not generator:
-            self.composite = self.composite.detach()
+
+        # # if we are training D, prevent gradient flow back through G
+        # if not generator:
+        #     self.composite = self.composite.detach()
 
         # get discriminators prediction on the generated (fake) image
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
+
+        breakpoint()
 
         # apply the masks on different source images: anti shortcut images
         if not valid:
@@ -354,8 +357,8 @@ class CopyModel(BaseModel):
             self.anti_sc, _ = networks.composite_image( self.anti_sc_src, self.
                 tgt, self.g_mask)
 
-            if not generator:
-                self.anti_sc = self.anti_sc.detach()
+            # if not generator:
+            #     self.anti_sc = self.anti_sc.detach()
 
             self.pred_antisc, self.D_mask_antisc= self.netD(self.anti_sc)
 
@@ -418,14 +421,13 @@ class CopyModel(BaseModel):
         # compute auxiliary loss, directly use lambda for plotting purposes
         # detach all masks coming from G to prevent gradients in G
         self.loss_AUX = (
-            self.opt.lambda_aux
-            * self.criterionMask(
+            self.opt.lambda_aux * self.criterionMask(
                 self.D_mask_real,
                 self.D_mask_fake,
                 self.D_mask_antisc,
                 self.D_mask_grfake,
                 self.g_mask.detach(),
-                self.mask_gf,
+                self.mask_gf, # does not require grads, no need to detach
                 use_gf=self.train_on_gf
             )
             if self.aux > 0
