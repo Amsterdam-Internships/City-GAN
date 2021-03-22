@@ -518,7 +518,8 @@ class CopyDiscriminator(nn.Module):
                 nn.Flatten(),
                 nn.Linear(512, 256),
                 nn.LeakyReLU(0.01),
-                nn.Linear(256, 1)
+                nn.Linear(256, 1),
+                nn.Sigmoid()
             )
         else:
             # outputs a single value too, but uses convolutions
@@ -527,7 +528,7 @@ class CopyDiscriminator(nn.Module):
                 nn.Conv2d(128, 1, 3, 1, 1),
                 nn.Flatten(),
                 nn.Linear(16, 1),
-                self.sigmoid)
+                nn.Sigmoid())
 
 
 
