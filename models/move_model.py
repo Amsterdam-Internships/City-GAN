@@ -171,16 +171,16 @@ class MoveModel(BaseModel):
         B = zero_centered.shape[0]
 
         # initialize theta
-        theta = torch.zeros(B, 2, 2)
+        theta = torch.zeros(B, 2, 2).to(self.device)
         # set the diagonal of theta
-        theta[:, torch.eye(2).bool()] = one_centered
+        theta[:, torch.eye(2).bool()] = one_centered.float()
         # concatenate the translation parameters
         self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
         # set the other two parameters
         # self.theta[:, 0, 1] = zero_centered[:, 0]
         # self.theta[:, 1, 0] = zero_centered[:, 1]
 
-        print(self.theta[0])
+        #print(self.theta[0])
 
 
         #########################

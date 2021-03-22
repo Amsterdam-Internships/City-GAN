@@ -334,7 +334,7 @@ class CopyModel(BaseModel):
         # generate output image given the input batch
         self.g_mask = self.netG(self.src)
         # binary mask for visualization
-        self.g_mask_binary = util.mask_to_binary(self.g_mask)
+        self.g_mask_binary = util.mask_to_binary(self.g_mask.detach())
 
         # create the composite mask from src and tgt images, and predicted mask
         self.composite, _ = networks.composite_image(self.src, self.tgt,
@@ -348,7 +348,7 @@ class CopyModel(BaseModel):
         # get discriminators prediction on the generated (fake) image
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
 
-        breakpoint()
+        #breakpoint()
 
         # apply the masks on different source images: anti shortcut images
         if not valid:
