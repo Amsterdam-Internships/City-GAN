@@ -342,8 +342,8 @@ class CopyModel(BaseModel):
 
 
         # # if we are training D, prevent gradient flow back through G
-        # if not generator:
-        #     self.composite = self.composite.detach()
+        if not generator:
+            self.composite = self.composite.detach()
 
         # get discriminators prediction on the generated (fake) image
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
@@ -357,8 +357,8 @@ class CopyModel(BaseModel):
             self.anti_sc, _ = networks.composite_image( self.anti_sc_src, self.
                 tgt, self.g_mask)
 
-            # if not generator:
-            #     self.anti_sc = self.anti_sc.detach()
+            if not generator:
+                self.anti_sc = self.anti_sc.detach()
 
             self.pred_antisc, self.D_mask_antisc= self.netD(self.anti_sc)
 
