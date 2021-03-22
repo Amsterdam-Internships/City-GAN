@@ -505,9 +505,21 @@ class CopyDiscriminator(nn.Module):
 
         if self.pool:
             # define average pooling, followed by two linear layers
-            self.pred_layers = nn.Sequential(nn.AvgPool2d(8, stride=2),
-                nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
-                nn.Linear(256, 1), self.sigmoid)
+            # original implementation
+
+            # self.pred_layers = nn.Sequential(nn.AvgPool2d(8, stride=2),
+            #     nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
+            #     nn.Linear(256, 1), self.sigmoid
+            #     )
+
+            # implementation from basilevh github
+            self.pred_layers = nn.Sequential(
+                nn.AdaptiveAvgPool2d(1),
+                nn.Flatten(),
+                nn.Linear(512, 256),
+                nn.LeakyReLU(0.01),
+                nn.Linear(256, 1)
+            )
         else:
             # outputs a single value too, but uses convolutions
             self.pred_layers =  nn.Sequential(

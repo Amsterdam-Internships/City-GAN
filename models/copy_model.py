@@ -404,7 +404,8 @@ class CopyModel(BaseModel):
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + self.loss_G_conf
 
         # scale the loss and perform backward step
-        self.scaler.scale(self.loss_G / self.opt.accumulation_steps).backward()
+        # self.scaler.scale(self.loss_G / self.opt.accumulation_steps).backward()
+        self.loss_G.backward()
 
 
     def backward_D(self):
@@ -439,7 +440,8 @@ class CopyModel(BaseModel):
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # scale gradients and perform backward step
-        self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
+        # self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
+        loss_D.backward()
 
 
     def optimize_parameters(self):
@@ -450,25 +452,24 @@ class CopyModel(BaseModel):
         # perform forward step
         self.forward(generator=self.train_G)
 
-        # perform gradient accumulation to simulate larger batch size
-        # for more information, see: https://towardsdatascience.com/i-am-so-done-with-cuda-out-of-memory-c62f42947dca
-        update_freq = self.opt.accumulation_steps
-
         # either train G or D, using the AMP scaler
         if self.train_G:
-            self.backward_G()
             self.count_G += 1
-            if self.count_G % update_freq == 0:
-                self.scaler.step(self.optimizer_G)
-                self.scaler.update()
-                self.optimizer_G.zero_grad()
+            self.optimizer_G.zero_grad()
+            self.backward_G()
+            self.optimizer_G.step()
+            # self.scaler.step(self.optimizer_G)
+            # self.scaler.update()
+
         else:
-            self.backward_D()
             self.count_D += 1
-            if self.count_D % update_freq == 0:
-                self.scaler.step(self.optimizer_D)
-                self.scaler.update()
-                self.optimizer_D.zero_grad()
+            self.optimizer_D.zero_grad()
+            self.backward_D()
+            self.optimizer_D.step()
+
+            # self.scaler.step(self.optimizer_D)
+            # self.scaler.update()
+
 
 
     def run_batch(self, data, total_batches):
@@ -505,8 +506,8 @@ class CopyModel(BaseModel):
             self.train_G = True
 
         # determine if grounded fakes are still used in training
-        if self.D_gf_perfect and self.headstart_over:
-            self.train_on_gf = False
+        # if self.D_gf_perfect and self.headstart_over:
+            # self.train_on_gf = False
 
         # unpack data from dataset and apply preprocessing
         self.set_input(data)

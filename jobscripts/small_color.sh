@@ -26,7 +26,7 @@ cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_co
 python $HOME/City-GAN/train.py --model copy \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
     --batch_size 64\
-    --n_epochs 10\
+    --n_epochs 20\
     --n_epochs_decay 20\
     --save_epoch_freq 10\
     --checkpoints_dir "$TMPDIR"/checkpoints\
@@ -43,9 +43,9 @@ python $HOME/City-GAN/train.py --model copy \
     --accumulation_steps 1\
     --display_id 0\
     --lambda_aux 1\
-    --D_threshold 0.5\
+    --D_threshold 0.0\
     --netD copy\
-    --real_target 0.8\
+    --real_target 0.75\
     --seed 42\
     --pool_D\
     --no_alternate
