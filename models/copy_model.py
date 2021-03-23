@@ -441,7 +441,7 @@ class CopyModel(BaseModel):
 
         # scale gradients and perform backward step
         # self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
-        loss_D.backward()
+        self.loss_D.backward()
 
 
     def optimize_parameters(self):
@@ -491,7 +491,7 @@ class CopyModel(BaseModel):
             print("Headstart D over")
 
         # determine training progress and curriculum
-        self.headstart_over = total_batches >= self.D_headstart
+        self.headstart_over = total_batches > self.D_headstart
         self.even_batch = total_batches % 2 == 0
 
         # by default train D (in headstart or performing below threshold:
@@ -499,7 +499,7 @@ class CopyModel(BaseModel):
 
         # determine if G can be trained
         # G and D are trained sequentially for eval_freq batches
-        alt_cond = self.opt.no_alternate and ((total_batches // 100) % 2 == 0)
+        alt_cond = not self.opt.no_alternate and ((total_batches // 100) % 2 == 0)
         batch_right = self.even_batch or alt_cond
 
         if self.headstart_over and self.D_above_thresh and batch_right:
@@ -512,6 +512,7 @@ class CopyModel(BaseModel):
         # unpack data from dataset and apply preprocessing
         self.set_input(data)
         # calculate loss functions, get gradients, update network weights
+
         self.optimize_parameters()
 
         if self.opt.tracemalloc:
@@ -534,7 +535,8 @@ class CopyModel(BaseModel):
 
         # reset all conditional parameters
         self.train_on_gf = not self.opt.no_grfakes
-        self.D_above_thresh = False
+        # self.D_above_thresh = False
+        self.D_above_thresh = True
         self.D_gf_perfect = False
 
         # init average lists
@@ -565,7 +567,7 @@ class CopyModel(BaseModel):
         self.D_gf_perfect = self.acc_grfake > 0.99
 
         # check performance on fakes to determine whether to train G
-        self.D_above_thresh = self.acc_fake > self.opt.D_threshold
+        # self.D_above_thresh = self.acc_fake > self.opt.D_threshold
 
         # print validation scores
         if self.opt.verbose:
