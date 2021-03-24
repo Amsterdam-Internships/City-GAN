@@ -334,7 +334,7 @@ class CopyModel(BaseModel):
         # generate output image given the input batch
         self.g_mask = self.netG(self.src)
         # binary mask for visualization
-        self.g_mask_binary = util.mask_to_binary(self.g_mask.detach())
+        self.g_mask_binary = util.mask_to_binary(self.g_mask)
 
         # create the composite mask from src and tgt images, and predicted mask
         self.composite, _ = networks.composite_image(self.src, self.tgt,
