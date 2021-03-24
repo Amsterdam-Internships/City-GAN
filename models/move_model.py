@@ -43,13 +43,15 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "acc_real", "acc_fake"]
+        # self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "acc_real", "acc_fake"]
+        self.loss_names = ["loss_G"]
 
         for loss in self.loss_names:
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
+        # self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
+        self.visual_names =  ["tgt", "src", "mask_binary", "obj", "transf_obj_mask", "GT"]
 
         self.count_G = self.count_D = 0
 
@@ -68,18 +70,25 @@ class MoveModel(BaseModel):
 
         if self.isTrain:
             # define Discriminator
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids)
-            self.model_names.append("D")
+            # self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids)
+            # self.model_names.append("D")
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label=opt.real_target).to(self.device)
 
+            # for sanity checking
+            self.MSE = torch.nn.MSELoss()
+            self.theta_gt = torch.Tensor([[1.2, 0, -0.5],[0, 0.8, 0.3]]).expand(opt.batch_size, 2, 3)
+            self.pred_fake = torch.tensor([0])
+
+
             # define optimizers
             self.optimizer_Conv = torch.optim.Adam(
                 self.netConv.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2))
-            self.optimizer_D = torch.optim.Adam(
-                self.netD.parameters(), lr=opt.lr, betas=(opt.beta1,opt.beta2))
-            self.optimizers = [self.optimizer_Conv, self.optimizer_D]
+            # self.optimizer_D = torch.optim.Adam(
+                # self.netD.parameters(), lr=opt.lr, betas=(opt.beta1,opt.beta2))
+            # self.optimizers = [self.optimizer_Conv, self.optimizer_D]
+            self.optimizers = [self.optimizer_Conv]
 
 
         # The program will automatically call <model.setup> to define schedulers, load networks, and print networks
@@ -183,31 +192,39 @@ class MoveModel(BaseModel):
         #print(self.theta[0])
 
 
-        #########################
-
         # TODO: check if align_corners should be true or false
         grid = F.affine_grid(self.theta, self.obj.size(), align_corners=False).float()
-        self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)
+        # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)
         self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=False)
+
+        ###### ground truth theta, use MSE loss for comparison
+
+        grid_gt = F.affine_grid(self.theta_gt, self.obj.size(), align_corners=False).float()
+        # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)
+        self.GT = F.grid_sample(self.obj_mask.float(), grid_gt, align_corners=False)
+
+
+
 
 
         # the object seems to be moved outside of the image!
         # perhaps a loss function on the similarity between tgt and composite
 
 
-        # composite the moved object with the background from the target
-        self.composite, _ = networks.composite_image(self.transf_obj, self.tgt, self.transf_obj_mask)
+        # # composite the moved object with the background from the target
+        # self.composite, _ = networks.composite_image(self.transf_obj, self.tgt, self.transf_obj_mask)
 
-        # detach composite if we are training the discriminator
-        if not generator:
-            self.composite = self.composite.detach()
+        # # detach composite if we are training the discriminator
+        # if not generator:
+        #     self.composite = self.composite.detach()
 
-        # get the prediction on the fake image
-        self.pred_fake = self.netD(self.composite)
+        # # get the prediction on the fake image
+        # # TODO: add a blur here?
+        # self.pred_fake = self.netD(self.composite)
 
-        if valid:
-            self.pred_real = self.netD(self.src)
-            self.compute_accs()
+        # if valid:
+        #     self.pred_real = self.netD(self.src)
+        #     self.compute_accs()
 
 
     def compute_accs(self):
@@ -250,7 +267,9 @@ class MoveModel(BaseModel):
 
         """
 
-        self.loss_G = self.criterionGAN(self.pred_fake, True)
+        # self.loss_G = self.criterionGAN(self.pred_fake, True)
+        self.loss_G = self.MSE(self.GT, self.transf_obj_mask)
+
 
         # TODO: not differentiable?
         # self.loss_eq = 2 * torch.eq(self.composite, self.tgt).all(1).all(2).all(1).float().mean()
@@ -269,7 +288,8 @@ class MoveModel(BaseModel):
 
         self.set_input(data)
 
-        train_G = not(self.overall_batch % 3 == 0)
+        # train_G = not(self.overall_batch % 3 == 0)
+        train_G = True
 
         # run the forward pass
         self.forward(generator=train_G)
