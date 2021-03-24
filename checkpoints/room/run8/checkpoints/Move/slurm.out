@@ -1,0 +1,118 @@
+starting MoveGAN training run 8
+Tar file moved to scratch
+Current time : 11:37:44
+
+10k_train.tar.gz
+990000_img.jpg
+990000_mask_0.jpg
+990000_mask_1.jpg
+990000_mask_2.jpg
+Tar file extracted on scratch
+Current time : 11:37:49
+
+Validation tar copied to scratch
+Current time : 11:37:49
+
+validation tar extracted on scratch
+Current time : 11:37:50
+
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/ROOM/images/	[default: None]
+             dataset_mode: room                          
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 0                             	[default: 100]
+                    model: move                          	[default: copy]
+                 n_epochs: 1                             	[default: 100]
+           n_epochs_decay: 1                             	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize                        
+               print_freq: 20                            
+              real_target: 0.8                           
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 0                             
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 6                             	[default: 2]
+              tracemalloc: False                         
+         update_html_freq: 100                           
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: False                         
+----------------- End -------------------
+dataset [RoomDataset] and dataloder are created
+dataset [RoomDataset] and dataloder are created
+Starting training of move-model
+The number of training images = 10000
+The number of validation images = 1111
+The number of epochs to run = 2
+gpu_ids: [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+[Network Conv] Total number of parameters : 4.732 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+(epoch: 1, batches: 20, time: 0.004, data: 0.001) loss_G: 0.038 
+(epoch: 1, batches: 40, time: 0.004, data: 6.523) loss_G: 0.028 
+(epoch: 1, batches: 60, time: 0.004, data: 0.001) loss_G: 0.022 
+(epoch: 1, batches: 80, time: 0.004, data: 0.001) loss_G: 0.017 
+(epoch: 1, batches: 100, time: 0.005, data: 0.001) loss_G: 0.020 
+(epoch: 1, batches: 120, time: 0.004, data: 0.001) loss_G: 0.023 
+(epoch: 1, batches: 140, time: 0.005, data: 0.001) loss_G: 0.016 
+learning rate 0.0002000 -> 0.0001600
+End of epoch 1 / 2 	 Time Taken: 580 sec
+(epoch: 2, batches: 20, time: 0.005, data: 0.001) loss_G: 0.009 
+(epoch: 2, batches: 40, time: 0.004, data: 0.003) loss_G: 0.011 
+(epoch: 2, batches: 60, time: 0.004, data: 14.657) loss_G: 0.011 
+(epoch: 2, batches: 80, time: 0.002, data: 14.769) loss_G: 0.011 
+(epoch: 2, batches: 100, time: 0.004, data: 10.990) loss_G: 0.012 
+(epoch: 2, batches: 120, time: 0.004, data: 0.001) loss_G: 0.010 
+(epoch: 2, batches: 140, time: 0.005, data: 0.001) loss_G: 0.005 
+learning rate 0.0001600 -> 0.0001280
+End of epoch 2 / 2 	 Time Taken: 580 sec
+Finished training, model is saved
+Batches trained - G: 312, D: 0 
