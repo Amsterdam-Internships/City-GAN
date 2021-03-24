@@ -503,8 +503,8 @@ class CopyModel(BaseModel):
             self.train_G = True
 
         # determine if grounded fakes are still used in training
-        # if self.D_gf_perfect and self.headstart_over:
-            # self.train_on_gf = False
+        if self.D_gf_perfect and self.headstart_over:
+            self.train_on_gf = False
 
         # unpack data from dataset and apply preprocessing
         self.set_input(data)
