@@ -78,7 +78,7 @@ class MoveModel(BaseModel):
 
             # for sanity checking
             self.MSE = torch.nn.MSELoss()
-            self.theta_gt = torch.Tensor([[1.2, 0, -0.5],[0, 0.8, 0.3]]).expand(opt.batch_size, 2, 3)
+            self.theta_gt = torch.Tensor([[1.2, 0, -0.5],[0, 0.8, 0.3]])
             self.pred_fake = torch.tensor([0])
 
 
@@ -198,6 +198,9 @@ class MoveModel(BaseModel):
         self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=False)
 
         ###### ground truth theta, use MSE loss for comparison
+
+
+        self.theta_gt = self.theta_gt.expand(B, 2, 3)
 
         grid_gt = F.affine_grid(self.theta_gt, self.obj.size(), align_corners=False).float()
         # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)

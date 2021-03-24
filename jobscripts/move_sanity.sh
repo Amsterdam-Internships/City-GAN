@@ -68,7 +68,7 @@ python $HOME/City-GAN/train.py --model move \
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
-    --min_obj_surface 60\
+    --min_obj_surface 0\
     --print_freq 20\
     --display_freq 100\
     --update_html 100\
