@@ -340,15 +340,12 @@ class CopyModel(BaseModel):
         self.composite, _ = networks.composite_image(self.src, self.tgt,
             self.g_mask, device=self.device)
 
-
         # # if we are training D, prevent gradient flow back through G
         if not generator:
             self.composite = self.composite.detach()
 
         # get discriminators prediction on the generated (fake) image
         self.pred_fake, self.D_mask_fake = self.netD(self.composite)
-
-        #breakpoint()
 
         # apply the masks on different source images: anti shortcut images
         if not valid:
@@ -535,8 +532,7 @@ class CopyModel(BaseModel):
 
         # reset all conditional parameters
         self.train_on_gf = not self.opt.no_grfakes
-        # self.D_above_thresh = False
-        self.D_above_thresh = True
+        self.D_above_thresh = False
         self.D_gf_perfect = False
 
         # init average lists
@@ -567,7 +563,7 @@ class CopyModel(BaseModel):
         self.D_gf_perfect = self.acc_grfake > 0.99
 
         # check performance on fakes to determine whether to train G
-        # self.D_above_thresh = self.acc_fake > self.opt.D_threshold
+        self.D_above_thresh = self.acc_fake > self.opt.D_threshold
 
         # print validation scores
         if self.opt.verbose:
