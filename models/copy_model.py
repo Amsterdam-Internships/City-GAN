@@ -499,7 +499,7 @@ class CopyModel(BaseModel):
 
         # determine if G can be trained
         # G and D are trained sequentially for eval_freq batches
-        alt_cond = not self.opt.no_alternate and ((total_batches // 100) % 2 == 0)
+        alt_cond = self.opt.no_alternate and ((total_batches // 100) % 2 == 0)
         batch_right = self.even_batch or alt_cond
 
         if self.headstart_over and self.D_above_thresh and batch_right:
