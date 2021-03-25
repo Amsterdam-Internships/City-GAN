@@ -1,0 +1,387 @@
+starting training run 79
+----------------- Options ---------------
+              D_headstart: 1000                          	[default: 0]
+              D_threshold: 0.5                           
+       accumulation_steps: 1                             
+               batch_size: 64                            
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+        confidence_weight: 0.0                           
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/CLEVR_colorized/images	[default: datasets]
+             dataset_mode: double                        
+                direction: None                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+            flip_vertical: False                         
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+               lambda_aux: 1.0                           	[default: 0.1]
+                load_iter: 0                             	[default: 0]
+                load_size: 70                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: inf                           
+          min_obj_surface: 100                           
+                    model: copy                          
+                 n_epochs: 5                             	[default: 20]
+           n_epochs_decay: 0                             	[default: 10]
+               n_layers_D: 3                             
+                     name: CopyGAN                       
+                      ndf: 64                            
+                     netD: copy                          
+                     netG: copy                          
+                      ngf: 64                            
+        no_border_zeroing: False                         
+               no_dropout: False                         
+                  no_flip: False                         
+               no_grfakes: False                         
+                  no_html: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                   pool_D: True                          	[default: False]
+                pool_size: 50                            
+               preprocess: resize_and_crop               
+               print_freq: 100                           	[default: 20]
+              real_target: 0.75                          	[default: 0.8]
+             save_by_iter: False                         
+          save_epoch_freq: 10                            
+         save_latest_freq: 5000                          
+                     seed: 42                            	[default: 0]
+               sequential: False                         
+           serial_batches: False                         
+               sigma_blur: 1.0                           
+                   suffix:                               
+              tracemalloc: False                         
+         update_html_freq: 100                           
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+dataset [DoubleDataset] and dataloder are created
+dataset [DoubleDataset] and dataloder are created
+Starting training of copy-model
+The number of training images = 26000
+The number of validation images = 3000
+The number of epochs to run = 5
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [CopyModel] was created
+---------- Networks initialized -------------
+DataParallel(
+  (module): CopyGenerator(
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+      )
+    )
+    (sigmoid): Sigmoid()
+  )
+)
+[Network G] Total number of parameters : 3.469 M
+DataParallel(
+  (module): CopyDiscriminator(
+    (blur_filter): GaussianSmoothing()
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, padding_mode=replicate)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+      )
+    )
+    (sigmoid): Sigmoid()
+    (pred_layers): Sequential(
+      (0): AdaptiveAvgPool2d(output_size=1)
+      (1): Flatten(start_dim=1, end_dim=-1)
+      (2): Linear(in_features=512, out_features=256, bias=True)
+      (3): LeakyReLU(negative_slope=0.01)
+      (4): Linear(in_features=256, out_features=1, bias=True)
+      (5): Sigmoid()
+    )
+  )
+)
+[Network D] Total number of parameters : 3.600 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/CopyGAN/web...
+validation accuracies:
+                gf: 0.00
+                real: 1.00
+                fake: 0.00
+
+ran validation set (B:1) in                         34.8 s.
+(epoch: 1, batches: 100, time: 0.012, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.962 loss_D_fake: 0.151 loss_D: 3.205 acc_real: 1.000 acc_fake: 0.000 loss_AUX: 1.894 loss_D_gr_fake: 0.197 acc_grfake: 0.000 
+validation accuracies:
+                gf: 1.00
+                real: 0.00
+                fake: 1.00
+
+ran validation set (B:101) in                         33.7 s.
+(epoch: 1, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.705 loss_D_fake: 0.026 loss_D: 2.504 acc_real: 0.000 acc_fake: 1.000 loss_AUX: 1.689 loss_D_gr_fake: 0.084 acc_grfake: 1.000 
+validation accuracies:
+                gf: 0.95
+                real: 0.77
+                fake: 0.99
+
+ran validation set (B:201) in                         33.5 s.
+(epoch: 1, batches: 300, time: 0.012, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.671 loss_D_fake: 0.016 loss_D: 2.440 acc_real: 0.774 acc_fake: 0.985 loss_AUX: 1.669 loss_D_gr_fake: 0.084 acc_grfake: 0.945 
+validation accuracies:
+                gf: 0.94
+                real: 0.90
+                fake: 0.99
+
+ran validation set (B:301) in                         34.2 s.
+(epoch: 1, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.593 loss_D_fake: 0.028 loss_D: 2.369 acc_real: 0.899 acc_fake: 0.985 loss_AUX: 1.641 loss_D_gr_fake: 0.108 acc_grfake: 0.941 
+validation accuracies:
+                gf: 0.95
+                real: 0.88
+                fake: 0.99
+
+ran validation set (B:401) in                         33.6 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 5 	 Time Taken: 446 sec
+/home/tlotze/.local/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:131: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step()`. "
+validation accuracies:
+                gf: 0.96
+                real: 0.76
+                fake: 0.99
+
+ran validation set (B:501) in                         34.4 s.
+(epoch: 2, batches: 100, time: 0.010, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.644 loss_D_fake: 0.029 loss_D: 2.427 acc_real: 0.756 acc_fake: 0.989 loss_AUX: 1.656 loss_D_gr_fake: 0.098 acc_grfake: 0.960 
+validation accuracies:
+                gf: 0.95
+                real: 0.94
+                fake: 0.99
+
+ran validation set (B:601) in                         34.0 s.
+(epoch: 2, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.588 loss_D_fake: 0.010 loss_D: 2.183 acc_real: 0.936 acc_fake: 0.990 loss_AUX: 1.539 loss_D_gr_fake: 0.047 acc_grfake: 0.946 
+validation accuracies:
+                gf: 0.93
+                real: 0.96
+                fake: 0.98
+
+ran validation set (B:701) in                         33.8 s.
+(epoch: 2, batches: 300, time: 0.010, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.677 loss_D_fake: 0.011 loss_D: 2.298 acc_real: 0.963 acc_fake: 0.984 loss_AUX: 1.559 loss_D_gr_fake: 0.050 acc_grfake: 0.929 
+validation accuracies:
+                gf: 0.97
+                real: 0.81
+                fake: 1.00
+
+ran validation set (B:801) in                         33.7 s.
+(epoch: 2, batches: 400, time: 0.010, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.580 loss_D_fake: 0.013 loss_D: 2.151 acc_real: 0.812 acc_fake: 0.999 loss_AUX: 1.516 loss_D_gr_fake: 0.042 acc_grfake: 0.966 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 5 	 Time Taken: 413 sec
+validation accuracies:
+                gf: 0.92
+                real: 0.98
+                fake: 0.98
+
+ran validation set (B:901) in                         34.1 s.
+(epoch: 3, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.619 loss_D_fake: 0.010 loss_D: 2.211 acc_real: 0.976 acc_fake: 0.978 loss_AUX: 1.548 loss_D_gr_fake: 0.035 acc_grfake: 0.923 
+Headstart D over
+validation accuracies:
+                gf: 0.95
+                real: 0.94
+                fake: 1.00
+
+ran validation set (B:1001) in                         34.0 s.
+(epoch: 3, batches: 200, time: 0.006, data: 0.003) loss_G_comp: 0.926 loss_G_anti_sc: 0.350 loss_G: 1.276 loss_D_real: 0.742 loss_D_fake: 0.303 loss_D: 4.854 acc_real: 0.944 acc_fake: 0.996 loss_AUX: 3.641 loss_D_gr_fake: 0.167 acc_grfake: 0.954 
+validation accuracies:
+                gf: 0.97
+                real: 0.80
+                fake: 0.95
+
+ran validation set (B:1101) in                         34.7 s.
+(epoch: 3, batches: 300, time: 0.006, data: 0.003) loss_G_comp: 1.172 loss_G_anti_sc: 0.146 loss_G: 1.318 loss_D_real: 0.609 loss_D_fake: 0.550 loss_D: 2.655 acc_real: 0.796 acc_fake: 0.945 loss_AUX: 1.365 loss_D_gr_fake: 0.131 acc_grfake: 0.970 
+validation accuracies:
+                gf: 0.98
+                real: 0.57
+                fake: 0.96
+
+ran validation set (B:1201) in                         34.2 s.
+(epoch: 3, batches: 400, time: 0.005, data: 0.004) loss_G_comp: 0.931 loss_G_anti_sc: 0.223 loss_G: 1.154 loss_D_real: 0.665 loss_D_fake: 0.467 loss_D: 2.485 acc_real: 0.568 acc_fake: 0.960 loss_AUX: 1.232 loss_D_gr_fake: 0.122 acc_grfake: 0.981 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 5 	 Time Taken: 379 sec
+validation accuracies:
+                gf: 0.99
+                real: 0.28
+                fake: 0.98
+
+ran validation set (B:1301) in                         34.0 s.
+(epoch: 4, batches: 100, time: 0.005, data: 0.003) loss_G_comp: 1.040 loss_G_anti_sc: 0.184 loss_G: 1.225 loss_D_real: 0.652 loss_D_fake: 0.537 loss_D: 1.923 acc_real: 0.276 acc_fake: 0.976 loss_AUX: 0.733 loss_D_gr_fake: 0.123 acc_grfake: 0.992 
+validation accuracies:
+                gf: 0.98
+                real: 0.64
+                fake: 0.88
+
+ran validation set (B:1401) in                         34.5 s.
+(epoch: 4, batches: 200, time: 0.006, data: 0.003) loss_G_comp: 0.984 loss_G_anti_sc: 0.198 loss_G: 1.182 loss_D_real: 0.641 loss_D_fake: 0.582 loss_D: 2.122 acc_real: 0.639 acc_fake: 0.883 loss_AUX: 0.788 loss_D_gr_fake: 0.110 acc_grfake: 0.979 
+validation accuracies:
+                gf: 0.98
+                real: 0.63
+                fake: 0.86
+
+ran validation set (B:1501) in                         34.6 s.
+(epoch: 4, batches: 300, time: 0.006, data: 0.003) loss_G_comp: 0.691 loss_G_anti_sc: 0.456 loss_G: 1.148 loss_D_real: 0.805 loss_D_fake: 0.387 loss_D: 1.977 acc_real: 0.629 acc_fake: 0.858 loss_AUX: 0.742 loss_D_gr_fake: 0.043 acc_grfake: 0.980 
+validation accuracies:
+                gf: 0.97
+                real: 0.79
+                fake: 0.74
+
+ran validation set (B:1601) in                         34.8 s.
+(epoch: 4, batches: 400, time: 0.005, data: 0.003) loss_G_comp: 0.841 loss_G_anti_sc: 0.342 loss_G: 1.183 loss_D_real: 0.747 loss_D_fake: 0.432 loss_D: 1.934 acc_real: 0.787 acc_fake: 0.740 loss_AUX: 0.684 loss_D_gr_fake: 0.071 acc_grfake: 0.972 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 5 	 Time Taken: 343 sec
+validation accuracies:
+                gf: 0.99
+                real: 0.39
+                fake: 0.93
+
+ran validation set (B:1701) in                         34.7 s.
+(epoch: 5, batches: 100, time: 0.005, data: 0.003) loss_G_comp: 0.922 loss_G_anti_sc: 0.228 loss_G: 1.150 loss_D_real: 0.728 loss_D_fake: 0.478 loss_D: 1.646 acc_real: 0.386 acc_fake: 0.933 loss_AUX: 0.440 loss_D_gr_fake: 0.075 acc_grfake: 0.991 
+validation accuracies:
+                gf: 0.98
+                real: 0.42
+                fake: 0.95
+
+ran validation set (B:1801) in                         34.4 s.
+(epoch: 5, batches: 200, time: 0.005, data: 0.003) loss_G_comp: 0.823 loss_G_anti_sc: 0.333 loss_G: 1.156 loss_D_real: 0.763 loss_D_fake: 0.405 loss_D: 1.830 acc_real: 0.418 acc_fake: 0.953 loss_AUX: 0.617 loss_D_gr_fake: 0.045 acc_grfake: 0.985 
+validation accuracies:
+                gf: 0.99
+                real: 0.54
+                fake: 0.87
+
+ran validation set (B:1901) in                         34.8 s.
+(epoch: 5, batches: 300, time: 0.006, data: 0.003) loss_G_comp: 0.903 loss_G_anti_sc: 0.233 loss_G: 1.136 loss_D_real: 0.700 loss_D_fake: 0.554 loss_D: 1.902 acc_real: 0.539 acc_fake: 0.873 loss_AUX: 0.578 loss_D_gr_fake: 0.070 acc_grfake: 0.986 
+validation accuracies:
+                gf: 0.99
+                real: 0.41
+                fake: 0.93
+
+ran validation set (B:2001) in                         35.1 s.
+(epoch: 5, batches: 400, time: 0.005, data: 0.003) loss_G_comp: 0.836 loss_G_anti_sc: 0.238 loss_G: 1.074 loss_D_real: 0.779 loss_D_fake: 0.405 loss_D: 1.767 acc_real: 0.407 acc_fake: 0.933 loss_AUX: 0.531 loss_D_gr_fake: 0.052 acc_grfake: 0.989 
+learning rate 0.0002000 -> 0.0001600
+End of epoch 5 / 5 	 Time Taken: 343 sec
+Finished training, model is saved
+Batches trained - G: 515, D: 1515 
