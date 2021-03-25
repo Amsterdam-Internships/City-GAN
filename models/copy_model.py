@@ -401,8 +401,8 @@ class CopyModel(BaseModel):
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + self.loss_G_conf
 
         # scale the loss and perform backward step
-        # self.scaler.scale(self.loss_G / self.opt.accumulation_steps).backward()
-        self.loss_G.backward()
+        self.scaler.scale(self.loss_G).backward()
+        # self.loss_G.backward()
 
 
     def backward_D(self):
@@ -437,8 +437,8 @@ class CopyModel(BaseModel):
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # scale gradients and perform backward step
-        # self.scaler.scale(self.loss_D / self.opt.accumulation_steps).backward()
-        self.loss_D.backward()
+        self.scaler.scale(self.loss_D).backward()
+        # self.loss_D.backward()
 
 
     def optimize_parameters(self):
@@ -452,20 +452,22 @@ class CopyModel(BaseModel):
         # either train G or D, using the AMP scaler
         if self.train_G:
             self.count_G += 1
-            self.optimizer_G.zero_grad()
+            # self.optimizer_G.zero_grad()
             self.backward_G()
-            self.optimizer_G.step()
-            # self.scaler.step(self.optimizer_G)
-            # self.scaler.update()
+            # self.optimizer_G.step()
+            self.scaler.step(self.optimizer_G)
+            self.scaler.update()
+            self.optimizer_G.zero_grad()
 
         else:
             self.count_D += 1
-            self.optimizer_D.zero_grad()
+            # self.optimizer_D.zero_grad()
             self.backward_D()
-            self.optimizer_D.step()
+            # self.optimizer_D.step()
 
-            # self.scaler.step(self.optimizer_D)
-            # self.scaler.update()
+            self.scaler.step(self.optimizer_D)
+            self.scaler.update()
+            self.optimizer_D.zero_grad()
 
 
 
