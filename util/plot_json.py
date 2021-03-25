@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-03-18 16:08
+# @Last Modified time: 2021-03-24 19:40
 
 
 """
@@ -62,7 +62,10 @@ def plot_json(opt):
             plot_iters= all_iters
         else:
             n = opt.n
-            plot_iters = all_iters[n//2:-(n//2)]
+            if n != 1:
+                plot_iters = all_iters[n//2:-(n//2)]
+            else:
+                plot_iters = all_iters
         losses = running_mean(losses, n)
 
 
@@ -112,7 +115,7 @@ if __name__ == "__main__":
         help='run to plot json file from, default 0 will plot latest')
     parser.add_argument('--dest', type=str, default="",
         help='leave empty to save plot at filename path')
-    parser.add_argument('--n', type=int, default=5,
+    parser.add_argument('--n', type=int, default=1,
         help='Interval to take running mean over for plotting')
 
     opt, unparsed = parser.parse_known_args()
