@@ -102,6 +102,12 @@ if __name__ == '__main__':
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_batch, losses, t_comp, t_data)
 
+                # get some insight in the gradient scaling process for copyGAN
+                try:
+                    print(model.scaler.state_dict())
+                except:
+                    pass
+
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
 
