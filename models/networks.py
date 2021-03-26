@@ -361,18 +361,18 @@ class CopyGenerator(nn.Module):
             self.upscale = nn.Sequential(*self.upscale)
 
         # set up encoder layers
-        self.enc1 = EncoderBlock(input_nc, 64, stride=1)
-        self.enc2 = EncoderBlock(64, 128)
-        self.enc3 = EncoderBlock(128, 256)
-        self.enc4 = EncoderBlock(256, 512)
+        self.enc1 = EncoderBlock(input_nc, 64, stride=1, norm_layer=norm_layer)
+        self.enc2 = EncoderBlock(64, 128, norm_layer=norm_layer)
+        self.enc3 = EncoderBlock(128, 256, norm_layer=norm_layer)
+        self.enc4 = EncoderBlock(256, 512, norm_layer=norm_layer)
 
         # set up decoder layers
-        self.dec4 = DecoderBlock(512, 256)
-        self.dec3 = DecoderBlock(512, 128)
-        self.dec2 = DecoderBlock(256, 64)
+        self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
+        self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
+        self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
         # this is always set to last layer, also when upsampling afterwards to
         # make the dimensions correct
-        self.dec1 = DecoderBlock(128, dec1_channels, last_layer=True)
+        self.dec1 = DecoderBlock(128, dec1_channels, last_layer=True, norm_layer=norm_layer)
 
         self.sigmoid = nn.Sigmoid()
 
@@ -487,17 +487,17 @@ class CopyDiscriminator(nn.Module):
             self.upscale = nn.Sequential(*self.upscale)
 
         # set up encoder layers
-        self.enc1 = EncoderBlock(input_nc, 64, stride=1)
-        self.enc2 = EncoderBlock(64, 128)
-        self.enc3 = EncoderBlock(128, 256)
-        self.enc4 = EncoderBlock(256, 512)
+        self.enc1 = EncoderBlock(input_nc, 64, stride=1, norm_layer=norm_layer)
+        self.enc2 = EncoderBlock(64, 128, norm_layer=norm_layer)
+        self.enc3 = EncoderBlock(128, 256, norm_layer=norm_layer)
+        self.enc4 = EncoderBlock(256, 512, norm_layer=norm_layer)
 
         # set up decoder layers
-        self.dec4 = DecoderBlock(512, 256)
-        self.dec3 = DecoderBlock(512, 128)
-        self.dec2 = DecoderBlock(256, 64)
+        self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
+        self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
+        self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
         # this being the last layer depends on possible upsampling operations
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)))
+        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)), norm_layer=norm_layer)
 
         self.sigmoid = nn.Sigmoid()
 
@@ -505,7 +505,7 @@ class CopyDiscriminator(nn.Module):
 
         if self.pool:
             # define average pooling, followed by two linear layers
-            # original implementation
+            # original implementation: only uses different avgpool layer
 
             # self.pred_layers = nn.Sequential(nn.AvgPool2d(8, stride=2),
             #     nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
@@ -731,7 +731,7 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0):
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0, noisy_labels=False, sigma=0.05):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -739,6 +739,7 @@ class GANLoss(nn.Module):
             target_real_label (bool) - - label for a real image, set to 0.8 to
                 prevent overconfidence
             target_fake_label (bool) - - label of a fake image
+            noisy (bool) - - Add random noise to the target label
 
         Note: the BCE loss is used as the sigmoid is computed in the model
         """
@@ -746,6 +747,9 @@ class GANLoss(nn.Module):
         self.register_buffer('real_label', torch.tensor(target_real_label))
         self.register_buffer('fake_label', torch.tensor(target_fake_label))
         self.gan_mode = gan_mode
+        self.noisy_labels = noisy_labels
+        self.sigma = sigma
+
         if gan_mode == 'lsgan':
             self.loss = nn.MSELoss()
         elif gan_mode == 'vanilla':
@@ -773,7 +777,14 @@ class GANLoss(nn.Module):
         else:
             target_tensor = self.fake_label
 
-        return target_tensor.expand_as(prediction)
+        target = target_tensor.expand_as(prediction)
+
+
+        if self.noisy_labels:
+            std = torch.ones_like(prediction) * self.sigma
+            return torch.normal(target, std)
+        else:
+            return target
 
 
     def __call__(self, prediction, target_is_real):

@@ -61,6 +61,8 @@ class CopyModel(BaseModel):
             save_epoch_freq=10,
             display_freq=100,
             print_freq=20,
+            real_target=0.75,
+            fake_target=0.1
         )
 
         # define new arguments for this model
@@ -130,6 +132,11 @@ class CopyModel(BaseModel):
             action="store_true",
             help="If specified, G and D will not be trained in alternating\
                 fashion, but sequentially (for val_freq batches each)",
+        )
+        parser.add_argument(
+            "--noisy_labels",
+            action="store_true",
+            help="If specified, random noise will be added to the target labels in the adversarial loss",
         )
 
         return parser
@@ -283,7 +290,9 @@ class CopyModel(BaseModel):
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(
-                gan_mode="vanilla", target_real_label=opt.real_target).to(self.device)
+                gan_mode="vanilla", target_real_label=opt.real_target,
+                target_fake_label=opt.fake_target, noisy_labels=
+                opt.noisy_labels).to(self.device)
             self.criterionMask = networks.MaskLoss().to(self.device)
             self.criterionConf = networks.ConfidenceLoss().to(self.device)
 
@@ -401,8 +410,8 @@ class CopyModel(BaseModel):
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + self.loss_G_conf
 
         # scale the loss and perform backward step
-        self.scaler.scale(self.loss_G).backward()
-        # self.loss_G.backward()
+        # self.scaler.scale(self.loss_G).backward()
+        self.loss_G.backward()
 
 
     def backward_D(self):
@@ -437,8 +446,8 @@ class CopyModel(BaseModel):
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # scale gradients and perform backward step
-        self.scaler.scale(self.loss_D).backward()
-        # self.loss_D.backward()
+        # self.scaler.scale(self.loss_D).backward()
+        self.loss_D.backward()
 
 
     def optimize_parameters(self):
@@ -446,28 +455,43 @@ class CopyModel(BaseModel):
         Update network weights for either Generator or Discriminator
         """
 
+        # for testing purposes,always 1/1
+        # self.train_G = self.even_batch
+
         # perform forward step
         self.forward(generator=self.train_G)
 
         # either train G or D, using the AMP scaler
         if self.train_G:
             self.count_G += 1
-            # self.optimizer_G.zero_grad()
-            self.backward_G()
-            # self.optimizer_G.step()
-            self.scaler.step(self.optimizer_G)
-            self.scaler.update()
             self.optimizer_G.zero_grad()
+            self.backward_G()
+            print("Generator")
+            for name, param in self.netG.named_parameters():
+                if param.requires_grad:
+                    print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
+
+            self.optimizer_G.step()
+            # self.scaler.step(self.optimizer_G)
+            # self.scaler.update()
+            # self.optimizer_G.zero_grad()
+            breakpoint()
 
         else:
             self.count_D += 1
-            # self.optimizer_D.zero_grad()
-            self.backward_D()
-            # self.optimizer_D.step()
-
-            self.scaler.step(self.optimizer_D)
-            self.scaler.update()
             self.optimizer_D.zero_grad()
+            self.backward_D()
+            print("Discriminator")
+            for name, param in self.netD.named_parameters():
+                if param.requires_grad:
+                    print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
+
+
+            self.optimizer_D.step()
+
+            # self.scaler.step(self.optimizer_D)
+            # self.scaler.update()
+            # self.optimizer_D.zero_grad()
 
 
 
