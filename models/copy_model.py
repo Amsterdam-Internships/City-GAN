@@ -575,9 +575,9 @@ class CopyModel(BaseModel):
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
 
-                preds_grfake.append(self.pred_grfake.mean())
-                preds_fake.append(self.pred_fake.mean())
-                preds_real.append(self.pred_real.mean())
+                preds_grfake.append(self.pred_grfake.mean().item())
+                preds_fake.append(self.pred_fake.mean().item())
+                preds_real.append(self.pred_real.mean().item())
 
 
         # set accuracies to mean for plotting purposes
