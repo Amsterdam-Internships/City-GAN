@@ -138,6 +138,11 @@ class CopyModel(BaseModel):
             action="store_true",
             help="If specified, random noise will be added to the target labels in the adversarial loss",
         )
+        parser.add_argument(
+            "--use_amp",
+            action="store_true",
+            help="If specified, gradient scaling using AMP GradScaler is enabled",
+        )
 
         return parser
 
@@ -212,7 +217,7 @@ class CopyModel(BaseModel):
         self.count_D = self.count_G = 0
 
         # init gradient scaler from cuda AMP
-        self.scaler = GradScaler()
+        self.scaler = GradScaler(enabled=opt.use_amp)
 
         # specify the images that are saved and displayed
         # (via base_model.get_current_visuals)
@@ -555,9 +560,8 @@ class CopyModel(BaseModel):
         self.D_gf_perfect = False
 
         # init average lists
-        acc_gf = []
-        acc_real = []
-        acc_fake = []
+        acc_gf = acc_real = acc_fake = []
+        preds_grfake = preds_fake = preds_real = []
 
         # compute accuracy on the validation data
         with torch.no_grad():
@@ -571,6 +575,11 @@ class CopyModel(BaseModel):
                 acc_gf.append(self.acc_grfake)
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
+
+                preds_grfake.append(self.pred_grfake.mean())
+                preds_fake.append(self.pred_fake.mean())
+                preds_real.append(self.acc_real.mean())
+
 
         # set accuracies to mean for plotting purposes
         self.acc_grfake = np.mean(acc_gf)
@@ -588,9 +597,9 @@ class CopyModel(BaseModel):
         if self.opt.verbose:
             print(
                 f"validation accuracies:\n\
-                gf: {self.acc_grfake:.2f}\n\
-                real: {self.acc_real:.2f}\n\
-                fake: {self.acc_fake:.2f}\n"
+                gf: {self.acc_grfake:.2f}, {np.mean(preds_grfake)}\n\
+                real: {self.acc_real:.2f},  {np.mean(preds_real)}\n\
+                fake: {self.acc_fake:.2f}, {np.mean(preds_fake)}\n"
             )
 
         if self.opt.tracemalloc:
