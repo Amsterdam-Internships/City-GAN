@@ -1,5 +1,5 @@
 starting training run 81
------------------ Options ---------------
+0;95;0c----------------- Options ---------------
               D_headstart: 1000                          	[default: 0]
               D_threshold: 0.5                           
        accumulation_steps: 1                             
@@ -62,7 +62,7 @@ starting training run 81
                 pool_size: 50                            
                preprocess: resize_and_crop               
                print_freq: 100                           	[default: 20]
-              real_target: 0.75                          
+              real_target: 0.75                          	[default: 0.9]
              save_by_iter: False                         
           save_epoch_freq: 10                            
          save_latest_freq: 5000                          
@@ -73,6 +73,7 @@ starting training run 81
                    suffix:                               
               tracemalloc: False                         
          update_html_freq: 100                           
+                  use_amp: False                         
            val_batch_size: 128                           
                  val_freq: 100                           
                   verbose: True                          	[default: False]
@@ -227,1331 +228,1331 @@ DataParallel(
 -----------------------------------------------
 create web directory /scratch/checkpoints/CopyGAN/web...
 validation accuracies:
-                gf: 0.00
-                real: 1.00
-                fake: 0.00
+                gf: 0.33, 0.5066661005434783
+                real: 0.33,  0.5066661005434783
+                fake: 0.33, 0.5066661005434783
 
 ran validation set (B:1) in                         34.9 s.
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 5.30432
+name: module.enc1.model.0.weight, norm gradient: 4.87608
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 2.17431
+name: module.enc2.model.0.weight, norm gradient: 2.37766
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 1.06507
+name: module.enc3.model.0.weight, norm gradient: 1.18729
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.42675
+name: module.enc4.model.0.weight, norm gradient: 0.47454
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.30676
+name: module.dec4.model.1.weight, norm gradient: 0.31857
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.41033
+name: module.dec3.model.1.weight, norm gradient: 0.40205
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.75507
+name: module.dec2.model.1.weight, norm gradient: 0.64136
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 1.27910
-name: module.dec1.model.0.bias, norm gradient: 0.09288
-name: module.pred_layers.2.weight, norm gradient: 0.30315
-name: module.pred_layers.2.bias, norm gradient: 0.03512
-name: module.pred_layers.4.weight, norm gradient: 0.70101
-name: module.pred_layers.4.bias, norm gradient: 0.06587
-(epoch: 1, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.824 loss_D_fake: 0.370 loss_D: 3.533 acc_real: 1.000 acc_fake: 0.000 loss_AUX: 1.937 loss_D_gr_fake: 0.403 acc_grfake: 0.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+name: module.dec1.model.0.weight, norm gradient: 1.19315
+name: module.dec1.model.0.bias, norm gradient: 0.12625
+name: module.pred_layers.2.weight, norm gradient: 0.28881
+name: module.pred_layers.2.bias, norm gradient: 0.03265
+name: module.pred_layers.4.weight, norm gradient: 0.68292
+name: module.pred_layers.4.bias, norm gradient: 0.06388
+(epoch: 1, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.817 loss_D_fake: 0.377 loss_D: 3.563 acc_real: 0.333 acc_fake: 0.333 loss_AUX: 1.962 loss_D_gr_fake: 0.408 acc_grfake: 0.333 
+{}
 validation accuracies:
-                gf: 0.99
-                real: 0.19
-                fake: 1.00
+                gf: 0.73, 0.3010536967844203
+                real: 0.73,  0.3010536967844203
+                fake: 0.73, 0.3010536967844203
 
-ran validation set (B:101) in                         33.7 s.
+ran validation set (B:101) in                         33.4 s.
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 6.36106
+name: module.enc1.model.0.weight, norm gradient: 4.81711
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 2.11778
+name: module.enc2.model.0.weight, norm gradient: 1.31791
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.90329
+name: module.enc3.model.0.weight, norm gradient: 0.56864
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.36232
+name: module.enc4.model.0.weight, norm gradient: 0.25554
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.17100
+name: module.dec4.model.1.weight, norm gradient: 0.17623
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.33324
+name: module.dec3.model.1.weight, norm gradient: 0.37911
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.78225
+name: module.dec2.model.1.weight, norm gradient: 1.04564
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 1.07077
-name: module.dec1.model.0.bias, norm gradient: 0.02208
-name: module.pred_layers.2.weight, norm gradient: 0.38600
-name: module.pred_layers.2.bias, norm gradient: 0.06287
-name: module.pred_layers.4.weight, norm gradient: 0.36227
-name: module.pred_layers.4.bias, norm gradient: 0.10534
-(epoch: 1, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.605 loss_D_fake: 0.388 loss_D: 3.180 acc_real: 0.188 acc_fake: 0.999 loss_AUX: 1.762 loss_D_gr_fake: 0.425 acc_grfake: 0.992 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+name: module.dec1.model.0.weight, norm gradient: 1.56595
+name: module.dec1.model.0.bias, norm gradient: 0.06032
+name: module.pred_layers.2.weight, norm gradient: 0.21841
+name: module.pred_layers.2.bias, norm gradient: 0.03640
+name: module.pred_layers.4.weight, norm gradient: 0.23450
+name: module.pred_layers.4.bias, norm gradient: 0.06305
+(epoch: 1, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.618 loss_D_fake: 0.381 loss_D: 3.160 acc_real: 0.726 acc_fake: 0.726 loss_AUX: 1.758 loss_D_gr_fake: 0.403 acc_grfake: 0.726 
+{}
 validation accuracies:
-                gf: 0.96
-                real: 0.72
-                fake: 0.99
+                gf: 0.89, 0.29889092929121375
+                real: 0.89,  0.29889092929121375
+                fake: 0.89, 0.29889092929121375
 
-ran validation set (B:201) in                         33.8 s.
+ran validation set (B:201) in                         34.2 s.
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.32582
+name: module.enc1.model.0.weight, norm gradient: 7.11044
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.40209
+name: module.enc2.model.0.weight, norm gradient: 2.38285
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.58498
+name: module.enc3.model.0.weight, norm gradient: 1.01718
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.25894
+name: module.enc4.model.0.weight, norm gradient: 0.32696
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.13467
+name: module.dec4.model.1.weight, norm gradient: 0.20967
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.21693
+name: module.dec3.model.1.weight, norm gradient: 0.33726
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.41496
+name: module.dec2.model.1.weight, norm gradient: 0.61369
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.44172
-name: module.dec1.model.0.bias, norm gradient: 0.01030
-name: module.pred_layers.2.weight, norm gradient: 0.20222
-name: module.pred_layers.2.bias, norm gradient: 0.03186
-name: module.pred_layers.4.weight, norm gradient: 0.19071
-name: module.pred_layers.4.bias, norm gradient: 0.06192
-(epoch: 1, batches: 300, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.585 loss_D_fake: 0.366 loss_D: 3.034 acc_real: 0.715 acc_fake: 0.993 loss_AUX: 1.673 loss_D_gr_fake: 0.409 acc_grfake: 0.957 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+name: module.dec1.model.0.weight, norm gradient: 0.96149
+name: module.dec1.model.0.bias, norm gradient: 0.05191
+name: module.pred_layers.2.weight, norm gradient: 0.15253
+name: module.pred_layers.2.bias, norm gradient: 0.02481
+name: module.pred_layers.4.weight, norm gradient: 0.18894
+name: module.pred_layers.4.bias, norm gradient: 0.04843
+(epoch: 1, batches: 300, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.576 loss_D_fake: 0.372 loss_D: 3.052 acc_real: 0.895 acc_fake: 0.895 loss_AUX: 1.682 loss_D_gr_fake: 0.423 acc_grfake: 0.895 
+{}
 validation accuracies:
-                gf: 0.94
-                real: 0.87
-                fake: 0.99
+                gf: 0.93, 0.293296924535779
+                real: 0.93,  0.293296924535779
+                fake: 0.93, 0.293296924535779
 
-ran validation set (B:301) in                         33.6 s.
+ran validation set (B:301) in                         33.8 s.
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 7.04188
+name: module.enc1.model.0.weight, norm gradient: 4.44642
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 2.38600
+name: module.enc2.model.0.weight, norm gradient: 1.93384
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 1.15980
+name: module.enc3.model.0.weight, norm gradient: 0.96725
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.39010
+name: module.enc4.model.0.weight, norm gradient: 0.32103
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.20883
+name: module.dec4.model.1.weight, norm gradient: 0.15747
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.30382
+name: module.dec3.model.1.weight, norm gradient: 0.29133
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.51126
+name: module.dec2.model.1.weight, norm gradient: 0.56116
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.41785
-name: module.dec1.model.0.bias, norm gradient: 0.01990
-name: module.pred_layers.2.weight, norm gradient: 0.50963
-name: module.pred_layers.2.bias, norm gradient: 0.07892
-name: module.pred_layers.4.weight, norm gradient: 0.40470
-name: module.pred_layers.4.bias, norm gradient: 0.14891
-(epoch: 1, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.700 loss_D_fake: 0.326 loss_D: 3.120 acc_real: 0.870 acc_fake: 0.989 loss_AUX: 1.765 loss_D_gr_fake: 0.330 acc_grfake: 0.943 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+name: module.dec1.model.0.weight, norm gradient: 0.45804
+name: module.dec1.model.0.bias, norm gradient: 0.01283
+name: module.pred_layers.2.weight, norm gradient: 0.46974
+name: module.pred_layers.2.bias, norm gradient: 0.07246
+name: module.pred_layers.4.weight, norm gradient: 0.35136
+name: module.pred_layers.4.bias, norm gradient: 0.13230
+(epoch: 1, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.661 loss_D_fake: 0.328 loss_D: 2.992 acc_real: 0.927 acc_fake: 0.927 loss_AUX: 1.665 loss_D_gr_fake: 0.338 acc_grfake: 0.927 
+{}
 validation accuracies:
-                gf: 0.92
-                real: 0.96
-                fake: 0.97
+                gf: 0.96, 0.3340047200520833
+                real: 0.96,  0.3340047200520833
+                fake: 0.96, 0.3340047200520833
 
-ran validation set (B:401) in                         33.3 s.
+ran validation set (B:401) in                         33.2 s.
 learning rate 0.0002000 -> 0.0002000
-End of epoch 1 / 8 	 Time Taken: 434 sec
+End of epoch 1 / 8 	 Time Taken: 437 sec
 /home/tlotze/.local/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:131: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
   warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step()`. "
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 23.55717
+name: module.enc1.model.0.weight, norm gradient: 4.94526
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 8.51305
+name: module.enc2.model.0.weight, norm gradient: 1.78272
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 3.85477
+name: module.enc3.model.0.weight, norm gradient: 0.79820
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 1.32869
+name: module.enc4.model.0.weight, norm gradient: 0.28404
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.84844
+name: module.dec4.model.1.weight, norm gradient: 0.17310
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.95847
+name: module.dec3.model.1.weight, norm gradient: 0.26859
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 1.05612
+name: module.dec2.model.1.weight, norm gradient: 0.54027
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 1.57174
-name: module.dec1.model.0.bias, norm gradient: 0.19511
-name: module.pred_layers.2.weight, norm gradient: 0.72457
-name: module.pred_layers.2.bias, norm gradient: 0.11144
-name: module.pred_layers.4.weight, norm gradient: 0.44853
-name: module.pred_layers.4.bias, norm gradient: 0.16708
+name: module.dec1.model.0.weight, norm gradient: 0.55533
+name: module.dec1.model.0.bias, norm gradient: 0.04590
+name: module.pred_layers.2.weight, norm gradient: 0.30251
+name: module.pred_layers.2.bias, norm gradient: 0.04695
+name: module.pred_layers.4.weight, norm gradient: 0.20216
+name: module.pred_layers.4.bias, norm gradient: 0.07648
 validation accuracies:
-                gf: 0.93
-                real: 0.93
-                fake: 0.97
+                gf: 0.96, 0.31632044695425726
+                real: 0.96,  0.31632044695425726
+                fake: 0.96, 0.31632044695425726
 
-ran validation set (B:501) in                         34.0 s.
-(epoch: 2, batches: 100, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.613 loss_D_fake: 0.354 loss_D: 2.981 acc_real: 0.926 acc_fake: 0.974 loss_AUX: 1.679 loss_D_gr_fake: 0.335 acc_grfake: 0.934 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:501) in                         34.5 s.
+(epoch: 2, batches: 100, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.647 loss_D_fake: 0.348 loss_D: 2.893 acc_real: 0.959 acc_fake: 0.959 loss_AUX: 1.573 loss_D_gr_fake: 0.325 acc_grfake: 0.959 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.74157
+name: module.enc1.model.0.weight, norm gradient: 3.60721
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.00640
+name: module.enc2.model.0.weight, norm gradient: 1.33047
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.47795
+name: module.enc3.model.0.weight, norm gradient: 0.59096
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.21492
+name: module.enc4.model.0.weight, norm gradient: 0.17075
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.18304
+name: module.dec4.model.1.weight, norm gradient: 0.08019
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.29782
+name: module.dec3.model.1.weight, norm gradient: 0.12720
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.74559
+name: module.dec2.model.1.weight, norm gradient: 0.25320
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.93540
-name: module.dec1.model.0.bias, norm gradient: 0.02295
-name: module.pred_layers.2.weight, norm gradient: 0.12586
-name: module.pred_layers.2.bias, norm gradient: 0.01835
-name: module.pred_layers.4.weight, norm gradient: 0.08993
-name: module.pred_layers.4.bias, norm gradient: 0.02287
+name: module.dec1.model.0.weight, norm gradient: 0.24677
+name: module.dec1.model.0.bias, norm gradient: 0.02230
+name: module.pred_layers.2.weight, norm gradient: 0.20664
+name: module.pred_layers.2.bias, norm gradient: 0.03170
+name: module.pred_layers.4.weight, norm gradient: 0.11613
+name: module.pred_layers.4.bias, norm gradient: 0.04448
 validation accuracies:
-                gf: 0.94
-                real: 0.96
-                fake: 0.99
+                gf: 0.97, 0.3240940259850543
+                real: 0.97,  0.3240940259850543
+                fake: 0.97, 0.3240940259850543
 
-ran validation set (B:601) in                         33.9 s.
-(epoch: 2, batches: 200, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.606 loss_D_fake: 0.317 loss_D: 2.820 acc_real: 0.962 acc_fake: 0.986 loss_AUX: 1.555 loss_D_gr_fake: 0.341 acc_grfake: 0.937 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:601) in                         34.3 s.
+(epoch: 2, batches: 200, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.601 loss_D_fake: 0.317 loss_D: 2.797 acc_real: 0.966 acc_fake: 0.966 loss_AUX: 1.541 loss_D_gr_fake: 0.339 acc_grfake: 0.966 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 6.19278
+name: module.enc1.model.0.weight, norm gradient: 3.32244
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.99029
+name: module.enc2.model.0.weight, norm gradient: 1.44465
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.90348
+name: module.enc3.model.0.weight, norm gradient: 0.72056
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.32794
+name: module.enc4.model.0.weight, norm gradient: 0.26281
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.22048
+name: module.dec4.model.1.weight, norm gradient: 0.15905
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.29422
+name: module.dec3.model.1.weight, norm gradient: 0.25951
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.43147
+name: module.dec2.model.1.weight, norm gradient: 0.51279
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.57501
-name: module.dec1.model.0.bias, norm gradient: 0.04801
-name: module.pred_layers.2.weight, norm gradient: 0.16314
-name: module.pred_layers.2.bias, norm gradient: 0.02535
-name: module.pred_layers.4.weight, norm gradient: 0.11244
-name: module.pred_layers.4.bias, norm gradient: 0.04518
+name: module.dec1.model.0.weight, norm gradient: 0.57075
+name: module.dec1.model.0.bias, norm gradient: 0.03728
+name: module.pred_layers.2.weight, norm gradient: 0.28337
+name: module.pred_layers.2.bias, norm gradient: 0.04368
+name: module.pred_layers.4.weight, norm gradient: 0.16796
+name: module.pred_layers.4.bias, norm gradient: 0.07221
 validation accuracies:
-                gf: 0.95
-                real: 0.93
-                fake: 0.99
+                gf: 0.95, 0.3011297695878623
+                real: 0.95,  0.3011297695878623
+                fake: 0.95, 0.3011297695878623
 
-ran validation set (B:701) in                         34.9 s.
-(epoch: 2, batches: 300, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.597 loss_D_fake: 0.346 loss_D: 2.781 acc_real: 0.935 acc_fake: 0.990 loss_AUX: 1.509 loss_D_gr_fake: 0.328 acc_grfake: 0.945 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:701) in                         34.8 s.
+(epoch: 2, batches: 300, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.593 loss_D_fake: 0.346 loss_D: 2.776 acc_real: 0.953 acc_fake: 0.953 loss_AUX: 1.507 loss_D_gr_fake: 0.329 acc_grfake: 0.953 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.28412
+name: module.enc1.model.0.weight, norm gradient: 2.19437
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.92771
+name: module.enc2.model.0.weight, norm gradient: 0.71459
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.38574
+name: module.enc3.model.0.weight, norm gradient: 0.30034
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.14496
+name: module.enc4.model.0.weight, norm gradient: 0.12261
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.06527
+name: module.dec4.model.1.weight, norm gradient: 0.06201
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.10729
+name: module.dec3.model.1.weight, norm gradient: 0.11164
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.18321
+name: module.dec2.model.1.weight, norm gradient: 0.19953
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.16706
-name: module.dec1.model.0.bias, norm gradient: 0.00610
-name: module.pred_layers.2.weight, norm gradient: 0.14497
-name: module.pred_layers.2.bias, norm gradient: 0.02204
-name: module.pred_layers.4.weight, norm gradient: 0.08285
-name: module.pred_layers.4.bias, norm gradient: 0.03576
+name: module.dec1.model.0.weight, norm gradient: 0.15879
+name: module.dec1.model.0.bias, norm gradient: 0.00836
+name: module.pred_layers.2.weight, norm gradient: 0.07430
+name: module.pred_layers.2.bias, norm gradient: 0.01114
+name: module.pred_layers.4.weight, norm gradient: 0.04198
+name: module.pred_layers.4.bias, norm gradient: 0.01677
 validation accuracies:
-                gf: 0.95
-                real: 0.96
-                fake: 0.99
+                gf: 0.97, 0.3170670219089674
+                real: 0.97,  0.3170670219089674
+                fake: 0.97, 0.3170670219089674
 
-ran validation set (B:801) in                         33.8 s.
-(epoch: 2, batches: 400, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.587 loss_D_fake: 0.352 loss_D: 2.861 acc_real: 0.964 acc_fake: 0.994 loss_AUX: 1.547 loss_D_gr_fake: 0.374 acc_grfake: 0.946 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:801) in                         33.3 s.
+(epoch: 2, batches: 400, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.578 loss_D_fake: 0.355 loss_D: 2.861 acc_real: 0.969 acc_fake: 0.969 loss_AUX: 1.549 loss_D_gr_fake: 0.379 acc_grfake: 0.969 
+{}
 learning rate 0.0002000 -> 0.0002000
-End of epoch 2 / 8 	 Time Taken: 400 sec
+End of epoch 2 / 8 	 Time Taken: 404 sec
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.63411
+name: module.enc1.model.0.weight, norm gradient: 2.43036
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.14250
+name: module.enc2.model.0.weight, norm gradient: 0.82929
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.58693
+name: module.enc3.model.0.weight, norm gradient: 0.43005
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.20886
+name: module.enc4.model.0.weight, norm gradient: 0.17927
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.11986
+name: module.dec4.model.1.weight, norm gradient: 0.06891
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.21381
+name: module.dec3.model.1.weight, norm gradient: 0.10985
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.55586
+name: module.dec2.model.1.weight, norm gradient: 0.19408
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.53205
-name: module.dec1.model.0.bias, norm gradient: 0.01549
-name: module.pred_layers.2.weight, norm gradient: 0.11615
-name: module.pred_layers.2.bias, norm gradient: 0.01760
-name: module.pred_layers.4.weight, norm gradient: 0.06383
-name: module.pred_layers.4.bias, norm gradient: 0.02483
+name: module.dec1.model.0.weight, norm gradient: 0.47045
+name: module.dec1.model.0.bias, norm gradient: 0.04488
+name: module.pred_layers.2.weight, norm gradient: 0.21777
+name: module.pred_layers.2.bias, norm gradient: 0.03286
+name: module.pred_layers.4.weight, norm gradient: 0.13426
+name: module.pred_layers.4.bias, norm gradient: 0.05299
 validation accuracies:
-                gf: 0.96
-                real: 0.95
-                fake: 1.00
+                gf: 0.96, 0.3161974920742754
+                real: 0.96,  0.3161974920742754
+                fake: 0.96, 0.3161974920742754
 
 ran validation set (B:901) in                         34.0 s.
-(epoch: 3, batches: 100, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.595 loss_D_fake: 0.332 loss_D: 2.932 acc_real: 0.952 acc_fake: 0.998 loss_AUX: 1.620 loss_D_gr_fake: 0.384 acc_grfake: 0.955 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 100, time: 0.016, data: 0.003) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.585 loss_D_fake: 0.356 loss_D: 3.062 acc_real: 0.962 acc_fake: 0.962 loss_AUX: 1.704 loss_D_gr_fake: 0.416 acc_grfake: 0.962 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.84153
+name: module.enc1.model.0.weight, norm gradient: 3.39858
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.83689
+name: module.enc2.model.0.weight, norm gradient: 0.98320
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.41189
+name: module.enc3.model.0.weight, norm gradient: 0.45035
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.18119
+name: module.enc4.model.0.weight, norm gradient: 0.17866
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.11134
+name: module.dec4.model.1.weight, norm gradient: 0.09495
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.15544
+name: module.dec3.model.1.weight, norm gradient: 0.12686
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.27119
+name: module.dec2.model.1.weight, norm gradient: 0.21439
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.26441
-name: module.dec1.model.0.bias, norm gradient: 0.02571
-name: module.pred_layers.2.weight, norm gradient: 0.13060
-name: module.pred_layers.2.bias, norm gradient: 0.01894
-name: module.pred_layers.4.weight, norm gradient: 0.10407
-name: module.pred_layers.4.bias, norm gradient: 0.00189
+name: module.dec1.model.0.weight, norm gradient: 0.25479
+name: module.dec1.model.0.bias, norm gradient: 0.02899
+name: module.pred_layers.2.weight, norm gradient: 0.08218
+name: module.pred_layers.2.bias, norm gradient: 0.01297
+name: module.pred_layers.4.weight, norm gradient: 0.09059
+name: module.pred_layers.4.bias, norm gradient: 0.02120
 Headstart D over
 validation accuracies:
-                gf: 0.95
-                real: 0.98
-                fake: 0.99
+                gf: 0.97, 0.3252952686254529
+                real: 0.97,  0.3252952686254529
+                fake: 0.97, 0.3252952686254529
 
-ran validation set (B:1001) in                         33.8 s.
-(epoch: 3, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 1.669 loss_G_anti_sc: 0.361 loss_G: 2.030 loss_D_real: 0.597 loss_D_fake: 0.371 loss_D: 3.089 acc_real: 0.977 acc_fake: 0.994 loss_AUX: 1.746 loss_D_gr_fake: 0.374 acc_grfake: 0.947 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:1001) in                         34.0 s.
+(epoch: 3, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 1.671 loss_G_anti_sc: 0.361 loss_G: 2.032 loss_D_real: 0.603 loss_D_fake: 0.361 loss_D: 2.837 acc_real: 0.971 acc_fake: 0.971 loss_AUX: 1.530 loss_D_gr_fake: 0.344 acc_grfake: 0.971 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 10.82835
+name: module.enc1.model.0.weight, norm gradient: 4.36927
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 3.80207
+name: module.enc2.model.0.weight, norm gradient: 1.34902
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 1.98282
+name: module.enc3.model.0.weight, norm gradient: 0.69956
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.83720
+name: module.enc4.model.0.weight, norm gradient: 0.29154
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.28706
+name: module.dec4.model.1.weight, norm gradient: 0.06980
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.54688
+name: module.dec3.model.1.weight, norm gradient: 0.16147
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 1.43247
+name: module.dec2.model.1.weight, norm gradient: 0.49328
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 1.34903
-name: module.dec1.model.0.bias, norm gradient: 0.04231
-name: module.pred_layers.2.weight, norm gradient: 1.24954
-name: module.pred_layers.2.bias, norm gradient: 0.19158
-name: module.pred_layers.4.weight, norm gradient: 0.52001
-name: module.pred_layers.4.bias, norm gradient: 0.24317
+name: module.dec1.model.0.weight, norm gradient: 0.61070
+name: module.dec1.model.0.bias, norm gradient: 0.03454
+name: module.pred_layers.2.weight, norm gradient: 0.37815
+name: module.pred_layers.2.bias, norm gradient: 0.05824
+name: module.pred_layers.4.weight, norm gradient: 0.18832
+name: module.pred_layers.4.bias, norm gradient: 0.07705
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.77479
+name: module.enc1.model.0.weight, norm gradient: 0.89706
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.43880
+name: module.enc2.model.0.weight, norm gradient: 0.46581
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.12848
+name: module.enc3.model.0.weight, norm gradient: 0.12610
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.05207
+name: module.enc4.model.0.weight, norm gradient: 0.04863
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.05815
+name: module.dec4.model.1.weight, norm gradient: 0.05527
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.16085
+name: module.dec3.model.1.weight, norm gradient: 0.15213
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.49371
+name: module.dec2.model.1.weight, norm gradient: 0.37086
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 1.45099
-name: module.dec1.model.0.bias, norm gradient: 0.13495
+name: module.dec1.model.0.weight, norm gradient: 2.78121
+name: module.dec1.model.0.bias, norm gradient: 0.27345
 validation accuracies:
-                gf: 0.96
-                real: 0.78
-                fake: 0.81
+                gf: 0.79, 0.2504015936367754
+                real: 0.79,  0.2504015936367754
+                fake: 0.79, 0.2504015936367754
 
-ran validation set (B:1101) in                         34.5 s.
-(epoch: 3, batches: 300, time: 0.012, data: 0.003) loss_G_comp: 0.916 loss_G_anti_sc: 0.486 loss_G: 1.401 loss_D_real: 0.855 loss_D_fake: 0.405 loss_D: 2.477 acc_real: 0.780 acc_fake: 0.811 loss_AUX: 0.863 loss_D_gr_fake: 0.355 acc_grfake: 0.964 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:1101) in                         34.0 s.
+(epoch: 3, batches: 300, time: 0.012, data: 0.003) loss_G_comp: 0.758 loss_G_anti_sc: 0.617 loss_G: 1.375 loss_D_real: 1.006 loss_D_fake: 0.361 loss_D: 2.545 acc_real: 0.791 acc_fake: 0.791 loss_AUX: 0.832 loss_D_gr_fake: 0.346 acc_grfake: 0.791 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 9.75575
+name: module.enc1.model.0.weight, norm gradient: 3.28938
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 4.02760
+name: module.enc2.model.0.weight, norm gradient: 1.06187
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 1.95927
+name: module.enc3.model.0.weight, norm gradient: 0.46719
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.69930
+name: module.enc4.model.0.weight, norm gradient: 0.19257
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.04197
+name: module.dec4.model.1.weight, norm gradient: 0.03756
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.08234
+name: module.dec3.model.1.weight, norm gradient: 0.06081
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.22137
+name: module.dec2.model.1.weight, norm gradient: 0.11569
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.30050
-name: module.dec1.model.0.bias, norm gradient: 0.01876
-name: module.pred_layers.2.weight, norm gradient: 1.46958
-name: module.pred_layers.2.bias, norm gradient: 0.22522
-name: module.pred_layers.4.weight, norm gradient: 0.66229
-name: module.pred_layers.4.bias, norm gradient: 0.29289
+name: module.dec1.model.0.weight, norm gradient: 0.12226
+name: module.dec1.model.0.bias, norm gradient: 0.00274
+name: module.pred_layers.2.weight, norm gradient: 0.21473
+name: module.pred_layers.2.bias, norm gradient: 0.03391
+name: module.pred_layers.4.weight, norm gradient: 0.09077
+name: module.pred_layers.4.bias, norm gradient: 0.04535
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.46978
+name: module.enc1.model.0.weight, norm gradient: 0.30256
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.29039
+name: module.enc2.model.0.weight, norm gradient: 0.21641
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.07974
+name: module.enc3.model.0.weight, norm gradient: 0.06227
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.03542
+name: module.enc4.model.0.weight, norm gradient: 0.02964
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.03193
+name: module.dec4.model.1.weight, norm gradient: 0.03000
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.07323
+name: module.dec3.model.1.weight, norm gradient: 0.06081
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.17973
+name: module.dec2.model.1.weight, norm gradient: 0.17834
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.49761
-name: module.dec1.model.0.bias, norm gradient: 0.03537
+name: module.dec1.model.0.weight, norm gradient: 0.30762
+name: module.dec1.model.0.bias, norm gradient: 0.02259
 validation accuracies:
-                gf: 0.97
-                real: 0.78
-                fake: 0.62
+                gf: 0.78, 0.3396827587182971
+                real: 0.78,  0.3396827587182971
+                fake: 0.78, 0.3396827587182971
 
-ran validation set (B:1201) in                         33.9 s.
-(epoch: 3, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 1.036 loss_G_anti_sc: 0.438 loss_G: 1.473 loss_D_real: 0.681 loss_D_fake: 0.609 loss_D: 2.080 acc_real: 0.778 acc_fake: 0.621 loss_AUX: 0.467 loss_D_gr_fake: 0.323 acc_grfake: 0.973 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:1201) in                         33.5 s.
+(epoch: 3, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.907 loss_G_anti_sc: 0.519 loss_G: 1.426 loss_D_real: 0.758 loss_D_fake: 0.511 loss_D: 2.044 acc_real: 0.776 acc_fake: 0.776 loss_AUX: 0.456 loss_D_gr_fake: 0.319 acc_grfake: 0.776 
+{}
 learning rate 0.0002000 -> 0.0002000
-End of epoch 3 / 8 	 Time Taken: 371 sec
+End of epoch 3 / 8 	 Time Taken: 372 sec
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 4.05452
+name: module.enc1.model.0.weight, norm gradient: 2.66944
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.24832
+name: module.enc2.model.0.weight, norm gradient: 0.77905
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.48803
+name: module.enc3.model.0.weight, norm gradient: 0.34614
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.18429
+name: module.enc4.model.0.weight, norm gradient: 0.15213
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.02130
+name: module.dec4.model.1.weight, norm gradient: 0.02695
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.03261
+name: module.dec3.model.1.weight, norm gradient: 0.04357
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05300
+name: module.dec2.model.1.weight, norm gradient: 0.07499
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.09847
-name: module.dec1.model.0.bias, norm gradient: 0.00924
-name: module.pred_layers.2.weight, norm gradient: 0.13197
-name: module.pred_layers.2.bias, norm gradient: 0.02130
-name: module.pred_layers.4.weight, norm gradient: 0.05839
-name: module.pred_layers.4.bias, norm gradient: 0.02888
+name: module.dec1.model.0.weight, norm gradient: 0.12348
+name: module.dec1.model.0.bias, norm gradient: 0.01171
+name: module.pred_layers.2.weight, norm gradient: 0.22340
+name: module.pred_layers.2.bias, norm gradient: 0.03398
+name: module.pred_layers.4.weight, norm gradient: 0.10415
+name: module.pred_layers.4.bias, norm gradient: 0.05115
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.11509
+name: module.enc1.model.0.weight, norm gradient: 0.07406
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.08455
+name: module.enc2.model.0.weight, norm gradient: 0.07944
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.03155
+name: module.enc3.model.0.weight, norm gradient: 0.02119
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01616
+name: module.enc4.model.0.weight, norm gradient: 0.01117
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01895
+name: module.dec4.model.1.weight, norm gradient: 0.01417
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.04433
+name: module.dec3.model.1.weight, norm gradient: 0.02741
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.07972
+name: module.dec2.model.1.weight, norm gradient: 0.09042
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.32588
-name: module.dec1.model.0.bias, norm gradient: 0.02738
+name: module.dec1.model.0.weight, norm gradient: 0.14795
+name: module.dec1.model.0.bias, norm gradient: 0.01025
 validation accuracies:
-                gf: 1.00
-                real: 0.16
-                fake: 0.94
+                gf: 0.70, 0.3238649230072464
+                real: 0.70,  0.3238649230072464
+                fake: 0.70, 0.3238649230072464
 
-ran validation set (B:1301) in                         34.3 s.
-(epoch: 4, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.890 loss_G_anti_sc: 0.506 loss_G: 1.396 loss_D_real: 0.774 loss_D_fake: 0.575 loss_D: 1.516 acc_real: 0.156 acc_fake: 0.940 loss_AUX: 0.167 loss_D_gr_fake: 0.347 acc_grfake: 0.998 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:1301) in                         34.5 s.
+(epoch: 4, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.994 loss_G_anti_sc: 0.460 loss_G: 1.454 loss_D_real: 0.783 loss_D_fake: 0.587 loss_D: 2.053 acc_real: 0.701 acc_fake: 0.701 loss_AUX: 0.354 loss_D_gr_fake: 0.329 acc_grfake: 0.701 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.69583
+name: module.enc1.model.0.weight, norm gradient: 1.99568
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.80079
+name: module.enc2.model.0.weight, norm gradient: 0.61732
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.32423
+name: module.enc3.model.0.weight, norm gradient: 0.27464
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.13339
+name: module.enc4.model.0.weight, norm gradient: 0.13238
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00438
+name: module.dec4.model.1.weight, norm gradient: 0.02658
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01004
+name: module.dec3.model.1.weight, norm gradient: 0.04081
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.02152
+name: module.dec2.model.1.weight, norm gradient: 0.05365
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.03936
-name: module.dec1.model.0.bias, norm gradient: 0.00354
-name: module.pred_layers.2.weight, norm gradient: 0.25361
-name: module.pred_layers.2.bias, norm gradient: 0.03881
-name: module.pred_layers.4.weight, norm gradient: 0.12513
-name: module.pred_layers.4.bias, norm gradient: 0.05786
+name: module.dec1.model.0.weight, norm gradient: 0.06595
+name: module.dec1.model.0.bias, norm gradient: 0.00669
+name: module.pred_layers.2.weight, norm gradient: 0.13104
+name: module.pred_layers.2.bias, norm gradient: 0.02042
+name: module.pred_layers.4.weight, norm gradient: 0.05638
+name: module.pred_layers.4.bias, norm gradient: 0.02739
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.09007
+name: module.enc1.model.0.weight, norm gradient: 0.05999
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.07204
+name: module.enc2.model.0.weight, norm gradient: 0.05292
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02850
+name: module.enc3.model.0.weight, norm gradient: 0.02040
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01306
+name: module.enc4.model.0.weight, norm gradient: 0.01110
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01383
+name: module.dec4.model.1.weight, norm gradient: 0.01195
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.03312
+name: module.dec3.model.1.weight, norm gradient: 0.02486
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.08901
+name: module.dec2.model.1.weight, norm gradient: 0.05716
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.14512
-name: module.dec1.model.0.bias, norm gradient: 0.01263
+name: module.dec1.model.0.weight, norm gradient: 0.13608
+name: module.dec1.model.0.bias, norm gradient: 0.00929
 validation accuracies:
-                gf: 1.00
-                real: 0.04
-                fake: 0.99
+                gf: 0.68, 0.3130900065104167
+                real: 0.68,  0.3130900065104167
+                fake: 0.68, 0.3130900065104167
 
-ran validation set (B:1401) in                         34.6 s.
-(epoch: 4, batches: 200, time: 0.010, data: 0.005) loss_G_comp: 0.865 loss_G_anti_sc: 0.514 loss_G: 1.379 loss_D_real: 0.717 loss_D_fake: 0.615 loss_D: 1.474 acc_real: 0.035 acc_fake: 0.989 loss_AUX: 0.142 loss_D_gr_fake: 0.347 acc_grfake: 0.999 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:1401) in                         33.3 s.
+(epoch: 4, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.838 loss_G_anti_sc: 0.533 loss_G: 1.371 loss_D_real: 0.759 loss_D_fake: 0.591 loss_D: 2.038 acc_real: 0.683 acc_fake: 0.683 loss_AUX: 0.340 loss_D_gr_fake: 0.349 acc_grfake: 0.683 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.02792
+name: module.enc1.model.0.weight, norm gradient: 1.22267
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.40051
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.22054
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.11130
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.03734
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.06377
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.10979
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.11387
+name: module.dec1.model.0.bias, norm gradient: 0.00749
+name: module.pred_layers.2.weight, norm gradient: 0.18082
+name: module.pred_layers.2.bias, norm gradient: 0.02687
+name: module.pred_layers.4.weight, norm gradient: 0.12116
+name: module.pred_layers.4.bias, norm gradient: 0.03580
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.03125
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.02843
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.00789
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00385
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00420
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01011
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.02165
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.05064
+name: module.dec1.model.0.bias, norm gradient: 0.00338
+validation accuracies:
+                gf: 0.69, 0.33525461390398553
+                real: 0.69,  0.33525461390398553
+                fake: 0.69, 0.33525461390398553
+
+ran validation set (B:1501) in                         34.4 s.
+(epoch: 4, batches: 300, time: 0.012, data: 0.003) loss_G_comp: 0.805 loss_G_anti_sc: 0.571 loss_G: 1.376 loss_D_real: 0.818 loss_D_fake: 0.535 loss_D: 2.002 acc_real: 0.687 acc_fake: 0.687 loss_AUX: 0.318 loss_D_gr_fake: 0.331 acc_grfake: 0.687 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 2.05510
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.63729
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.30567
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.12883
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.03244
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.05847
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.10186
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.14307
+name: module.dec1.model.0.bias, norm gradient: 0.01096
+name: module.pred_layers.2.weight, norm gradient: 0.20791
+name: module.pred_layers.2.bias, norm gradient: 0.03195
+name: module.pred_layers.4.weight, norm gradient: 0.10448
+name: module.pred_layers.4.bias, norm gradient: 0.04925
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.11722
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.06110
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02102
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00930
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.01007
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.02326
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.06374
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.14383
+name: module.dec1.model.0.bias, norm gradient: 0.00509
+validation accuracies:
+                gf: 0.69, 0.34472833163496375
+                real: 0.69,  0.34472833163496375
+                fake: 0.69, 0.34472833163496375
+
+ran validation set (B:1601) in                         34.5 s.
+(epoch: 4, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.842 loss_G_anti_sc: 0.536 loss_G: 1.378 loss_D_real: 0.757 loss_D_fake: 0.596 loss_D: 1.994 acc_real: 0.687 acc_fake: 0.687 loss_AUX: 0.297 loss_D_gr_fake: 0.343 acc_grfake: 0.687 
+{}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 8 	 Time Taken: 346 sec
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 4.32902
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 1.45178
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.58984
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.23326
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.03541
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.05034
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.08140
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.14399
+name: module.dec1.model.0.bias, norm gradient: 0.01462
+name: module.pred_layers.2.weight, norm gradient: 0.41285
+name: module.pred_layers.2.bias, norm gradient: 0.06383
+name: module.pred_layers.4.weight, norm gradient: 0.19099
+name: module.pred_layers.4.bias, norm gradient: 0.08823
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.08901
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.03944
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.01428
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00844
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00830
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01740
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.03841
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.11899
+name: module.dec1.model.0.bias, norm gradient: 0.00827
+validation accuracies:
+                gf: 0.69, 0.3434899371603261
+                real: 0.69,  0.3434899371603261
+                fake: 0.69, 0.3434899371603261
+
+ran validation set (B:1701) in                         34.2 s.
+(epoch: 5, batches: 100, time: 0.012, data: 0.003) loss_G_comp: 0.807 loss_G_anti_sc: 0.566 loss_G: 1.373 loss_D_real: 0.810 loss_D_fake: 0.547 loss_D: 1.978 acc_real: 0.687 acc_fake: 0.687 loss_AUX: 0.281 loss_D_gr_fake: 0.339 acc_grfake: 0.687 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 2.23572
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.79345
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.39552
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.18157
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.04744
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.06900
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.07743
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.04535
+name: module.dec1.model.0.bias, norm gradient: 0.00148
+name: module.pred_layers.2.weight, norm gradient: 0.37924
+name: module.pred_layers.2.bias, norm gradient: 0.05750
+name: module.pred_layers.4.weight, norm gradient: 0.18549
+name: module.pred_layers.4.bias, norm gradient: 0.07804
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.10095
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.10455
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02835
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.01430
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.01553
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.03078
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.08399
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.17476
+name: module.dec1.model.0.bias, norm gradient: 0.01197
+validation accuracies:
+                gf: 0.67, 0.27723317906476447
+                real: 0.67,  0.27723317906476447
+                fake: 0.67, 0.27723317906476447
+
+ran validation set (B:1801) in                         34.5 s.
+(epoch: 5, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.852 loss_G_anti_sc: 0.529 loss_G: 1.381 loss_D_real: 0.783 loss_D_fake: 0.571 loss_D: 1.984 acc_real: 0.667 acc_fake: 0.667 loss_AUX: 0.293 loss_D_gr_fake: 0.337 acc_grfake: 0.667 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.21215
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.57042
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.32340
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.16512
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.04691
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.07758
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.11466
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.11361
+name: module.dec1.model.0.bias, norm gradient: 0.00637
+name: module.pred_layers.2.weight, norm gradient: 0.28401
+name: module.pred_layers.2.bias, norm gradient: 0.04385
+name: module.pred_layers.4.weight, norm gradient: 0.14000
+name: module.pred_layers.4.bias, norm gradient: 0.06337
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.10807
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.04962
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02420
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.01181
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00986
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01697
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.03577
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.05810
+name: module.dec1.model.0.bias, norm gradient: 0.00063
+validation accuracies:
+                gf: 0.67, 0.30594447039175726
+                real: 0.67,  0.30594447039175726
+                fake: 0.67, 0.30594447039175726
+
+ran validation set (B:1901) in                         33.7 s.
+(epoch: 5, batches: 300, time: 0.012, data: 0.003) loss_G_comp: 0.828 loss_G_anti_sc: 0.544 loss_G: 1.372 loss_D_real: 0.798 loss_D_fake: 0.560 loss_D: 1.954 acc_real: 0.669 acc_fake: 0.669 loss_AUX: 0.276 loss_D_gr_fake: 0.321 acc_grfake: 0.669 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 2.41662
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.88265
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.49529
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.19593
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.06007
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.10508
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.17783
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.19672
+name: module.dec1.model.0.bias, norm gradient: 0.01423
+name: module.pred_layers.2.weight, norm gradient: 0.33362
+name: module.pred_layers.2.bias, norm gradient: 0.05012
+name: module.pred_layers.4.weight, norm gradient: 0.16166
+name: module.pred_layers.4.bias, norm gradient: 0.06875
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.12077
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.10745
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.01875
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00878
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00895
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.02420
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.10697
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.30748
+name: module.dec1.model.0.bias, norm gradient: 0.00911
+validation accuracies:
+                gf: 0.68, 0.3315703903419384
+                real: 0.68,  0.3315703903419384
+                fake: 0.68, 0.3315703903419384
+
+ran validation set (B:2001) in                         33.4 s.
+(epoch: 5, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.835 loss_G_anti_sc: 0.538 loss_G: 1.372 loss_D_real: 0.819 loss_D_fake: 0.539 loss_D: 1.970 acc_real: 0.677 acc_fake: 0.677 loss_AUX: 0.276 loss_D_gr_fake: 0.337 acc_grfake: 0.677 
+{}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 5 / 8 	 Time Taken: 346 sec
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.10131
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.38653
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.19865
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.10714
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.03547
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.05094
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.07478
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.07641
+name: module.dec1.model.0.bias, norm gradient: 0.00137
+name: module.pred_layers.2.weight, norm gradient: 0.06426
+name: module.pred_layers.2.bias, norm gradient: 0.00984
+name: module.pred_layers.4.weight, norm gradient: 0.00752
+name: module.pred_layers.4.bias, norm gradient: 0.00015
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.11497
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.08085
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02444
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.01257
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.01164
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.02087
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.04699
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.06981
+name: module.dec1.model.0.bias, norm gradient: 0.00252
+validation accuracies:
+                gf: 0.67, 0.31139782891757245
+                real: 0.67,  0.31139782891757245
+                fake: 0.67, 0.31139782891757245
+
+ran validation set (B:2101) in                         33.9 s.
+(epoch: 6, batches: 100, time: 0.012, data: 0.004) loss_G_comp: 0.784 loss_G_anti_sc: 0.586 loss_G: 1.370 loss_D_real: 0.767 loss_D_fake: 0.602 loss_D: 2.058 acc_real: 0.668 acc_fake: 0.668 loss_AUX: 0.328 loss_D_gr_fake: 0.360 acc_grfake: 0.668 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.13778
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.35110
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.18592
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.09338
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.03000
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.04517
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.06859
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.07434
+name: module.dec1.model.0.bias, norm gradient: 0.00139
+name: module.pred_layers.2.weight, norm gradient: 0.07144
+name: module.pred_layers.2.bias, norm gradient: 0.01045
+name: module.pred_layers.4.weight, norm gradient: 0.03578
+name: module.pred_layers.4.bias, norm gradient: 0.00418
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.13530
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.06076
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02155
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00996
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00937
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01808
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.05347
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.12642
+name: module.dec1.model.0.bias, norm gradient: 0.00519
+validation accuracies:
+                gf: 0.67, 0.31231866366621375
+                real: 0.67,  0.31231866366621375
+                fake: 0.67, 0.31231866366621375
+
+ran validation set (B:2201) in                         33.9 s.
+(epoch: 6, batches: 200, time: 0.011, data: 0.003) loss_G_comp: 0.829 loss_G_anti_sc: 0.541 loss_G: 1.371 loss_D_real: 0.771 loss_D_fake: 0.582 loss_D: 1.960 acc_real: 0.667 acc_fake: 0.667 loss_AUX: 0.266 loss_D_gr_fake: 0.341 acc_grfake: 0.667 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 2.68733
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.97879
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.48119
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.21986
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.04352
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.06633
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.09867
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.09235
+name: module.dec1.model.0.bias, norm gradient: 0.00544
+name: module.pred_layers.2.weight, norm gradient: 0.50863
+name: module.pred_layers.2.bias, norm gradient: 0.07867
+name: module.pred_layers.4.weight, norm gradient: 0.24395
+name: module.pred_layers.4.bias, norm gradient: 0.11736
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.09855
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.07067
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02215
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.01014
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00899
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01857
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.06639
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.18459
+name: module.dec1.model.0.bias, norm gradient: 0.00202
+validation accuracies:
+                gf: 0.67, 0.29507490517436596
+                real: 0.67,  0.29507490517436596
+                fake: 0.67, 0.29507490517436596
+
+ran validation set (B:2301) in                         33.4 s.
+(epoch: 6, batches: 300, time: 0.012, data: 0.004) loss_G_comp: 0.826 loss_G_anti_sc: 0.545 loss_G: 1.371 loss_D_real: 0.762 loss_D_fake: 0.595 loss_D: 1.937 acc_real: 0.668 acc_fake: 0.668 loss_AUX: 0.251 loss_D_gr_fake: 0.328 acc_grfake: 0.668 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.87904
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.72544
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.32974
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.15532
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.04235
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.06211
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.09547
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.08731
+name: module.dec1.model.0.bias, norm gradient: 0.00294
+name: module.pred_layers.2.weight, norm gradient: 0.18238
+name: module.pred_layers.2.bias, norm gradient: 0.02808
+name: module.pred_layers.4.weight, norm gradient: 0.07395
+name: module.pred_layers.4.bias, norm gradient: 0.03555
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.12447
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.06553
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.02220
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.01112
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.01052
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.02060
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.06137
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.10211
+name: module.dec1.model.0.bias, norm gradient: 0.00366
+validation accuracies:
+                gf: 0.67, 0.2958037887794384
+                real: 0.67,  0.2958037887794384
+                fake: 0.67, 0.2958037887794384
+
+ran validation set (B:2401) in                         34.1 s.
+(epoch: 6, batches: 400, time: 0.011, data: 0.003) loss_G_comp: 0.655 loss_G_anti_sc: 0.771 loss_G: 1.426 loss_D_real: 1.080 loss_D_fake: 0.406 loss_D: 2.106 acc_real: 0.667 acc_fake: 0.667 loss_AUX: 0.271 loss_D_gr_fake: 0.350 acc_grfake: 0.667 
+{}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 6 / 8 	 Time Taken: 345 sec
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.20637
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.37305
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.19835
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.11615
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.03222
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.04785
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.07387
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.07214
+name: module.dec1.model.0.bias, norm gradient: 0.00122
+name: module.pred_layers.2.weight, norm gradient: 0.16117
+name: module.pred_layers.2.bias, norm gradient: 0.02480
+name: module.pred_layers.4.weight, norm gradient: 0.06973
+name: module.pred_layers.4.bias, norm gradient: 0.03243
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.11452
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.04912
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.01434
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00632
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00545
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01095
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.03699
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.08579
+name: module.dec1.model.0.bias, norm gradient: 0.00549
+validation accuracies:
+                gf: 0.67, 0.305672023607337
+                real: 0.67,  0.305672023607337
+                fake: 0.67, 0.305672023607337
+
+ran validation set (B:2501) in                         34.1 s.
+(epoch: 7, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.857 loss_G_anti_sc: 0.511 loss_G: 1.368 loss_D_real: 0.768 loss_D_fake: 0.560 loss_D: 1.959 acc_real: 0.667 acc_fake: 0.667 loss_AUX: 0.281 loss_D_gr_fake: 0.350 acc_grfake: 0.667 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.95091
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.56789
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.27724
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.13541
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.04236
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.06756
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.09348
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.07450
+name: module.dec1.model.0.bias, norm gradient: 0.00582
+name: module.pred_layers.2.weight, norm gradient: 0.08592
+name: module.pred_layers.2.bias, norm gradient: 0.01304
+name: module.pred_layers.4.weight, norm gradient: 0.02612
+name: module.pred_layers.4.bias, norm gradient: 0.00913
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 0.05896
+name: module.enc1.model.0.bias, norm gradient: 0.00000
+name: module.enc2.model.0.weight, norm gradient: 0.04559
+name: module.enc2.model.0.bias, norm gradient: 0.00000
+name: module.enc3.model.0.weight, norm gradient: 0.01098
+name: module.enc3.model.0.bias, norm gradient: 0.00000
+name: module.enc4.model.0.weight, norm gradient: 0.00531
+name: module.enc4.model.0.bias, norm gradient: 0.00000
+name: module.dec4.model.1.weight, norm gradient: 0.00511
+name: module.dec4.model.1.bias, norm gradient: 0.00000
+name: module.dec3.model.1.weight, norm gradient: 0.01125
+name: module.dec3.model.1.bias, norm gradient: 0.00000
+name: module.dec2.model.1.weight, norm gradient: 0.04466
+name: module.dec2.model.1.bias, norm gradient: 0.00000
+name: module.dec1.model.0.weight, norm gradient: 0.09740
+name: module.dec1.model.0.bias, norm gradient: 0.00179
+validation accuracies:
+                gf: 0.67, 0.3067273126132246
+                real: 0.67,  0.3067273126132246
+                fake: 0.67, 0.3067273126132246
+
+ran validation set (B:2601) in                         34.0 s.
+(epoch: 7, batches: 200, time: 0.012, data: 0.003) loss_G_comp: 0.760 loss_G_anti_sc: 0.608 loss_G: 1.368 loss_D_real: 0.856 loss_D_fake: 0.527 loss_D: 1.981 acc_real: 0.667 acc_fake: 0.667 loss_AUX: 0.254 loss_D_gr_fake: 0.343 acc_grfake: 0.667 
+{}
+DataParallel
+name: module.enc1.model.0.weight, norm gradient: 1.69818
 name: module.enc1.model.0.bias, norm gradient: 0.00000
 name: module.enc2.model.0.weight, norm gradient: 0.62081
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.23015
+name: module.enc3.model.0.weight, norm gradient: 0.35073
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.10516
+name: module.enc4.model.0.weight, norm gradient: 0.18523
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00535
+name: module.dec4.model.1.weight, norm gradient: 0.04748
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00956
+name: module.dec3.model.1.weight, norm gradient: 0.06433
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.02580
+name: module.dec2.model.1.weight, norm gradient: 0.09133
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.04143
-name: module.dec1.model.0.bias, norm gradient: 0.00126
-name: module.pred_layers.2.weight, norm gradient: 0.14985
-name: module.pred_layers.2.bias, norm gradient: 0.02291
-name: module.pred_layers.4.weight, norm gradient: 0.06683
-name: module.pred_layers.4.bias, norm gradient: 0.03228
+name: module.dec1.model.0.weight, norm gradient: 0.10187
+name: module.dec1.model.0.bias, norm gradient: 0.00095
+name: module.pred_layers.2.weight, norm gradient: 0.30806
+name: module.pred_layers.2.bias, norm gradient: 0.04790
+name: module.pred_layers.4.weight, norm gradient: 0.11410
+name: module.pred_layers.4.bias, norm gradient: 0.05509
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.04242
+name: module.enc1.model.0.weight, norm gradient: 0.32622
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.05886
+name: module.enc2.model.0.weight, norm gradient: 0.20077
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01633
+name: module.enc3.model.0.weight, norm gradient: 0.03784
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00847
+name: module.enc4.model.0.weight, norm gradient: 0.01574
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00848
+name: module.dec4.model.1.weight, norm gradient: 0.01610
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01876
+name: module.dec3.model.1.weight, norm gradient: 0.04244
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05071
+name: module.dec2.model.1.weight, norm gradient: 0.20994
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.11626
-name: module.dec1.model.0.bias, norm gradient: 0.00808
+name: module.dec1.model.0.weight, norm gradient: 0.68969
+name: module.dec1.model.0.bias, norm gradient: 0.02185
 validation accuracies:
-                gf: 0.99
-                real: 0.37
-                fake: 0.82
+                gf: 0.67, 0.30909353062726447
+                real: 0.67,  0.30909353062726447
+                fake: 0.67, 0.30909353062726447
 
-ran validation set (B:1501) in                         34.2 s.
-(epoch: 4, batches: 300, time: 0.011, data: 0.001) loss_G_comp: 0.775 loss_G_anti_sc: 0.614 loss_G: 1.390 loss_D_real: 0.816 loss_D_fake: 0.540 loss_D: 1.475 acc_real: 0.367 acc_fake: 0.818 loss_AUX: 0.119 loss_D_gr_fake: 0.347 acc_grfake: 0.991 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:2701) in                         34.3 s.
+(epoch: 7, batches: 300, time: 0.011, data: 0.003) loss_G_comp: 0.853 loss_G_anti_sc: 0.523 loss_G: 1.377 loss_D_real: 0.786 loss_D_fake: 0.556 loss_D: 1.923 acc_real: 0.668 acc_fake: 0.668 loss_AUX: 0.248 loss_D_gr_fake: 0.333 acc_grfake: 0.668 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.38723
+name: module.enc1.model.0.weight, norm gradient: 1.52528
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.70884
+name: module.enc2.model.0.weight, norm gradient: 0.45956
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.26700
+name: module.enc3.model.0.weight, norm gradient: 0.22526
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.12068
+name: module.enc4.model.0.weight, norm gradient: 0.12447
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00315
+name: module.dec4.model.1.weight, norm gradient: 0.05257
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00662
+name: module.dec3.model.1.weight, norm gradient: 0.08259
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01161
+name: module.dec2.model.1.weight, norm gradient: 0.14796
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.03617
-name: module.dec1.model.0.bias, norm gradient: 0.00409
-name: module.pred_layers.2.weight, norm gradient: 0.23673
-name: module.pred_layers.2.bias, norm gradient: 0.03621
-name: module.pred_layers.4.weight, norm gradient: 0.09946
-name: module.pred_layers.4.bias, norm gradient: 0.04878
+name: module.dec1.model.0.weight, norm gradient: 0.15631
+name: module.dec1.model.0.bias, norm gradient: 0.01122
+name: module.pred_layers.2.weight, norm gradient: 0.04396
+name: module.pred_layers.2.bias, norm gradient: 0.00650
+name: module.pred_layers.4.weight, norm gradient: 0.01149
+name: module.pred_layers.4.bias, norm gradient: 0.00482
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.09117
+name: module.enc1.model.0.weight, norm gradient: 0.10721
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.05471
+name: module.enc2.model.0.weight, norm gradient: 0.04873
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01874
+name: module.enc3.model.0.weight, norm gradient: 0.01062
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00939
+name: module.enc4.model.0.weight, norm gradient: 0.00493
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00916
+name: module.dec4.model.1.weight, norm gradient: 0.00478
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02028
+name: module.dec3.model.1.weight, norm gradient: 0.01075
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05513
+name: module.dec2.model.1.weight, norm gradient: 0.03624
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.20522
-name: module.dec1.model.0.bias, norm gradient: 0.01429
+name: module.dec1.model.0.weight, norm gradient: 0.08802
+name: module.dec1.model.0.bias, norm gradient: 0.00239
 validation accuracies:
-                gf: 0.99
-                real: 0.36
-                fake: 0.81
+                gf: 0.67, 0.3211616847826087
+                real: 0.67,  0.3211616847826087
+                fake: 0.67, 0.3211616847826087
 
-ran validation set (B:1601) in                         34.3 s.
-(epoch: 4, batches: 400, time: 0.010, data: 0.016) loss_G_comp: 0.808 loss_G_anti_sc: 0.564 loss_G: 1.371 loss_D_real: 0.760 loss_D_fake: 0.582 loss_D: 1.454 acc_real: 0.363 acc_fake: 0.807 loss_AUX: 0.111 loss_D_gr_fake: 0.347 acc_grfake: 0.993 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:2801) in                         34.0 s.
+(epoch: 7, batches: 400, time: 0.011, data: 0.004) loss_G_comp: 0.751 loss_G_anti_sc: 0.620 loss_G: 1.370 loss_D_real: 0.817 loss_D_fake: 0.544 loss_D: 1.941 acc_real: 0.670 acc_fake: 0.670 loss_AUX: 0.237 loss_D_gr_fake: 0.342 acc_grfake: 0.670 
+{}
 learning rate 0.0002000 -> 0.0002000
-End of epoch 4 / 8 	 Time Taken: 309 sec
+End of epoch 7 / 8 	 Time Taken: 348 sec
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.97572
+name: module.enc1.model.0.weight, norm gradient: 1.41364
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.51503
+name: module.enc2.model.0.weight, norm gradient: 0.45778
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.18370
+name: module.enc3.model.0.weight, norm gradient: 0.26135
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.09311
+name: module.enc4.model.0.weight, norm gradient: 0.11928
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00346
+name: module.dec4.model.1.weight, norm gradient: 0.05931
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00854
+name: module.dec3.model.1.weight, norm gradient: 0.09611
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01930
+name: module.dec2.model.1.weight, norm gradient: 0.17035
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.03083
-name: module.dec1.model.0.bias, norm gradient: 0.00269
-name: module.pred_layers.2.weight, norm gradient: 0.04890
-name: module.pred_layers.2.bias, norm gradient: 0.00762
-name: module.pred_layers.4.weight, norm gradient: 0.02169
-name: module.pred_layers.4.bias, norm gradient: 0.00215
+name: module.dec1.model.0.weight, norm gradient: 0.18234
+name: module.dec1.model.0.bias, norm gradient: 0.01146
+name: module.pred_layers.2.weight, norm gradient: 0.11862
+name: module.pred_layers.2.bias, norm gradient: 0.01791
+name: module.pred_layers.4.weight, norm gradient: 0.05686
+name: module.pred_layers.4.bias, norm gradient: 0.02276
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.07254
+name: module.enc1.model.0.weight, norm gradient: 0.04377
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.06167
+name: module.enc2.model.0.weight, norm gradient: 0.03073
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02135
+name: module.enc3.model.0.weight, norm gradient: 0.01299
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01104
+name: module.enc4.model.0.weight, norm gradient: 0.00723
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01124
+name: module.dec4.model.1.weight, norm gradient: 0.00722
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02107
+name: module.dec3.model.1.weight, norm gradient: 0.01172
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05098
+name: module.dec2.model.1.weight, norm gradient: 0.02839
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.17381
-name: module.dec1.model.0.bias, norm gradient: 0.01547
+name: module.dec1.model.0.weight, norm gradient: 0.04222
+name: module.dec1.model.0.bias, norm gradient: 0.00184
 validation accuracies:
-                gf: 1.00
-                real: 0.02
-                fake: 0.99
+                gf: 0.67, 0.31190822435461957
+                real: 0.67,  0.31190822435461957
+                fake: 0.67, 0.31190822435461957
 
-ran validation set (B:1701) in                         34.2 s.
-(epoch: 5, batches: 100, time: 0.011, data: 0.015) loss_G_comp: 0.855 loss_G_anti_sc: 0.525 loss_G: 1.381 loss_D_real: 0.779 loss_D_fake: 0.557 loss_D: 1.438 acc_real: 0.018 acc_fake: 0.992 loss_AUX: 0.103 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:2901) in                         34.0 s.
+(epoch: 8, batches: 100, time: 0.012, data: 0.003) loss_G_comp: 0.822 loss_G_anti_sc: 0.548 loss_G: 1.370 loss_D_real: 0.775 loss_D_fake: 0.592 loss_D: 1.981 acc_real: 0.667 acc_fake: 0.667 loss_AUX: 0.286 loss_D_gr_fake: 0.329 acc_grfake: 0.667 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.23426
+name: module.enc1.model.0.weight, norm gradient: 1.81324
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.97446
+name: module.enc2.model.0.weight, norm gradient: 0.48769
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.35905
+name: module.enc3.model.0.weight, norm gradient: 0.26957
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.16553
+name: module.enc4.model.0.weight, norm gradient: 0.14891
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00315
+name: module.dec4.model.1.weight, norm gradient: 0.04208
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00749
+name: module.dec3.model.1.weight, norm gradient: 0.05829
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01661
+name: module.dec2.model.1.weight, norm gradient: 0.07140
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.02176
-name: module.dec1.model.0.bias, norm gradient: 0.00208
-name: module.pred_layers.2.weight, norm gradient: 0.37055
-name: module.pred_layers.2.bias, norm gradient: 0.05641
-name: module.pred_layers.4.weight, norm gradient: 0.15972
-name: module.pred_layers.4.bias, norm gradient: 0.07403
+name: module.dec1.model.0.weight, norm gradient: 0.06982
+name: module.dec1.model.0.bias, norm gradient: 0.00454
+name: module.pred_layers.2.weight, norm gradient: 0.26482
+name: module.pred_layers.2.bias, norm gradient: 0.04057
+name: module.pred_layers.4.weight, norm gradient: 0.11056
+name: module.pred_layers.4.bias, norm gradient: 0.05497
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.07907
+name: module.enc1.model.0.weight, norm gradient: 0.10657
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.07040
+name: module.enc2.model.0.weight, norm gradient: 0.04933
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02745
+name: module.enc3.model.0.weight, norm gradient: 0.01791
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01339
+name: module.enc4.model.0.weight, norm gradient: 0.00702
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01442
+name: module.dec4.model.1.weight, norm gradient: 0.00638
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.03026
+name: module.dec3.model.1.weight, norm gradient: 0.01310
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.07130
+name: module.dec2.model.1.weight, norm gradient: 0.03758
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.11268
-name: module.dec1.model.0.bias, norm gradient: 0.00279
+name: module.dec1.model.0.weight, norm gradient: 0.08625
+name: module.dec1.model.0.bias, norm gradient: 0.00401
 validation accuracies:
-                gf: 1.00
-                real: 0.17
-                fake: 0.90
+                gf: 0.67, 0.32327845476675726
+                real: 0.67,  0.32327845476675726
+                fake: 0.67, 0.32327845476675726
 
-ran validation set (B:1801) in                         34.8 s.
-(epoch: 5, batches: 200, time: 0.011, data: 0.005) loss_G_comp: 0.788 loss_G_anti_sc: 0.586 loss_G: 1.374 loss_D_real: 0.769 loss_D_fake: 0.576 loss_D: 1.438 acc_real: 0.173 acc_fake: 0.898 loss_AUX: 0.093 loss_D_gr_fake: 0.347 acc_grfake: 0.997 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:3001) in                         33.7 s.
+(epoch: 8, batches: 200, time: 0.012, data: 0.004) loss_G_comp: 0.924 loss_G_anti_sc: 0.488 loss_G: 1.412 loss_D_real: 0.680 loss_D_fake: 0.704 loss_D: 2.018 acc_real: 0.671 acc_fake: 0.671 loss_AUX: 0.268 loss_D_gr_fake: 0.366 acc_grfake: 0.671 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.57770
+name: module.enc1.model.0.weight, norm gradient: 2.03764
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.92444
+name: module.enc2.model.0.weight, norm gradient: 0.71568
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.29249
+name: module.enc3.model.0.weight, norm gradient: 0.41895
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.12538
+name: module.enc4.model.0.weight, norm gradient: 0.20854
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00244
+name: module.dec4.model.1.weight, norm gradient: 0.03966
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00636
+name: module.dec3.model.1.weight, norm gradient: 0.06177
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01362
+name: module.dec2.model.1.weight, norm gradient: 0.09058
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.02609
-name: module.dec1.model.0.bias, norm gradient: 0.00267
-name: module.pred_layers.2.weight, norm gradient: 0.14617
-name: module.pred_layers.2.bias, norm gradient: 0.02214
-name: module.pred_layers.4.weight, norm gradient: 0.06126
-name: module.pred_layers.4.bias, norm gradient: 0.02883
+name: module.dec1.model.0.weight, norm gradient: 0.08524
+name: module.dec1.model.0.bias, norm gradient: 0.00099
+name: module.pred_layers.2.weight, norm gradient: 0.45753
+name: module.pred_layers.2.bias, norm gradient: 0.07027
+name: module.pred_layers.4.weight, norm gradient: 0.20451
+name: module.pred_layers.4.bias, norm gradient: 0.09690
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.07171
+name: module.enc1.model.0.weight, norm gradient: 0.11530
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.04951
+name: module.enc2.model.0.weight, norm gradient: 0.06365
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02108
+name: module.enc3.model.0.weight, norm gradient: 0.00988
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00966
+name: module.enc4.model.0.weight, norm gradient: 0.00436
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00933
+name: module.dec4.model.1.weight, norm gradient: 0.00429
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01816
+name: module.dec3.model.1.weight, norm gradient: 0.01134
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.04753
+name: module.dec2.model.1.weight, norm gradient: 0.05678
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.14132
-name: module.dec1.model.0.bias, norm gradient: 0.01186
+name: module.dec1.model.0.weight, norm gradient: 0.20537
+name: module.dec1.model.0.bias, norm gradient: 0.00622
 validation accuracies:
-                gf: 0.99
-                real: 0.23
-                fake: 0.87
+                gf: 0.67, 0.34142181838768115
+                real: 0.67,  0.34142181838768115
+                fake: 0.67, 0.34142181838768115
 
-ran validation set (B:1901) in                         33.7 s.
-(epoch: 5, batches: 300, time: 0.011, data: 0.004) loss_G_comp: 0.779 loss_G_anti_sc: 0.589 loss_G: 1.368 loss_D_real: 0.866 loss_D_fake: 0.491 loss_D: 1.444 acc_real: 0.233 acc_fake: 0.869 loss_AUX: 0.088 loss_D_gr_fake: 0.347 acc_grfake: 0.994 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:3101) in                         33.4 s.
+(epoch: 8, batches: 300, time: 0.012, data: 0.003) loss_G_comp: 0.799 loss_G_anti_sc: 0.566 loss_G: 1.365 loss_D_real: 0.806 loss_D_fake: 0.551 loss_D: 1.935 acc_real: 0.674 acc_fake: 0.674 loss_AUX: 0.234 loss_D_gr_fake: 0.343 acc_grfake: 0.674 
+{}
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.33197
+name: module.enc1.model.0.weight, norm gradient: 1.52055
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.89246
+name: module.enc2.model.0.weight, norm gradient: 0.52213
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.32569
+name: module.enc3.model.0.weight, norm gradient: 0.25796
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.14013
+name: module.enc4.model.0.weight, norm gradient: 0.13009
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00246
+name: module.dec4.model.1.weight, norm gradient: 0.05818
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00545
+name: module.dec3.model.1.weight, norm gradient: 0.08006
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.00913
+name: module.dec2.model.1.weight, norm gradient: 0.11570
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01617
-name: module.dec1.model.0.bias, norm gradient: 0.00127
-name: module.pred_layers.2.weight, norm gradient: 0.18965
-name: module.pred_layers.2.bias, norm gradient: 0.02874
-name: module.pred_layers.4.weight, norm gradient: 0.09075
-name: module.pred_layers.4.bias, norm gradient: 0.04315
+name: module.dec1.model.0.weight, norm gradient: 0.09901
+name: module.dec1.model.0.bias, norm gradient: 0.00878
+name: module.pred_layers.2.weight, norm gradient: 0.07813
+name: module.pred_layers.2.bias, norm gradient: 0.01185
+name: module.pred_layers.4.weight, norm gradient: 0.03766
+name: module.pred_layers.4.bias, norm gradient: 0.00325
 DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.09534
+name: module.enc1.model.0.weight, norm gradient: 0.20373
 name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.07162
+name: module.enc2.model.0.weight, norm gradient: 0.10920
 name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02405
+name: module.enc3.model.0.weight, norm gradient: 0.01871
 name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01139
+name: module.enc4.model.0.weight, norm gradient: 0.00772
 name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01095
+name: module.dec4.model.1.weight, norm gradient: 0.00740
 name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02231
+name: module.dec3.model.1.weight, norm gradient: 0.01998
 name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05624
+name: module.dec2.model.1.weight, norm gradient: 0.10047
 name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.09085
-name: module.dec1.model.0.bias, norm gradient: 0.00122
+name: module.dec1.model.0.weight, norm gradient: 0.29686
+name: module.dec1.model.0.bias, norm gradient: 0.00743
 validation accuracies:
-                gf: 1.00
-                real: 0.02
-                fake: 1.00
+                gf: 0.67, 0.3186981643455616
+                real: 0.67,  0.3186981643455616
+                fake: 0.67, 0.3186981643455616
 
-ran validation set (B:2001) in                         34.5 s.
-(epoch: 5, batches: 400, time: 0.010, data: 0.001) loss_G_comp: 0.863 loss_G_anti_sc: 0.518 loss_G: 1.381 loss_D_real: 0.764 loss_D_fake: 0.583 loss_D: 1.429 acc_real: 0.018 acc_fake: 0.996 loss_AUX: 0.082 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-learning rate 0.0002000 -> 0.0002000
-End of epoch 5 / 8 	 Time Taken: 299 sec
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.84745
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.17205
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.36301
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.15238
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00210
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00431
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.00811
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01201
-name: module.dec1.model.0.bias, norm gradient: 0.00081
-name: module.pred_layers.2.weight, norm gradient: 0.22746
-name: module.pred_layers.2.bias, norm gradient: 0.03522
-name: module.pred_layers.4.weight, norm gradient: 0.09237
-name: module.pred_layers.4.bias, norm gradient: 0.04512
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.09851
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.07797
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02919
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01286
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01273
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02289
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05648
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.08519
-name: module.dec1.model.0.bias, norm gradient: 0.00027
-validation accuracies:
-                gf: 0.99
-                real: 0.17
-                fake: 0.90
-
-ran validation set (B:2101) in                         34.4 s.
-(epoch: 6, batches: 100, time: 0.010, data: 0.003) loss_G_comp: 0.791 loss_G_anti_sc: 0.577 loss_G: 1.369 loss_D_real: 0.747 loss_D_fake: 0.598 loss_D: 1.424 acc_real: 0.170 acc_fake: 0.898 loss_AUX: 0.079 loss_D_gr_fake: 0.347 acc_grfake: 0.995 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.18303
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.36319
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.15694
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.08820
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00279
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00581
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01217
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01841
-name: module.dec1.model.0.bias, norm gradient: 0.00161
-name: module.pred_layers.2.weight, norm gradient: 0.07738
-name: module.pred_layers.2.bias, norm gradient: 0.01161
-name: module.pred_layers.4.weight, norm gradient: 0.03100
-name: module.pred_layers.4.bias, norm gradient: 0.01481
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.12936
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.07236
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02272
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01063
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00972
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01842
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.06031
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.11209
-name: module.dec1.model.0.bias, norm gradient: 0.00382
-validation accuracies:
-                gf: 1.00
-                real: 0.00
-                fake: 1.00
-
-ran validation set (B:2201) in                         34.0 s.
-(epoch: 6, batches: 200, time: 0.010, data: 0.004) loss_G_comp: 0.737 loss_G_anti_sc: 0.631 loss_G: 1.368 loss_D_real: 0.839 loss_D_fake: 0.516 loss_D: 1.426 acc_real: 0.004 acc_fake: 0.999 loss_AUX: 0.071 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.93156
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.62738
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.20767
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.10321
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00214
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00402
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01031
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01931
-name: module.dec1.model.0.bias, norm gradient: 0.00139
-name: module.pred_layers.2.weight, norm gradient: 0.09534
-name: module.pred_layers.2.bias, norm gradient: 0.01445
-name: module.pred_layers.4.weight, norm gradient: 0.03982
-name: module.pred_layers.4.bias, norm gradient: 0.01676
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.06992
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.05227
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01635
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00944
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00909
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02020
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.06195
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.10410
-name: module.dec1.model.0.bias, norm gradient: 0.00081
-validation accuracies:
-                gf: 1.00
-                real: 0.01
-                fake: 1.00
-
-ran validation set (B:2301) in                         34.2 s.
-(epoch: 6, batches: 300, time: 0.011, data: 0.001) loss_G_comp: 0.793 loss_G_anti_sc: 0.573 loss_G: 1.366 loss_D_real: 0.781 loss_D_fake: 0.570 loss_D: 1.420 acc_real: 0.012 acc_fake: 0.996 loss_AUX: 0.069 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.48484
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.44795
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.23804
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.12701
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00252
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00570
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01162
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01366
-name: module.dec1.model.0.bias, norm gradient: 0.00066
-name: module.pred_layers.2.weight, norm gradient: 0.18078
-name: module.pred_layers.2.bias, norm gradient: 0.02752
-name: module.pred_layers.4.weight, norm gradient: 0.07458
-name: module.pred_layers.4.bias, norm gradient: 0.03066
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.12827
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.10014
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02307
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00981
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00963
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02373
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.07256
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.12966
-name: module.dec1.model.0.bias, norm gradient: 0.00368
-validation accuracies:
-                gf: 1.00
-                real: 0.02
-                fake: 0.99
-
-ran validation set (B:2401) in                         34.2 s.
-(epoch: 6, batches: 400, time: 0.010, data: 0.003) loss_G_comp: 0.759 loss_G_anti_sc: 0.603 loss_G: 1.362 loss_D_real: 0.768 loss_D_fake: 0.579 loss_D: 1.413 acc_real: 0.023 acc_fake: 0.992 loss_AUX: 0.066 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-learning rate 0.0002000 -> 0.0002000
-End of epoch 6 / 8 	 Time Taken: 299 sec
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.11044
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.36799
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.17437
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.10766
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00313
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00660
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01751
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.02391
-name: module.dec1.model.0.bias, norm gradient: 0.00102
-name: module.pred_layers.2.weight, norm gradient: 0.16737
-name: module.pred_layers.2.bias, norm gradient: 0.02596
-name: module.pred_layers.4.weight, norm gradient: 0.06554
-name: module.pred_layers.4.bias, norm gradient: 0.03235
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.10216
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.08679
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01992
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01084
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01128
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02398
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.07161
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.16314
-name: module.dec1.model.0.bias, norm gradient: 0.00009
-validation accuracies:
-                gf: 1.00
-                real: 0.06
-                fake: 0.98
-
-ran validation set (B:2501) in                         34.4 s.
-(epoch: 7, batches: 100, time: 0.010, data: 0.003) loss_G_comp: 0.736 loss_G_anti_sc: 0.640 loss_G: 1.376 loss_D_real: 0.841 loss_D_fake: 0.526 loss_D: 1.431 acc_real: 0.062 acc_fake: 0.978 loss_AUX: 0.065 loss_D_gr_fake: 0.347 acc_grfake: 0.999 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.86584
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.58104
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.22153
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.10765
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00171
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00377
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.00701
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.00805
-name: module.dec1.model.0.bias, norm gradient: 0.00070
-name: module.pred_layers.2.weight, norm gradient: 0.14833
-name: module.pred_layers.2.bias, norm gradient: 0.02325
-name: module.pred_layers.4.weight, norm gradient: 0.06043
-name: module.pred_layers.4.bias, norm gradient: 0.03077
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.12902
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.10566
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01829
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00795
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00777
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02168
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.09491
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.25659
-name: module.dec1.model.0.bias, norm gradient: 0.00901
-validation accuracies:
-                gf: 1.00
-                real: 0.01
-                fake: 1.00
-
-ran validation set (B:2601) in                         34.6 s.
-(epoch: 7, batches: 200, time: 0.010, data: 0.003) loss_G_comp: 0.783 loss_G_anti_sc: 0.578 loss_G: 1.361 loss_D_real: 0.813 loss_D_fake: 0.542 loss_D: 1.423 acc_real: 0.010 acc_fake: 0.995 loss_AUX: 0.068 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.40538
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.77403
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.27588
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.13465
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00127
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00295
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.00532
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.00848
-name: module.dec1.model.0.bias, norm gradient: 0.00079
-name: module.pred_layers.2.weight, norm gradient: 0.34767
-name: module.pred_layers.2.bias, norm gradient: 0.05291
-name: module.pred_layers.4.weight, norm gradient: 0.13459
-name: module.pred_layers.4.bias, norm gradient: 0.06213
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.10155
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.06504
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01481
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00686
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00679
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01798
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.06887
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.19584
-name: module.dec1.model.0.bias, norm gradient: 0.01246
-validation accuracies:
-                gf: 1.00
-                real: 0.00
-                fake: 1.00
-
-ran validation set (B:2701) in                         34.5 s.
-(epoch: 7, batches: 300, time: 0.011, data: 0.015) loss_G_comp: 0.733 loss_G_anti_sc: 0.644 loss_G: 1.377 loss_D_real: 0.833 loss_D_fake: 0.522 loss_D: 1.414 acc_real: 0.001 acc_fake: 1.000 loss_AUX: 0.059 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 2.81353
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.79917
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.29910
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.14353
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00264
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00678
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01661
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.02612
-name: module.dec1.model.0.bias, norm gradient: 0.00203
-name: module.pred_layers.2.weight, norm gradient: 0.28809
-name: module.pred_layers.2.bias, norm gradient: 0.04398
-name: module.pred_layers.4.weight, norm gradient: 0.11579
-name: module.pred_layers.4.bias, norm gradient: 0.05455
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.09098
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.07957
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01643
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00785
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00808
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01822
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.06425
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.20628
-name: module.dec1.model.0.bias, norm gradient: 0.01062
-validation accuracies:
-                gf: 1.00
-                real: 0.14
-                fake: 0.92
-
-ran validation set (B:2801) in                         34.6 s.
-(epoch: 7, batches: 400, time: 0.010, data: 0.003) loss_G_comp: 0.843 loss_G_anti_sc: 0.533 loss_G: 1.376 loss_D_real: 0.737 loss_D_fake: 0.602 loss_D: 1.400 acc_real: 0.136 acc_fake: 0.920 loss_AUX: 0.060 loss_D_gr_fake: 0.347 acc_grfake: 0.996 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-learning rate 0.0002000 -> 0.0002000
-End of epoch 7 / 8 	 Time Taken: 301 sec
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 3.52317
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.07654
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.34164
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.15215
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00329
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00703
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01876
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.02805
-name: module.dec1.model.0.bias, norm gradient: 0.00153
-name: module.pred_layers.2.weight, norm gradient: 0.17725
-name: module.pred_layers.2.bias, norm gradient: 0.02676
-name: module.pred_layers.4.weight, norm gradient: 0.06973
-name: module.pred_layers.4.bias, norm gradient: 0.03365
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.11213
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.04563
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.01651
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00709
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00557
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01058
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.03188
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.06214
-name: module.dec1.model.0.bias, norm gradient: 0.00157
-validation accuracies:
-                gf: 1.00
-                real: 0.03
-                fake: 0.99
-
-ran validation set (B:2901) in                         34.6 s.
-(epoch: 8, batches: 100, time: 0.011, data: 0.003) loss_G_comp: 0.793 loss_G_anti_sc: 0.576 loss_G: 1.368 loss_D_real: 0.779 loss_D_fake: 0.557 loss_D: 1.395 acc_real: 0.031 acc_fake: 0.986 loss_AUX: 0.059 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.82321
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.24194
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.10771
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.07594
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00252
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00599
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.01387
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01960
-name: module.dec1.model.0.bias, norm gradient: 0.00108
-name: module.pred_layers.2.weight, norm gradient: 0.01894
-name: module.pred_layers.2.bias, norm gradient: 0.00273
-name: module.pred_layers.4.weight, norm gradient: 0.01423
-name: module.pred_layers.4.bias, norm gradient: 0.00330
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.07294
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.05235
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02209
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00940
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00856
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01937
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05280
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.10625
-name: module.dec1.model.0.bias, norm gradient: 0.00385
-validation accuracies:
-                gf: 1.00
-                real: 0.01
-                fake: 0.99
-
-ran validation set (B:3001) in                         34.4 s.
-(epoch: 8, batches: 200, time: 0.010, data: 0.014) loss_G_comp: 0.781 loss_G_anti_sc: 0.587 loss_G: 1.367 loss_D_real: 0.804 loss_D_fake: 0.542 loss_D: 1.402 acc_real: 0.013 acc_fake: 0.995 loss_AUX: 0.056 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 1.75453
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.60821
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.27307
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.16350
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00110
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00221
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.00303
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.00830
-name: module.dec1.model.0.bias, norm gradient: 0.00087
-name: module.pred_layers.2.weight, norm gradient: 0.42129
-name: module.pred_layers.2.bias, norm gradient: 0.06532
-name: module.pred_layers.4.weight, norm gradient: 0.16854
-name: module.pred_layers.4.bias, norm gradient: 0.08129
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.07759
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.06769
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02238
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.00862
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00776
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.01789
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.05770
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.11108
-name: module.dec1.model.0.bias, norm gradient: 0.00602
-validation accuracies:
-                gf: 1.00
-                real: 0.01
-                fake: 1.00
-
-ran validation set (B:3101) in                         34.6 s.
-(epoch: 8, batches: 300, time: 0.010, data: 0.001) loss_G_comp: 0.808 loss_G_anti_sc: 0.561 loss_G: 1.369 loss_D_real: 0.727 loss_D_fake: 0.611 loss_D: 1.394 acc_real: 0.010 acc_fake: 0.998 loss_AUX: 0.056 loss_D_gr_fake: 0.347 acc_grfake: 1.000 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 5.02678
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 1.44367
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.54748
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.31592
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.00170
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.00357
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.00766
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.01307
-name: module.dec1.model.0.bias, norm gradient: 0.00132
-name: module.pred_layers.2.weight, norm gradient: 0.84878
-name: module.pred_layers.2.bias, norm gradient: 0.12863
-name: module.pred_layers.4.weight, norm gradient: 0.35388
-name: module.pred_layers.4.bias, norm gradient: 0.15745
-DataParallel
-name: module.enc1.model.0.weight, norm gradient: 0.17078
-name: module.enc1.model.0.bias, norm gradient: 0.00000
-name: module.enc2.model.0.weight, norm gradient: 0.10020
-name: module.enc2.model.0.bias, norm gradient: 0.00000
-name: module.enc3.model.0.weight, norm gradient: 0.02527
-name: module.enc3.model.0.bias, norm gradient: 0.00000
-name: module.enc4.model.0.weight, norm gradient: 0.01018
-name: module.enc4.model.0.bias, norm gradient: 0.00000
-name: module.dec4.model.1.weight, norm gradient: 0.01026
-name: module.dec4.model.1.bias, norm gradient: 0.00000
-name: module.dec3.model.1.weight, norm gradient: 0.02492
-name: module.dec3.model.1.bias, norm gradient: 0.00000
-name: module.dec2.model.1.weight, norm gradient: 0.09340
-name: module.dec2.model.1.bias, norm gradient: 0.00000
-name: module.dec1.model.0.weight, norm gradient: 0.23876
-name: module.dec1.model.0.bias, norm gradient: 0.01067
-validation accuracies:
-                gf: 0.99
-                real: 0.26
-                fake: 0.84
-
-ran validation set (B:3201) in                         34.4 s.
-(epoch: 8, batches: 400, time: 0.010, data: 0.003) loss_G_comp: 0.783 loss_G_anti_sc: 0.573 loss_G: 1.355 loss_D_real: 0.791 loss_D_fake: 0.549 loss_D: 1.388 acc_real: 0.261 acc_fake: 0.844 loss_AUX: 0.049 loss_D_gr_fake: 0.347 acc_grfake: 0.995 
-{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+ran validation set (B:3201) in                         33.7 s.
+(epoch: 8, batches: 400, time: 0.011, data: 0.004) loss_G_comp: 0.825 loss_G_anti_sc: 0.543 loss_G: 1.368 loss_D_real: 0.749 loss_D_fake: 0.600 loss_D: 1.904 acc_real: 0.671 acc_fake: 0.671 loss_AUX: 0.244 loss_D_gr_fake: 0.311 acc_grfake: 0.671 
+{}
 learning rate 0.0002000 -> 0.0001600
-End of epoch 8 / 8 	 Time Taken: 300 sec
+End of epoch 8 / 8 	 Time Taken: 346 sec
 Finished training, model is saved
 Batches trained - G: 1124, D: 2124 
