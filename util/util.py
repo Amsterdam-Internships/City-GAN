@@ -8,6 +8,12 @@ import os
 import linecache
 
 
+def print_gradients(net):
+    print(f"{net.__class__.__name__}")
+    for name, param in net.named_parameters():
+        if param.requires_grad:
+            print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
+
 
 def mask_to_binary(mask):
     """

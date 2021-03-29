@@ -455,8 +455,8 @@ class CopyModel(BaseModel):
         Update network weights for either Generator or Discriminator
         """
 
-        # for testing purposes,always 1/1
-        # self.train_G = self.even_batch
+        # for testing purposes,always 1/1 after headstart
+        self.train_G = self.even_batch and self.headstart_over
 
         # perform forward step
         self.forward(generator=self.train_G)
@@ -466,27 +466,18 @@ class CopyModel(BaseModel):
             self.count_G += 1
             self.optimizer_G.zero_grad()
             self.backward_G()
-            print("Generator")
-            for name, param in self.netG.named_parameters():
-                if param.requires_grad:
-                    print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
+            if self.total_batches % self.opt.print_freq == 0: util.print_gradients(self.netG)
 
             self.optimizer_G.step()
             # self.scaler.step(self.optimizer_G)
             # self.scaler.update()
             # self.optimizer_G.zero_grad()
-            breakpoint()
 
         else:
             self.count_D += 1
             self.optimizer_D.zero_grad()
             self.backward_D()
-            print("Discriminator")
-            for name, param in self.netD.named_parameters():
-                if param.requires_grad:
-                    print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
-
-
+            if (self.total_batches+1) % self.opt.print_freq == 0: util.print_gradients(self.netD)
             self.optimizer_D.step()
 
             # self.scaler.step(self.optimizer_D)
@@ -509,6 +500,8 @@ class CopyModel(BaseModel):
 
         if self.opt.tracemalloc:
             tracemalloc.start()
+
+        self.total_batches = total_batches
 
         if total_batches == self.D_headstart:
             print("Headstart D over")

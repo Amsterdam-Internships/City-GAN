@@ -591,7 +591,7 @@ class EncoderBlock(nn.Module):
     normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, kernel=3, stride=2, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=2, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=True):
         """
         Construct a Unet encoder block.
 
@@ -630,7 +630,7 @@ class DecoderBlock(nn.Module):
     a convolutional layer, normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, kernel=3, stride=1, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=1, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=True, last_layer=False):
         """Construct a Unet encoder block
         Parameters:
             input_nc (int)  -- the number of channels in input images
