@@ -61,7 +61,7 @@ class CopyModel(BaseModel):
             save_epoch_freq=10,
             display_freq=100,
             print_freq=20,
-            real_target=0.75,
+            real_target=0.9,
             fake_target=0.1
         )
 
@@ -424,8 +424,7 @@ class CopyModel(BaseModel):
 
         # compute adversarial losses
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
-        self.loss_D_fake = self.criterionGAN(
-            self.pred_fake, False)
+        self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
 
         if self.train_on_gf:
             self.loss_D_gr_fake = self.criterionGAN(self.pred_grfake, False)
@@ -578,7 +577,7 @@ class CopyModel(BaseModel):
 
                 preds_grfake.append(self.pred_grfake.mean())
                 preds_fake.append(self.pred_fake.mean())
-                preds_real.append(self.acc_real.mean())
+                preds_real.append(self.pred_real.mean())
 
 
         # set accuracies to mean for plotting purposes
