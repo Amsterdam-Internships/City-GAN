@@ -211,10 +211,10 @@ class CopyModel(BaseModel):
             setattr(self, loss, 0)
 
         # init for training curriculum
-        self.D_gf_perfect = self.D_above_thresh = False
+        self.D_gf_perfect, self.D_above_thresh = False, False
 
         # keep count of training steps (also for gradient accumulation)
-        self.count_D = self.count_G = 0
+        self.count_D, self.count_G = 0, 0
 
         # init gradient scaler from cuda AMP
         self.scaler = GradScaler(enabled=opt.use_amp)
@@ -324,6 +324,7 @@ class CopyModel(BaseModel):
         # put image data on device
         self.src = input["src"].to(self.device)
         self.tgt = input["tgt"].to(self.device)
+        self.irrel = input['irrel'].to(self.device)
 
         if not self.isTrain:
             self.ground_truth = input['gt']
@@ -364,9 +365,11 @@ class CopyModel(BaseModel):
         # apply the masks on different source images: anti shortcut images
         if not valid:
             # use flip to "shuffle" the batch and get new combinations
-            self.anti_sc_src = torch.flip(self.src, [0])
-            self.anti_sc, _ = networks.composite_image( self.anti_sc_src, self.
-                tgt, self.g_mask)
+            # self.anti_sc_src = torch.flip(self.src, [0])
+            # self.anti_sc, _ = networks.composite_image(self.anti_sc_src, self.tgt, self.g_mask)
+
+            # use an irrelant image instead of shuffled src images
+            self.anti_sc, _ = networks.composite_image(self.irrel, self.tgt, self.g_mask)
 
             if not generator:
                 self.anti_sc = self.anti_sc.detach()
@@ -559,8 +562,8 @@ class CopyModel(BaseModel):
         self.D_gf_perfect = False
 
         # init average lists
-        acc_gf = acc_real = acc_fake = []
-        preds_grfake = preds_fake = preds_real = []
+        acc_gf, acc_real, acc_fake = [], [], []
+        preds_grfake, preds_fake, preds_real = [], [], []
 
         # compute accuracy on the validation data
         with torch.no_grad():

@@ -55,18 +55,25 @@ class DoubleDataset(BaseDataset):
         pathA = self.paths[index]
         indexB = (index + random.randint(1, self.size-1)) % self.size
         pathB = self.paths[indexB]
+        # irrelevant other image
+        indexC = random.randint(0, self.size-1)
+        pathC = self.paths[indexC]
+
         A = Image.open(pathA).convert('RGB')
         B = Image.open(pathB).convert('RGB')
+        C = Image.open(pathC).convert('RGB')
 
         # apply the same transform to both A and B
         transform_params = get_params(self.opt, A.size)
         A_transform = get_transform(self.opt, transform_params, grayscale=(self.input_nc == 1))
         B_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1))
+        C_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1))
 
         A = A_transform(A)
         B = B_transform(B)
+        C = C_transform(C)
 
-        out = {'src': A, 'tgt': B, 'src_paths': pathA, 'tgt_paths': pathB}
+        out = {'src': A, 'tgt': B, 'irrel': C, 'src_paths': pathA, 'tgt_paths': pathB, "irrel_paths": pathC}
 
         if self.return_mask:
             mask = Image.open(self.mask_paths[index]).convert('RGB')
