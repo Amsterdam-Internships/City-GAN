@@ -41,8 +41,8 @@ class TrainOptions(BaseOptions):
         parser.add_argument("--val_freq", type=int, default=100, help="every val_freq batches run the model on validation data, and obtain accuracies for training schedule.",)
         parser.add_argument("--val_batch_size", type=int, default=128, help="every val_freq batches run the model on validation data, and obtain accuracies for training schedule")
         parser.add_argument("--tracemalloc", action="store_true", help="If specified, largest memory allocations are printed")
-        parser.add_argument('--min_obj_surface', type=int, default=100,
-                help= "Minimum number of pixels an object needs to be to be eligible for moving")
+        parser.add_argument('--min_obj_surface', type=int, default=100, help= "Minimum number of pixels an object needs to be to be eligible for moving")
+        parser.add_argument("--use_amp", action="store_true", help="If specified, gradient scaling using AMP GradScaler is enabled")
 
         self.isTrain = True
         return parser

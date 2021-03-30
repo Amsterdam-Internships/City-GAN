@@ -11,7 +11,7 @@ module load 2020
 module load Python
 
 # declare run
-run=7
+run=9
 echo "starting MoveGAN training run $run"
 
 #Create output directory on scratch
