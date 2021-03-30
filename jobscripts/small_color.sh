@@ -27,7 +27,7 @@ cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_co
 python $HOME/City-GAN/train.py --model copy \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
     --batch_size 64\
-    --n_epochs 8 \
+    --n_epochs 4 \
     --n_epochs_decay 0 \
     --save_epoch_freq 10\
     --checkpoints_dir "$TMPDIR"/checkpoints\

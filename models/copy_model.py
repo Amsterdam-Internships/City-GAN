@@ -62,7 +62,6 @@ class CopyModel(BaseModel):
             display_freq=100,
             print_freq=20,
             real_target=0.9,
-            fake_target=0.1
         )
 
         # define new arguments for this model
@@ -143,6 +142,9 @@ class CopyModel(BaseModel):
             action="store_true",
             help="If specified, gradient scaling using AMP GradScaler is enabled",
         )
+        parser.add_argument("--fake_target",type=float, default=0.1,
+            help="Soft labeling for fake targets")
+
 
         return parser
 
