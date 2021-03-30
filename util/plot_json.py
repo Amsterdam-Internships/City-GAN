@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2020-12-04 09:38
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-03-24 19:40
+# @Last Modified time: 2021-03-30 15:03
 
 
 """
@@ -93,12 +93,6 @@ def plot_json(opt):
     plt.savefig(opt.dest)
 
     print(f"figure saved to {opt.dest}")
-
-
-
-
-
-
 
 
 
