@@ -936,7 +936,7 @@ class MoveConvNET(nn.Module):
 
         use_bias = norm_layer.func == nn.InstanceNorm2d
 
-        nf_mult_prev = nf_mult = 1
+        nf_mult_prev, nf_mult = 1, 1
 
         for n in range(1, n_layers+1):
             nf_mult_prev = nf_mult

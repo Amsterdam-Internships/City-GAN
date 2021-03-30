@@ -62,91 +62,75 @@ class CopyModel(BaseModel):
             display_freq=100,
             print_freq=20,
             real_target=0.9,
+            fake_target=0.1,
+            use_amp=True
         )
 
         # define new arguments for this model
-        # if is_train:
         parser.add_argument(
-            "--lambda_aux",
-            type=float,
-            default=0.1,
+            "--lambda_aux", type=float, default=0.1,
             help="weight for the auxiliary mask loss",
         )
         parser.add_argument(
-            "--confidence_weight",
-            type=float,
-            default=0.0,
+            "--confidence_weight", type=float, default=0.0,
             help="weight for the confidence loss for generator",
         )
         parser.add_argument(
-            "--D_headstart",
-            type=int,
-            default=0,
+            "--D_headstart", type=int, default=0,
             help="First train only discriminator for D_headstart batches",
         )
         parser.add_argument(
-            "--sigma_blur",
-            type=float,
-            default=1.0,
+            "--sigma_blur", type=float, default=1.0,
             help="Sigma used in Gaussian filter used for blurring \
             discriminator input",
         )
         parser.add_argument(
-            "--no_border_zeroing",
-            action="store_true",
+            "--no_border_zeroing", action="store_true",
             help="default: clamp borders of generated mask to 0 \
                 (store_false)",
         )
         parser.add_argument(
-            "--D_threshold",
-            type=float,
-            default=0.5,
+            "--D_threshold", type=float, default=0.5,
             help="when the accuracy of the discriminator is lower than \
                 this threshold, only train D",
         )
         parser.add_argument(
-            "--pool_D",
-            action="store_true",
+            "--pool_D", action="store_true",
             help="If true, discriminator uses avg pooling to get its prediction, like Arandjelovic, otherwise conv & linear layers are used",
         )
         parser.add_argument(
-            "--accumulation_steps",
-            type=int,
-            default=1,
+            "--accumulation_steps", type=int, default=1,
             help="accumulate gradients for this amount of batches, \
                 before backpropagating, to simulate a larger batch size",
         )
         parser.add_argument(
-            "--no_grfakes",
-            action="store_true",
+            "--no_grfakes", action="store_true",
             help="If true, no grounded fakes will be used in training",
         )
         parser.add_argument(
-            "--flip_vertical",
-            action="store_true",
+            "--flip_vertical", action="store_true",
             help="If specified, the data will be flipped vertically",
         )
         parser.add_argument(
-            "--sequential",
-            action="store_true",
+            "--sequential", action="store_true",
             help="If specified, G and D will not be trained in alternating\
                 fashion, but sequentially (for val_freq batches each)",
         )
         parser.add_argument(
-            "--noisy_labels",
-            action="store_true",
+            "--noisy_labels", action="store_true",
             help="If specified, random noise will be added to the target labels in the adversarial loss",
         )
         parser.add_argument(
-            "--use_amp",
-            action="store_true",
+            "--use_amp", action="store_true",
             help="If specified, gradient scaling using AMP GradScaler is enabled",
         )
-        parser.add_argument("--fake_target",type=float, default=0.1,
+        parser.add_argument(
+            "--fake_target",type=float, default=0.1,
             help="Soft labeling for fake targets")
 
 
         return parser
+
 
 
     def __init__(self, opt):
@@ -243,7 +227,7 @@ class CopyModel(BaseModel):
                     "g_mask_binary",
                     "composite",
                     "D_mask_fake",
-                    "anti_sc_src",
+                    "irrel",
                     "anti_sc",
                     "D_mask_antisc",
                     "D_mask_real",
@@ -259,7 +243,7 @@ class CopyModel(BaseModel):
                     "g_mask",
                     "g_mask_binary",
                     "composite",
-                    "anti_sc_src",
+                    "irrel",
                     "anti_sc",
                 ]
                 if not opt.no_grfakes:
@@ -420,8 +404,8 @@ class CopyModel(BaseModel):
         self.loss_G = self.loss_G_comp + self.loss_G_anti_sc + self.loss_G_conf
 
         # scale the loss and perform backward step
-        # self.scaler.scale(self.loss_G).backward()
-        self.loss_G.backward()
+        self.scaler.scale(self.loss_G).backward()
+        # self.loss_G.backward()
 
 
     def backward_D(self):
@@ -455,8 +439,8 @@ class CopyModel(BaseModel):
             self.loss_D = self.loss_D + self.loss_D_gr_fake
 
         # scale gradients and perform backward step
-        # self.scaler.scale(self.loss_D).backward()
-        self.loss_D.backward()
+        self.scaler.scale(self.loss_D).backward()
+        # self.loss_D.backward()
 
 
     def optimize_parameters(self):
@@ -473,25 +457,25 @@ class CopyModel(BaseModel):
         # either train G or D, using the AMP scaler
         if self.train_G:
             self.count_G += 1
-            self.optimizer_G.zero_grad()
-            self.backward_G()
-            if self.total_batches % self.opt.print_freq == 0: util.print_gradients(self.netG)
-
-            self.optimizer_G.step()
-            # self.scaler.step(self.optimizer_G)
-            # self.scaler.update()
             # self.optimizer_G.zero_grad()
+            self.backward_G()
+            # if self.total_batches % self.opt.print_freq == 0: util.print_gradients(self.netG)
+
+            # self.optimizer_G.step()
+            self.scaler.step(self.optimizer_G)
+            self.scaler.update()
+            self.optimizer_G.zero_grad()
 
         else:
             self.count_D += 1
-            self.optimizer_D.zero_grad()
-            self.backward_D()
-            if (self.total_batches+1) % self.opt.print_freq == 0: util.print_gradients(self.netD)
-            self.optimizer_D.step()
-
-            # self.scaler.step(self.optimizer_D)
-            # self.scaler.update()
             # self.optimizer_D.zero_grad()
+            self.backward_D()
+            # if (self.total_batches+1) % self.opt.print_freq == 0: util.print_gradients(self.netD)
+            # self.optimizer_D.step()
+
+            self.scaler.step(self.optimizer_D)
+            self.scaler.update()
+            self.optimizer_D.zero_grad()
 
 
 
