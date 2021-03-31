@@ -116,14 +116,6 @@ class CopyModel(BaseModel):
             help="If specified, G and D will not be trained in alternating\
                 fashion, but sequentially (for val_freq batches each)",
         )
-        parser.add_argument(
-            "--noisy_labels", action="store_true",
-            help="If specified, random noise will be added to the target labels in the adversarial loss",
-        )
-        parser.add_argument(
-            "--fake_target",type=float, default=0.1,
-            help="Soft labeling for fake targets")
-
 
         return parser
 

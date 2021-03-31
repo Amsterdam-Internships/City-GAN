@@ -101,6 +101,8 @@ if __name__ == '__main__':
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_batch, losses, t_comp, t_data)
+                if opt.model=='move':
+                    print(model.theta)
 
                 # get some insight in the gradient scaling process for copyGAN
                 try:

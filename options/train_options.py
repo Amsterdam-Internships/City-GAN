@@ -43,6 +43,8 @@ class TrainOptions(BaseOptions):
         parser.add_argument("--tracemalloc", action="store_true", help="If specified, largest memory allocations are printed")
         parser.add_argument('--min_obj_surface', type=int, default=100, help= "Minimum number of pixels an object needs to be to be eligible for moving")
         parser.add_argument("--use_amp", action="store_true", help="If specified, gradient scaling using AMP GradScaler is enabled")
+        parser.add_argument("--noisy_labels", action="store_true", help="If specified, random noise will be added to the target labels in the adversarial loss",)
+        parser.add_argument("--fake_target",type=float, default=0.1, help="Soft labeling for fake targets")
 
         self.isTrain = True
         return parser
