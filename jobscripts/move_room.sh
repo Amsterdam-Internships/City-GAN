@@ -3,6 +3,7 @@
 #SBATCH -n 16
 #SBATCH -t 10:00:00
 #SBATCH -p gpu_shared
+#SBATCH --gpus-per-node=1
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=tom.lotze@gmail.com
 
