@@ -110,10 +110,10 @@ class MoveModel(BaseModel):
         """
 
         # get the surface per mask in the batch
-        self.surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
+        surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
         # center and return the object
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
-        mask_pdist = self.mask_binary / self.surface
+        mask_pdist = self.mask_binary / surface
 
         [self.B, _, self.w, self.h] = list(mask_pdist.shape)
         # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
@@ -200,6 +200,9 @@ class MoveModel(BaseModel):
         self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
         self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=True, padding_mode='border')
 
+        # get the surfaces of the transformed objects
+        self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
+
         ############### SANITY CHECKING USING GT theta
 
         # self.theta_gt = self.theta_gt_single.expand(B, 2, 3)
@@ -271,7 +274,7 @@ class MoveModel(BaseModel):
         # use the inverse MSE loss to enforce the object to be in the image
         # perhaps we should scale this based on the object surface
         MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        size_correction = self.surface.squeeze()/self.opt.load_size**2
+        size_correction = self.trans_obj_surface/self.opt.load_size**2
 
         self.loss_eq = 3 - 5 * torch.mean(MSE_loss/size_correction)
 
