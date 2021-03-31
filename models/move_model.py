@@ -66,7 +66,7 @@ class MoveModel(BaseModel):
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, theta_dim=opt.theta_dim)
+        self.netConv = networks.define_D(opt.input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, theta_dim=opt.theta_dim)
 
 
         self.model_names = ["Conv"]
@@ -172,10 +172,10 @@ class MoveModel(BaseModel):
             - the transformed object and object masks are composited --> output img
         """
         # concatenate the target and object on channel dimension
-        tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
+        # tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
 
         # compute theta using the convolutional network
-        zero_centered, one_centered, translation = self.netConv(tgt_obj_concat)
+        zero_centered, one_centered, translation = self.netConv(self.obj, self.tgt)
         B = zero_centered.shape[0]
 
         # initialize theta
@@ -185,8 +185,8 @@ class MoveModel(BaseModel):
         # concatenate the translation parameters
         self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
         # set the other two parameters, constrain to zero for now
-        self.theta[:, 0, 1] = zero_centered[:, 0]
-        self.theta[:, 1, 0] = zero_centered[:, 1]
+        # self.theta[:, 0, 1] = zero_centered[:, 0]
+        # self.theta[:, 1, 0] = zero_centered[:, 1]
 
         #print(self.theta[0])
 
@@ -273,7 +273,7 @@ class MoveModel(BaseModel):
         MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
         size_correction = self.surface.squeeze()/self.opt.load_size**2
 
-        self.loss_eq = 3 - torch.mean(MSE_loss/size_correction)
+        self.loss_eq = 3 - 5 * torch.mean(MSE_loss/size_correction)
 
         self.loss_conv = self.loss_G + self.loss_eq
 

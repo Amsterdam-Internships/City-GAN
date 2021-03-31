@@ -610,7 +610,7 @@ class EncoderBlock(nn.Module):
         layers = [
             nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias, padding_mode="replicate"),
             norm_layer(output_nc),
-            nn.LeakyReLU(slope, True)
+            nn.LeakyReLU(slope)
         ]
 
         if dropout:
@@ -649,7 +649,7 @@ class DecoderBlock(nn.Module):
         if not last_layer:
             layers += [nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
                        nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding, padding_mode="replicate")]
-            layers += [norm_layer(output_nc), nn.LeakyReLU(slope, True)]
+            layers += [norm_layer(output_nc), nn.LeakyReLU(slope)]
 
         # if this is the last layer, don't upsample, only conv layer
         else:
@@ -931,8 +931,16 @@ class MoveConvNET(nn.Module):
     def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
         super(MoveConvNET, self).__init__()
 
-        layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
+        # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
+
+        # define two separate layers for the input
+        self.obj_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
+        self.tgt_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
+
+        ndf *= 2
+
+        layers = []
 
         use_bias = norm_layer.func == nn.InstanceNorm2d
 
@@ -944,7 +952,7 @@ class MoveConvNET(nn.Module):
             layers += [
                 nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
                 norm_layer(ndf * nf_mult),
-                nn.LeakyReLU(0.2, True)
+                nn.LeakyReLU(0.2)
             ]
 
         layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
@@ -956,8 +964,13 @@ class MoveConvNET(nn.Module):
         self.trans = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
 
 
-    def forward(self, input):
-        last_layer =  self.model(input)
+    def forward(self, obj, tgt):
+
+        obj_out = self.obj_layer(obj)
+        tgt_out = self.tgt_layer(tgt)
+        concat = torch.cat([tgt_out, obj_out], 1)
+
+        last_layer =  self.model(concat)
 
         # shape: B * 2, range: [-.5, .5]
         zero_centered = torch.divide(self.zero_c(last_layer), 2)
@@ -1062,7 +1075,7 @@ class NLayerDiscriminator(nn.Module):
 
         kw = 4
         padw = 1
-        sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
+        sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2)]
         nf_mult = 1
         nf_mult_prev = 1
         for n in range(1, n_layers+1):  # gradually increase the number of filters
@@ -1071,7 +1084,7 @@ class NLayerDiscriminator(nn.Module):
             sequence += [
                 nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=2, padding=padw, bias=use_bias),
                 norm_layer(ndf * nf_mult),
-                nn.LeakyReLU(0.2, True)
+                nn.LeakyReLU(0.2)
             ]
 
         nf_mult_prev = nf_mult
@@ -1079,7 +1092,7 @@ class NLayerDiscriminator(nn.Module):
         sequence += [
             nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=1, padding=padw, bias=use_bias),
             norm_layer(ndf * nf_mult),
-            nn.LeakyReLU(0.2, True)
+            nn.LeakyReLU(0.2)
         ]
 
         sequence += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
@@ -1156,7 +1169,7 @@ class UnetSkipConnectionBlock(nn.Module):
             input_nc = outer_nc
         downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=3,
                              stride=2, padding=1, bias=use_bias)
-        downrelu = nn.LeakyReLU(0.2, True)
+        downrelu = nn.LeakyReLU(0.2)
         downnorm = norm_layer(inner_nc)
         uprelu = nn.ReLU(True)
         upnorm = norm_layer(outer_nc)

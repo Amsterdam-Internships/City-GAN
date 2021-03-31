@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=10
+run=11
 echo "starting MoveGAN training run $run"
 
 #Create output directory on scratch
@@ -64,8 +64,8 @@ python $HOME/City-GAN/train.py --model move \
     --name Move\
     --max_dataset_size 10000\
     --batch_size 64\
-    --n_epochs 10\
-    --n_epochs_decay 20\
+    --n_epochs 2\
+    --n_epochs_decay 2\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
