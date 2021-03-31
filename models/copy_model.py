@@ -445,7 +445,7 @@ class CopyModel(BaseModel):
         """
 
         # for testing purposes,always 1/1 after headstart
-        self.train_G = self.even_batch and self.headstart_over
+        # self.train_G = self.even_batch and self.headstart_over
 
         # perform forward step
         self.forward(generator=self.train_G)
