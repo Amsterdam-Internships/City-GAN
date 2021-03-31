@@ -23,7 +23,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", use_amp=True)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", use_amp=True, real_target=0.9, fake_target=0.1, noisy_labels=True)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
@@ -77,7 +77,7 @@ class MoveModel(BaseModel):
             self.model_names.append("D")
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label= opt.real_target).to(self.device)
+            self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label= opt.real_target, target_fake_label=opt.fake_target, noisy_labels=opt.noisy_labels).to(self.device)
             self.MSE = torch.nn.MSELoss(reduction='none')
 
             # blur to apply on input to discriminator
