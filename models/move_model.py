@@ -185,8 +185,8 @@ class MoveModel(BaseModel):
         # concatenate the translation parameters
         self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
         # set the other two parameters, constrain to zero for now
-        # self.theta[:, 0, 1] = zero_centered[:, 0]
-        # self.theta[:, 1, 0] = zero_centered[:, 1]
+        self.theta[:, 0, 1] = zero_centered[:, 0]
+        self.theta[:, 1, 0] = zero_centered[:, 1]
 
         #print(self.theta[0])
 
@@ -273,12 +273,12 @@ class MoveModel(BaseModel):
         MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
         size_correction = self.surface.squeeze()/self.opt.load_size**2
 
-        self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
+        self.loss_eq = 3 - torch.mean(MSE_loss/size_correction)
 
         self.loss_conv = self.loss_G + self.loss_eq
 
-        # self.scaler.scale(self.loss_G).backward()
-        self.loss_conv.backward()
+        self.scaler.scale(self.loss_G).backward()
+        # self.loss_conv.backward()
 
 
     def optimize_parameters(self, data):
@@ -296,23 +296,25 @@ class MoveModel(BaseModel):
         # train convnet predicting theta
         if train_G:
             # print("Training Convnet")
-            self.optimizer_Conv.zero_grad()
+
             self.backward_Conv()
 
-            # self.scaler.step(self.optimizer_Conv)
-            # self.scaler.update()
-            self.optimizer_Conv.step()
+            self.scaler.step(self.optimizer_Conv)
+            self.scaler.update()
+            # self.optimizer_Conv.step()
             self.count_G += 1
+            self.optimizer_Conv.zero_grad()
 
         # train discriminator
         else:
             # print("Training D")
-            self.optimizer_D.zero_grad()
+
             self.backward_D()
-            # self.scaler.step(self.optimizer_D)
-            # self.scaler.update()
-            self.optimizer_D.step()
+            self.scaler.step(self.optimizer_D)
+            self.scaler.update()
+            # self.optimizer_D.step()
             self.count_D += 1
+            self.optimizer_D.zero_grad()
 
 
     def baseline(self, data, type_='random'):

@@ -959,14 +959,15 @@ class MoveConvNET(nn.Module):
     def forward(self, input):
         last_layer =  self.model(input)
 
-        # shape: B * 4
-        zero_centered = self.zero_c(last_layer)
+        # shape: B * 2, range: [-.5, .5]
+        zero_centered = torch.divide(self.zero_c(last_layer), 2)
+
         # shape: B * 2; add one to make it one-centered
-        # the one centered are from 0.75 to 1.25
-        one_centered = torch.divide(torch.add(self.one_c(last_layer), 4), 4)
+        # the one centered are from 0.75 to 1.25 (old, 4,4. Now: 0.5, 1.5;2,2)
+        one_centered = torch.divide(torch.add(self.one_c(last_layer), 2), 2)
 
-
-        translation = torch.divide(self.trans(last_layer), 1.5) # was 1.2
+        # shape B * 2
+        translation = torch.divide(self.trans(last_layer), 1.0) # was 1.2, then 1.5, now no constraints
 
         return zero_centered, one_centered, translation
 
