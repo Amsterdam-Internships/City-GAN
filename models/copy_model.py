@@ -112,9 +112,8 @@ class CopyModel(BaseModel):
             help="If specified, the data will be flipped vertically",
         )
         parser.add_argument(
-            "--sequential", action="store_true",
-            help="If specified, G and D will not be trained in alternating\
-                fashion, but sequentially (for val_freq batches each)",
+            "--n_alternating_batches", type=int, default=1,
+            help="Specify for how many consecutive batches G and D are trained. E.g. if set to 1, G and D will be trained alternating"
         )
 
         return parser
@@ -236,6 +235,9 @@ class CopyModel(BaseModel):
                 ]
                 if not opt.no_grfakes:
                     self.visual_names.extend(["grounded_fake", "mask_gf"])
+
+        for vis in self.visual_names:
+            setattr(self, vis, torch.zeros(1, 3, 64, 64))
 
         # define generator, output_nc is set to 1 (binary mask)
         self.netG = networks.define_G(
@@ -440,6 +442,7 @@ class CopyModel(BaseModel):
         # self.train_G = self.even_batch and self.headstart_over
 
         # perform forward step
+        print(self.train_G)
         self.forward(generator=self.train_G)
 
         # either train G or D, using the AMP scaler
@@ -489,15 +492,15 @@ class CopyModel(BaseModel):
 
         # determine training progress and curriculum
         self.headstart_over = total_batches > self.D_headstart
-        self.even_batch = total_batches % 2 == 0
+        # self.even_batch = total_batches % 2 == 0
 
         # by default train D (in headstart or performing below threshold:
         self.train_G = False
 
         # determine if G can be trained
         # G and D are trained sequentially for eval_freq batches
-        alt_cond = self.opt.sequential and ((total_batches // 100) % 2 == 0)
-        batch_right = self.even_batch or alt_cond
+        batch_right = (total_batches // self.opt.n_alternating_batches) % 2 ==0
+        print("Batch:", batch_right, "above thresh", self.D_above_thresh)
 
         if self.headstart_over and self.D_above_thresh and batch_right:
             self.train_G = True
@@ -565,6 +568,9 @@ class CopyModel(BaseModel):
         # set all training curriculum booleans for the coming eval_freq batches
         # performance of discriminator on grounded fakes
         self.D_gf_perfect = self.acc_grfake > 0.99
+
+        self.acc_fake = np.random.random()
+        print("acc fake", acc_fake)
 
         # check performance on fakes to determine whether to train G
         self.D_above_thresh = self.acc_fake > self.opt.D_threshold
