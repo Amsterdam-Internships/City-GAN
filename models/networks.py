@@ -982,6 +982,11 @@ class MoveConvNET(nn.Module):
         # shape B * 2
         translation = torch.divide(self.trans(last_layer), 1.0) # was 1.2, then 1.5, now no constraints
 
+        # for run 9:
+        # zero centered, no scaling (-1, 1)
+        # scale, one_centered: +4 /4 (0.75, 1.25)
+        # translation, /1.5
+
         return zero_centered, one_centered, translation
 
 

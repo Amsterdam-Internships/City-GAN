@@ -192,7 +192,9 @@ class MoveModel(BaseModel):
 
         # experimenting with theta
         # min/max 0.83
-        # self.theta[0] = torch.Tensor([[1.25, 0, 1/1.2], [0, 1.25, -1/1.2]])
+        # self.theta[0] = torch.Tensor([[1, -1, 1], [1, 1, 1]])
+
+        # self.obj[0, :, 32, 32] = torch.tensor([1, 0, 0])
 
 
         # TODO: check if align_corners should be true or false
@@ -273,10 +275,27 @@ class MoveModel(BaseModel):
 
         # use the inverse MSE loss to enforce the object to be in the image
         # perhaps we should scale this based on the object surface
+
+        #TODO: Sum nr of pixels in transf max
+
         MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
         size_correction = self.trans_obj_surface/self.opt.load_size**2
 
-        self.loss_eq = 3 - 5 * torch.mean(MSE_loss/size_correction)
+
+        # replace zeros with 1
+        size_correction[size_correction==0] = 1
+
+        # Replace 0 in size_corrction with 1
+
+        # this was the code used for run 9
+        # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+        # size_correction = self.surface.squeeze()/self.opt.load_size**2
+        # self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
+
+
+
+        # TODO: size correction is 0 if the object is moved out of the image
+        self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
 
         self.loss_conv = self.loss_G + self.loss_eq
 

@@ -94,16 +94,14 @@ if __name__ == '__main__':
                 D_fake = D_fake.detach().squeeze().cpu().numpy().round(2)
                 D_fakes.append(D_fake)
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fakes=D_fakes)
-                breakpoint()
-
+                if opt.model=='move':
+                    print(model.theta[0])
 
             # print training losses and save logging information to the disk
             if epoch_batch % opt.print_freq == 0:
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_batch, losses, t_comp, t_data)
-                if opt.model=='move':
-                    print(model.theta[0])
 
                 # get some insight in the gradient scaling process for copyGAN
                 if opt.use_amp:
