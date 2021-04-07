@@ -1,0 +1,400 @@
+starting MoveGAN training run 13
+Tar file moved to scratch
+Current time : 22:31:21
+
+10k_train.tar.gz
+990000_img.jpg
+990000_mask_0.jpg
+990000_mask_1.jpg
+990000_mask_2.jpg
+Tar file extracted on scratch
+Current time : 22:31:26
+
+Validation tar copied to scratch
+Current time : 22:31:26
+
+validation tar extracted on scratch
+Current time : 22:31:27
+
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/ROOM/images/	[default: None]
+             dataset_mode: room                          
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+              fake_target: 0.1                           
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 60                            	[default: 100]
+                    model: move                          	[default: copy]
+                 n_epochs: 5                             	[default: 100]
+           n_epochs_decay: 10                            	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+             noisy_labels: True                          
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize                        
+               print_freq: 20                            
+              real_target: 0.9                           
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 0                             
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 6                             	[default: 2]
+              tracemalloc: False                         
+         update_html_freq: 100                           
+                  use_amp: True                          
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: False                         
+----------------- End -------------------
+dataset [RoomDataset] and dataloder are created
+dataset [RoomDataset] and dataloder are created
+Starting training of move-model
+The number of training images = 10000
+The number of validation images = 1111
+The number of epochs to run = 15
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+[Network Conv] Total number of parameters : 17.276 M
+[Network D] Total number of parameters : 6.960 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+(epoch: 1, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.380 loss_D_fake: 2.310 loss_D: 1.345 loss_G: 0.375 loss_conv: 4.682 loss_eq: 4.307 acc_real: 0.996 acc_fake: 0.004 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 20}
+(epoch: 1, batches: 40, time: 0.011, data: 0.004) loss_D_real: 0.342 loss_D_fake: 2.191 loss_D: 1.266 loss_G: 0.336 loss_conv: 4.251 loss_eq: 3.915 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 40}
+(epoch: 1, batches: 60, time: 0.003, data: 0.139) loss_D_real: 0.351 loss_D_fake: 2.284 loss_D: 1.318 loss_G: 0.347 loss_conv: 4.033 loss_eq: 3.687 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 60}
+(epoch: 1, batches: 80, time: 0.003, data: 0.326) loss_D_real: 0.345 loss_D_fake: 2.274 loss_D: 1.309 loss_G: 0.343 loss_conv: 3.695 loss_eq: 3.352 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 80}
+tensor([[1.4973, 0.0000, 0.9999],
+        [0.0000, 1.4923, 0.9996]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 1, batches: 100, time: 0.004, data: 0.265) loss_D_real: 0.349 loss_D_fake: 2.019 loss_D: 1.184 loss_G: 0.337 loss_conv: 4.116 loss_eq: 3.779 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 100}
+(epoch: 1, batches: 120, time: 0.003, data: 0.297) loss_D_real: 0.335 loss_D_fake: 2.094 loss_D: 1.215 loss_G: 0.341 loss_conv: 4.292 loss_eq: 3.952 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 120}
+(epoch: 1, batches: 140, time: 0.003, data: 0.564) loss_D_real: 0.338 loss_D_fake: 2.196 loss_D: 1.267 loss_G: 0.335 loss_conv: 6.927 loss_eq: 6.592 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 140}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 15 	 Time Taken: 425 sec
+(epoch: 2, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.338 loss_D_fake: 2.027 loss_D: 1.182 loss_G: 0.331 loss_conv: 4.240 loss_eq: 3.908 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 176}
+(epoch: 2, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.339 loss_D_fake: 2.135 loss_D: 1.237 loss_G: 0.337 loss_conv: 4.714 loss_eq: 4.377 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 196}
+tensor([[1.4993, 0.0000, 0.9999],
+        [0.0000, 1.4971, 0.9892]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 2, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.342 loss_D_fake: 2.251 loss_D: 1.296 loss_G: 0.334 loss_conv: 5.010 loss_eq: 4.675 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 216}
+(epoch: 2, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.341 loss_D_fake: 2.210 loss_D: 1.275 loss_G: 0.341 loss_conv: 4.454 loss_eq: 4.113 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 236}
+(epoch: 2, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.339 loss_D_fake: 1.993 loss_D: 1.166 loss_G: 0.328 loss_conv: 4.365 loss_eq: 4.037 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 256}
+(epoch: 2, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.331 loss_D_fake: 2.201 loss_D: 1.266 loss_G: 0.331 loss_conv: 4.992 loss_eq: 4.661 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 276}
+(epoch: 2, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.332 loss_D_fake: 1.974 loss_D: 1.153 loss_G: 0.331 loss_conv: 4.751 loss_eq: 4.420 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 296}
+tensor([[1.4998, 0.0000, 0.9914],
+        [0.0000, 1.4956, 1.0000]], device='cuda:0', grad_fn=<SelectBackward>)
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 15 	 Time Taken: 427 sec
+(epoch: 3, batches: 20, time: 0.003, data: 0.059) loss_D_real: 0.328 loss_D_fake: 2.035 loss_D: 1.182 loss_G: 0.326 loss_conv: 4.810 loss_eq: 4.484 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 332}
+(epoch: 3, batches: 40, time: 0.003, data: 0.026) loss_D_real: 0.343 loss_D_fake: 2.015 loss_D: 1.179 loss_G: 0.333 loss_conv: 4.047 loss_eq: 3.714 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 352}
+(epoch: 3, batches: 60, time: 0.003, data: 0.005) loss_D_real: 0.329 loss_D_fake: 2.109 loss_D: 1.219 loss_G: 0.329 loss_conv: 4.828 loss_eq: 4.499 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 372}
+(epoch: 3, batches: 80, time: 0.003, data: 0.008) loss_D_real: 0.333 loss_D_fake: 2.059 loss_D: 1.196 loss_G: 0.337 loss_conv: 4.800 loss_eq: 4.464 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 392}
+tensor([[1.4993, 0.0000, 0.9978],
+        [0.0000, 1.4953, 1.0000]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 3, batches: 100, time: 0.003, data: 0.049) loss_D_real: 0.333 loss_D_fake: 2.147 loss_D: 1.240 loss_G: 0.330 loss_conv: 4.864 loss_eq: 4.534 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 412}
+(epoch: 3, batches: 120, time: 0.003, data: 0.018) loss_D_real: 0.316 loss_D_fake: 2.116 loss_D: 1.216 loss_G: 0.335 loss_conv: 4.581 loss_eq: 4.245 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 432}
+(epoch: 3, batches: 140, time: 0.003, data: 0.005) loss_D_real: 0.337 loss_D_fake: 2.099 loss_D: 1.218 loss_G: 0.344 loss_conv: 4.085 loss_eq: 3.740 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 452}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 15 	 Time Taken: 425 sec
+(epoch: 4, batches: 20, time: 0.003, data: 0.005) loss_D_real: 0.325 loss_D_fake: 2.214 loss_D: 1.269 loss_G: 0.321 loss_conv: 4.383 loss_eq: 4.062 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 488}
+tensor([[ 1.4963,  0.0000, -0.9965],
+        [ 0.0000,  1.5000,  0.9999]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 4, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.337 loss_D_fake: 2.062 loss_D: 1.200 loss_G: 0.329 loss_conv: 4.286 loss_eq: 3.957 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 508}
+(epoch: 4, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.321 loss_D_fake: 2.192 loss_D: 1.257 loss_G: 0.330 loss_conv: 4.224 loss_eq: 3.894 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 528}
+(epoch: 4, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.331 loss_D_fake: 2.061 loss_D: 1.196 loss_G: 0.317 loss_conv: 5.086 loss_eq: 4.768 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 548}
+(epoch: 4, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.330 loss_D_fake: 2.059 loss_D: 1.195 loss_G: 0.339 loss_conv: 4.962 loss_eq: 4.624 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 568}
+(epoch: 4, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.346 loss_D_fake: 2.307 loss_D: 1.326 loss_G: 0.325 loss_conv: 4.662 loss_eq: 4.337 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 588}
+tensor([[ 1.4969,  0.0000, -0.8837],
+        [ 0.0000,  1.4978,  0.9997]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 4, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.350 loss_D_fake: 2.343 loss_D: 1.347 loss_G: 0.337 loss_conv: 5.330 loss_eq: 4.994 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 608}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 15 	 Time Taken: 425 sec
+(epoch: 5, batches: 20, time: 0.003, data: 10.010) loss_D_real: 0.333 loss_D_fake: 2.188 loss_D: 1.260 loss_G: 0.333 loss_conv: 4.907 loss_eq: 4.574 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 644}
+(epoch: 5, batches: 40, time: 0.003, data: 10.013) loss_D_real: 0.326 loss_D_fake: 2.173 loss_D: 1.250 loss_G: 0.332 loss_conv: 6.105 loss_eq: 5.773 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 664}
+(epoch: 5, batches: 60, time: 0.003, data: 10.044) loss_D_real: 0.316 loss_D_fake: 2.103 loss_D: 1.209 loss_G: 0.329 loss_conv: 5.855 loss_eq: 5.526 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 684}
+tensor([[1.4973, 0.0000, 1.0000],
+        [0.0000, 0.5991, 0.9969]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 5, batches: 80, time: 0.003, data: 9.966) loss_D_real: 0.325 loss_D_fake: 2.103 loss_D: 1.214 loss_G: 0.328 loss_conv: 6.021 loss_eq: 5.694 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 704}
+(epoch: 5, batches: 100, time: 0.003, data: 10.096) loss_D_real: 0.339 loss_D_fake: 2.028 loss_D: 1.184 loss_G: 0.325 loss_conv: 7.734 loss_eq: 7.409 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 724}
+(epoch: 5, batches: 120, time: 0.002, data: 10.073) loss_D_real: 0.322 loss_D_fake: 2.044 loss_D: 1.183 loss_G: 0.334 loss_conv: 8.163 loss_eq: 7.830 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 744}
+(epoch: 5, batches: 140, time: 0.003, data: 10.062) loss_D_real: 0.335 loss_D_fake: 2.082 loss_D: 1.209 loss_G: 0.338 loss_conv: 8.262 loss_eq: 7.924 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 764}
+saving the model at the end of epoch 5, iters 49920
+learning rate 0.0002000 -> 0.0001600
+End of epoch 5 / 15 	 Time Taken: 424 sec
+tensor([[1.4981, 0.0000, 1.0000],
+        [0.0000, 0.5202, 0.9975]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 6, batches: 20, time: 0.004, data: 0.001) loss_D_real: 0.319 loss_D_fake: 2.129 loss_D: 1.224 loss_G: 0.334 loss_conv: 8.283 loss_eq: 7.950 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 800}
+(epoch: 6, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.329 loss_D_fake: 2.094 loss_D: 1.212 loss_G: 0.337 loss_conv: 8.337 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 820}
+(epoch: 6, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.326 loss_D_fake: 2.178 loss_D: 1.252 loss_G: 0.317 loss_conv: 8.291 loss_eq: 7.974 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 840}
+(epoch: 6, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.332 loss_D_fake: 2.031 loss_D: 1.182 loss_G: 0.323 loss_conv: 8.323 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 860}
+(epoch: 6, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.322 loss_D_fake: 2.201 loss_D: 1.261 loss_G: 0.339 loss_conv: 8.291 loss_eq: 7.952 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 880}
+tensor([[1.4974, 0.0000, 0.9984],
+        [0.0000, 0.5167, 0.9992]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 6, batches: 120, time: 0.004, data: 0.015) loss_D_real: 0.324 loss_D_fake: 2.119 loss_D: 1.222 loss_G: 0.323 loss_conv: 8.205 loss_eq: 7.883 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 900}
+(epoch: 6, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.303 loss_D_fake: 2.058 loss_D: 1.180 loss_G: 0.341 loss_conv: 8.205 loss_eq: 7.864 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 920}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 6 / 15 	 Time Taken: 427 sec
+(epoch: 7, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.326 loss_D_fake: 2.128 loss_D: 1.227 loss_G: 0.339 loss_conv: 8.208 loss_eq: 7.869 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 956}
+(epoch: 7, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.328 loss_D_fake: 2.047 loss_D: 1.188 loss_G: 0.331 loss_conv: 8.239 loss_eq: 7.907 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 976}
+(epoch: 7, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.327 loss_D_fake: 2.154 loss_D: 1.241 loss_G: 0.313 loss_conv: 8.183 loss_eq: 7.870 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 996}
+tensor([[1.4990, 0.0000, 1.0000],
+        [0.0000, 0.5000, 0.9998]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 7, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.323 loss_D_fake: 2.150 loss_D: 1.237 loss_G: 0.326 loss_conv: 8.030 loss_eq: 7.704 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1016}
+(epoch: 7, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.333 loss_D_fake: 1.975 loss_D: 1.154 loss_G: 0.333 loss_conv: 7.929 loss_eq: 7.596 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1036}
+(epoch: 7, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.331 loss_D_fake: 2.022 loss_D: 1.177 loss_G: 0.322 loss_conv: 7.519 loss_eq: 7.197 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1056}
+(epoch: 7, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.329 loss_D_fake: 2.198 loss_D: 1.264 loss_G: 0.332 loss_conv: 7.906 loss_eq: 7.574 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1076}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 7 / 15 	 Time Taken: 425 sec
+tensor([[1.4957, 0.0000, 1.0000],
+        [0.0000, 0.5010, 0.9977]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 8, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.336 loss_D_fake: 2.031 loss_D: 1.183 loss_G: 0.324 loss_conv: 7.733 loss_eq: 7.409 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1112}
+(epoch: 8, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.331 loss_D_fake: 2.085 loss_D: 1.208 loss_G: 0.332 loss_conv: 8.109 loss_eq: 7.777 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1132}
+(epoch: 8, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.333 loss_D_fake: 2.169 loss_D: 1.251 loss_G: 0.320 loss_conv: 8.095 loss_eq: 7.775 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1152}
+(epoch: 8, batches: 80, time: 0.003, data: 0.063) loss_D_real: 0.313 loss_D_fake: 2.134 loss_D: 1.224 loss_G: 0.321 loss_conv: 8.052 loss_eq: 7.731 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1172}
+(epoch: 8, batches: 100, time: 0.003, data: 0.744) loss_D_real: 0.333 loss_D_fake: 2.163 loss_D: 1.248 loss_G: 0.324 loss_conv: 8.092 loss_eq: 7.768 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1192}
+tensor([[1.4967, 0.0000, 0.9999],
+        [0.0000, 0.5000, 0.9996]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 8, batches: 120, time: 0.002, data: 0.004) loss_D_real: 0.317 loss_D_fake: 2.047 loss_D: 1.182 loss_G: 0.323 loss_conv: 8.017 loss_eq: 7.695 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1212}
+(epoch: 8, batches: 140, time: 0.003, data: 0.137) loss_D_real: 0.306 loss_D_fake: 2.065 loss_D: 1.186 loss_G: 0.322 loss_conv: 8.212 loss_eq: 7.890 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1232}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 8 / 15 	 Time Taken: 421 sec
+(epoch: 9, batches: 20, time: 0.003, data: 0.004) loss_D_real: 0.332 loss_D_fake: 2.049 loss_D: 1.190 loss_G: 0.337 loss_conv: 8.085 loss_eq: 7.748 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1268}
+(epoch: 9, batches: 40, time: 0.003, data: 0.005) loss_D_real: 0.330 loss_D_fake: 2.142 loss_D: 1.236 loss_G: 0.331 loss_conv: 8.331 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1288}
+tensor([[1.4994, 0.0000, 1.0000],
+        [0.0000, 0.5001, 0.9992]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 9, batches: 60, time: 0.003, data: 0.059) loss_D_real: 0.336 loss_D_fake: 2.021 loss_D: 1.178 loss_G: 0.322 loss_conv: 8.294 loss_eq: 7.973 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1308}
+(epoch: 9, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.323 loss_D_fake: 2.108 loss_D: 1.216 loss_G: 0.340 loss_conv: 8.339 loss_eq: 7.999 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1328}
+(epoch: 9, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.333 loss_D_fake: 2.123 loss_D: 1.228 loss_G: 0.317 loss_conv: 8.263 loss_eq: 7.946 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1348}
+(epoch: 9, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.314 loss_D_fake: 2.055 loss_D: 1.185 loss_G: 0.327 loss_conv: 8.305 loss_eq: 7.978 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1368}
+(epoch: 9, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.322 loss_D_fake: 2.192 loss_D: 1.257 loss_G: 0.330 loss_conv: 8.271 loss_eq: 7.942 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1388}
+tensor([[ 1.4428,  0.0000, -0.9990],
+        [ 0.0000,  0.5014,  0.9990]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+learning rate 0.0001600 -> 0.0001600
+End of epoch 9 / 15 	 Time Taken: 429 sec
+(epoch: 10, batches: 20, time: 0.003, data: 9.976) loss_D_real: 0.327 loss_D_fake: 2.032 loss_D: 1.180 loss_G: 0.320 loss_conv: 8.274 loss_eq: 7.954 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1424}
+(epoch: 10, batches: 40, time: 0.003, data: 9.861) loss_D_real: 0.309 loss_D_fake: 2.106 loss_D: 1.207 loss_G: 0.324 loss_conv: 8.221 loss_eq: 7.898 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1444}
+(epoch: 10, batches: 60, time: 0.003, data: 9.417) loss_D_real: 0.327 loss_D_fake: 2.106 loss_D: 1.217 loss_G: 0.323 loss_conv: 8.297 loss_eq: 7.974 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1464}
+(epoch: 10, batches: 80, time: 0.003, data: 9.055) loss_D_real: 0.333 loss_D_fake: 2.154 loss_D: 1.243 loss_G: 0.327 loss_conv: 8.184 loss_eq: 7.857 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1484}
+tensor([[1.4990, 0.0000, 1.0000],
+        [0.0000, 0.5000, 0.9936]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 10, batches: 100, time: 0.003, data: 8.874) loss_D_real: 0.327 loss_D_fake: 2.057 loss_D: 1.192 loss_G: 0.330 loss_conv: 8.261 loss_eq: 7.931 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1504}
+(epoch: 10, batches: 120, time: 0.002, data: 8.217) loss_D_real: 0.341 loss_D_fake: 2.184 loss_D: 1.262 loss_G: 0.335 loss_conv: 8.307 loss_eq: 7.972 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1524}
+(epoch: 10, batches: 140, time: 0.003, data: 7.875) loss_D_real: 0.322 loss_D_fake: 2.105 loss_D: 1.214 loss_G: 0.334 loss_conv: 8.255 loss_eq: 7.921 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1544}
+saving the model at the end of epoch 10, iters 99840
+learning rate 0.0001600 -> 0.0001280
+End of epoch 10 / 15 	 Time Taken: 425 sec
+(epoch: 11, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.332 loss_D_fake: 2.046 loss_D: 1.189 loss_G: 0.309 loss_conv: 8.160 loss_eq: 7.852 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1580}
+tensor([[1.4991, 0.0000, 1.0000],
+        [0.0000, 0.5009, 0.9841]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 11, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.329 loss_D_fake: 2.056 loss_D: 1.192 loss_G: 0.327 loss_conv: 8.327 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1600}
+(epoch: 11, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.323 loss_D_fake: 2.027 loss_D: 1.175 loss_G: 0.339 loss_conv: 8.301 loss_eq: 7.962 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1620}
+(epoch: 11, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.330 loss_D_fake: 2.120 loss_D: 1.225 loss_G: 0.317 loss_conv: 8.167 loss_eq: 7.850 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1640}
+(epoch: 11, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.327 loss_D_fake: 2.029 loss_D: 1.178 loss_G: 0.328 loss_conv: 8.328 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1660}
+(epoch: 11, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.323 loss_D_fake: 2.078 loss_D: 1.200 loss_G: 0.335 loss_conv: 8.309 loss_eq: 7.974 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1680}
+tensor([[1.4968, 0.0000, 1.0000],
+        [0.0000, 0.5054, 0.9993]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 11, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.310 loss_D_fake: 2.155 loss_D: 1.232 loss_G: 0.332 loss_conv: 8.332 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1700}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 11 / 15 	 Time Taken: 426 sec
+(epoch: 12, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.326 loss_D_fake: 2.044 loss_D: 1.185 loss_G: 0.325 loss_conv: 8.325 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1736}
+(epoch: 12, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.319 loss_D_fake: 2.044 loss_D: 1.181 loss_G: 0.311 loss_conv: 8.311 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1756}
+(epoch: 12, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.327 loss_D_fake: 2.051 loss_D: 1.189 loss_G: 0.321 loss_conv: 8.246 loss_eq: 7.926 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1776}
+(epoch: 12, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.332 loss_D_fake: 2.068 loss_D: 1.200 loss_G: 0.328 loss_conv: 8.163 loss_eq: 7.835 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1796}
+tensor([[1.4911, 0.0000, 0.8404],
+        [0.0000, 0.5000, 1.0000]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 12, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.326 loss_D_fake: 2.143 loss_D: 1.234 loss_G: 0.323 loss_conv: 8.323 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1816}
+(epoch: 12, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.312 loss_D_fake: 2.054 loss_D: 1.183 loss_G: 0.321 loss_conv: 8.196 loss_eq: 7.875 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1836}
+(epoch: 12, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.329 loss_D_fake: 2.122 loss_D: 1.225 loss_G: 0.329 loss_conv: 8.329 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1856}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 12 / 15 	 Time Taken: 424 sec
+(epoch: 13, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.324 loss_D_fake: 2.093 loss_D: 1.209 loss_G: 0.321 loss_conv: 8.271 loss_eq: 7.950 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1892}
+tensor([[ 1.3915,  0.0000, -0.9649],
+        [ 0.0000,  0.5000,  0.9999]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 13, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.319 loss_D_fake: 2.218 loss_D: 1.268 loss_G: 0.326 loss_conv: 8.213 loss_eq: 7.887 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1912}
+(epoch: 13, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.331 loss_D_fake: 2.069 loss_D: 1.200 loss_G: 0.323 loss_conv: 8.323 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1932}
+(epoch: 13, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.328 loss_D_fake: 2.050 loss_D: 1.189 loss_G: 0.330 loss_conv: 8.187 loss_eq: 7.856 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1952}
+(epoch: 13, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.328 loss_D_fake: 1.996 loss_D: 1.162 loss_G: 0.340 loss_conv: 8.340 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1972}
+(epoch: 13, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.340 loss_D_fake: 2.066 loss_D: 1.203 loss_G: 0.321 loss_conv: 8.253 loss_eq: 7.932 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1992}
+tensor([[ 1.4755,  0.0000, -0.5180],
+        [ 0.0000,  0.5000,  0.9998]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 13, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.325 loss_D_fake: 2.039 loss_D: 1.182 loss_G: 0.333 loss_conv: 8.237 loss_eq: 7.904 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 12}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 13 / 15 	 Time Taken: 419 sec
+(epoch: 14, batches: 20, time: 0.003, data: 0.010) loss_D_real: 0.325 loss_D_fake: 2.064 loss_D: 1.194 loss_G: 0.315 loss_conv: 8.288 loss_eq: 7.973 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 48}
+(epoch: 14, batches: 40, time: 0.003, data: 0.250) loss_D_real: 0.333 loss_D_fake: 2.134 loss_D: 1.234 loss_G: 0.325 loss_conv: 8.325 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 68}
+(epoch: 14, batches: 60, time: 0.002, data: 1.104) loss_D_real: 0.329 loss_D_fake: 2.115 loss_D: 1.222 loss_G: 0.320 loss_conv: 8.320 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 88}
+tensor([[1.4771, 0.0000, 1.0000],
+        [0.0000, 0.5000, 0.9988]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 14, batches: 80, time: 0.003, data: 1.859) loss_D_real: 0.336 loss_D_fake: 2.111 loss_D: 1.224 loss_G: 0.312 loss_conv: 8.312 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 108}
+(epoch: 14, batches: 100, time: 0.003, data: 2.683) loss_D_real: 0.316 loss_D_fake: 2.050 loss_D: 1.183 loss_G: 0.334 loss_conv: 8.290 loss_eq: 7.956 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 128}
+(epoch: 14, batches: 120, time: 0.002, data: 3.553) loss_D_real: 0.337 loss_D_fake: 2.122 loss_D: 1.230 loss_G: 0.331 loss_conv: 8.256 loss_eq: 7.925 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 148}
+(epoch: 14, batches: 140, time: 0.003, data: 4.340) loss_D_real: 0.316 loss_D_fake: 2.016 loss_D: 1.166 loss_G: 0.323 loss_conv: 8.223 loss_eq: 7.900 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 168}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 14 / 15 	 Time Taken: 421 sec
+tensor([[1.4967, 0.0000, 0.9993],
+        [0.0000, 0.5000, 0.9990]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 15, batches: 20, time: 0.003, data: 9.709) loss_D_real: 0.326 loss_D_fake: 2.073 loss_D: 1.200 loss_G: 0.322 loss_conv: 8.175 loss_eq: 7.853 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 204}
+(epoch: 15, batches: 40, time: 0.003, data: 8.210) loss_D_real: 0.323 loss_D_fake: 2.024 loss_D: 1.173 loss_G: 0.324 loss_conv: 8.324 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 224}
+(epoch: 15, batches: 60, time: 0.003, data: 8.198) loss_D_real: 0.326 loss_D_fake: 1.977 loss_D: 1.152 loss_G: 0.326 loss_conv: 8.278 loss_eq: 7.953 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 244}
+(epoch: 15, batches: 80, time: 0.003, data: 8.482) loss_D_real: 0.309 loss_D_fake: 2.191 loss_D: 1.250 loss_G: 0.330 loss_conv: 8.288 loss_eq: 7.958 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 264}
+(epoch: 15, batches: 100, time: 0.003, data: 8.554) loss_D_real: 0.330 loss_D_fake: 2.134 loss_D: 1.232 loss_G: 0.328 loss_conv: 8.271 loss_eq: 7.943 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 284}
+tensor([[1.4964, 0.0000, 1.0000],
+        [0.0000, 0.5000, 0.9991]], device='cuda:0', grad_fn=<SelectBackward>)
+(epoch: 15, batches: 120, time: 0.002, data: 8.410) loss_D_real: 0.331 loss_D_fake: 2.102 loss_D: 1.217 loss_G: 0.329 loss_conv: 8.305 loss_eq: 7.976 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 304}
+(epoch: 15, batches: 140, time: 0.003, data: 7.989) loss_D_real: 0.337 loss_D_fake: 2.129 loss_D: 1.233 loss_G: 0.327 loss_conv: 8.327 loss_eq: 8.000 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 324}
+saving the model at the end of epoch 15, iters 149760
+learning rate 0.0001280 -> 0.0001024
+End of epoch 15 / 15 	 Time Taken: 426 sec
+Finished training, model is saved
+Batches trained - G: 1560, D: 780 
