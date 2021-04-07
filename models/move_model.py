@@ -81,7 +81,7 @@ class MoveModel(BaseModel):
             self.MSE = torch.nn.MSELoss(reduction='none')
 
             # blur to apply on input to discriminator
-            self.blur = networks.GaussianSmoothing().to(self.device)
+            self.blur = networks.GaussianSmoothing(sigma=(0.5, 0.5)).to(self.device)
 
             # for sanity checking
             # self.theta_gt_single = torch.Tensor([[1.2, 0, -0.5],[0, 0.8, 0.3]]).to(self.device)
