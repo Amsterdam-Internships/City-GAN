@@ -23,7 +23,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", use_amp=True, real_target=0.9, fake_target=0.1, noisy_labels=True)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", use_amp=True, real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
@@ -110,10 +110,10 @@ class MoveModel(BaseModel):
         """
 
         # get the surface per mask in the batch
-        surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
+        self.surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
         # center and return the object
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
-        mask_pdist = self.mask_binary / surface
+        mask_pdist = self.mask_binary / self.surface
 
         [self.B, _, self.w, self.h] = list(mask_pdist.shape)
         # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
@@ -279,23 +279,23 @@ class MoveModel(BaseModel):
         #TODO: Sum nr of pixels in transf max
 
         MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        size_correction = self.trans_obj_surface/self.opt.load_size**2
+        # size_correction = self.trans_obj_surface/self.opt.load_size**2
 
 
         # replace zeros with 1
-        size_correction[size_correction==0] = 1
+        # size_correction[size_correction==0] = 1
 
         # Replace 0 in size_corrction with 1
 
-        # this was the code used for run 9
+        ####### this was the code used for run 9
         # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        # size_correction = self.surface.squeeze()/self.opt.load_size**2
-        # self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
+        size_correction = self.surface.squeeze()/self.opt.load_size**2
+        self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
 
 
 
         # TODO: size correction is 0 if the object is moved out of the image
-        self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
+        # self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
 
         self.loss_conv = self.loss_G + self.loss_eq
 

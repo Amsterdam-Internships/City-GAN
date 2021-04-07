@@ -931,6 +931,8 @@ class MoveConvNET(nn.Module):
     def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
         super(MoveConvNET, self).__init__()
 
+        ########### RUN 13 ##############
+
         # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
 
@@ -958,6 +960,35 @@ class MoveConvNET(nn.Module):
         layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
         self.model = nn.Sequential(*layers)
 
+        ####################
+
+
+
+        ##### RUN 9 ########
+
+
+        # layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
+        # norm_layer = get_norm_layer(norm_type=norm)
+
+        # use_bias = norm_layer.func == nn.InstanceNorm2d
+
+        # nf_mult_prev, nf_mult = 1, 1
+
+        # for n in range(1, n_layers+1):
+        #     nf_mult_prev = nf_mult
+        #     nf_mult = min(2 ** n, 8)
+        #     layers += [
+        #         nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
+        #         norm_layer(ndf * nf_mult),
+        #         nn.LeakyReLU(0.2, True)
+        #     ]
+
+        # layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+        # self.model = nn.Sequential(*layers)
+
+
+        #############################
+
         # define two seperate linear layers for final layer
         self.zero_c = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
         self.one_c = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
@@ -977,10 +1008,10 @@ class MoveConvNET(nn.Module):
 
         # shape: B * 2; add one to make it one-centered
         # the one centered are from 0.75 to 1.25 (old, 4,4. Now: 0.5, 1.5;2,2)
-        one_centered = torch.divide(torch.add(self.one_c(last_layer), 2), 2)
+        one_centered = torch.divide(torch.add(self.one_c(last_layer), 4), 4)
 
         # shape B * 2
-        translation = torch.divide(self.trans(last_layer), 1.0) # was 1.2, then 1.5, now no constraints
+        translation = torch.divide(self.trans(last_layer), 1.5) # was 1.2, then 1.5, now no constraints
 
         # for run 9:
         # zero centered, no scaling (-1, 1)
