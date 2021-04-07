@@ -23,7 +23,7 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", use_amp=True, real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
@@ -192,7 +192,7 @@ class MoveModel(BaseModel):
 
         # experimenting with theta
         # min/max 0.83
-        # self.theta[0] = torch.Tensor([[1, -1, 1], [1, 1, 1]])
+        # self.theta[0] = torch.Tensor([[1.5, 0, 0], [0, 0.5, 0.5]])
 
         # self.obj[0, :, 32, 32] = torch.tensor([1, 0, 0])
 
@@ -256,8 +256,8 @@ class MoveModel(BaseModel):
 
         self.loss_D = (self.loss_D_fake + self.loss_D_real) / 2
 
-        # self.scaler.scale(self.loss_D).backward()
-        self.loss_D.backward()
+        self.scaler.scale(self.loss_D).backward()
+        # self.loss_D.backward()
 
 
 
