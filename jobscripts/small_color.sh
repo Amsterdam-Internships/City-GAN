@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=84
+run=85
 echo "starting training run $run"
 
 #Create output directory on scratch
@@ -27,8 +27,8 @@ cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_co
 python $HOME/City-GAN/train.py --model copy \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
     --batch_size 64\
-    --n_epochs 20\
-    --n_epochs_decay 40\
+    --n_epochs 5\
+    --n_epochs_decay 5\
     --save_epoch_freq 10\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --print_freq 100\
@@ -38,12 +38,12 @@ python $HOME/City-GAN/train.py --model copy \
     --sigma_blur 1\
     --load_size 70\
     --crop_size 64\
-    --D_headstart 1000\
+    --D_headstart 0\
     --confidence_weight 0.0\
     --val_batch_size 128\
     --accumulation_steps 1\
     --display_id 0\
-    --lambda_aux 1\
+    --lambda_aux 0.1\
     --D_threshold 0.5\
     --netD copy\
     --real_target 0.9\
@@ -52,6 +52,7 @@ python $HOME/City-GAN/train.py --model copy \
     --pool_D\
     --use_amp\
     --noisy_labels\
+    --n_alternating_batches 20
 
 
 # copy checkpoints to home directory

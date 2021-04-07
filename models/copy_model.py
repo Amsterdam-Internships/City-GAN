@@ -442,7 +442,7 @@ class CopyModel(BaseModel):
         # self.train_G = self.even_batch and self.headstart_over
 
         # perform forward step
-        print(self.train_G)
+        # print(self.train_G)
         self.forward(generator=self.train_G)
 
         # either train G or D, using the AMP scaler
@@ -500,7 +500,7 @@ class CopyModel(BaseModel):
         # determine if G can be trained
         # G and D are trained sequentially for eval_freq batches
         batch_right = (total_batches // self.opt.n_alternating_batches) % 2 ==0
-        print("Batch:", batch_right, "above thresh", self.D_above_thresh)
+        # print("Batch:", batch_right, "above thresh", self.D_above_thresh)
 
         if self.headstart_over and self.D_above_thresh and batch_right:
             self.train_G = True
@@ -569,8 +569,8 @@ class CopyModel(BaseModel):
         # performance of discriminator on grounded fakes
         self.D_gf_perfect = self.acc_grfake > 0.99
 
-        self.acc_fake = np.random.random()
-        print("acc fake", acc_fake)
+        # self.acc_fake = np.random.random()
+        # print("acc fake", acc_fake)
 
         # check performance on fakes to determine whether to train G
         self.D_above_thresh = self.acc_fake > self.opt.D_threshold
