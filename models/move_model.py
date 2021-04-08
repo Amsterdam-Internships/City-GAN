@@ -44,6 +44,14 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
+        # specify random seed
+        if opt.seed == 0:
+            opt.seed = np.random.randint(0, 42)
+            print(f"Random seed is set to {opt.seed}")
+
+        torch.manual_seed(opt.seed)
+        np.random.seed(opt.seed)
+
         self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "loss_eq", "acc_real", "acc_fake"]
         # for sanity checking
         # self.loss_names = ["loss_G"]
@@ -265,8 +273,8 @@ class MoveModel(BaseModel):
 
         self.loss_D = (self.loss_D_fake + self.loss_D_real) / 2
 
-        self.scaler.scale(self.loss_D).backward()
-        # self.loss_D.backward()
+        # self.scaler.scale(self.loss_D).backward()
+        self.loss_D.backward()
 
 
 
@@ -308,14 +316,16 @@ class MoveModel(BaseModel):
 
         self.loss_conv = self.loss_G + self.loss_eq
 
-        self.scaler.scale(self.loss_G).backward()
-        # self.loss_conv.backward()
+        # self.scaler.scale(self.loss_G).backward()
+        self.loss_conv.backward()
 
 
     def optimize_parameters(self, data):
         """Update network weights; it will be called in every training iteration.
         """
 
+
+        ########## FORWARD PASS RUN 9 (NO SCALER)
         self.set_input(data)
 
         train_G = not(self.overall_batch % 3 == 0)
@@ -327,25 +337,56 @@ class MoveModel(BaseModel):
         # train convnet predicting theta
         if train_G:
             # print("Training Convnet")
-
+            self.optimizer_Conv.zero_grad()
             self.backward_Conv()
 
-            self.scaler.step(self.optimizer_Conv)
-            self.scaler.update()
-            # self.optimizer_Conv.step()
+            # self.scaler.step(self.optimizer_Conv)
+            # self.scaler.update()
+            self.optimizer_Conv.step()
             self.count_G += 1
-            self.optimizer_Conv.zero_grad()
 
         # train discriminator
         else:
             # print("Training D")
-
-            self.backward_D()
-            self.scaler.step(self.optimizer_D)
-            self.scaler.update()
-            # self.optimizer_D.step()
-            self.count_D += 1
             self.optimizer_D.zero_grad()
+            self.backward_D()
+            # self.scaler.step(self.optimizer_D)
+            # self.scaler.update()
+            self.optimizer_D.step()
+            self.count_D += 1
+
+        ##############
+
+        # self.set_input(data)
+
+        # train_G = not(self.overall_batch % 3 == 0)
+        # # train_G = True
+
+        # # run the forward pass
+        # self.forward(generator=train_G)
+
+        # # train convnet predicting theta
+        # if train_G:
+        #     # print("Training Convnet")
+
+        #     self.backward_Conv()
+
+        #     self.scaler.step(self.optimizer_Conv)
+        #     self.scaler.update()
+        #     # self.optimizer_Conv.step()
+        #     self.count_G += 1
+        #     self.optimizer_Conv.zero_grad()
+
+        # # train discriminator
+        # else:
+        #     # print("Training D")
+
+        #     self.backward_D()
+        #     self.scaler.step(self.optimizer_D)
+        #     self.scaler.update()
+        #     # self.optimizer_D.step()
+        #     self.count_D += 1
+        #     self.optimizer_D.zero_grad()
 
 
     def baseline(self, data, type_='random'):
@@ -430,6 +471,7 @@ class MoveModel(BaseModel):
 
         # init average lists
         acc_real, acc_fake = [], []
+        preds_real, preds_fake = [], []
 
         # compute accuracy on the validation data
         with torch.no_grad():
@@ -443,6 +485,9 @@ class MoveModel(BaseModel):
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
 
+                preds_real.append(torch.mean(self.pred_real).item())
+                preds_fake.append(torch.mean(self.pred_fake).item())
+
         # set accuracies to mean for plotting purposes
         self.acc_fake = np.mean(acc_fake)
         self.acc_real = np.mean(acc_real)
@@ -452,8 +497,8 @@ class MoveModel(BaseModel):
         if self.opt.verbose:
             print(
                 f"validation accuracies:\n\
-                real: {self.acc_real:.2f}\n\
-                fake: {self.acc_fake:.2f}\n"
+                real: {self.acc_real:.2f}, {np.mean(preds_real)}\n\
+                fake: {self.acc_fake:.2f}, {np.mean(preds_fake)}\n"
             )
 
         if self.opt.tracemalloc:
