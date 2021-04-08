@@ -934,6 +934,7 @@ class MoveConvNET(nn.Module):
 
         # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
+        use_bias = norm_layer.func == nn.InstanceNorm2d
         self.two_stream = two_stream
 
         ########### TWO STREAM INPUT ##############
@@ -947,7 +948,7 @@ class MoveConvNET(nn.Module):
 
             layers = []
 
-            use_bias = norm_layer.func == nn.InstanceNorm2d
+
 
             nf_mult_prev, nf_mult = 1, 1
 
@@ -967,8 +968,6 @@ class MoveConvNET(nn.Module):
         else:
             layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
             norm_layer = get_norm_layer(norm_type=norm)
-
-            use_bias = norm_layer.func == nn.InstanceNorm2d
 
             nf_mult_prev, nf_mult = 1, 1
 
