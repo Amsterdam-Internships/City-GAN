@@ -67,7 +67,9 @@ class MoveModel(BaseModel):
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.define_D(opt.input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, two_stream=opt.two_stream)
+        conv_input_nc = 3 if opt.two_stream else 6
+
+        self.netConv = networks.define_D(conv_input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, two_stream=opt.two_stream)
 
 
         self.model_names = ["Conv"]
@@ -180,7 +182,7 @@ class MoveModel(BaseModel):
         else:
             # single stream input
             # concatenate the target and object on channel dimension
-            tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
+            tgt_obj_cat = torch.cat([self.tgt, self.obj], 1)
             zero_centered, one_centered,translation = self.netConv(tgt_obj_cat)
 
         B = zero_centered.shape[0]

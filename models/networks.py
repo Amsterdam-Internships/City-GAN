@@ -934,6 +934,7 @@ class MoveConvNET(nn.Module):
 
         # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
+        self.two_stream = two_stream
 
         ########### TWO STREAM INPUT ##############
 
