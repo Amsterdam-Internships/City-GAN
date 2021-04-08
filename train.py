@@ -74,17 +74,19 @@ if __name__ == '__main__':
             # run everything on validation set every val_freq batches
             # also run the untrained model (batch = 0), for baseline
             if (overall_batch -1) % opt.val_freq == 0:
+                model.eval()
                 val_start_time = time.time()
                 model.run_validation(val_dataset)
                 if opt.verbose:
                     duration = time.time() - val_start_time
                     print(f"ran validation set (B:{overall_batch}) in \
                         {duration:.1f} s.")
+                model.train()
 
 
             # inference can be called here, make another script TODO
             # original, moved = model.baseline(data, type_="random")
-
+            model.train()
             model.run_batch(data, overall_batch)
 
             # display images on visdom and save images to a HTML file
