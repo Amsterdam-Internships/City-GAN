@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    pool=False, aux=True, theta_dim=2):
+    pool=False, aux=True, two_stream=False):
     """
     Returns a discriminator
 
@@ -216,7 +216,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
             norm_layer=norm_layer)
     elif netD == "move":
-        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, theta_dim=theta_dim)
+        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -928,63 +928,60 @@ class DotLoss(nn.Module):
 class MoveConvNET(nn.Module):
     """
     """
-    def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
+    def __init__(self, input_nc, ndf, n_layers, norm, two_stream=False):
         super(MoveConvNET, self).__init__()
 
-        ########### RUN 13 ##############
 
         # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
 
-        # define two separate layers for the input
-        self.obj_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
-        self.tgt_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
+        ########### TWO STREAM INPUT ##############
 
-        ndf *= 2
+        if two_stream:
+            # define two separate layers for the input
+            self.obj_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
+            self.tgt_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
 
-        layers = []
+            ndf *= 2
 
-        use_bias = norm_layer.func == nn.InstanceNorm2d
+            layers = []
 
-        nf_mult_prev, nf_mult = 1, 1
+            use_bias = norm_layer.func == nn.InstanceNorm2d
 
-        for n in range(1, n_layers+1):
-            nf_mult_prev = nf_mult
-            nf_mult = min(2 ** n, 8)
-            layers += [
-                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
-                norm_layer(ndf * nf_mult),
-                nn.LeakyReLU(0.2)
-            ]
+            nf_mult_prev, nf_mult = 1, 1
 
-        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
-        self.model = nn.Sequential(*layers)
+            for n in range(1, n_layers+1):
+                nf_mult_prev = nf_mult
+                nf_mult = min(2 ** n, 8)
+                layers += [
+                    nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
+                    norm_layer(ndf * nf_mult),
+                    nn.LeakyReLU(0.2)
+                ]
 
-        ####################
+            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+            self.model = nn.Sequential(*layers)
 
+        ##### SINGLE STREAM INPUT ########
+        else:
+            layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
+            norm_layer = get_norm_layer(norm_type=norm)
 
+            use_bias = norm_layer.func == nn.InstanceNorm2d
 
-        ##### RUN 9 ########
+            nf_mult_prev, nf_mult = 1, 1
 
+            for n in range(1, n_layers+1):
+                nf_mult_prev = nf_mult
+                nf_mult = min(2 ** n, 8)
+                layers += [
+                    nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
+                    norm_layer(ndf * nf_mult),
+                    nn.LeakyReLU(0.2, True)
+                ]
 
-        # layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
-        # norm_layer = get_norm_layer(norm_type=norm)
-
-        # use_bias = norm_layer.func == nn.InstanceNorm2d
-
-        # nf_mult_prev, nf_mult = 1, 1
-
-        # for n in range(1, n_layers+1):
-        #     nf_mult_prev = nf_mult
-        #     nf_mult = min(2 ** n, 8)
-        #     layers += [
-        #         nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
-        #         norm_layer(ndf * nf_mult),
-        #         nn.LeakyReLU(0.2, True)
-        #     ]
-
-        # layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
-        # self.model = nn.Sequential(*layers)
+            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+            self.model = nn.Sequential(*layers)
 
 
         #############################
@@ -995,11 +992,18 @@ class MoveConvNET(nn.Module):
         self.trans = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
 
 
-    def forward(self, obj, tgt):
+    def forward(self, obj, tgt=None):
 
-        obj_out = self.obj_layer(obj)
-        tgt_out = self.tgt_layer(tgt)
-        concat = torch.cat([tgt_out, obj_out], 1)
+        # either two streams are used, if not, there must only be one input.
+        assert self.two_stream or not tgt
+
+        # forward object and targets through separate streams, or
+        if self.two_stream:
+            obj_out = self.obj_layer(obj)
+            tgt_out = self.tgt_layer(tgt)
+            concat = torch.cat([tgt_out, obj_out], 1)
+        else:
+            concat = obj
 
         last_layer =  self.model(concat)
 

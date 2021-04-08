@@ -27,6 +27,7 @@ class MoveModel(BaseModel):
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
+            parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
 
 
         return parser
@@ -66,7 +67,7 @@ class MoveModel(BaseModel):
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.define_D(opt.input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, theta_dim=opt.theta_dim)
+        self.netConv = networks.define_D(opt.input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, two_stream=opt.two_stream)
 
 
         self.model_names = ["Conv"]
@@ -171,11 +172,17 @@ class MoveModel(BaseModel):
             - affine transformation on the object and the object mask
             - the transformed object and object masks are composited --> output img
         """
-        # concatenate the target and object on channel dimension
-        # tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
-
         # compute theta using the convolutional network
-        zero_centered, one_centered, translation = self.netConv(self.obj, self.tgt)
+
+        # two-stream input
+        if self.opt.two_stream:
+            zero_centered, one_centered, translation = self.netConv(self.obj, self.tgt)
+        else:
+            # single stream input
+            # concatenate the target and object on channel dimension
+            tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
+            zero_centered, one_centered,translation = self.netConv(tgt_obj_cat)
+
         B = zero_centered.shape[0]
 
         # initialize theta
