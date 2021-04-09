@@ -1,0 +1,1246 @@
+starting MoveGAN training run 19
+Tar file moved to scratch
+Current time : 22:38:34
+
+10k_train.tar.gz
+990000_img.jpg
+990000_mask_0.jpg
+990000_mask_1.jpg
+990000_mask_2.jpg
+Tar file extracted on scratch
+Current time : 22:38:40
+
+Validation tar copied to scratch
+Current time : 22:38:40
+
+validation tar extracted on scratch
+Current time : 22:38:40
+
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/ROOM/images/	[default: None]
+             dataset_mode: room                          
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+              fake_target: 0.0                           	[default: 0.1]
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 60                            	[default: 100]
+                    model: move                          	[default: copy]
+                 n_epochs: 10                            	[default: 100]
+           n_epochs_decay: 40                            	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+             noisy_labels: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize                        
+               print_freq: 20                            
+              real_target: 0.8                           	[default: 0.9]
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 0                             
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 6                             	[default: 2]
+              tracemalloc: False                         
+               two_stream: False                         
+         update_html_freq: 100                           
+                  use_amp: False                         
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+dataset [RoomDataset] and dataloder are created
+dataset [RoomDataset] and dataloder are created
+Starting training of move-model
+The number of training images = 10000
+The number of validation images = 1111
+The number of epochs to run = 50
+Random seed is set to 18
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+DataParallel(
+  (module): MoveConvNET(
+    (model): Sequential(
+      (0): Conv2d(6, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      (2): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (3): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (4): LeakyReLU(negative_slope=0.2, inplace=True)
+      (5): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (6): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (7): LeakyReLU(negative_slope=0.2, inplace=True)
+      (8): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (9): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (10): LeakyReLU(negative_slope=0.2, inplace=True)
+      (11): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (12): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (13): LeakyReLU(negative_slope=0.2, inplace=True)
+      (14): Flatten(start_dim=1, end_dim=-1)
+      (15): Linear(in_features=8192, out_features=100, bias=True)
+    )
+    (zero_c): Sequential(
+      (0): Linear(in_features=100, out_features=2, bias=True)
+      (1): Tanh()
+    )
+    (one_c): Sequential(
+      (0): Linear(in_features=100, out_features=2, bias=True)
+      (1): Tanh()
+    )
+    (trans): Sequential(
+      (0): Linear(in_features=100, out_features=2, bias=True)
+      (1): Tanh()
+    )
+  )
+)
+[Network Conv] Total number of parameters : 4.732 M
+DataParallel(
+  (module): NLayerDiscriminator(
+    (model): Sequential(
+      (0): Conv2d(3, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): LeakyReLU(negative_slope=0.2)
+      (2): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (3): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (4): LeakyReLU(negative_slope=0.2)
+      (5): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (6): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (7): LeakyReLU(negative_slope=0.2)
+      (8): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (9): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (10): LeakyReLU(negative_slope=0.2)
+      (11): Conv2d(512, 512, kernel_size=(4, 4), stride=(1, 1), padding=(1, 1))
+      (12): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (13): LeakyReLU(negative_slope=0.2)
+      (14): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), padding=(1, 1))
+      (15): Sigmoid()
+    )
+  )
+)
+[Network D] Total number of parameters : 6.960 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+validation accuracies:
+                real: 0.26, 0.39208984375
+                fake: 0.75, 0.386871337890625
+
+ran validation set (B:1) in                         9.5 s.
+(epoch: 1, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.809 loss_D_fake: 0.620 loss_D: 0.714 loss_G: 1.008 loss_conv: 1.849 loss_eq: 0.842 acc_real: 0.452 acc_fake: 0.651 
+(epoch: 1, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.903 loss_D_fake: 0.444 loss_D: 0.673 loss_G: 1.116 loss_conv: 1.769 loss_eq: 0.653 acc_real: 0.375 acc_fake: 0.804 
+(epoch: 1, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.781 loss_D_fake: 0.622 loss_D: 0.701 loss_G: 0.980 loss_conv: 1.548 loss_eq: 0.567 acc_real: 0.543 acc_fake: 0.681 
+(epoch: 1, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.857 loss_D_fake: 0.522 loss_D: 0.689 loss_G: 0.902 loss_conv: 1.835 loss_eq: 0.933 acc_real: 0.320 acc_fake: 0.766 
+100 tensor([[ 0.7537,  0.0000,  0.6623],
+        [ 0.0000,  0.7552, -0.1308]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 1, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.798 loss_D_fake: 0.622 loss_D: 0.710 loss_G: 1.161 loss_conv: 1.818 loss_eq: 0.656 acc_real: 0.453 acc_fake: 0.644 
+validation accuracies:
+                real: 0.39, 0.444793701171875
+                fake: 0.78, 0.34869384765625
+
+ran validation set (B:101) in                         9.4 s.
+(epoch: 1, batches: 120, time: 0.003, data: 0.003) loss_D_real: 0.655 loss_D_fake: 0.640 loss_D: 0.648 loss_G: 0.825 loss_conv: 1.520 loss_eq: 0.695 acc_real: 0.681 acc_fake: 0.601 
+(epoch: 1, batches: 140, time: 0.002, data: 0.002) loss_D_real: 0.777 loss_D_fake: 0.586 loss_D: 0.682 loss_G: 1.036 loss_conv: 1.478 loss_eq: 0.442 acc_real: 0.487 acc_fake: 0.658 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 50 	 Time Taken: 431 sec
+(epoch: 2, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.837 loss_D_fake: 0.416 loss_D: 0.626 loss_G: 0.925 loss_conv: 1.457 loss_eq: 0.533 acc_real: 0.319 acc_fake: 0.851 
+(epoch: 2, batches: 40, time: 0.002, data: 0.001) loss_D_real: 0.830 loss_D_fake: 0.474 loss_D: 0.652 loss_G: 1.044 loss_conv: 1.619 loss_eq: 0.576 acc_real: 0.419 acc_fake: 0.843 
+200 tensor([[ 0.7503,  0.0000,  0.4724],
+        [ 0.0000,  0.7501, -0.3170]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.77, 0.60247802734375
+                fake: 0.42, 0.52166748046875
+
+ran validation set (B:201) in                         8.5 s.
+(epoch: 2, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.762 loss_D_fake: 0.476 loss_D: 0.619 loss_G: 0.996 loss_conv: 1.742 loss_eq: 0.746 acc_real: 0.525 acc_fake: 0.803 
+(epoch: 2, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.734 loss_D_fake: 0.544 loss_D: 0.639 loss_G: 1.152 loss_conv: 1.549 loss_eq: 0.397 acc_real: 0.496 acc_fake: 0.711 
+(epoch: 2, batches: 100, time: 0.003, data: 0.002) loss_D_real: 1.076 loss_D_fake: 0.337 loss_D: 0.706 loss_G: 1.016 loss_conv: 1.485 loss_eq: 0.469 acc_real: 0.155 acc_fake: 0.909 
+(epoch: 2, batches: 120, time: 0.002, data: 0.007) loss_D_real: 1.195 loss_D_fake: 0.244 loss_D: 0.719 loss_G: 1.385 loss_conv: 1.887 loss_eq: 0.503 acc_real: 0.037 acc_fake: 0.975 
+(epoch: 2, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.835 loss_D_fake: 0.447 loss_D: 0.641 loss_G: 0.994 loss_conv: 1.819 loss_eq: 0.825 acc_real: 0.320 acc_fake: 0.848 
+300 tensor([[0.7503, 0.0000, 0.3090],
+        [0.0000, 0.7504, 0.3743]], device='cuda:0', grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.55, 0.512725830078125
+                fake: 0.68, 0.41949462890625
+
+ran validation set (B:301) in                         9.9 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 50 	 Time Taken: 430 sec
+(epoch: 3, batches: 20, time: 0.003, data: 0.050) loss_D_real: 0.683 loss_D_fake: 0.788 loss_D: 0.736 loss_G: 1.181 loss_conv: 1.932 loss_eq: 0.750 acc_real: 0.583 acc_fake: 0.479 
+(epoch: 3, batches: 40, time: 0.002, data: 0.054) loss_D_real: 0.832 loss_D_fake: 0.415 loss_D: 0.624 loss_G: 0.937 loss_conv: 1.369 loss_eq: 0.432 acc_real: 0.312 acc_fake: 0.917 
+(epoch: 3, batches: 60, time: 0.002, data: 0.232) loss_D_real: 0.707 loss_D_fake: 0.595 loss_D: 0.651 loss_G: 0.884 loss_conv: 1.462 loss_eq: 0.578 acc_real: 0.585 acc_fake: 0.674 
+(epoch: 3, batches: 80, time: 0.002, data: 0.437) loss_D_real: 1.104 loss_D_fake: 0.267 loss_D: 0.685 loss_G: 0.819 loss_conv: 1.421 loss_eq: 0.603 acc_real: 0.123 acc_fake: 0.982 
+400 tensor([[ 0.7503,  0.0000, -0.4650],
+        [ 0.0000,  0.7502, -0.3350]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.62, 0.540283203125
+                fake: 0.72, 0.391754150390625
+
+ran validation set (B:401) in                         9.0 s.
+(epoch: 3, batches: 100, time: 0.003, data: 1.400) loss_D_real: 0.881 loss_D_fake: 0.415 loss_D: 0.648 loss_G: 1.146 loss_conv: 1.604 loss_eq: 0.458 acc_real: 0.341 acc_fake: 0.810 
+(epoch: 3, batches: 120, time: 0.003, data: 1.602) loss_D_real: 0.752 loss_D_fake: 0.486 loss_D: 0.619 loss_G: 0.939 loss_conv: 1.669 loss_eq: 0.730 acc_real: 0.548 acc_fake: 0.810 
+(epoch: 3, batches: 140, time: 0.003, data: 2.070) loss_D_real: 0.782 loss_D_fake: 0.424 loss_D: 0.603 loss_G: 1.060 loss_conv: 1.775 loss_eq: 0.715 acc_real: 0.475 acc_fake: 0.840 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 50 	 Time Taken: 428 sec
+(epoch: 4, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.869 loss_D_fake: 0.421 loss_D: 0.645 loss_G: 1.025 loss_conv: 1.669 loss_eq: 0.643 acc_real: 0.336 acc_fake: 0.861 
+500 tensor([[ 0.7504,  0.0000, -0.6587],
+        [ 0.0000,  0.7503, -0.2183]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.68, 0.5711669921875
+                fake: 0.72, 0.392242431640625
+
+ran validation set (B:501) in                         9.5 s.
+(epoch: 4, batches: 40, time: 0.003, data: 1.326) loss_D_real: 0.806 loss_D_fake: 0.453 loss_D: 0.630 loss_G: 1.072 loss_conv: 1.580 loss_eq: 0.509 acc_real: 0.464 acc_fake: 0.815 
+(epoch: 4, batches: 60, time: 0.003, data: 1.156) loss_D_real: 0.714 loss_D_fake: 0.478 loss_D: 0.596 loss_G: 1.011 loss_conv: 1.361 loss_eq: 0.350 acc_real: 0.606 acc_fake: 0.792 
+(epoch: 4, batches: 80, time: 0.002, data: 0.723) loss_D_real: 0.947 loss_D_fake: 0.359 loss_D: 0.653 loss_G: 0.847 loss_conv: 1.514 loss_eq: 0.667 acc_real: 0.230 acc_fake: 0.901 
+(epoch: 4, batches: 100, time: 0.003, data: 0.214) loss_D_real: 0.715 loss_D_fake: 0.487 loss_D: 0.601 loss_G: 1.165 loss_conv: 1.624 loss_eq: 0.459 acc_real: 0.593 acc_fake: 0.802 
+(epoch: 4, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.677 loss_D_fake: 0.573 loss_D: 0.625 loss_G: 0.899 loss_conv: 1.241 loss_eq: 0.343 acc_real: 0.695 acc_fake: 0.703 
+600 tensor([[ 0.7502,  0.0000, -0.5844],
+        [ 0.0000,  0.7502, -0.5940]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.24, 0.387054443359375
+                fake: 0.93, 0.2730712890625
+
+ran validation set (B:601) in                         9.0 s.
+(epoch: 4, batches: 140, time: 0.003, data: 0.005) loss_D_real: 0.786 loss_D_fake: 0.556 loss_D: 0.671 loss_G: 1.122 loss_conv: 1.796 loss_eq: 0.674 acc_real: 0.452 acc_fake: 0.746 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 50 	 Time Taken: 430 sec
+(epoch: 5, batches: 20, time: 0.003, data: 9.782) loss_D_real: 0.892 loss_D_fake: 0.347 loss_D: 0.620 loss_G: 1.031 loss_conv: 1.509 loss_eq: 0.478 acc_real: 0.292 acc_fake: 0.900 
+(epoch: 5, batches: 40, time: 0.003, data: 9.248) loss_D_real: 0.734 loss_D_fake: 0.458 loss_D: 0.596 loss_G: 1.233 loss_conv: 1.628 loss_eq: 0.395 acc_real: 0.536 acc_fake: 0.815 
+(epoch: 5, batches: 60, time: 0.003, data: 8.633) loss_D_real: 0.810 loss_D_fake: 0.449 loss_D: 0.629 loss_G: 1.190 loss_conv: 1.782 loss_eq: 0.592 acc_real: 0.434 acc_fake: 0.811 
+700 tensor([[ 0.7501,  0.0000, -0.1743],
+        [ 0.0000,  0.7500, -0.4968]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.32, 0.412109375
+                fake: 0.94, 0.23309326171875
+
+ran validation set (B:701) in                         9.0 s.
+(epoch: 5, batches: 80, time: 0.002, data: 7.987) loss_D_real: 0.823 loss_D_fake: 0.291 loss_D: 0.557 loss_G: 1.093 loss_conv: 1.512 loss_eq: 0.419 acc_real: 0.471 acc_fake: 0.942 
+(epoch: 5, batches: 100, time: 0.003, data: 7.238) loss_D_real: 0.818 loss_D_fake: 0.280 loss_D: 0.549 loss_G: 1.304 loss_conv: 1.566 loss_eq: 0.262 acc_real: 0.411 acc_fake: 0.953 
+(epoch: 5, batches: 120, time: 0.003, data: 6.813) loss_D_real: 0.823 loss_D_fake: 0.393 loss_D: 0.608 loss_G: 1.208 loss_conv: 1.864 loss_eq: 0.657 acc_real: 0.398 acc_fake: 0.844 
+(epoch: 5, batches: 140, time: 0.002, data: 6.398) loss_D_real: 0.710 loss_D_fake: 0.537 loss_D: 0.623 loss_G: 1.287 loss_conv: 1.859 loss_eq: 0.573 acc_real: 0.611 acc_fake: 0.722 
+saving the model at the end of epoch 5, iters 49920
+learning rate 0.0002000 -> 0.0002000
+End of epoch 5 / 50 	 Time Taken: 423 sec
+800 tensor([[ 0.7501,  0.0000, -0.0660],
+        [ 0.0000,  0.7501, -0.1262]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 6, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.775 loss_D_fake: 0.385 loss_D: 0.580 loss_G: 1.192 loss_conv: 1.616 loss_eq: 0.425 acc_real: 0.529 acc_fake: 0.893 
+validation accuracies:
+                real: 0.50, 0.489654541015625
+                fake: 0.85, 0.30914306640625
+
+ran validation set (B:801) in                         9.2 s.
+(epoch: 6, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.894 loss_D_fake: 0.347 loss_D: 0.620 loss_G: 0.951 loss_conv: 1.519 loss_eq: 0.568 acc_real: 0.281 acc_fake: 0.910 
+(epoch: 6, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.790 loss_D_fake: 0.465 loss_D: 0.628 loss_G: 1.184 loss_conv: 1.674 loss_eq: 0.490 acc_real: 0.436 acc_fake: 0.767 
+(epoch: 6, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.803 loss_D_fake: 0.394 loss_D: 0.598 loss_G: 1.190 loss_conv: 1.668 loss_eq: 0.477 acc_real: 0.435 acc_fake: 0.875 
+(epoch: 6, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.814 loss_D_fake: 0.383 loss_D: 0.599 loss_G: 1.065 loss_conv: 1.483 loss_eq: 0.418 acc_real: 0.386 acc_fake: 0.877 
+900 tensor([[ 0.7501,  0.0000,  0.0250],
+        [ 0.0000,  0.7501, -0.3062]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 6, batches: 120, time: 0.004, data: 0.003) loss_D_real: 0.839 loss_D_fake: 0.364 loss_D: 0.601 loss_G: 1.163 loss_conv: 1.847 loss_eq: 0.684 acc_real: 0.455 acc_fake: 0.865 
+validation accuracies:
+                real: 0.57, 0.52825927734375
+                fake: 0.82, 0.324371337890625
+
+ran validation set (B:901) in                         8.8 s.
+(epoch: 6, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.681 loss_D_fake: 0.500 loss_D: 0.590 loss_G: 1.292 loss_conv: 1.725 loss_eq: 0.433 acc_real: 0.713 acc_fake: 0.754 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 6 / 50 	 Time Taken: 425 sec
+(epoch: 7, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.861 loss_D_fake: 0.352 loss_D: 0.607 loss_G: 1.092 loss_conv: 1.661 loss_eq: 0.569 acc_real: 0.430 acc_fake: 0.893 
+(epoch: 7, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.760 loss_D_fake: 0.523 loss_D: 0.641 loss_G: 1.199 loss_conv: 1.673 loss_eq: 0.475 acc_real: 0.496 acc_fake: 0.758 
+(epoch: 7, batches: 60, time: 0.003, data: 0.003) loss_D_real: 0.811 loss_D_fake: 0.333 loss_D: 0.572 loss_G: 1.354 loss_conv: 1.810 loss_eq: 0.455 acc_real: 0.415 acc_fake: 0.927 
+1000 tensor([[ 0.7500,  0.0000,  0.1989],
+        [ 0.0000,  0.7501, -0.5386]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.39, 0.443267822265625
+                fake: 0.91, 0.27728271484375
+
+ran validation set (B:1001) in                         9.4 s.
+(epoch: 7, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.850 loss_D_fake: 0.318 loss_D: 0.584 loss_G: 1.084 loss_conv: 1.666 loss_eq: 0.582 acc_real: 0.353 acc_fake: 0.893 
+(epoch: 7, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.800 loss_D_fake: 0.342 loss_D: 0.571 loss_G: 1.234 loss_conv: 1.602 loss_eq: 0.367 acc_real: 0.512 acc_fake: 0.902 
+(epoch: 7, batches: 120, time: 0.003, data: 0.003) loss_D_real: 0.902 loss_D_fake: 0.340 loss_D: 0.621 loss_G: 1.489 loss_conv: 1.954 loss_eq: 0.465 acc_real: 0.339 acc_fake: 0.888 
+(epoch: 7, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.826 loss_D_fake: 0.466 loss_D: 0.646 loss_G: 1.200 loss_conv: 1.594 loss_eq: 0.394 acc_real: 0.426 acc_fake: 0.811 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 7 / 50 	 Time Taken: 423 sec
+1100 tensor([[ 0.7503,  0.0000,  0.1830],
+        [ 0.0000,  0.7502, -0.1348]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.51, 0.489959716796875
+                fake: 0.87, 0.288726806640625
+
+ran validation set (B:1101) in                         8.9 s.
+(epoch: 8, batches: 20, time: 0.002, data: 0.034) loss_D_real: 0.982 loss_D_fake: 0.295 loss_D: 0.638 loss_G: 0.950 loss_conv: 1.433 loss_eq: 0.483 acc_real: 0.270 acc_fake: 0.963 
+(epoch: 8, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.866 loss_D_fake: 0.363 loss_D: 0.614 loss_G: 0.971 loss_conv: 1.379 loss_eq: 0.408 acc_real: 0.270 acc_fake: 0.844 
+(epoch: 8, batches: 60, time: 0.002, data: 0.003) loss_D_real: 0.788 loss_D_fake: 0.486 loss_D: 0.637 loss_G: 1.109 loss_conv: 1.656 loss_eq: 0.547 acc_real: 0.492 acc_fake: 0.787 
+(epoch: 8, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.635 loss_D_fake: 0.640 loss_D: 0.637 loss_G: 1.298 loss_conv: 1.781 loss_eq: 0.483 acc_real: 0.738 acc_fake: 0.609 
+(epoch: 8, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.889 loss_D_fake: 0.363 loss_D: 0.626 loss_G: 1.071 loss_conv: 1.560 loss_eq: 0.488 acc_real: 0.347 acc_fake: 0.863 
+1200 tensor([[ 0.7501,  0.0000,  0.1188],
+        [ 0.0000,  0.7501, -0.1094]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.48, 0.48150634765625
+                fake: 0.88, 0.278350830078125
+
+ran validation set (B:1201) in                         9.0 s.
+(epoch: 8, batches: 120, time: 0.002, data: 0.003) loss_D_real: 0.679 loss_D_fake: 0.428 loss_D: 0.554 loss_G: 1.025 loss_conv: 1.415 loss_eq: 0.390 acc_real: 0.665 acc_fake: 0.847 
+(epoch: 8, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.915 loss_D_fake: 0.309 loss_D: 0.612 loss_G: 1.089 loss_conv: 1.719 loss_eq: 0.629 acc_real: 0.346 acc_fake: 0.943 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 8 / 50 	 Time Taken: 422 sec
+(epoch: 9, batches: 20, time: 0.003, data: 0.003) loss_D_real: 0.771 loss_D_fake: 0.387 loss_D: 0.579 loss_G: 1.197 loss_conv: 1.829 loss_eq: 0.632 acc_real: 0.504 acc_fake: 0.918 
+(epoch: 9, batches: 40, time: 0.002, data: 0.003) loss_D_real: 0.661 loss_D_fake: 0.546 loss_D: 0.603 loss_G: 1.350 loss_conv: 1.730 loss_eq: 0.381 acc_real: 0.720 acc_fake: 0.716 
+1300 tensor([[ 0.7500,  0.0000,  0.5728],
+        [ 0.0000,  0.7500, -0.3755]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.59, 0.534423828125
+                fake: 0.83, 0.32037353515625
+
+ran validation set (B:1301) in                         9.5 s.
+(epoch: 9, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.811 loss_D_fake: 0.396 loss_D: 0.604 loss_G: 1.559 loss_conv: 1.965 loss_eq: 0.407 acc_real: 0.496 acc_fake: 0.831 
+(epoch: 9, batches: 80, time: 0.002, data: 0.003) loss_D_real: 0.658 loss_D_fake: 0.563 loss_D: 0.611 loss_G: 1.259 loss_conv: 1.916 loss_eq: 0.656 acc_real: 0.754 acc_fake: 0.726 
+(epoch: 9, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.791 loss_D_fake: 0.449 loss_D: 0.620 loss_G: 1.217 loss_conv: 1.723 loss_eq: 0.506 acc_real: 0.512 acc_fake: 0.810 
+(epoch: 9, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.708 loss_D_fake: 0.428 loss_D: 0.568 loss_G: 1.000 loss_conv: 1.492 loss_eq: 0.491 acc_real: 0.583 acc_fake: 0.849 
+(epoch: 9, batches: 140, time: 0.003, data: 0.017) loss_D_real: 0.818 loss_D_fake: 0.312 loss_D: 0.565 loss_G: 1.156 loss_conv: 1.612 loss_eq: 0.456 acc_real: 0.479 acc_fake: 0.900 
+1400 tensor([[ 0.7500,  0.0000,  0.6369],
+        [ 0.0000,  0.7501, -0.2696]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.61, 0.54571533203125
+                fake: 0.77, 0.360870361328125
+
+ran validation set (B:1401) in                         6.3 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 9 / 50 	 Time Taken: 421 sec
+(epoch: 10, batches: 20, time: 0.002, data: 9.922) loss_D_real: 0.677 loss_D_fake: 0.451 loss_D: 0.564 loss_G: 1.385 loss_conv: 1.816 loss_eq: 0.431 acc_real: 0.707 acc_fake: 0.823 
+(epoch: 10, batches: 40, time: 0.002, data: 9.936) loss_D_real: 0.721 loss_D_fake: 0.422 loss_D: 0.572 loss_G: 1.428 loss_conv: 1.761 loss_eq: 0.333 acc_real: 0.590 acc_fake: 0.861 
+(epoch: 10, batches: 60, time: 0.002, data: 9.849) loss_D_real: 0.912 loss_D_fake: 0.291 loss_D: 0.602 loss_G: 1.478 loss_conv: 2.009 loss_eq: 0.531 acc_real: 0.399 acc_fake: 0.915 
+(epoch: 10, batches: 80, time: 0.003, data: 9.544) loss_D_real: 0.688 loss_D_fake: 0.463 loss_D: 0.576 loss_G: 1.393 loss_conv: 1.879 loss_eq: 0.486 acc_real: 0.676 acc_fake: 0.828 
+1500 tensor([[ 0.7501,  0.0000,  0.5361],
+        [ 0.0000,  0.7501, -0.3569]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.62, 0.54437255859375
+                fake: 0.81, 0.341217041015625
+
+ran validation set (B:1501) in                         9.2 s.
+(epoch: 10, batches: 100, time: 0.003, data: 8.980) loss_D_real: 0.741 loss_D_fake: 0.461 loss_D: 0.601 loss_G: 1.165 loss_conv: 1.571 loss_eq: 0.405 acc_real: 0.574 acc_fake: 0.766 
+(epoch: 10, batches: 120, time: 0.003, data: 7.931) loss_D_real: 0.731 loss_D_fake: 0.403 loss_D: 0.567 loss_G: 1.176 loss_conv: 1.568 loss_eq: 0.392 acc_real: 0.592 acc_fake: 0.821 
+(epoch: 10, batches: 140, time: 0.002, data: 7.425) loss_D_real: 0.663 loss_D_fake: 0.489 loss_D: 0.576 loss_G: 1.183 loss_conv: 1.882 loss_eq: 0.700 acc_real: 0.703 acc_fake: 0.801 
+saving the model at the end of epoch 10, iters 99840
+learning rate 0.0002000 -> 0.0001600
+End of epoch 10 / 50 	 Time Taken: 420 sec
+(epoch: 11, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.799 loss_D_fake: 0.422 loss_D: 0.610 loss_G: 1.119 loss_conv: 1.682 loss_eq: 0.563 acc_real: 0.436 acc_fake: 0.831 
+1600 tensor([[ 0.7500,  0.0000,  0.0039],
+        [ 0.0000,  0.7501, -0.4419]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 11, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.741 loss_D_fake: 0.333 loss_D: 0.537 loss_G: 1.216 loss_conv: 1.710 loss_eq: 0.495 acc_real: 0.552 acc_fake: 0.903 
+validation accuracies:
+                real: 0.46, 0.472320556640625
+                fake: 0.90, 0.27239990234375
+
+ran validation set (B:1601) in                         9.4 s.
+(epoch: 11, batches: 60, time: 0.002, data: 0.326) loss_D_real: 0.727 loss_D_fake: 0.452 loss_D: 0.589 loss_G: 1.218 loss_conv: 1.655 loss_eq: 0.437 acc_real: 0.557 acc_fake: 0.770 
+(epoch: 11, batches: 80, time: 0.002, data: 0.328) loss_D_real: 0.751 loss_D_fake: 0.438 loss_D: 0.594 loss_G: 1.193 loss_conv: 1.852 loss_eq: 0.659 acc_real: 0.504 acc_fake: 0.822 
+(epoch: 11, batches: 100, time: 0.003, data: 0.739) loss_D_real: 0.764 loss_D_fake: 0.434 loss_D: 0.599 loss_G: 1.287 loss_conv: 1.774 loss_eq: 0.486 acc_real: 0.504 acc_fake: 0.871 
+(epoch: 11, batches: 120, time: 0.002, data: 0.210) loss_D_real: 0.778 loss_D_fake: 0.424 loss_D: 0.601 loss_G: 1.001 loss_conv: 1.375 loss_eq: 0.374 acc_real: 0.551 acc_fake: 0.886 
+1700 tensor([[ 0.7500,  0.0000,  0.1595],
+        [ 0.0000,  0.7500, -0.0540]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 11, batches: 140, time: 0.003, data: 0.646) loss_D_real: 0.979 loss_D_fake: 0.322 loss_D: 0.650 loss_G: 1.047 loss_conv: 1.541 loss_eq: 0.494 acc_real: 0.246 acc_fake: 0.927 
+validation accuracies:
+                real: 0.57, 0.52618408203125
+                fake: 0.82, 0.3399658203125
+
+ran validation set (B:1701) in                         9.5 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 11 / 50 	 Time Taken: 420 sec
+(epoch: 12, batches: 20, time: 0.003, data: 0.027) loss_D_real: 0.716 loss_D_fake: 0.333 loss_D: 0.525 loss_G: 1.226 loss_conv: 1.807 loss_eq: 0.581 acc_real: 0.598 acc_fake: 0.938 
+(epoch: 12, batches: 40, time: 0.002, data: 0.032) loss_D_real: 0.800 loss_D_fake: 0.400 loss_D: 0.600 loss_G: 1.109 loss_conv: 1.660 loss_eq: 0.551 acc_real: 0.432 acc_fake: 0.881 
+(epoch: 12, batches: 60, time: 0.002, data: 0.316) loss_D_real: 0.749 loss_D_fake: 0.330 loss_D: 0.539 loss_G: 1.191 loss_conv: 1.626 loss_eq: 0.436 acc_real: 0.614 acc_fake: 0.898 
+(epoch: 12, batches: 80, time: 0.002, data: 1.005) loss_D_real: 0.901 loss_D_fake: 0.300 loss_D: 0.600 loss_G: 1.006 loss_conv: 1.401 loss_eq: 0.395 acc_real: 0.356 acc_fake: 0.915 
+1800 tensor([[ 0.7502,  0.0000, -0.4637],
+        [ 0.0000,  0.7502, -0.2313]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.34, 0.4027099609375
+                fake: 0.95, 0.1912689208984375
+
+ran validation set (B:1801) in                         9.2 s.
+(epoch: 12, batches: 100, time: 0.002, data: 0.602) loss_D_real: 0.690 loss_D_fake: 0.490 loss_D: 0.590 loss_G: 1.171 loss_conv: 1.797 loss_eq: 0.626 acc_real: 0.644 acc_fake: 0.754 
+(epoch: 12, batches: 120, time: 0.002, data: 0.549) loss_D_real: 0.750 loss_D_fake: 0.450 loss_D: 0.600 loss_G: 1.133 loss_conv: 1.577 loss_eq: 0.443 acc_real: 0.582 acc_fake: 0.793 
+(epoch: 12, batches: 140, time: 0.002, data: 0.703) loss_D_real: 0.789 loss_D_fake: 0.358 loss_D: 0.574 loss_G: 1.282 loss_conv: 1.895 loss_eq: 0.613 acc_real: 0.508 acc_fake: 0.905 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 12 / 50 	 Time Taken: 416 sec
+(epoch: 13, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.836 loss_D_fake: 0.260 loss_D: 0.548 loss_G: 1.182 loss_conv: 1.619 loss_eq: 0.437 acc_real: 0.427 acc_fake: 0.964 
+1900 tensor([[ 0.7500,  0.0000,  0.6247],
+        [ 0.0000,  0.7500, -0.5654]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.67, 0.57904052734375
+                fake: 0.78, 0.34442138671875
+
+ran validation set (B:1901) in                         9.4 s.
+(epoch: 13, batches: 40, time: 0.003, data: 0.005) loss_D_real: 0.817 loss_D_fake: 0.354 loss_D: 0.585 loss_G: 1.156 loss_conv: 1.631 loss_eq: 0.475 acc_real: 0.429 acc_fake: 0.929 
+(epoch: 13, batches: 60, time: 0.002, data: 0.262) loss_D_real: 0.756 loss_D_fake: 0.419 loss_D: 0.587 loss_G: 1.184 loss_conv: 1.610 loss_eq: 0.426 acc_real: 0.586 acc_fake: 0.858 
+(epoch: 13, batches: 80, time: 0.003, data: 0.005) loss_D_real: 0.771 loss_D_fake: 0.444 loss_D: 0.607 loss_G: 1.232 loss_conv: 1.749 loss_eq: 0.516 acc_real: 0.529 acc_fake: 0.787 
+(epoch: 13, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.781 loss_D_fake: 0.406 loss_D: 0.593 loss_G: 1.290 loss_conv: 1.678 loss_eq: 0.388 acc_real: 0.570 acc_fake: 0.848 
+(epoch: 13, batches: 120, time: 0.002, data: 0.062) loss_D_real: 0.704 loss_D_fake: 0.572 loss_D: 0.638 loss_G: 1.253 loss_conv: 1.683 loss_eq: 0.429 acc_real: 0.638 acc_fake: 0.683 
+2000 tensor([[ 0.7501,  0.0000,  0.3705],
+        [ 0.0000,  0.7501, -0.2018]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.54, 0.513671875
+                fake: 0.86, 0.293731689453125
+
+ran validation set (B:2001) in                         8.7 s.
+(epoch: 13, batches: 140, time: 0.003, data: 1.082) loss_D_real: 0.819 loss_D_fake: 0.327 loss_D: 0.573 loss_G: 1.212 loss_conv: 1.565 loss_eq: 0.353 acc_real: 0.392 acc_fake: 0.925 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 13 / 50 	 Time Taken: 420 sec
+(epoch: 14, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.765 loss_D_fake: 0.461 loss_D: 0.613 loss_G: 1.227 loss_conv: 1.754 loss_eq: 0.527 acc_real: 0.463 acc_fake: 0.804 
+(epoch: 14, batches: 40, time: 0.003, data: 0.003) loss_D_real: 0.804 loss_D_fake: 0.336 loss_D: 0.570 loss_G: 1.347 loss_conv: 1.883 loss_eq: 0.536 acc_real: 0.475 acc_fake: 0.902 
+(epoch: 14, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.723 loss_D_fake: 0.464 loss_D: 0.594 loss_G: 1.167 loss_conv: 1.695 loss_eq: 0.528 acc_real: 0.614 acc_fake: 0.833 
+2100 tensor([[ 0.7500,  0.0000, -0.4799],
+        [ 0.0000,  0.7500, -0.5438]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.63, 0.55810546875
+                fake: 0.76, 0.35064697265625
+
+ran validation set (B:2101) in                         8.9 s.
+(epoch: 14, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.791 loss_D_fake: 0.419 loss_D: 0.605 loss_G: 1.358 loss_conv: 1.858 loss_eq: 0.500 acc_real: 0.567 acc_fake: 0.841 
+(epoch: 14, batches: 100, time: 0.003, data: 0.350) loss_D_real: 0.939 loss_D_fake: 0.274 loss_D: 0.607 loss_G: 0.948 loss_conv: 1.295 loss_eq: 0.347 acc_real: 0.381 acc_fake: 0.898 
+(epoch: 14, batches: 120, time: 0.003, data: 1.087) loss_D_real: 0.755 loss_D_fake: 0.377 loss_D: 0.566 loss_G: 1.127 loss_conv: 1.687 loss_eq: 0.560 acc_real: 0.581 acc_fake: 0.919 
+(epoch: 14, batches: 140, time: 0.003, data: 1.991) loss_D_real: 0.776 loss_D_fake: 0.333 loss_D: 0.555 loss_G: 1.181 loss_conv: 1.650 loss_eq: 0.469 acc_real: 0.536 acc_fake: 0.883 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 14 / 50 	 Time Taken: 421 sec
+2200 tensor([[ 0.7500,  0.0000, -0.3299],
+        [ 0.0000,  0.7500, -0.3907]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.62, 0.55474853515625
+                fake: 0.83, 0.315765380859375
+
+ran validation set (B:2201) in                         8.4 s.
+(epoch: 15, batches: 20, time: 0.002, data: 9.986) loss_D_real: 0.690 loss_D_fake: 0.439 loss_D: 0.565 loss_G: 1.204 loss_conv: 1.788 loss_eq: 0.585 acc_real: 0.676 acc_fake: 0.832 
+(epoch: 15, batches: 40, time: 0.003, data: 8.682) loss_D_real: 0.746 loss_D_fake: 0.348 loss_D: 0.547 loss_G: 1.038 loss_conv: 1.669 loss_eq: 0.630 acc_real: 0.602 acc_fake: 0.902 
+(epoch: 15, batches: 60, time: 0.003, data: 9.318) loss_D_real: 0.786 loss_D_fake: 0.395 loss_D: 0.590 loss_G: 1.306 loss_conv: 1.711 loss_eq: 0.405 acc_real: 0.475 acc_fake: 0.839 
+(epoch: 15, batches: 80, time: 0.002, data: 9.493) loss_D_real: 0.696 loss_D_fake: 0.547 loss_D: 0.622 loss_G: 1.285 loss_conv: 1.973 loss_eq: 0.688 acc_real: 0.664 acc_fake: 0.697 
+(epoch: 15, batches: 100, time: 0.003, data: 9.405) loss_D_real: 0.784 loss_D_fake: 0.349 loss_D: 0.567 loss_G: 1.269 loss_conv: 1.865 loss_eq: 0.596 acc_real: 0.521 acc_fake: 0.894 
+2300 tensor([[ 0.7500,  0.0000,  0.6317],
+        [ 0.0000,  0.7500, -0.3065]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.55, 0.512298583984375
+                fake: 0.84, 0.3116455078125
+
+ran validation set (B:2301) in                         9.2 s.
+(epoch: 15, batches: 120, time: 0.002, data: 9.276) loss_D_real: 0.784 loss_D_fake: 0.408 loss_D: 0.596 loss_G: 1.168 loss_conv: 1.719 loss_eq: 0.551 acc_real: 0.500 acc_fake: 0.831 
+(epoch: 15, batches: 140, time: 0.003, data: 9.392) loss_D_real: 0.859 loss_D_fake: 0.389 loss_D: 0.624 loss_G: 1.307 loss_conv: 1.698 loss_eq: 0.391 acc_real: 0.406 acc_fake: 0.816 
+saving the model at the end of epoch 15, iters 149760
+learning rate 0.0001600 -> 0.0001600
+End of epoch 15 / 50 	 Time Taken: 426 sec
+(epoch: 16, batches: 20, time: 0.002, data: 0.001) loss_D_real: 1.019 loss_D_fake: 0.185 loss_D: 0.602 loss_G: 1.122 loss_conv: 1.629 loss_eq: 0.507 acc_real: 0.258 acc_fake: 0.938 
+(epoch: 16, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.857 loss_D_fake: 0.333 loss_D: 0.595 loss_G: 1.190 loss_conv: 1.585 loss_eq: 0.395 acc_real: 0.379 acc_fake: 0.927 
+2400 tensor([[ 0.7500,  0.0000,  0.3482],
+        [ 0.0000,  0.7500, -0.5825]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 16, batches: 60, time: 0.004, data: 0.002) loss_D_real: 0.751 loss_D_fake: 0.372 loss_D: 0.562 loss_G: 1.304 loss_conv: 1.739 loss_eq: 0.435 acc_real: 0.539 acc_fake: 0.892 
+validation accuracies:
+                real: 0.47, 0.473114013671875
+                fake: 0.90, 0.2550048828125
+
+ran validation set (B:2401) in                         9.8 s.
+(epoch: 16, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.791 loss_D_fake: 0.305 loss_D: 0.548 loss_G: 1.392 loss_conv: 1.889 loss_eq: 0.497 acc_real: 0.500 acc_fake: 0.943 
+(epoch: 16, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.878 loss_D_fake: 0.256 loss_D: 0.567 loss_G: 1.005 loss_conv: 1.734 loss_eq: 0.729 acc_real: 0.325 acc_fake: 0.948 
+(epoch: 16, batches: 120, time: 0.002, data: 0.002) loss_D_real: 0.767 loss_D_fake: 0.319 loss_D: 0.543 loss_G: 1.551 loss_conv: 1.939 loss_eq: 0.388 acc_real: 0.555 acc_fake: 0.915 
+(epoch: 16, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.657 loss_D_fake: 0.529 loss_D: 0.593 loss_G: 1.526 loss_conv: 2.148 loss_eq: 0.621 acc_real: 0.746 acc_fake: 0.754 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 16 / 50 	 Time Taken: 420 sec
+2500 tensor([[ 0.7500,  0.0000,  0.5601],
+        [ 0.0000,  0.7501, -0.2860]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.44, 0.456756591796875
+                fake: 0.92, 0.242950439453125
+
+ran validation set (B:2501) in                         8.7 s.
+(epoch: 17, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.708 loss_D_fake: 0.463 loss_D: 0.585 loss_G: 1.361 loss_conv: 1.847 loss_eq: 0.487 acc_real: 0.655 acc_fake: 0.802 
+(epoch: 17, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.820 loss_D_fake: 0.322 loss_D: 0.571 loss_G: 1.196 loss_conv: 1.683 loss_eq: 0.487 acc_real: 0.388 acc_fake: 0.900 
+(epoch: 17, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.782 loss_D_fake: 0.325 loss_D: 0.553 loss_G: 1.073 loss_conv: 1.884 loss_eq: 0.811 acc_real: 0.528 acc_fake: 0.899 
+(epoch: 17, batches: 80, time: 0.002, data: 0.002) loss_D_real: 0.845 loss_D_fake: 0.296 loss_D: 0.570 loss_G: 1.122 loss_conv: 1.661 loss_eq: 0.540 acc_real: 0.504 acc_fake: 0.908 
+(epoch: 17, batches: 100, time: 0.002, data: 0.001) loss_D_real: 0.719 loss_D_fake: 0.378 loss_D: 0.548 loss_G: 1.443 loss_conv: 2.004 loss_eq: 0.561 acc_real: 0.654 acc_fake: 0.851 
+2600 tensor([[ 0.7500,  0.0000,  0.3950],
+        [ 0.0000,  0.7500, -0.4011]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.66, 0.5745849609375
+                fake: 0.81, 0.324462890625
+
+ran validation set (B:2601) in                         8.7 s.
+(epoch: 17, batches: 120, time: 0.002, data: 0.003) loss_D_real: 0.851 loss_D_fake: 0.277 loss_D: 0.564 loss_G: 1.509 loss_conv: 1.969 loss_eq: 0.459 acc_real: 0.467 acc_fake: 0.925 
+(epoch: 17, batches: 140, time: 0.002, data: 0.002) loss_D_real: 0.879 loss_D_fake: 0.315 loss_D: 0.597 loss_G: 1.005 loss_conv: 1.569 loss_eq: 0.563 acc_real: 0.342 acc_fake: 0.912 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 17 / 50 	 Time Taken: 424 sec
+(epoch: 18, batches: 20, time: 0.002, data: 0.008) loss_D_real: 0.798 loss_D_fake: 0.374 loss_D: 0.586 loss_G: 0.968 loss_conv: 1.615 loss_eq: 0.647 acc_real: 0.461 acc_fake: 0.879 
+(epoch: 18, batches: 40, time: 0.003, data: 0.450) loss_D_real: 0.671 loss_D_fake: 0.442 loss_D: 0.557 loss_G: 1.299 loss_conv: 1.810 loss_eq: 0.511 acc_real: 0.689 acc_fake: 0.803 
+2700 tensor([[ 0.7501,  0.0000,  0.5437],
+        [ 0.0000,  0.7502, -0.3370]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.47, 0.46270751953125
+                fake: 0.92, 0.2178497314453125
+
+ran validation set (B:2701) in                         9.4 s.
+(epoch: 18, batches: 60, time: 0.003, data: 1.656) loss_D_real: 0.864 loss_D_fake: 0.228 loss_D: 0.546 loss_G: 1.489 loss_conv: 1.962 loss_eq: 0.473 acc_real: 0.387 acc_fake: 0.968 
+(epoch: 18, batches: 80, time: 0.003, data: 2.425) loss_D_real: 0.767 loss_D_fake: 0.332 loss_D: 0.550 loss_G: 1.006 loss_conv: 1.559 loss_eq: 0.552 acc_real: 0.593 acc_fake: 0.894 
+(epoch: 18, batches: 100, time: 0.002, data: 3.090) loss_D_real: 0.618 loss_D_fake: 0.525 loss_D: 0.571 loss_G: 1.535 loss_conv: 2.172 loss_eq: 0.637 acc_real: 0.737 acc_fake: 0.737 
+(epoch: 18, batches: 120, time: 0.002, data: 4.073) loss_D_real: 0.662 loss_D_fake: 0.496 loss_D: 0.579 loss_G: 1.235 loss_conv: 1.629 loss_eq: 0.395 acc_real: 0.686 acc_fake: 0.763 
+(epoch: 18, batches: 140, time: 0.003, data: 4.985) loss_D_real: 0.790 loss_D_fake: 0.504 loss_D: 0.647 loss_G: 1.249 loss_conv: 1.814 loss_eq: 0.566 acc_real: 0.528 acc_fake: 0.746 
+2800 tensor([[ 0.7500,  0.0000, -0.2833],
+        [ 0.0000,  0.7500, -0.5309]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.44, 0.453125
+                fake: 0.92, 0.2389068603515625
+
+ran validation set (B:2801) in                         8.5 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 18 / 50 	 Time Taken: 424 sec
+(epoch: 19, batches: 20, time: 0.003, data: 0.003) loss_D_real: 0.643 loss_D_fake: 0.460 loss_D: 0.552 loss_G: 1.485 loss_conv: 2.076 loss_eq: 0.591 acc_real: 0.746 acc_fake: 0.802 
+(epoch: 19, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.660 loss_D_fake: 0.443 loss_D: 0.551 loss_G: 1.291 loss_conv: 1.609 loss_eq: 0.318 acc_real: 0.705 acc_fake: 0.787 
+(epoch: 19, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.830 loss_D_fake: 0.393 loss_D: 0.612 loss_G: 1.289 loss_conv: 1.913 loss_eq: 0.624 acc_real: 0.479 acc_fake: 0.843 
+(epoch: 19, batches: 80, time: 0.003, data: 0.003) loss_D_real: 0.847 loss_D_fake: 0.270 loss_D: 0.559 loss_G: 1.236 loss_conv: 1.822 loss_eq: 0.585 acc_real: 0.500 acc_fake: 0.917 
+2900 tensor([[ 0.7500,  0.0000,  0.6344],
+        [ 0.0000,  0.7500, -0.2388]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.69, 0.5867919921875
+                fake: 0.80, 0.3236083984375
+
+ran validation set (B:2901) in                         8.8 s.
+(epoch: 19, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.757 loss_D_fake: 0.497 loss_D: 0.627 loss_G: 1.436 loss_conv: 1.930 loss_eq: 0.494 acc_real: 0.589 acc_fake: 0.750 
+(epoch: 19, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.886 loss_D_fake: 0.304 loss_D: 0.595 loss_G: 1.364 loss_conv: 1.771 loss_eq: 0.407 acc_real: 0.364 acc_fake: 0.886 
+(epoch: 19, batches: 140, time: 0.002, data: 0.003) loss_D_real: 0.707 loss_D_fake: 0.455 loss_D: 0.581 loss_G: 1.185 loss_conv: 1.726 loss_eq: 0.541 acc_real: 0.654 acc_fake: 0.758 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 19 / 50 	 Time Taken: 422 sec
+(epoch: 20, batches: 20, time: 0.003, data: 9.938) loss_D_real: 0.824 loss_D_fake: 0.217 loss_D: 0.520 loss_G: 1.185 loss_conv: 1.665 loss_eq: 0.480 acc_real: 0.480 acc_fake: 0.984 
+3000 tensor([[ 0.7500,  0.0000,  0.5045],
+        [ 0.0000,  0.7500, -0.5567]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.67, 0.578369140625
+                fake: 0.81, 0.31146240234375
+
+ran validation set (B:3001) in                         9.4 s.
+(epoch: 20, batches: 40, time: 0.003, data: 9.869) loss_D_real: 0.631 loss_D_fake: 0.441 loss_D: 0.536 loss_G: 1.465 loss_conv: 2.043 loss_eq: 0.578 acc_real: 0.798 acc_fake: 0.810 
+(epoch: 20, batches: 60, time: 0.003, data: 9.793) loss_D_real: 0.932 loss_D_fake: 0.268 loss_D: 0.600 loss_G: 1.710 loss_conv: 2.231 loss_eq: 0.521 acc_real: 0.391 acc_fake: 0.919 
+(epoch: 20, batches: 80, time: 0.002, data: 9.858) loss_D_real: 0.800 loss_D_fake: 0.297 loss_D: 0.549 loss_G: 1.069 loss_conv: 1.654 loss_eq: 0.584 acc_real: 0.484 acc_fake: 0.926 
+(epoch: 20, batches: 100, time: 0.003, data: 9.806) loss_D_real: 0.796 loss_D_fake: 0.264 loss_D: 0.530 loss_G: 1.445 loss_conv: 1.796 loss_eq: 0.351 acc_real: 0.471 acc_fake: 0.975 
+(epoch: 20, batches: 120, time: 0.003, data: 9.854) loss_D_real: 0.958 loss_D_fake: 0.236 loss_D: 0.597 loss_G: 1.642 loss_conv: 2.026 loss_eq: 0.384 acc_real: 0.291 acc_fake: 0.975 
+3100 tensor([[ 0.7500,  0.0000,  0.6212],
+        [ 0.0000,  0.7500, -0.1658]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.52, 0.497161865234375
+                fake: 0.87, 0.27655029296875
+
+ran validation set (B:3101) in                         8.8 s.
+(epoch: 20, batches: 140, time: 0.003, data: 9.735) loss_D_real: 0.740 loss_D_fake: 0.353 loss_D: 0.546 loss_G: 1.190 loss_conv: 1.622 loss_eq: 0.432 acc_real: 0.545 acc_fake: 0.840 
+saving the model at the end of epoch 20, iters 199680
+learning rate 0.0001600 -> 0.0001280
+End of epoch 20 / 50 	 Time Taken: 417 sec
+(epoch: 21, batches: 20, time: 0.002, data: 0.005) loss_D_real: 0.713 loss_D_fake: 0.332 loss_D: 0.522 loss_G: 1.517 loss_conv: 2.131 loss_eq: 0.614 acc_real: 0.627 acc_fake: 0.906 
+(epoch: 21, batches: 40, time: 0.002, data: 0.047) loss_D_real: 0.832 loss_D_fake: 0.315 loss_D: 0.573 loss_G: 1.005 loss_conv: 1.631 loss_eq: 0.626 acc_real: 0.512 acc_fake: 0.904 
+(epoch: 21, batches: 60, time: 0.002, data: 0.054) loss_D_real: 0.699 loss_D_fake: 0.334 loss_D: 0.516 loss_G: 1.291 loss_conv: 1.840 loss_eq: 0.549 acc_real: 0.661 acc_fake: 0.911 
+3200 tensor([[ 0.7504,  0.0000, -0.6579],
+        [ 0.0000,  0.7501, -0.4204]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 21, batches: 80, time: 0.004, data: 0.081) loss_D_real: 0.789 loss_D_fake: 0.295 loss_D: 0.542 loss_G: 1.265 loss_conv: 1.945 loss_eq: 0.680 acc_real: 0.517 acc_fake: 0.925 
+validation accuracies:
+                real: 0.51, 0.4888916015625
+                fake: 0.87, 0.2657470703125
+
+ran validation set (B:3201) in                         9.2 s.
+(epoch: 21, batches: 100, time: 0.002, data: 0.239) loss_D_real: 0.724 loss_D_fake: 0.383 loss_D: 0.553 loss_G: 1.456 loss_conv: 1.959 loss_eq: 0.503 acc_real: 0.596 acc_fake: 0.851 
+(epoch: 21, batches: 120, time: 0.003, data: 0.239) loss_D_real: 0.729 loss_D_fake: 0.329 loss_D: 0.529 loss_G: 1.312 loss_conv: 1.752 loss_eq: 0.440 acc_real: 0.627 acc_fake: 0.881 
+(epoch: 21, batches: 140, time: 0.002, data: 0.232) loss_D_real: 0.878 loss_D_fake: 0.232 loss_D: 0.555 loss_G: 1.398 loss_conv: 1.949 loss_eq: 0.551 acc_real: 0.462 acc_fake: 0.958 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 21 / 50 	 Time Taken: 423 sec
+(epoch: 22, batches: 20, time: 0.002, data: 0.003) loss_D_real: 0.639 loss_D_fake: 0.352 loss_D: 0.496 loss_G: 1.367 loss_conv: 1.717 loss_eq: 0.350 acc_real: 0.750 acc_fake: 0.887 
+3300 tensor([[ 0.7500,  0.0000, -0.3441],
+        [ 0.0000,  0.7500, -0.5376]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.58, 0.530609130859375
+                fake: 0.83, 0.3048095703125
+
+ran validation set (B:3301) in                         8.7 s.
+(epoch: 22, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.890 loss_D_fake: 0.315 loss_D: 0.602 loss_G: 1.157 loss_conv: 1.664 loss_eq: 0.507 acc_real: 0.355 acc_fake: 0.923 
+(epoch: 22, batches: 60, time: 0.003, data: 0.003) loss_D_real: 0.767 loss_D_fake: 0.339 loss_D: 0.553 loss_G: 1.491 loss_conv: 2.071 loss_eq: 0.580 acc_real: 0.460 acc_fake: 0.883 
+(epoch: 22, batches: 80, time: 0.003, data: 0.003) loss_D_real: 0.725 loss_D_fake: 0.444 loss_D: 0.584 loss_G: 1.152 loss_conv: 1.640 loss_eq: 0.488 acc_real: 0.621 acc_fake: 0.787 
+(epoch: 22, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.875 loss_D_fake: 0.292 loss_D: 0.584 loss_G: 1.001 loss_conv: 1.673 loss_eq: 0.672 acc_real: 0.441 acc_fake: 0.919 
+(epoch: 22, batches: 120, time: 0.003, data: 0.003) loss_D_real: 0.676 loss_D_fake: 0.420 loss_D: 0.548 loss_G: 1.165 loss_conv: 1.771 loss_eq: 0.605 acc_real: 0.738 acc_fake: 0.816 
+3400 tensor([[ 0.7500,  0.0000, -0.0803],
+        [ 0.0000,  0.7500, -0.4278]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.63, 0.55450439453125
+                fake: 0.83, 0.311431884765625
+
+ran validation set (B:3401) in                         8.6 s.
+(epoch: 22, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.788 loss_D_fake: 0.421 loss_D: 0.604 loss_G: 1.190 loss_conv: 1.703 loss_eq: 0.513 acc_real: 0.546 acc_fake: 0.800 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 22 / 50 	 Time Taken: 425 sec
+(epoch: 23, batches: 20, time: 0.003, data: 0.030) loss_D_real: 0.773 loss_D_fake: 0.312 loss_D: 0.543 loss_G: 1.228 loss_conv: 1.872 loss_eq: 0.645 acc_real: 0.458 acc_fake: 0.929 
+(epoch: 23, batches: 40, time: 0.003, data: 0.019) loss_D_real: 0.899 loss_D_fake: 0.290 loss_D: 0.595 loss_G: 1.234 loss_conv: 1.708 loss_eq: 0.474 acc_real: 0.412 acc_fake: 0.904 
+(epoch: 23, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.741 loss_D_fake: 0.409 loss_D: 0.575 loss_G: 1.348 loss_conv: 1.939 loss_eq: 0.590 acc_real: 0.575 acc_fake: 0.837 
+3500 tensor([[ 0.7500,  0.0000, -0.2282],
+        [ 0.0000,  0.7500, -0.2415]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.62, 0.55206298828125
+                fake: 0.79, 0.3271484375
+
+ran validation set (B:3501) in                         8.9 s.
+(epoch: 23, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.910 loss_D_fake: 0.218 loss_D: 0.564 loss_G: 1.211 loss_conv: 1.815 loss_eq: 0.603 acc_real: 0.371 acc_fake: 0.963 
+(epoch: 23, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.723 loss_D_fake: 0.316 loss_D: 0.519 loss_G: 1.362 loss_conv: 1.761 loss_eq: 0.399 acc_real: 0.542 acc_fake: 0.938 
+(epoch: 23, batches: 120, time: 0.003, data: 0.003) loss_D_real: 0.760 loss_D_fake: 0.369 loss_D: 0.565 loss_G: 1.426 loss_conv: 1.892 loss_eq: 0.466 acc_real: 0.692 acc_fake: 0.850 
+(epoch: 23, batches: 140, time: 0.002, data: 0.002) loss_D_real: 0.708 loss_D_fake: 0.419 loss_D: 0.563 loss_G: 1.528 loss_conv: 2.196 loss_eq: 0.668 acc_real: 0.594 acc_fake: 0.828 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 23 / 50 	 Time Taken: 418 sec
+3600 tensor([[ 0.7500,  0.0000,  0.5893],
+        [ 0.0000,  0.7500, -0.2951]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.46, 0.470062255859375
+                fake: 0.90, 0.23919677734375
+
+ran validation set (B:3601) in                         9.7 s.
+(epoch: 24, batches: 20, time: 0.003, data: 0.180) loss_D_real: 0.731 loss_D_fake: 0.311 loss_D: 0.521 loss_G: 1.263 loss_conv: 1.816 loss_eq: 0.553 acc_real: 0.554 acc_fake: 0.950 
+(epoch: 24, batches: 40, time: 0.002, data: 0.319) loss_D_real: 0.786 loss_D_fake: 0.267 loss_D: 0.527 loss_G: 1.426 loss_conv: 2.055 loss_eq: 0.629 acc_real: 0.546 acc_fake: 0.929 
+(epoch: 24, batches: 60, time: 0.002, data: 0.302) loss_D_real: 0.695 loss_D_fake: 0.352 loss_D: 0.523 loss_G: 1.392 loss_conv: 1.986 loss_eq: 0.594 acc_real: 0.616 acc_fake: 0.841 
+(epoch: 24, batches: 80, time: 0.002, data: 0.166) loss_D_real: 0.729 loss_D_fake: 0.238 loss_D: 0.483 loss_G: 1.413 loss_conv: 1.847 loss_eq: 0.434 acc_real: 0.607 acc_fake: 0.951 
+(epoch: 24, batches: 100, time: 0.003, data: 0.121) loss_D_real: 0.871 loss_D_fake: 0.298 loss_D: 0.584 loss_G: 1.209 loss_conv: 1.751 loss_eq: 0.543 acc_real: 0.390 acc_fake: 0.894 
+3700 tensor([[ 0.7500,  0.0000, -0.3886],
+        [ 0.0000,  0.7500, -0.4987]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.48, 0.47216796875
+                fake: 0.90, 0.2344207763671875
+
+ran validation set (B:3701) in                         9.0 s.
+(epoch: 24, batches: 120, time: 0.003, data: 1.426) loss_D_real: 0.672 loss_D_fake: 0.406 loss_D: 0.539 loss_G: 1.291 loss_conv: 1.710 loss_eq: 0.419 acc_real: 0.701 acc_fake: 0.840 
+(epoch: 24, batches: 140, time: 0.003, data: 1.378) loss_D_real: 0.659 loss_D_fake: 0.453 loss_D: 0.556 loss_G: 1.329 loss_conv: 1.718 loss_eq: 0.390 acc_real: 0.718 acc_fake: 0.805 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 24 / 50 	 Time Taken: 425 sec
+(epoch: 25, batches: 20, time: 0.003, data: 9.892) loss_D_real: 0.854 loss_D_fake: 0.242 loss_D: 0.548 loss_G: 1.255 loss_conv: 1.862 loss_eq: 0.607 acc_real: 0.407 acc_fake: 0.935 
+(epoch: 25, batches: 40, time: 0.003, data: 9.965) loss_D_real: 0.618 loss_D_fake: 0.496 loss_D: 0.557 loss_G: 1.594 loss_conv: 2.115 loss_eq: 0.522 acc_real: 0.758 acc_fake: 0.775 
+3800 tensor([[ 0.7500,  0.0000,  0.1188],
+        [ 0.0000,  0.7500, -0.5561]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.55, 0.512451171875
+                fake: 0.85, 0.2674560546875
+
+ran validation set (B:3801) in                         9.0 s.
+(epoch: 25, batches: 60, time: 0.002, data: 9.887) loss_D_real: 0.885 loss_D_fake: 0.273 loss_D: 0.579 loss_G: 1.562 loss_conv: 2.183 loss_eq: 0.621 acc_real: 0.356 acc_fake: 0.928 
+(epoch: 25, batches: 80, time: 0.002, data: 10.000) loss_D_real: 0.655 loss_D_fake: 0.495 loss_D: 0.575 loss_G: 1.551 loss_conv: 2.066 loss_eq: 0.515 acc_real: 0.742 acc_fake: 0.721 
+(epoch: 25, batches: 100, time: 0.003, data: 9.992) loss_D_real: 0.657 loss_D_fake: 0.389 loss_D: 0.523 loss_G: 1.523 loss_conv: 2.045 loss_eq: 0.523 acc_real: 0.733 acc_fake: 0.846 
+(epoch: 25, batches: 120, time: 0.003, data: 10.080) loss_D_real: 0.622 loss_D_fake: 0.388 loss_D: 0.505 loss_G: 1.106 loss_conv: 1.724 loss_eq: 0.618 acc_real: 0.734 acc_fake: 0.859 
+(epoch: 25, batches: 140, time: 0.003, data: 10.037) loss_D_real: 0.790 loss_D_fake: 0.313 loss_D: 0.551 loss_G: 1.284 loss_conv: 1.910 loss_eq: 0.626 acc_real: 0.531 acc_fake: 0.862 
+3900 tensor([[ 0.7501,  0.0000, -0.5941],
+        [ 0.0000,  0.7500, -0.4318]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+saving the model at the end of epoch 25, iters 249600
+learning rate 0.0001280 -> 0.0001280
+End of epoch 25 / 50 	 Time Taken: 417 sec
+validation accuracies:
+                real: 0.54, 0.504364013671875
+                fake: 0.87, 0.263671875
+
+ran validation set (B:3901) in                         9.3 s.
+(epoch: 26, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.735 loss_D_fake: 0.378 loss_D: 0.557 loss_G: 1.247 loss_conv: 1.702 loss_eq: 0.455 acc_real: 0.611 acc_fake: 0.848 
+(epoch: 26, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.648 loss_D_fake: 0.516 loss_D: 0.582 loss_G: 1.703 loss_conv: 2.222 loss_eq: 0.519 acc_real: 0.750 acc_fake: 0.698 
+(epoch: 26, batches: 60, time: 0.002, data: 0.003) loss_D_real: 0.842 loss_D_fake: 0.351 loss_D: 0.597 loss_G: 1.571 loss_conv: 2.182 loss_eq: 0.612 acc_real: 0.373 acc_fake: 0.842 
+(epoch: 26, batches: 80, time: 0.003, data: 0.050) loss_D_real: 0.731 loss_D_fake: 0.327 loss_D: 0.529 loss_G: 1.480 loss_conv: 2.154 loss_eq: 0.674 acc_real: 0.653 acc_fake: 0.886 
+4000 tensor([[ 0.7500,  0.0000, -0.3173],
+        [ 0.0000,  0.7500, -0.0655]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 26, batches: 100, time: 0.005, data: 0.010) loss_D_real: 0.703 loss_D_fake: 0.310 loss_D: 0.507 loss_G: 1.530 loss_conv: 2.139 loss_eq: 0.610 acc_real: 0.607 acc_fake: 0.881 
+validation accuracies:
+                real: 0.58, 0.53387451171875
+                fake: 0.88, 0.24169921875
+
+ran validation set (B:4001) in                         9.5 s.
+(epoch: 26, batches: 120, time: 0.002, data: 0.002) loss_D_real: 0.830 loss_D_fake: 0.297 loss_D: 0.563 loss_G: 1.855 loss_conv: 2.305 loss_eq: 0.450 acc_real: 0.438 acc_fake: 0.906 
+(epoch: 26, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.713 loss_D_fake: 0.434 loss_D: 0.574 loss_G: 1.491 loss_conv: 1.987 loss_eq: 0.495 acc_real: 0.721 acc_fake: 0.738 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 26 / 50 	 Time Taken: 423 sec
+(epoch: 27, batches: 20, time: 0.002, data: 0.003) loss_D_real: 0.818 loss_D_fake: 0.276 loss_D: 0.547 loss_G: 1.346 loss_conv: 1.769 loss_eq: 0.423 acc_real: 0.513 acc_fake: 0.914 
+(epoch: 27, batches: 40, time: 0.002, data: 0.031) loss_D_real: 0.696 loss_D_fake: 0.383 loss_D: 0.540 loss_G: 1.709 loss_conv: 2.235 loss_eq: 0.527 acc_real: 0.730 acc_fake: 0.859 
+4100 tensor([[ 0.7500,  0.0000, -0.3302],
+        [ 0.0000,  0.7500, -0.3827]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.62, 0.55682373046875
+                fake: 0.80, 0.3077392578125
+
+ran validation set (B:4101) in                         8.7 s.
+(epoch: 27, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.828 loss_D_fake: 0.257 loss_D: 0.543 loss_G: 1.576 loss_conv: 2.124 loss_eq: 0.548 acc_real: 0.471 acc_fake: 0.929 
+(epoch: 27, batches: 80, time: 0.003, data: 0.005) loss_D_real: 0.700 loss_D_fake: 0.385 loss_D: 0.543 loss_G: 1.122 loss_conv: 1.874 loss_eq: 0.751 acc_real: 0.623 acc_fake: 0.814 
+(epoch: 27, batches: 100, time: 0.003, data: 0.015) loss_D_real: 0.777 loss_D_fake: 0.281 loss_D: 0.529 loss_G: 1.261 loss_conv: 1.797 loss_eq: 0.536 acc_real: 0.472 acc_fake: 0.927 
+(epoch: 27, batches: 120, time: 0.003, data: 0.052) loss_D_real: 0.729 loss_D_fake: 0.343 loss_D: 0.536 loss_G: 1.367 loss_conv: 2.054 loss_eq: 0.687 acc_real: 0.540 acc_fake: 0.895 
+(epoch: 27, batches: 140, time: 0.002, data: 0.005) loss_D_real: 0.706 loss_D_fake: 0.398 loss_D: 0.552 loss_G: 1.168 loss_conv: 1.723 loss_eq: 0.555 acc_real: 0.623 acc_fake: 0.779 
+4200 tensor([[ 0.7500,  0.0000, -0.3126],
+        [ 0.0000,  0.7500, -0.3502]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.56, 0.5185546875
+                fake: 0.85, 0.275177001953125
+
+ran validation set (B:4201) in                         8.8 s.
+learning rate 0.0001280 -> 0.0001280
+End of epoch 27 / 50 	 Time Taken: 417 sec
+(epoch: 28, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.658 loss_D_fake: 0.336 loss_D: 0.497 loss_G: 1.365 loss_conv: 1.923 loss_eq: 0.558 acc_real: 0.759 acc_fake: 0.866 
+(epoch: 28, batches: 40, time: 0.002, data: 0.002) loss_D_real: 0.706 loss_D_fake: 0.356 loss_D: 0.531 loss_G: 1.349 loss_conv: 1.823 loss_eq: 0.475 acc_real: 0.660 acc_fake: 0.885 
+(epoch: 28, batches: 60, time: 0.002, data: 0.003) loss_D_real: 0.744 loss_D_fake: 0.383 loss_D: 0.563 loss_G: 1.527 loss_conv: 2.020 loss_eq: 0.492 acc_real: 0.576 acc_fake: 0.839 
+(epoch: 28, batches: 80, time: 0.003, data: 0.061) loss_D_real: 0.683 loss_D_fake: 0.356 loss_D: 0.520 loss_G: 1.642 loss_conv: 2.209 loss_eq: 0.566 acc_real: 0.634 acc_fake: 0.858 
+4300 tensor([[ 0.7500,  0.0000,  0.6578],
+        [ 0.0000,  0.7500, -0.1902]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.48, 0.47601318359375
+                fake: 0.91, 0.2110748291015625
+
+ran validation set (B:4301) in                         9.1 s.
+(epoch: 28, batches: 100, time: 0.002, data: 0.003) loss_D_real: 0.772 loss_D_fake: 0.317 loss_D: 0.544 loss_G: 1.488 loss_conv: 2.083 loss_eq: 0.595 acc_real: 0.566 acc_fake: 0.832 
+(epoch: 28, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.789 loss_D_fake: 0.342 loss_D: 0.566 loss_G: 1.381 loss_conv: 1.977 loss_eq: 0.596 acc_real: 0.575 acc_fake: 0.857 
+(epoch: 28, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.705 loss_D_fake: 0.434 loss_D: 0.569 loss_G: 1.450 loss_conv: 1.960 loss_eq: 0.510 acc_real: 0.627 acc_fake: 0.797 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 28 / 50 	 Time Taken: 421 sec
+(epoch: 29, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.633 loss_D_fake: 0.402 loss_D: 0.517 loss_G: 1.561 loss_conv: 2.065 loss_eq: 0.504 acc_real: 0.776 acc_fake: 0.853 
+4400 tensor([[ 0.7500,  0.0000,  0.6421],
+        [ 0.0000,  0.7500, -0.2734]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.41, 0.43450927734375
+                fake: 0.93, 0.1890716552734375
+
+ran validation set (B:4401) in                         9.0 s.
+(epoch: 29, batches: 40, time: 0.002, data: 0.142) loss_D_real: 0.686 loss_D_fake: 0.316 loss_D: 0.501 loss_G: 1.258 loss_conv: 2.032 loss_eq: 0.774 acc_real: 0.651 acc_fake: 0.921 
+(epoch: 29, batches: 60, time: 0.003, data: 0.139) loss_D_real: 0.637 loss_D_fake: 0.307 loss_D: 0.472 loss_G: 1.285 loss_conv: 1.724 loss_eq: 0.439 acc_real: 0.819 acc_fake: 0.911 
+(epoch: 29, batches: 80, time: 0.002, data: 0.003) loss_D_real: 0.720 loss_D_fake: 0.345 loss_D: 0.532 loss_G: 1.485 loss_conv: 2.188 loss_eq: 0.703 acc_real: 0.545 acc_fake: 0.889 
+(epoch: 29, batches: 100, time: 0.002, data: 0.003) loss_D_real: 0.865 loss_D_fake: 0.223 loss_D: 0.544 loss_G: 1.279 loss_conv: 1.934 loss_eq: 0.655 acc_real: 0.397 acc_fake: 0.957 
+(epoch: 29, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.659 loss_D_fake: 0.355 loss_D: 0.507 loss_G: 1.084 loss_conv: 1.694 loss_eq: 0.609 acc_real: 0.763 acc_fake: 0.852 
+4500 tensor([[ 0.7500,  0.0000,  0.6528],
+        [ 0.0000,  0.7500, -0.5636]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.61, 0.5433349609375
+                fake: 0.85, 0.2840576171875
+
+ran validation set (B:4501) in                         9.1 s.
+(epoch: 29, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.840 loss_D_fake: 0.253 loss_D: 0.546 loss_G: 1.158 loss_conv: 1.800 loss_eq: 0.642 acc_real: 0.442 acc_fake: 0.967 
+learning rate 0.0001280 -> 0.0001280
+End of epoch 29 / 50 	 Time Taken: 419 sec
+(epoch: 30, batches: 20, time: 0.003, data: 9.658) loss_D_real: 0.653 loss_D_fake: 0.481 loss_D: 0.567 loss_G: 1.919 loss_conv: 2.465 loss_eq: 0.545 acc_real: 0.770 acc_fake: 0.775 
+(epoch: 30, batches: 40, time: 0.003, data: 8.846) loss_D_real: 0.849 loss_D_fake: 0.285 loss_D: 0.567 loss_G: 1.174 loss_conv: 1.842 loss_eq: 0.668 acc_real: 0.441 acc_fake: 0.922 
+(epoch: 30, batches: 60, time: 0.003, data: 8.088) loss_D_real: 0.667 loss_D_fake: 0.422 loss_D: 0.545 loss_G: 1.168 loss_conv: 1.765 loss_eq: 0.597 acc_real: 0.722 acc_fake: 0.810 
+4600 tensor([[ 0.7500,  0.0000,  0.5511],
+        [ 0.0000,  0.7500, -0.3326]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.47, 0.47198486328125
+                fake: 0.88, 0.252593994140625
+
+ran validation set (B:4601) in                         9.5 s.
+(epoch: 30, batches: 80, time: 0.003, data: 7.161) loss_D_real: 0.720 loss_D_fake: 0.370 loss_D: 0.545 loss_G: 1.678 loss_conv: 2.424 loss_eq: 0.746 acc_real: 0.608 acc_fake: 0.871 
+(epoch: 30, batches: 100, time: 0.003, data: 6.055) loss_D_real: 0.736 loss_D_fake: 0.330 loss_D: 0.533 loss_G: 1.283 loss_conv: 1.935 loss_eq: 0.651 acc_real: 0.574 acc_fake: 0.881 
+(epoch: 30, batches: 120, time: 0.003, data: 5.473) loss_D_real: 0.673 loss_D_fake: 0.399 loss_D: 0.536 loss_G: 1.302 loss_conv: 1.829 loss_eq: 0.527 acc_real: 0.737 acc_fake: 0.776 
+(epoch: 30, batches: 140, time: 0.003, data: 5.030) loss_D_real: 0.713 loss_D_fake: 0.333 loss_D: 0.523 loss_G: 1.416 loss_conv: 2.034 loss_eq: 0.618 acc_real: 0.625 acc_fake: 0.863 
+saving the model at the end of epoch 30, iters 299520
+learning rate 0.0001280 -> 0.0001024
+End of epoch 30 / 50 	 Time Taken: 420 sec
+4700 tensor([[ 0.7500,  0.0000, -0.5161],
+        [ 0.0000,  0.7500, -0.0967]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 31, batches: 20, time: 0.006, data: 0.001) loss_D_real: 0.683 loss_D_fake: 0.297 loss_D: 0.490 loss_G: 1.327 loss_conv: 1.955 loss_eq: 0.629 acc_real: 0.689 acc_fake: 0.898 
+validation accuracies:
+                real: 0.48, 0.473297119140625
+                fake: 0.91, 0.2247314453125
+
+ran validation set (B:4701) in                         8.9 s.
+(epoch: 31, batches: 40, time: 0.003, data: 0.003) loss_D_real: 0.712 loss_D_fake: 0.313 loss_D: 0.512 loss_G: 1.464 loss_conv: 2.082 loss_eq: 0.619 acc_real: 0.615 acc_fake: 0.881 
+(epoch: 31, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.842 loss_D_fake: 0.242 loss_D: 0.542 loss_G: 1.699 loss_conv: 2.420 loss_eq: 0.720 acc_real: 0.453 acc_fake: 0.958 
+(epoch: 31, batches: 80, time: 0.003, data: 0.003) loss_D_real: 0.708 loss_D_fake: 0.362 loss_D: 0.535 loss_G: 1.461 loss_conv: 2.081 loss_eq: 0.620 acc_real: 0.685 acc_fake: 0.863 
+(epoch: 31, batches: 100, time: 0.002, data: 0.002) loss_D_real: 0.608 loss_D_fake: 0.572 loss_D: 0.590 loss_G: 1.522 loss_conv: 2.262 loss_eq: 0.739 acc_real: 0.818 acc_fake: 0.703 
+4800 tensor([[ 0.7501,  0.0000, -0.5916],
+        [ 0.0000,  0.7500, -0.3523]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 31, batches: 120, time: 0.005, data: 0.002) loss_D_real: 0.698 loss_D_fake: 0.286 loss_D: 0.492 loss_G: 1.490 loss_conv: 1.948 loss_eq: 0.457 acc_real: 0.636 acc_fake: 0.898 
+validation accuracies:
+                real: 0.70, 0.60174560546875
+                fake: 0.74, 0.340179443359375
+
+ran validation set (B:4801) in                         8.2 s.
+(epoch: 31, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.639 loss_D_fake: 0.376 loss_D: 0.508 loss_G: 1.578 loss_conv: 2.135 loss_eq: 0.557 acc_real: 0.746 acc_fake: 0.832 
+learning rate 0.0001024 -> 0.0001024
+End of epoch 31 / 50 	 Time Taken: 424 sec
+(epoch: 32, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.654 loss_D_fake: 0.323 loss_D: 0.488 loss_G: 1.714 loss_conv: 2.337 loss_eq: 0.624 acc_real: 0.746 acc_fake: 0.871 
+(epoch: 32, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.640 loss_D_fake: 0.321 loss_D: 0.481 loss_G: 1.507 loss_conv: 2.047 loss_eq: 0.541 acc_real: 0.767 acc_fake: 0.896 
+(epoch: 32, batches: 60, time: 0.003, data: 0.003) loss_D_real: 0.815 loss_D_fake: 0.289 loss_D: 0.552 loss_G: 1.537 loss_conv: 2.198 loss_eq: 0.661 acc_real: 0.487 acc_fake: 0.886 
+4900 tensor([[0.7502, 0.0000, 0.0133],
+        [0.0000, 0.7501, 0.0557]], device='cuda:0', grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.55, 0.513153076171875
+                fake: 0.90, 0.2223052978515625
+
+ran validation set (B:4901) in                         9.3 s.
+(epoch: 32, batches: 80, time: 0.003, data: 0.003) loss_D_real: 0.715 loss_D_fake: 0.262 loss_D: 0.489 loss_G: 1.567 loss_conv: 2.096 loss_eq: 0.529 acc_real: 0.581 acc_fake: 0.907 
+(epoch: 32, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.656 loss_D_fake: 0.372 loss_D: 0.514 loss_G: 1.702 loss_conv: 2.424 loss_eq: 0.722 acc_real: 0.746 acc_fake: 0.825 
+(epoch: 32, batches: 120, time: 0.002, data: 0.003) loss_D_real: 0.687 loss_D_fake: 0.320 loss_D: 0.503 loss_G: 1.528 loss_conv: 2.122 loss_eq: 0.594 acc_real: 0.664 acc_fake: 0.844 
+(epoch: 32, batches: 140, time: 0.002, data: 0.002) loss_D_real: 0.649 loss_D_fake: 0.413 loss_D: 0.531 loss_G: 1.227 loss_conv: 1.887 loss_eq: 0.660 acc_real: 0.722 acc_fake: 0.851 
+learning rate 0.0001024 -> 0.0001024
+End of epoch 32 / 50 	 Time Taken: 415 sec
+5000 tensor([[ 0.7500,  0.0000,  0.4582],
+        [ 0.0000,  0.7500, -0.4681]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.55, 0.515289306640625
+                fake: 0.87, 0.2503814697265625
+
+ran validation set (B:5001) in                         9.5 s.
+(epoch: 33, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.695 loss_D_fake: 0.410 loss_D: 0.552 loss_G: 1.533 loss_conv: 2.231 loss_eq: 0.698 acc_real: 0.676 acc_fake: 0.816 
+(epoch: 33, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.744 loss_D_fake: 0.287 loss_D: 0.515 loss_G: 1.407 loss_conv: 2.025 loss_eq: 0.618 acc_real: 0.602 acc_fake: 0.893 
+(epoch: 33, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.611 loss_D_fake: 0.362 loss_D: 0.486 loss_G: 1.315 loss_conv: 2.039 loss_eq: 0.725 acc_real: 0.815 acc_fake: 0.815 
+(epoch: 33, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.811 loss_D_fake: 0.229 loss_D: 0.520 loss_G: 1.170 loss_conv: 1.710 loss_eq: 0.540 acc_real: 0.445 acc_fake: 0.907 
+(epoch: 33, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.699 loss_D_fake: 0.317 loss_D: 0.508 loss_G: 1.403 loss_conv: 2.024 loss_eq: 0.621 acc_real: 0.662 acc_fake: 0.877 
+5100 tensor([[ 0.7500,  0.0000,  0.5659],
+        [ 0.0000,  0.7502, -0.2076]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.43, 0.433349609375
+                fake: 0.94, 0.1692352294921875
+
+ran validation set (B:5101) in                         8.8 s.
+(epoch: 33, batches: 120, time: 0.002, data: 0.003) loss_D_real: 0.679 loss_D_fake: 0.287 loss_D: 0.483 loss_G: 1.605 loss_conv: 2.407 loss_eq: 0.802 acc_real: 0.644 acc_fake: 0.873 
+(epoch: 33, batches: 140, time: 0.002, data: 0.002) loss_D_real: 0.692 loss_D_fake: 0.365 loss_D: 0.528 loss_G: 1.502 loss_conv: 2.105 loss_eq: 0.603 acc_real: 0.778 acc_fake: 0.847 
+learning rate 0.0001024 -> 0.0001024
+End of epoch 33 / 50 	 Time Taken: 417 sec
+(epoch: 34, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.746 loss_D_fake: 0.217 loss_D: 0.481 loss_G: 1.274 loss_conv: 1.891 loss_eq: 0.617 acc_real: 0.556 acc_fake: 0.944 
+(epoch: 34, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.637 loss_D_fake: 0.388 loss_D: 0.512 loss_G: 1.535 loss_conv: 2.099 loss_eq: 0.564 acc_real: 0.800 acc_fake: 0.850 
+5200 tensor([[ 0.7500,  0.0000,  0.3113],
+        [ 0.0000,  0.7500, -0.5772]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.60, 0.5323486328125
+                fake: 0.84, 0.2665557861328125
+
+ran validation set (B:5201) in                         8.9 s.
+(epoch: 34, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.822 loss_D_fake: 0.285 loss_D: 0.554 loss_G: 1.538 loss_conv: 2.316 loss_eq: 0.778 acc_real: 0.496 acc_fake: 0.875 
+(epoch: 34, batches: 80, time: 0.003, data: 0.003) loss_D_real: 0.674 loss_D_fake: 0.265 loss_D: 0.470 loss_G: 1.638 loss_conv: 2.081 loss_eq: 0.444 acc_real: 0.717 acc_fake: 0.904 
+(epoch: 34, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.769 loss_D_fake: 0.309 loss_D: 0.539 loss_G: 1.231 loss_conv: 1.861 loss_eq: 0.629 acc_real: 0.610 acc_fake: 0.864 
+(epoch: 34, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.703 loss_D_fake: 0.388 loss_D: 0.545 loss_G: 1.298 loss_conv: 1.936 loss_eq: 0.639 acc_real: 0.619 acc_fake: 0.821 
+(epoch: 34, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.821 loss_D_fake: 0.239 loss_D: 0.530 loss_G: 1.272 loss_conv: 1.720 loss_eq: 0.448 acc_real: 0.433 acc_fake: 0.938 
+5300 tensor([[ 0.7500,  0.0000, -0.5823],
+        [ 0.0000,  0.7501, -0.2817]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.44, 0.445556640625
+                fake: 0.92, 0.19342041015625
+
+ran validation set (B:5301) in                         6.2 s.
+learning rate 0.0001024 -> 0.0001024
+End of epoch 34 / 50 	 Time Taken: 428 sec
+(epoch: 35, batches: 20, time: 0.002, data: 10.101) loss_D_real: 0.983 loss_D_fake: 0.201 loss_D: 0.592 loss_G: 1.176 loss_conv: 1.752 loss_eq: 0.576 acc_real: 0.351 acc_fake: 0.960 
+(epoch: 35, batches: 40, time: 0.003, data: 10.117) loss_D_real: 0.711 loss_D_fake: 0.311 loss_D: 0.511 loss_G: 1.653 loss_conv: 2.244 loss_eq: 0.590 acc_real: 0.690 acc_fake: 0.909 
+(epoch: 35, batches: 60, time: 0.003, data: 9.871) loss_D_real: 0.740 loss_D_fake: 0.248 loss_D: 0.494 loss_G: 1.735 loss_conv: 2.377 loss_eq: 0.642 acc_real: 0.661 acc_fake: 0.940 
+(epoch: 35, batches: 80, time: 0.003, data: 9.525) loss_D_real: 0.702 loss_D_fake: 0.319 loss_D: 0.510 loss_G: 1.587 loss_conv: 2.092 loss_eq: 0.505 acc_real: 0.613 acc_fake: 0.839 
+5400 tensor([[ 0.7500,  0.0000,  0.1891],
+        [ 0.0000,  0.7500, -0.5265]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.68, 0.589111328125
+                fake: 0.76, 0.3179931640625
+
+ran validation set (B:5401) in                         8.3 s.
+(epoch: 35, batches: 100, time: 0.003, data: 8.524) loss_D_real: 0.627 loss_D_fake: 0.434 loss_D: 0.531 loss_G: 1.502 loss_conv: 2.154 loss_eq: 0.652 acc_real: 0.795 acc_fake: 0.795 
+(epoch: 35, batches: 120, time: 0.003, data: 7.743) loss_D_real: 0.748 loss_D_fake: 0.279 loss_D: 0.514 loss_G: 1.727 loss_conv: 2.353 loss_eq: 0.626 acc_real: 0.586 acc_fake: 0.934 
+(epoch: 35, batches: 140, time: 0.002, data: 6.811) loss_D_real: 0.727 loss_D_fake: 0.260 loss_D: 0.494 loss_G: 1.499 loss_conv: 2.275 loss_eq: 0.776 acc_real: 0.572 acc_fake: 0.911 
+saving the model at the end of epoch 35, iters 349440
+learning rate 0.0001024 -> 0.0001024
+End of epoch 35 / 50 	 Time Taken: 421 sec
+(epoch: 36, batches: 20, time: 0.002, data: 0.053) loss_D_real: 0.699 loss_D_fake: 0.305 loss_D: 0.502 loss_G: 1.599 loss_conv: 2.197 loss_eq: 0.599 acc_real: 0.704 acc_fake: 0.900 
+5500 tensor([[ 0.7500,  0.0000, -0.5046],
+        [ 0.0000,  0.7500, -0.2522]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 36, batches: 40, time: 0.007, data: 0.001) loss_D_real: 0.740 loss_D_fake: 0.230 loss_D: 0.485 loss_G: 1.352 loss_conv: 1.940 loss_eq: 0.588 acc_real: 0.553 acc_fake: 0.910 
+validation accuracies:
+                real: 0.67, 0.58587646484375
+                fake: 0.78, 0.29168701171875
+
+ran validation set (B:5501) in                         8.9 s.
+(epoch: 36, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.797 loss_D_fake: 0.290 loss_D: 0.543 loss_G: 1.707 loss_conv: 2.307 loss_eq: 0.600 acc_real: 0.537 acc_fake: 0.896 
+(epoch: 36, batches: 80, time: 0.003, data: 0.003) loss_D_real: 0.693 loss_D_fake: 0.407 loss_D: 0.550 loss_G: 1.661 loss_conv: 2.359 loss_eq: 0.698 acc_real: 0.627 acc_fake: 0.779 
+(epoch: 36, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.674 loss_D_fake: 0.353 loss_D: 0.513 loss_G: 1.684 loss_conv: 2.571 loss_eq: 0.887 acc_real: 0.713 acc_fake: 0.898 
+(epoch: 36, batches: 120, time: 0.002, data: 0.002) loss_D_real: 0.700 loss_D_fake: 0.411 loss_D: 0.555 loss_G: 1.470 loss_conv: 2.096 loss_eq: 0.627 acc_real: 0.684 acc_fake: 0.785 
+5600 tensor([[ 0.7500,  0.0000,  0.6600],
+        [ 0.0000,  0.7500, -0.2447]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 36, batches: 140, time: 0.005, data: 0.001) loss_D_real: 0.681 loss_D_fake: 0.404 loss_D: 0.543 loss_G: 1.748 loss_conv: 2.390 loss_eq: 0.642 acc_real: 0.689 acc_fake: 0.799 
+validation accuracies:
+                real: 0.47, 0.467376708984375
+                fake: 0.90, 0.2129974365234375
+
+ran validation set (B:5601) in                         8.3 s.
+learning rate 0.0001024 -> 0.0001024
+End of epoch 36 / 50 	 Time Taken: 418 sec
+(epoch: 37, batches: 20, time: 0.002, data: 0.033) loss_D_real: 0.777 loss_D_fake: 0.280 loss_D: 0.529 loss_G: 1.261 loss_conv: 2.063 loss_eq: 0.802 acc_real: 0.633 acc_fake: 0.940 
+(epoch: 37, batches: 40, time: 0.003, data: 0.041) loss_D_real: 0.722 loss_D_fake: 0.261 loss_D: 0.491 loss_G: 1.652 loss_conv: 2.361 loss_eq: 0.709 acc_real: 0.615 acc_fake: 0.925 
+(epoch: 37, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.830 loss_D_fake: 0.312 loss_D: 0.571 loss_G: 1.629 loss_conv: 2.162 loss_eq: 0.533 acc_real: 0.496 acc_fake: 0.904 
+(epoch: 37, batches: 80, time: 0.002, data: 0.002) loss_D_real: 0.665 loss_D_fake: 0.377 loss_D: 0.521 loss_G: 1.490 loss_conv: 2.320 loss_eq: 0.830 acc_real: 0.738 acc_fake: 0.817 
+5700 tensor([[ 0.7513,  0.0000,  0.6598],
+        [ 0.0000,  0.7518, -0.1849]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.59, 0.543792724609375
+                fake: 0.85, 0.2513580322265625
+
+ran validation set (B:5701) in                         8.5 s.
+(epoch: 37, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.717 loss_D_fake: 0.350 loss_D: 0.534 loss_G: 1.898 loss_conv: 2.519 loss_eq: 0.621 acc_real: 0.583 acc_fake: 0.842 
+(epoch: 37, batches: 120, time: 0.002, data: 0.002) loss_D_real: 0.778 loss_D_fake: 0.174 loss_D: 0.476 loss_G: 1.772 loss_conv: 2.552 loss_eq: 0.780 acc_real: 0.509 acc_fake: 0.978 
+(epoch: 37, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.803 loss_D_fake: 0.277 loss_D: 0.540 loss_G: 1.251 loss_conv: 1.869 loss_eq: 0.618 acc_real: 0.558 acc_fake: 0.904 
+learning rate 0.0001024 -> 0.0001024
+End of epoch 37 / 50 	 Time Taken: 416 sec
+(epoch: 38, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.557 loss_D_fake: 0.417 loss_D: 0.487 loss_G: 1.584 loss_conv: 2.214 loss_eq: 0.630 acc_real: 0.917 acc_fake: 0.806 
+5800 tensor([[ 0.7500,  0.0000,  0.6404],
+        [ 0.0000,  0.7500, -0.1862]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.53, 0.499237060546875
+                fake: 0.90, 0.209503173828125
+
+ran validation set (B:5801) in                         8.6 s.
+(epoch: 38, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.797 loss_D_fake: 0.249 loss_D: 0.523 loss_G: 1.629 loss_conv: 2.231 loss_eq: 0.603 acc_real: 0.480 acc_fake: 0.889 
+(epoch: 38, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.666 loss_D_fake: 0.310 loss_D: 0.488 loss_G: 1.454 loss_conv: 2.109 loss_eq: 0.655 acc_real: 0.742 acc_fake: 0.898 
+(epoch: 38, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.729 loss_D_fake: 0.353 loss_D: 0.541 loss_G: 1.431 loss_conv: 2.157 loss_eq: 0.726 acc_real: 0.585 acc_fake: 0.852 
+(epoch: 38, batches: 100, time: 0.002, data: 0.002) loss_D_real: 0.642 loss_D_fake: 0.380 loss_D: 0.511 loss_G: 1.827 loss_conv: 2.541 loss_eq: 0.714 acc_real: 0.788 acc_fake: 0.809 
+(epoch: 38, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.650 loss_D_fake: 0.356 loss_D: 0.503 loss_G: 1.610 loss_conv: 2.349 loss_eq: 0.739 acc_real: 0.754 acc_fake: 0.871 
+5900 tensor([[ 0.7500,  0.0000, -0.4100],
+        [ 0.0000,  0.7500, -0.5378]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.49, 0.470367431640625
+                fake: 0.91, 0.18499755859375
+
+ran validation set (B:5901) in                         9.8 s.
+(epoch: 38, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.634 loss_D_fake: 0.264 loss_D: 0.449 loss_G: 1.542 loss_conv: 2.182 loss_eq: 0.640 acc_real: 0.766 acc_fake: 0.911 
+learning rate 0.0001024 -> 0.0001024
+End of epoch 38 / 50 	 Time Taken: 418 sec
+(epoch: 39, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.705 loss_D_fake: 0.229 loss_D: 0.467 loss_G: 1.558 loss_conv: 2.232 loss_eq: 0.674 acc_real: 0.619 acc_fake: 0.944 
+(epoch: 39, batches: 40, time: 0.003, data: 0.003) loss_D_real: 0.656 loss_D_fake: 0.278 loss_D: 0.467 loss_G: 1.524 loss_conv: 2.260 loss_eq: 0.736 acc_real: 0.754 acc_fake: 0.889 
+(epoch: 39, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.680 loss_D_fake: 0.352 loss_D: 0.516 loss_G: 1.496 loss_conv: 2.129 loss_eq: 0.633 acc_real: 0.689 acc_fake: 0.828 
+6000 tensor([[ 0.7500,  0.0000,  0.6246],
+        [ 0.0000,  0.7500, -0.6066]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.60, 0.54449462890625
+                fake: 0.86, 0.2303009033203125
+
+ran validation set (B:6001) in                         9.1 s.
+(epoch: 39, batches: 80, time: 0.002, data: 0.224) loss_D_real: 0.746 loss_D_fake: 0.203 loss_D: 0.474 loss_G: 1.546 loss_conv: 2.309 loss_eq: 0.763 acc_real: 0.631 acc_fake: 0.955 
+(epoch: 39, batches: 100, time: 0.003, data: 0.024) loss_D_real: 0.806 loss_D_fake: 0.215 loss_D: 0.510 loss_G: 1.426 loss_conv: 2.168 loss_eq: 0.742 acc_real: 0.528 acc_fake: 0.952 
+(epoch: 39, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.626 loss_D_fake: 0.352 loss_D: 0.489 loss_G: 1.449 loss_conv: 2.122 loss_eq: 0.673 acc_real: 0.766 acc_fake: 0.848 
+(epoch: 39, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.748 loss_D_fake: 0.330 loss_D: 0.539 loss_G: 1.760 loss_conv: 2.369 loss_eq: 0.608 acc_real: 0.560 acc_fake: 0.843 
+learning rate 0.0001024 -> 0.0001024
+End of epoch 39 / 50 	 Time Taken: 415 sec
+6100 tensor([[ 0.7500,  0.0000, -0.6227],
+        [ 0.0000,  0.7500, -0.5853]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.47, 0.461456298828125
+                fake: 0.92, 0.192291259765625
+
+ran validation set (B:6101) in                         9.2 s.
+(epoch: 40, batches: 20, time: 0.002, data: 9.607) loss_D_real: 0.763 loss_D_fake: 0.266 loss_D: 0.515 loss_G: 1.620 loss_conv: 2.048 loss_eq: 0.428 acc_real: 0.557 acc_fake: 0.921 
+(epoch: 40, batches: 40, time: 0.003, data: 9.303) loss_D_real: 0.696 loss_D_fake: 0.279 loss_D: 0.487 loss_G: 1.640 loss_conv: 2.338 loss_eq: 0.699 acc_real: 0.631 acc_fake: 0.907 
+(epoch: 40, batches: 60, time: 0.003, data: 9.271) loss_D_real: 0.745 loss_D_fake: 0.431 loss_D: 0.588 loss_G: 1.733 loss_conv: 2.290 loss_eq: 0.557 acc_real: 0.546 acc_fake: 0.754 
+(epoch: 40, batches: 80, time: 0.002, data: 9.284) loss_D_real: 0.703 loss_D_fake: 0.268 loss_D: 0.486 loss_G: 1.526 loss_conv: 2.301 loss_eq: 0.775 acc_real: 0.606 acc_fake: 0.886 
+(epoch: 40, batches: 100, time: 0.003, data: 9.306) loss_D_real: 0.612 loss_D_fake: 0.381 loss_D: 0.497 loss_G: 2.074 loss_conv: 2.636 loss_eq: 0.562 acc_real: 0.831 acc_fake: 0.835 
+6200 tensor([[ 0.7500,  0.0000, -0.6585],
+        [ 0.0000,  0.7500, -0.2745]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.64, 0.5604248046875
+                fake: 0.77, 0.311492919921875
+
+ran validation set (B:6201) in                         9.0 s.
+(epoch: 40, batches: 120, time: 0.003, data: 9.110) loss_D_real: 0.829 loss_D_fake: 0.212 loss_D: 0.520 loss_G: 1.732 loss_conv: 2.611 loss_eq: 0.878 acc_real: 0.448 acc_fake: 0.944 
+(epoch: 40, batches: 140, time: 0.002, data: 9.480) loss_D_real: 0.882 loss_D_fake: 0.218 loss_D: 0.550 loss_G: 1.529 loss_conv: 2.221 loss_eq: 0.692 acc_real: 0.368 acc_fake: 0.952 
+saving the model at the end of epoch 40, iters 399360
+learning rate 0.0001024 -> 0.0000819
+End of epoch 40 / 50 	 Time Taken: 416 sec
+(epoch: 41, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.647 loss_D_fake: 0.349 loss_D: 0.498 loss_G: 1.942 loss_conv: 2.521 loss_eq: 0.579 acc_real: 0.754 acc_fake: 0.863 
+(epoch: 41, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.652 loss_D_fake: 0.355 loss_D: 0.504 loss_G: 1.693 loss_conv: 2.517 loss_eq: 0.824 acc_real: 0.750 acc_fake: 0.857 
+6300 tensor([[ 0.7500,  0.0000,  0.6592],
+        [ 0.0000,  0.7500, -0.5819]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 41, batches: 60, time: 0.006, data: 0.002) loss_D_real: 0.650 loss_D_fake: 0.257 loss_D: 0.453 loss_G: 1.515 loss_conv: 2.239 loss_eq: 0.724 acc_real: 0.725 acc_fake: 0.911 
+validation accuracies:
+                real: 0.53, 0.505035400390625
+                fake: 0.88, 0.2118682861328125
+
+ran validation set (B:6301) in                         9.5 s.
+(epoch: 41, batches: 80, time: 0.003, data: 0.005) loss_D_real: 0.694 loss_D_fake: 0.236 loss_D: 0.465 loss_G: 1.578 loss_conv: 2.220 loss_eq: 0.643 acc_real: 0.631 acc_fake: 0.926 
+(epoch: 41, batches: 100, time: 0.003, data: 0.003) loss_D_real: 0.690 loss_D_fake: 0.220 loss_D: 0.455 loss_G: 1.780 loss_conv: 2.354 loss_eq: 0.573 acc_real: 0.742 acc_fake: 0.963 
+(epoch: 41, batches: 120, time: 0.002, data: 0.002) loss_D_real: 0.656 loss_D_fake: 0.253 loss_D: 0.455 loss_G: 1.642 loss_conv: 2.360 loss_eq: 0.718 acc_real: 0.763 acc_fake: 0.952 
+(epoch: 41, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.776 loss_D_fake: 0.282 loss_D: 0.529 loss_G: 2.056 loss_conv: 2.727 loss_eq: 0.671 acc_real: 0.571 acc_fake: 0.883 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 41 / 50 	 Time Taken: 414 sec
+6400 tensor([[ 0.7500,  0.0000,  0.6358],
+        [ 0.0000,  0.7500, -0.1326]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.52, 0.487701416015625
+                fake: 0.92, 0.171142578125
+
+ran validation set (B:6401) in                         9.1 s.
+(epoch: 42, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.606 loss_D_fake: 0.392 loss_D: 0.499 loss_G: 1.860 loss_conv: 2.440 loss_eq: 0.580 acc_real: 0.832 acc_fake: 0.797 
+(epoch: 42, batches: 40, time: 0.002, data: 0.001) loss_D_real: 0.874 loss_D_fake: 0.138 loss_D: 0.506 loss_G: 1.505 loss_conv: 2.336 loss_eq: 0.831 acc_real: 0.393 acc_fake: 0.968 
+(epoch: 42, batches: 60, time: 0.002, data: 0.002) loss_D_real: 0.769 loss_D_fake: 0.238 loss_D: 0.503 loss_G: 1.925 loss_conv: 2.502 loss_eq: 0.576 acc_real: 0.525 acc_fake: 0.904 
+(epoch: 42, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.650 loss_D_fake: 0.401 loss_D: 0.526 loss_G: 1.624 loss_conv: 2.484 loss_eq: 0.860 acc_real: 0.730 acc_fake: 0.836 
+(epoch: 42, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.752 loss_D_fake: 0.247 loss_D: 0.500 loss_G: 1.739 loss_conv: 2.540 loss_eq: 0.801 acc_real: 0.597 acc_fake: 0.903 
+6500 tensor([[ 0.7500,  0.0000,  0.5679],
+        [ 0.0000,  0.7500, -0.5068]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.53, 0.50335693359375
+                fake: 0.89, 0.2119140625
+
+ran validation set (B:6501) in                         8.9 s.
+(epoch: 42, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.647 loss_D_fake: 0.343 loss_D: 0.495 loss_G: 1.545 loss_conv: 2.427 loss_eq: 0.882 acc_real: 0.738 acc_fake: 0.867 
+(epoch: 42, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.701 loss_D_fake: 0.491 loss_D: 0.596 loss_G: 1.537 loss_conv: 2.382 loss_eq: 0.845 acc_real: 0.629 acc_fake: 0.741 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 42 / 50 	 Time Taken: 424 sec
+(epoch: 43, batches: 20, time: 0.002, data: 0.001) loss_D_real: 0.760 loss_D_fake: 0.323 loss_D: 0.542 loss_G: 1.856 loss_conv: 2.572 loss_eq: 0.716 acc_real: 0.540 acc_fake: 0.888 
+(epoch: 43, batches: 40, time: 0.002, data: 0.002) loss_D_real: 0.774 loss_D_fake: 0.189 loss_D: 0.481 loss_G: 1.403 loss_conv: 2.282 loss_eq: 0.879 acc_real: 0.543 acc_fake: 0.983 
+6600 tensor([[ 0.7500,  0.0000, -0.1526],
+        [ 0.0000,  1.2479, -0.5501]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.54, 0.50006103515625
+                fake: 0.83, 0.2529754638671875
+
+ran validation set (B:6601) in                         9.0 s.
+(epoch: 43, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.714 loss_D_fake: 0.366 loss_D: 0.540 loss_G: 1.800 loss_conv: 2.556 loss_eq: 0.756 acc_real: 0.734 acc_fake: 0.847 
+(epoch: 43, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.773 loss_D_fake: 0.232 loss_D: 0.503 loss_G: 1.442 loss_conv: 2.402 loss_eq: 0.960 acc_real: 0.586 acc_fake: 0.955 
+(epoch: 43, batches: 100, time: 0.002, data: 0.002) loss_D_real: 0.772 loss_D_fake: 0.281 loss_D: 0.527 loss_G: 1.242 loss_conv: 2.258 loss_eq: 1.016 acc_real: 0.521 acc_fake: 0.907 
+(epoch: 43, batches: 120, time: 0.002, data: 0.003) loss_D_real: 0.829 loss_D_fake: 0.365 loss_D: 0.597 loss_G: 1.391 loss_conv: 2.323 loss_eq: 0.932 acc_real: 0.421 acc_fake: 0.833 
+(epoch: 43, batches: 140, time: 0.002, data: 0.001) loss_D_real: 0.693 loss_D_fake: 0.382 loss_D: 0.537 loss_G: 1.602 loss_conv: 2.364 loss_eq: 0.762 acc_real: 0.647 acc_fake: 0.833 
+6700 tensor([[ 0.7500,  0.0000,  0.3694],
+        [ 0.0000,  0.7500, -0.4486]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.54, 0.50262451171875
+                fake: 0.90, 0.2125244140625
+
+ran validation set (B:6701) in                         9.3 s.
+learning rate 0.0000819 -> 0.0000819
+End of epoch 43 / 50 	 Time Taken: 420 sec
+(epoch: 44, batches: 20, time: 0.002, data: 0.002) loss_D_real: 0.629 loss_D_fake: 0.330 loss_D: 0.479 loss_G: 1.697 loss_conv: 2.382 loss_eq: 0.685 acc_real: 0.796 acc_fake: 0.846 
+(epoch: 44, batches: 40, time: 0.003, data: 0.003) loss_D_real: 0.667 loss_D_fake: 0.353 loss_D: 0.510 loss_G: 1.872 loss_conv: 2.615 loss_eq: 0.743 acc_real: 0.672 acc_fake: 0.799 
+(epoch: 44, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.665 loss_D_fake: 0.350 loss_D: 0.507 loss_G: 1.633 loss_conv: 2.187 loss_eq: 0.554 acc_real: 0.672 acc_fake: 0.862 
+(epoch: 44, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.709 loss_D_fake: 0.259 loss_D: 0.484 loss_G: 1.817 loss_conv: 2.485 loss_eq: 0.668 acc_real: 0.675 acc_fake: 0.917 
+6800 tensor([[ 0.7500,  0.0000, -0.4045],
+        [ 0.0000,  0.7500, -0.5493]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.48, 0.4649658203125
+                fake: 0.91, 0.1907196044921875
+
+ran validation set (B:6801) in                         9.2 s.
+(epoch: 44, batches: 100, time: 0.002, data: 0.002) loss_D_real: 0.650 loss_D_fake: 0.250 loss_D: 0.450 loss_G: 1.701 loss_conv: 2.366 loss_eq: 0.665 acc_real: 0.750 acc_fake: 0.918 
+(epoch: 44, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.782 loss_D_fake: 0.230 loss_D: 0.506 loss_G: 1.729 loss_conv: 2.383 loss_eq: 0.654 acc_real: 0.476 acc_fake: 0.921 
+(epoch: 44, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.643 loss_D_fake: 0.357 loss_D: 0.500 loss_G: 1.644 loss_conv: 2.369 loss_eq: 0.725 acc_real: 0.742 acc_fake: 0.857 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 44 / 50 	 Time Taken: 416 sec
+(epoch: 45, batches: 20, time: 0.003, data: 10.009) loss_D_real: 0.695 loss_D_fake: 0.334 loss_D: 0.515 loss_G: 1.742 loss_conv: 2.539 loss_eq: 0.797 acc_real: 0.733 acc_fake: 0.871 
+6900 tensor([[ 0.7500,  0.0000, -0.3396],
+        [ 0.0000,  0.7501, -0.0706]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.49, 0.47698974609375
+                fake: 0.91, 0.182708740234375
+
+ran validation set (B:6901) in                         9.4 s.
+(epoch: 45, batches: 40, time: 0.003, data: 9.853) loss_D_real: 0.662 loss_D_fake: 0.263 loss_D: 0.462 loss_G: 2.183 loss_conv: 2.899 loss_eq: 0.715 acc_real: 0.692 acc_fake: 0.875 
+(epoch: 45, batches: 60, time: 0.003, data: 10.073) loss_D_real: 0.816 loss_D_fake: 0.204 loss_D: 0.510 loss_G: 2.025 loss_conv: 2.781 loss_eq: 0.755 acc_real: 0.410 acc_fake: 0.918 
+(epoch: 45, batches: 80, time: 0.003, data: 10.111) loss_D_real: 0.699 loss_D_fake: 0.151 loss_D: 0.425 loss_G: 1.736 loss_conv: 2.598 loss_eq: 0.861 acc_real: 0.629 acc_fake: 0.970 
+(epoch: 45, batches: 100, time: 0.003, data: 10.129) loss_D_real: 0.636 loss_D_fake: 0.300 loss_D: 0.468 loss_G: 2.018 loss_conv: 2.744 loss_eq: 0.725 acc_real: 0.767 acc_fake: 0.871 
+(epoch: 45, batches: 120, time: 0.003, data: 10.126) loss_D_real: 0.761 loss_D_fake: 0.226 loss_D: 0.493 loss_G: 1.819 loss_conv: 2.473 loss_eq: 0.654 acc_real: 0.578 acc_fake: 0.914 
+7000 tensor([[ 0.7500,  0.0000, -0.4210],
+        [ 0.0000,  0.7500, -0.1016]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.49, 0.47723388671875
+                fake: 0.93, 0.1689300537109375
+
+ran validation set (B:7001) in                         9.1 s.
+(epoch: 45, batches: 140, time: 0.003, data: 9.924) loss_D_real: 0.680 loss_D_fake: 0.226 loss_D: 0.453 loss_G: 1.759 loss_conv: 2.332 loss_eq: 0.573 acc_real: 0.655 acc_fake: 0.914 
+saving the model at the end of epoch 45, iters 449280
+learning rate 0.0000819 -> 0.0000819
+End of epoch 45 / 50 	 Time Taken: 422 sec
+(epoch: 46, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.722 loss_D_fake: 0.296 loss_D: 0.509 loss_G: 1.578 loss_conv: 2.304 loss_eq: 0.726 acc_real: 0.627 acc_fake: 0.903 
+(epoch: 46, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.662 loss_D_fake: 0.259 loss_D: 0.461 loss_G: 1.791 loss_conv: 2.479 loss_eq: 0.688 acc_real: 0.742 acc_fake: 0.893 
+(epoch: 46, batches: 60, time: 0.003, data: 0.003) loss_D_real: 0.679 loss_D_fake: 0.318 loss_D: 0.499 loss_G: 1.536 loss_conv: 2.289 loss_eq: 0.752 acc_real: 0.699 acc_fake: 0.860 
+7100 tensor([[ 0.7500,  0.0000, -0.1245],
+        [ 0.0000,  1.1501, -0.5889]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 46, batches: 80, time: 0.006, data: 0.001) loss_D_real: 0.714 loss_D_fake: 0.318 loss_D: 0.516 loss_G: 1.725 loss_conv: 2.849 loss_eq: 1.124 acc_real: 0.642 acc_fake: 0.892 
+validation accuracies:
+                real: 0.37, 0.404327392578125
+                fake: 0.89, 0.1949005126953125
+
+ran validation set (B:7101) in                         8.7 s.
+(epoch: 46, batches: 100, time: 0.003, data: 0.005) loss_D_real: 0.777 loss_D_fake: 0.245 loss_D: 0.511 loss_G: 1.330 loss_conv: 2.275 loss_eq: 0.945 acc_real: 0.435 acc_fake: 0.931 
+(epoch: 46, batches: 120, time: 0.003, data: 0.036) loss_D_real: 0.628 loss_D_fake: 0.262 loss_D: 0.445 loss_G: 1.635 loss_conv: 2.316 loss_eq: 0.681 acc_real: 0.775 acc_fake: 0.930 
+(epoch: 46, batches: 140, time: 0.002, data: 0.009) loss_D_real: 0.805 loss_D_fake: 0.252 loss_D: 0.529 loss_G: 1.494 loss_conv: 2.326 loss_eq: 0.832 acc_real: 0.479 acc_fake: 0.915 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 46 / 50 	 Time Taken: 422 sec
+(epoch: 47, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.661 loss_D_fake: 0.284 loss_D: 0.472 loss_G: 1.671 loss_conv: 2.371 loss_eq: 0.700 acc_real: 0.685 acc_fake: 0.891 
+7200 tensor([[ 0.7500,  0.0000,  0.4210],
+        [ 0.0000,  0.7500, -0.4268]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.40, 0.4129638671875
+                fake: 0.93, 0.1422882080078125
+
+ran validation set (B:7201) in                         9.5 s.
+(epoch: 47, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.610 loss_D_fake: 0.362 loss_D: 0.486 loss_G: 1.910 loss_conv: 2.702 loss_eq: 0.792 acc_real: 0.848 acc_fake: 0.832 
+(epoch: 47, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.628 loss_D_fake: 0.430 loss_D: 0.529 loss_G: 1.550 loss_conv: 2.305 loss_eq: 0.755 acc_real: 0.820 acc_fake: 0.775 
+(epoch: 47, batches: 80, time: 0.003, data: 0.002) loss_D_real: 0.724 loss_D_fake: 0.289 loss_D: 0.506 loss_G: 1.652 loss_conv: 2.580 loss_eq: 0.928 acc_real: 0.659 acc_fake: 0.859 
+(epoch: 47, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.676 loss_D_fake: 0.318 loss_D: 0.497 loss_G: 1.335 loss_conv: 2.203 loss_eq: 0.868 acc_real: 0.684 acc_fake: 0.865 
+(epoch: 47, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.717 loss_D_fake: 0.301 loss_D: 0.509 loss_G: 1.596 loss_conv: 2.372 loss_eq: 0.777 acc_real: 0.633 acc_fake: 0.908 
+7300 tensor([[ 0.7500,  0.0000,  0.6495],
+        [ 0.0000,  0.8327, -0.5971]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.60, 0.54803466796875
+                fake: 0.79, 0.294952392578125
+
+ran validation set (B:7301) in                         8.6 s.
+(epoch: 47, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.893 loss_D_fake: 0.246 loss_D: 0.569 loss_G: 1.437 loss_conv: 2.424 loss_eq: 0.986 acc_real: 0.487 acc_fake: 0.903 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 47 / 50 	 Time Taken: 417 sec
+(epoch: 48, batches: 20, time: 0.003, data: 0.002) loss_D_real: 0.677 loss_D_fake: 0.399 loss_D: 0.538 loss_G: 1.626 loss_conv: 2.598 loss_eq: 0.972 acc_real: 0.762 acc_fake: 0.802 
+(epoch: 48, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.808 loss_D_fake: 0.265 loss_D: 0.536 loss_G: 1.514 loss_conv: 2.503 loss_eq: 0.990 acc_real: 0.528 acc_fake: 0.927 
+(epoch: 48, batches: 60, time: 0.002, data: 0.003) loss_D_real: 0.713 loss_D_fake: 0.317 loss_D: 0.515 loss_G: 1.554 loss_conv: 2.572 loss_eq: 1.017 acc_real: 0.593 acc_fake: 0.877 
+7400 tensor([[ 0.7500,  0.0000,  0.5972],
+        [ 0.0000,  0.7500, -0.6429]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.43, 0.438720703125
+                fake: 0.89, 0.2021484375
+
+ran validation set (B:7401) in                         9.0 s.
+(epoch: 48, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.719 loss_D_fake: 0.236 loss_D: 0.477 loss_G: 1.823 loss_conv: 2.762 loss_eq: 0.940 acc_real: 0.542 acc_fake: 0.958 
+(epoch: 48, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.774 loss_D_fake: 0.264 loss_D: 0.519 loss_G: 1.701 loss_conv: 2.642 loss_eq: 0.941 acc_real: 0.642 acc_fake: 0.931 
+(epoch: 48, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.669 loss_D_fake: 0.344 loss_D: 0.507 loss_G: 1.572 loss_conv: 2.556 loss_eq: 0.984 acc_real: 0.680 acc_fake: 0.893 
+(epoch: 48, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.672 loss_D_fake: 0.328 loss_D: 0.500 loss_G: 1.607 loss_conv: 2.451 loss_eq: 0.845 acc_real: 0.703 acc_fake: 0.858 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 48 / 50 	 Time Taken: 415 sec
+7500 tensor([[ 0.7500,  0.0000,  0.6348],
+        [ 0.0000,  0.7500, -0.5122]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.49, 0.4688720703125
+                fake: 0.87, 0.208892822265625
+
+ran validation set (B:7501) in                         9.7 s.
+(epoch: 49, batches: 20, time: 0.002, data: 0.005) loss_D_real: 0.608 loss_D_fake: 0.437 loss_D: 0.522 loss_G: 1.997 loss_conv: 2.912 loss_eq: 0.915 acc_real: 0.814 acc_fake: 0.763 
+(epoch: 49, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.600 loss_D_fake: 0.485 loss_D: 0.542 loss_G: 1.798 loss_conv: 2.719 loss_eq: 0.921 acc_real: 0.865 acc_fake: 0.709 
+(epoch: 49, batches: 60, time: 0.003, data: 0.001) loss_D_real: 0.756 loss_D_fake: 0.266 loss_D: 0.511 loss_G: 1.579 loss_conv: 2.401 loss_eq: 0.822 acc_real: 0.504 acc_fake: 0.955 
+(epoch: 49, batches: 80, time: 0.002, data: 0.015) loss_D_real: 0.637 loss_D_fake: 0.391 loss_D: 0.514 loss_G: 1.597 loss_conv: 2.584 loss_eq: 0.988 acc_real: 0.778 acc_fake: 0.794 
+(epoch: 49, batches: 100, time: 0.003, data: 0.043) loss_D_real: 0.647 loss_D_fake: 0.335 loss_D: 0.491 loss_G: 1.565 loss_conv: 2.619 loss_eq: 1.054 acc_real: 0.714 acc_fake: 0.863 
+7600 tensor([[ 0.7501,  0.0000, -0.6512],
+        [ 0.0000,  0.7500, -0.1485]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.45, 0.44720458984375
+                fake: 0.89, 0.202117919921875
+
+ran validation set (B:7601) in                         9.6 s.
+(epoch: 49, batches: 120, time: 0.002, data: 0.251) loss_D_real: 0.605 loss_D_fake: 0.376 loss_D: 0.491 loss_G: 1.267 loss_conv: 2.359 loss_eq: 1.093 acc_real: 0.826 acc_fake: 0.826 
+(epoch: 49, batches: 140, time: 0.003, data: 0.269) loss_D_real: 0.794 loss_D_fake: 0.194 loss_D: 0.494 loss_G: 1.394 loss_conv: 2.375 loss_eq: 0.981 acc_real: 0.556 acc_fake: 0.935 
+learning rate 0.0000819 -> 0.0000819
+End of epoch 49 / 50 	 Time Taken: 417 sec
+(epoch: 50, batches: 20, time: 0.003, data: 9.911) loss_D_real: 0.651 loss_D_fake: 0.238 loss_D: 0.445 loss_G: 1.684 loss_conv: 2.635 loss_eq: 0.951 acc_real: 0.775 acc_fake: 0.911 
+(epoch: 50, batches: 40, time: 0.003, data: 9.745) loss_D_real: 0.711 loss_D_fake: 0.320 loss_D: 0.515 loss_G: 1.323 loss_conv: 2.319 loss_eq: 0.996 acc_real: 0.679 acc_fake: 0.893 
+7700 tensor([[ 0.7500,  0.0000, -0.4999],
+        [ 0.0000,  1.2500, -0.0666]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 0.45, 0.4429931640625
+                fake: 0.89, 0.20733642578125
+
+ran validation set (B:7701) in                         9.5 s.
+(epoch: 50, batches: 60, time: 0.003, data: 8.708) loss_D_real: 0.675 loss_D_fake: 0.350 loss_D: 0.513 loss_G: 1.400 loss_conv: 2.406 loss_eq: 1.006 acc_real: 0.730 acc_fake: 0.891 
+(epoch: 50, batches: 80, time: 0.002, data: 8.691) loss_D_real: 0.683 loss_D_fake: 0.316 loss_D: 0.500 loss_G: 1.392 loss_conv: 2.578 loss_eq: 1.185 acc_real: 0.696 acc_fake: 0.892 
+(epoch: 50, batches: 100, time: 0.003, data: 7.852) loss_D_real: 0.579 loss_D_fake: 0.562 loss_D: 0.570 loss_G: 1.455 loss_conv: 2.485 loss_eq: 1.030 acc_real: 0.891 acc_fake: 0.706 
+(epoch: 50, batches: 120, time: 0.002, data: 7.183) loss_D_real: 0.792 loss_D_fake: 0.260 loss_D: 0.526 loss_G: 1.663 loss_conv: 2.666 loss_eq: 1.003 acc_real: 0.500 acc_fake: 0.902 
+(epoch: 50, batches: 140, time: 0.002, data: 6.526) loss_D_real: 0.764 loss_D_fake: 0.316 loss_D: 0.540 loss_G: 1.434 loss_conv: 2.525 loss_eq: 1.091 acc_real: 0.532 acc_fake: 0.881 
+7800 tensor([[ 0.7500,  0.0000, -0.6288],
+        [ 0.0000,  1.2500, -0.1927]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+saving the model at the end of epoch 50, iters 499200
+learning rate 0.0000819 -> 0.0000655
+End of epoch 50 / 50 	 Time Taken: 420 sec
+Finished training, model is saved
+Batches trained - G: 5200, D: 2600 
