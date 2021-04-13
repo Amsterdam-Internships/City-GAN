@@ -3,6 +3,7 @@ from data.base_dataset import BaseDataset, get_params, get_transform
 from data.image_folder import make_dataset
 from PIL import Image
 import random
+import torch
 
 
 class DoubleDataset(BaseDataset):
@@ -77,8 +78,13 @@ class DoubleDataset(BaseDataset):
 
         if self.return_mask:
             mask = Image.open(self.mask_paths[index]).convert('RGB')
-            mask = A_transform(mask)
-            out['gt'] = mask
+            out['gt_num_obj'] = len(set(list(mask.getdata())))-1#len(torch.unique(mask))-1
+            mask_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1), method=Image.NEAREST)
+            mask_visual = A_transform(mask)
+            mask_og = mask_transform(mask)
+            out['nearest_gt'] = mask_og
+            out['visual_gt'] = mask_visual
+
 
         return out
 

@@ -200,7 +200,8 @@ class CopyModel(BaseModel):
                     "tgt",
                     "g_mask",
                     "g_mask_binary",
-                    "ground_truth",
+                    "gt",
+                    "gt_og",
                     "eroded_mask",
                     "composite_eroded",
                     "composite",
@@ -303,9 +304,13 @@ class CopyModel(BaseModel):
         self.irrel = input['irrel'].to(self.device)
 
         if not self.isTrain:
-            self.ground_truth = input['gt']
-            self.bin_gt = util.mask_to_binary((self.ground_truth[:, -1]+1)/2)
+            # the first gt mask has bicubic interpolation, the second nearest, to preserve exact pixel values. Check double_dataset.py
+            self.gt = input['visual_gt']
+            self.gt_og = input['nearest_gt']
+            self.gt_num_obj = input['gt_num_obj']
 
+            # convert the mask to binary in grayscale
+            self.bin_gt = util.mask_to_binary((self.gt[:, -1]+1)/2)
         # create a grounded fake, the function samples a random polygon mask
         if self.train_on_gf and not self.opt.no_grfakes:
             self.grounded_fake, self.mask_gf = networks.composite_image(
@@ -611,7 +616,7 @@ class CopyModel(BaseModel):
             self.eroded_mask = dilation(erosion(self.g_mask_binary, kernel_plus), kernel_ones)
 
 
-            self.labelled_mask, num_mask = ndimage.label(self.eroded_mask)
+            self.labelled_mask, self.num_mask = ndimage.label(self.eroded_mask)
 
             self.labelled_mask = torch.Tensor(self.labelled_mask)
             self.labelled_mask= (self.labelled_mask / self.labelled_mask.max())
