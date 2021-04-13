@@ -23,7 +23,7 @@ mkdir "$TMPDIR"/datasets/CLEVR_colorized
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
 # execute training script
-python $HOME/City-GAN/train.py --model copypasteGAN \
+python $HOME/City-GAN/train.py --model copy \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
     --batch_size 32\
     --n_epochs 15\

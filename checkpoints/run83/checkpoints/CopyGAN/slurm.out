@@ -1,0 +1,2304 @@
+starting training run 83
+----------------- Options ---------------
+              D_headstart: 1000                          	[default: 0]
+              D_threshold: 0.5                           
+       accumulation_steps: 1                             
+               batch_size: 64                            
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+        confidence_weight: 0.0                           
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/CLEVR_colorized/images	[default: datasets]
+             dataset_mode: double                        
+                direction: None                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+              fake_target: 0.1                           
+            flip_vertical: False                         
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+               lambda_aux: 1.0                           	[default: 0.1]
+                load_iter: 0                             	[default: 0]
+                load_size: 70                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: inf                           
+          min_obj_surface: 100                           
+                    model: copy                          
+                 n_epochs: 20                            
+           n_epochs_decay: 40                            	[default: 10]
+               n_layers_D: 3                             
+                     name: CopyGAN                       
+                      ndf: 64                            
+                     netD: copy                          
+                     netG: copy                          
+                      ngf: 64                            
+        no_border_zeroing: False                         
+               no_dropout: False                         
+                  no_flip: False                         
+               no_grfakes: False                         
+                  no_html: False                         
+             noisy_labels: True                          	[default: False]
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                   pool_D: True                          	[default: False]
+                pool_size: 50                            
+               preprocess: resize_and_crop               
+               print_freq: 100                           	[default: 20]
+              real_target: 0.9                           
+             save_by_iter: False                         
+          save_epoch_freq: 10                            
+         save_latest_freq: 5000                          
+                     seed: 42                            	[default: 0]
+               sequential: False                         
+           serial_batches: False                         
+               sigma_blur: 1.0                           
+                   suffix:                               
+              tracemalloc: False                         
+         update_html_freq: 100                           
+                  use_amp: True                          
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+dataset [DoubleDataset] and dataloder are created
+dataset [DoubleDataset] and dataloder are created
+Starting training of copy-model
+The number of training images = 26000
+The number of validation images = 3000
+The number of epochs to run = 60
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [CopyModel] was created
+---------- Networks initialized -------------
+DataParallel(
+  (module): CopyGenerator(
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+      )
+    )
+    (sigmoid): Sigmoid()
+  )
+)
+[Network G] Total number of parameters : 3.470 M
+DataParallel(
+  (module): CopyDiscriminator(
+    (blur_filter): GaussianSmoothing()
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2, inplace=True)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+      )
+    )
+    (sigmoid): Sigmoid()
+    (pred_layers): Sequential(
+      (0): AdaptiveAvgPool2d(output_size=1)
+      (1): Flatten(start_dim=1, end_dim=-1)
+      (2): Linear(in_features=512, out_features=256, bias=True)
+      (3): LeakyReLU(negative_slope=0.01)
+      (4): Linear(in_features=256, out_features=1, bias=True)
+      (5): Sigmoid()
+    )
+  )
+)
+[Network D] Total number of parameters : 3.601 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/CopyGAN/web...
+validation accuracies:
+                gf: 0.00, 0.5068359375
+                real: 1.00,  0.50634765625
+                fake: 0.00, 0.5068359375
+
+ran validation set (B:1) in                         37.6 s.
+(epoch: 1, batches: 100, time: 0.012, data: 0.004) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.565 loss_D_fake: 0.405 loss_D: 3.415 acc_real: 1.000 acc_fake: 0.000 loss_AUX: 1.986 loss_D_gr_fake: 0.459 acc_grfake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 100}
+validation accuracies:
+                gf: 0.92, 0.2833305027173913
+                real: 0.85,  0.6067000679347826
+                fake: 0.97, 0.19403872282608695
+
+ran validation set (B:101) in                         36.4 s.
+(epoch: 1, batches: 200, time: 0.011, data: 0.004) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.400 loss_D_fake: 0.448 loss_D: 3.118 acc_real: 0.846 acc_fake: 0.969 loss_AUX: 1.766 loss_D_gr_fake: 0.504 acc_grfake: 0.918 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 200}
+validation accuracies:
+                gf: 0.97, 0.15233313519021738
+                real: 0.72,  0.5874872622282609
+                fake: 0.99, 0.10546609629755435
+
+ran validation set (B:201) in                         35.9 s.
+(epoch: 1, batches: 300, time: 0.012, data: 0.002) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.347 loss_D_fake: 0.386 loss_D: 2.858 acc_real: 0.723 acc_fake: 0.994 loss_AUX: 1.682 loss_D_gr_fake: 0.443 acc_grfake: 0.966 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 300}
+validation accuracies:
+                gf: 0.91, 0.1960502292798913
+                real: 0.98,  0.794051460597826
+                fake: 0.97, 0.13348123301630435
+
+ran validation set (B:301) in                         35.5 s.
+(epoch: 1, batches: 400, time: 0.012, data: 0.007) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.433 loss_D_fake: 0.325 loss_D: 2.698 acc_real: 0.981 acc_fake: 0.970 loss_AUX: 1.594 loss_D_gr_fake: 0.346 acc_grfake: 0.913 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 400}
+validation accuracies:
+                gf: 0.90, 0.22163722826086957
+                real: 0.99,  0.8337933084239131
+                fake: 0.96, 0.14048966117527173
+
+ran validation set (B:401) in                         35.9 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 60 	 Time Taken: 465 sec
+/home/tlotze/.local/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:131: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step()`. "
+validation accuracies:
+                gf: 0.92, 0.181884765625
+                real: 0.99,  0.8136039402173914
+                fake: 0.98, 0.12748386548913043
+
+ran validation set (B:501) in                         37.2 s.
+(epoch: 2, batches: 100, time: 0.010, data: 0.004) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.356 loss_D_fake: 0.391 loss_D: 2.789 acc_real: 0.989 acc_fake: 0.978 loss_AUX: 1.600 loss_D_gr_fake: 0.442 acc_grfake: 0.922 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 506}
+validation accuracies:
+                gf: 0.93, 0.16434909986413043
+                real: 0.98,  0.8076596467391305
+                fake: 0.98, 0.11930250084918478
+
+ran validation set (B:601) in                         36.9 s.
+(epoch: 2, batches: 200, time: 0.010, data: 0.004) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.383 loss_D_fake: 0.318 loss_D: 2.634 acc_real: 0.979 acc_fake: 0.984 loss_AUX: 1.567 loss_D_gr_fake: 0.366 acc_grfake: 0.930 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 606}
+validation accuracies:
+                gf: 0.92, 0.16188115658967392
+                real: 0.99,  0.8236880095108695
+                fake: 0.97, 0.11076819378396739
+
+ran validation set (B:701) in                         35.7 s.
+(epoch: 2, batches: 300, time: 0.012, data: 0.004) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.375 loss_D_fake: 0.351 loss_D: 2.666 acc_real: 0.987 acc_fake: 0.971 loss_AUX: 1.564 loss_D_gr_fake: 0.376 acc_grfake: 0.923 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 706}
+validation accuracies:
+                gf: 0.95, 0.14182181980298914
+                real: 0.96,  0.7647758152173914
+                fake: 0.99, 0.1005859375
+
+ran validation set (B:801) in                         36.8 s.
+(epoch: 2, batches: 400, time: 0.010, data: 0.002) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.367 loss_D_fake: 0.346 loss_D: 2.644 acc_real: 0.962 acc_fake: 0.994 loss_AUX: 1.536 loss_D_gr_fake: 0.396 acc_grfake: 0.946 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 806}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 60 	 Time Taken: 434 sec
+validation accuracies:
+                gf: 0.94, 0.15415357506793478
+                real: 0.99,  0.8444718070652174
+                fake: 0.98, 0.11215342646059782
+
+ran validation set (B:901) in                         37.7 s.
+(epoch: 3, batches: 100, time: 0.011, data: 0.004) loss_G_comp: 0.000 loss_G_anti_sc: 0.000 loss_G: 0.000 loss_D_real: 0.367 loss_D_fake: 0.312 loss_D: 2.588 acc_real: 0.988 acc_fake: 0.980 loss_AUX: 1.532 loss_D_gr_fake: 0.378 acc_grfake: 0.940 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 912}
+Headstart D over
+validation accuracies:
+                gf: 0.95, 0.14306640625
+                real: 0.98,  0.8171492866847826
+                fake: 0.99, 0.10714058254076086
+
+ran validation set (B:1001) in                         37.9 s.
+(epoch: 3, batches: 200, time: 0.007, data: 0.004) loss_G_comp: 1.232 loss_G_anti_sc: 0.379 loss_G: 1.611 loss_D_real: 0.342 loss_D_fake: 0.649 loss_D: 3.105 acc_real: 0.982 acc_fake: 0.990 loss_AUX: 1.603 loss_D_gr_fake: 0.511 acc_grfake: 0.946 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1012}
+validation accuracies:
+                gf: 0.95, 0.14948836616847827
+                real: 0.96,  0.7399371603260869
+                fake: 0.92, 0.37056300951086957
+
+ran validation set (B:1101) in                         36.1 s.
+(epoch: 3, batches: 300, time: 0.007, data: 0.021) loss_G_comp: 0.814 loss_G_anti_sc: 0.468 loss_G: 1.282 loss_D_real: 0.398 loss_D_fake: 0.597 loss_D: 2.933 acc_real: 0.960 acc_fake: 0.918 loss_AUX: 1.549 loss_D_gr_fake: 0.389 acc_grfake: 0.948 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1112}
+validation accuracies:
+                gf: 0.93, 0.20696225373641305
+                real: 0.99,  0.8016728940217391
+                fake: 0.70, 0.4602687669836957
+
+ran validation set (B:1201) in                         37.9 s.
+(epoch: 3, batches: 400, time: 0.006, data: 0.006) loss_G_comp: 0.892 loss_G_anti_sc: 0.376 loss_G: 1.269 loss_D_real: 0.328 loss_D_fake: 0.702 loss_D: 3.007 acc_real: 0.990 acc_fake: 0.702 loss_AUX: 1.552 loss_D_gr_fake: 0.426 acc_grfake: 0.932 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1212}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 60 	 Time Taken: 409 sec
+validation accuracies:
+                gf: 0.93, 0.18471361243206522
+                real: 1.00,  0.8372537364130435
+                fake: 0.64, 0.48117994225543476
+
+ran validation set (B:1301) in                         37.8 s.
+(epoch: 4, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.758 loss_G_anti_sc: 0.439 loss_G: 1.197 loss_D_real: 0.395 loss_D_fake: 0.605 loss_D: 2.860 acc_real: 0.998 acc_fake: 0.638 loss_AUX: 1.499 loss_D_gr_fake: 0.361 acc_grfake: 0.931 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1318}
+validation accuracies:
+                gf: 0.95, 0.15079398777173914
+                real: 0.97,  0.7829908288043478
+                fake: 0.83, 0.4213230298913043
+
+ran validation set (B:1401) in                         37.5 s.
+(epoch: 4, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.770 loss_G_anti_sc: 0.432 loss_G: 1.202 loss_D_real: 0.397 loss_D_fake: 0.649 loss_D: 2.901 acc_real: 0.974 acc_fake: 0.828 loss_AUX: 1.444 loss_D_gr_fake: 0.411 acc_grfake: 0.950 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1418}
+validation accuracies:
+                gf: 0.99, 0.10699993631114131
+                real: 0.44,  0.48002292798913043
+                fake: 0.99, 0.30698029891304346
+
+ran validation set (B:1501) in                         37.3 s.
+(epoch: 4, batches: 300, time: 0.005, data: 0.002) loss_G_comp: 0.830 loss_G_anti_sc: 0.405 loss_G: 1.235 loss_D_real: 0.378 loss_D_fake: 0.693 loss_D: 2.318 acc_real: 0.441 acc_fake: 0.986 loss_AUX: 1.247 loss_D_gr_fake: 0.487 acc_grfake: 0.992 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1518}
+validation accuracies:
+                gf: 0.93, 0.17588739809782608
+                real: 0.98,  0.7936480978260869
+                fake: 0.88, 0.39481784986413043
+
+ran validation set (B:1601) in                         36.7 s.
+(epoch: 4, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.940 loss_G_anti_sc: 0.390 loss_G: 1.329 loss_D_real: 0.402 loss_D_fake: 0.622 loss_D: 2.893 acc_real: 0.982 acc_fake: 0.882 loss_AUX: 1.419 loss_D_gr_fake: 0.450 acc_grfake: 0.934 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1618}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 60 	 Time Taken: 386 sec
+validation accuracies:
+                gf: 0.96, 0.13730521824048914
+                real: 0.94,  0.7184952445652174
+                fake: 0.90, 0.3895104449728261
+
+ran validation set (B:1701) in                         38.5 s.
+(epoch: 5, batches: 100, time: 0.007, data: 0.121) loss_G_comp: 0.872 loss_G_anti_sc: 0.375 loss_G: 1.247 loss_D_real: 0.370 loss_D_fake: 0.651 loss_D: 2.770 acc_real: 0.945 acc_fake: 0.901 loss_AUX: 1.336 loss_D_gr_fake: 0.412 acc_grfake: 0.960 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1724}
+validation accuracies:
+                gf: 0.95, 0.14427118716032608
+                real: 0.96,  0.7321246603260869
+                fake: 0.84, 0.4135105298913043
+
+ran validation set (B:1801) in                         37.9 s.
+(epoch: 5, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.851 loss_G_anti_sc: 0.381 loss_G: 1.233 loss_D_real: 0.364 loss_D_fake: 0.821 loss_D: 2.869 acc_real: 0.957 acc_fake: 0.840 loss_AUX: 1.297 loss_D_gr_fake: 0.388 acc_grfake: 0.951 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1824}
+validation accuracies:
+                gf: 0.95, 0.15146802819293478
+                real: 0.98,  0.7793817934782609
+                fake: 0.51, 0.5023671025815217
+
+ran validation set (B:1901) in                         37.6 s.
+(epoch: 5, batches: 300, time: 0.006, data: 0.006) loss_G_comp: 0.787 loss_G_anti_sc: 0.418 loss_G: 1.204 loss_D_real: 0.413 loss_D_fake: 0.674 loss_D: 2.729 acc_real: 0.979 acc_fake: 0.506 loss_AUX: 1.247 loss_D_gr_fake: 0.394 acc_grfake: 0.947 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1924}
+validation accuracies:
+                gf: 0.95, 0.14836585003396738
+                real: 0.96,  0.7560716711956522
+                fake: 0.61, 0.4727836277173913
+
+ran validation set (B:2001) in                         38.1 s.
+(epoch: 5, batches: 400, time: 0.006, data: 0.004) loss_G_comp: 0.889 loss_G_anti_sc: 0.400 loss_G: 1.289 loss_D_real: 0.364 loss_D_fake: 0.806 loss_D: 2.703 acc_real: 0.961 acc_fake: 0.613 loss_AUX: 1.146 loss_D_gr_fake: 0.387 acc_grfake: 0.950 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 24}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 5 / 60 	 Time Taken: 394 sec
+validation accuracies:
+                gf: 0.93, 0.19916567595108695
+                real: 1.00,  0.8244947350543478
+                fake: 0.18, 0.6054475203804348
+
+ran validation set (B:2101) in                         37.9 s.
+(epoch: 6, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.836 loss_G_anti_sc: 0.424 loss_G: 1.260 loss_D_real: 0.379 loss_D_fake: 0.826 loss_D: 2.642 acc_real: 0.997 acc_fake: 0.178 loss_AUX: 1.065 loss_D_gr_fake: 0.373 acc_grfake: 0.929 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 130}
+validation accuracies:
+                gf: 0.95, 0.14426587975543478
+                real: 0.96,  0.7370074728260869
+                fake: 0.58, 0.47998046875
+
+ran validation set (B:2201) in                         37.6 s.
+(epoch: 6, batches: 200, time: 0.007, data: 0.004) loss_G_comp: 0.550 loss_G_anti_sc: 0.641 loss_G: 1.191 loss_D_real: 0.572 loss_D_fake: 0.522 loss_D: 2.451 acc_real: 0.961 acc_fake: 0.575 loss_AUX: 1.016 loss_D_gr_fake: 0.340 acc_grfake: 0.954 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 230}
+validation accuracies:
+                gf: 0.98, 0.12158203125
+                real: 0.76,  0.5928158967391305
+                fake: 0.87, 0.38497792119565216
+
+ran validation set (B:2301) in                         37.2 s.
+(epoch: 6, batches: 300, time: 0.007, data: 0.002) loss_G_comp: 0.794 loss_G_anti_sc: 0.478 loss_G: 1.271 loss_D_real: 0.398 loss_D_fake: 0.756 loss_D: 2.410 acc_real: 0.763 acc_fake: 0.870 loss_AUX: 0.905 loss_D_gr_fake: 0.351 acc_grfake: 0.979 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 330}
+validation accuracies:
+                gf: 0.99, 0.1363578464673913
+                real: 0.23,  0.42856233016304346
+                fake: 0.98, 0.3412979789402174
+
+ran validation set (B:2401) in                         38.5 s.
+(epoch: 6, batches: 400, time: 0.005, data: 0.071) loss_G_comp: 0.655 loss_G_anti_sc: 0.498 loss_G: 1.153 loss_D_real: 0.482 loss_D_fake: 0.641 loss_D: 1.824 acc_real: 0.234 acc_fake: 0.978 loss_AUX: 0.701 loss_D_gr_fake: 0.423 acc_grfake: 0.995 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 430}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 6 / 60 	 Time Taken: 390 sec
+validation accuracies:
+                gf: 0.94, 0.18563710088315216
+                real: 0.99,  0.7719514266304348
+                fake: 0.22, 0.5830290421195652
+
+ran validation set (B:2501) in                         37.0 s.
+(epoch: 7, batches: 100, time: 0.007, data: 0.004) loss_G_comp: 0.665 loss_G_anti_sc: 0.504 loss_G: 1.169 loss_D_real: 0.463 loss_D_fake: 0.709 loss_D: 2.332 acc_real: 0.987 acc_fake: 0.218 loss_AUX: 0.799 loss_D_gr_fake: 0.362 acc_grfake: 0.939 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 536}
+validation accuracies:
+                gf: 0.97, 0.12726095448369565
+                real: 0.78,  0.5998429008152174
+                fake: 0.78, 0.42123811141304346
+
+ran validation set (B:2601) in                         37.4 s.
+(epoch: 7, batches: 200, time: 0.008, data: 0.004) loss_G_comp: 0.735 loss_G_anti_sc: 0.442 loss_G: 1.177 loss_D_real: 0.521 loss_D_fake: 0.652 loss_D: 2.272 acc_real: 0.782 acc_fake: 0.785 loss_AUX: 0.730 loss_D_gr_fake: 0.368 acc_grfake: 0.974 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 636}
+validation accuracies:
+                gf: 0.95, 0.16304347826086957
+                real: 0.99,  0.737410835597826
+                fake: 0.25, 0.5674465013586957
+
+ran validation set (B:2701) in                         37.0 s.
+(epoch: 7, batches: 300, time: 0.007, data: 0.004) loss_G_comp: 0.642 loss_G_anti_sc: 0.534 loss_G: 1.176 loss_D_real: 0.470 loss_D_fake: 0.636 loss_D: 2.196 acc_real: 0.986 acc_fake: 0.254 loss_AUX: 0.717 loss_D_gr_fake: 0.373 acc_grfake: 0.953 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 736}
+validation accuracies:
+                gf: 0.95, 0.1464578379755435
+                real: 0.92,  0.7012355638586957
+                fake: 0.45, 0.5213994565217391
+
+ran validation set (B:2801) in                         37.3 s.
+(epoch: 7, batches: 400, time: 0.006, data: 0.004) loss_G_comp: 0.617 loss_G_anti_sc: 0.562 loss_G: 1.179 loss_D_real: 0.501 loss_D_fake: 0.617 loss_D: 2.188 acc_real: 0.920 acc_fake: 0.451 loss_AUX: 0.723 loss_D_gr_fake: 0.347 acc_grfake: 0.950 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 836}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 7 / 60 	 Time Taken: 387 sec
+validation accuracies:
+                gf: 0.97, 0.13402258831521738
+                real: 0.78,  0.6188434103260869
+                fake: 0.74, 0.4333389945652174
+
+ran validation set (B:2901) in                         37.9 s.
+(epoch: 8, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.671 loss_G_anti_sc: 0.513 loss_G: 1.184 loss_D_real: 0.479 loss_D_fake: 0.738 loss_D: 2.284 acc_real: 0.778 acc_fake: 0.738 loss_AUX: 0.697 loss_D_gr_fake: 0.370 acc_grfake: 0.972 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 942}
+validation accuracies:
+                gf: 0.99, 0.11536971382472826
+                real: 0.54,  0.52001953125
+                fake: 0.89, 0.375785495923913
+
+ran validation set (B:3001) in                         37.2 s.
+(epoch: 8, batches: 200, time: 0.006, data: 0.023) loss_G_comp: 0.706 loss_G_anti_sc: 0.485 loss_G: 1.191 loss_D_real: 0.459 loss_D_fake: 0.763 loss_D: 2.284 acc_real: 0.544 acc_fake: 0.894 loss_AUX: 0.698 loss_D_gr_fake: 0.364 acc_grfake: 0.988 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1042}
+validation accuracies:
+                gf: 0.97, 0.13792087720788043
+                real: 0.87,  0.640242866847826
+                fake: 0.59, 0.479194972826087
+
+ran validation set (B:3101) in                         37.6 s.
+(epoch: 8, batches: 300, time: 0.006, data: 0.066) loss_G_comp: 0.871 loss_G_anti_sc: 0.458 loss_G: 1.329 loss_D_real: 0.418 loss_D_fake: 0.782 loss_D: 2.220 acc_real: 0.867 acc_fake: 0.589 loss_AUX: 0.618 loss_D_gr_fake: 0.402 acc_grfake: 0.966 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1142}
+validation accuracies:
+                gf: 0.97, 0.1336006496263587
+                real: 0.89,  0.6667586616847826
+                fake: 0.52, 0.49849269701086957
+
+ran validation set (B:3201) in                         37.5 s.
+(epoch: 8, batches: 400, time: 0.006, data: 0.022) loss_G_comp: 0.694 loss_G_anti_sc: 0.578 loss_G: 1.272 loss_D_real: 0.583 loss_D_fake: 0.593 loss_D: 2.187 acc_real: 0.887 acc_fake: 0.516 loss_AUX: 0.645 loss_D_gr_fake: 0.365 acc_grfake: 0.971 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1242}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 8 / 60 	 Time Taken: 390 sec
+validation accuracies:
+                gf: 0.98, 0.11946437669836957
+                real: 0.69,  0.574600883152174
+                fake: 0.74, 0.4339546535326087
+
+ran validation set (B:3301) in                         37.3 s.
+(epoch: 9, batches: 100, time: 0.006, data: 0.025) loss_G_comp: 0.677 loss_G_anti_sc: 0.495 loss_G: 1.172 loss_D_real: 0.486 loss_D_fake: 0.757 loss_D: 2.175 acc_real: 0.685 acc_fake: 0.740 loss_AUX: 0.576 loss_D_gr_fake: 0.357 acc_grfake: 0.978 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1348}
+validation accuracies:
+                gf: 0.97, 0.1290283203125
+                real: 0.79,  0.6043648097826086
+                fake: 0.64, 0.4634850543478261
+
+ran validation set (B:3401) in                         37.0 s.
+(epoch: 9, batches: 200, time: 0.007, data: 0.020) loss_G_comp: 0.656 loss_G_anti_sc: 0.561 loss_G: 1.217 loss_D_real: 0.709 loss_D_fake: 0.553 loss_D: 2.159 acc_real: 0.794 acc_fake: 0.641 loss_AUX: 0.550 loss_D_gr_fake: 0.347 acc_grfake: 0.974 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1448}
+validation accuracies:
+                gf: 0.97, 0.13640561311141305
+                real: 0.82,  0.6141941236413043
+                fake: 0.58, 0.4796089504076087
+
+ran validation set (B:3501) in                         37.8 s.
+(epoch: 9, batches: 300, time: 0.006, data: 0.020) loss_G_comp: 0.722 loss_G_anti_sc: 0.454 loss_G: 1.176 loss_D_real: 0.479 loss_D_fake: 0.788 loss_D: 2.138 acc_real: 0.818 acc_fake: 0.579 loss_AUX: 0.525 loss_D_gr_fake: 0.347 acc_grfake: 0.973 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1548}
+validation accuracies:
+                gf: 0.98, 0.12878683338994565
+                real: 0.77,  0.5969132133152174
+                fake: 0.62, 0.46891983695652173
+
+ran validation set (B:3601) in                         37.2 s.
+(epoch: 9, batches: 400, time: 0.006, data: 0.020) loss_G_comp: 0.693 loss_G_anti_sc: 0.548 loss_G: 1.241 loss_D_real: 0.536 loss_D_fake: 0.740 loss_D: 2.088 acc_real: 0.771 acc_fake: 0.619 loss_AUX: 0.472 loss_D_gr_fake: 0.339 acc_grfake: 0.977 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1648}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 9 / 60 	 Time Taken: 388 sec
+validation accuracies:
+                gf: 0.97, 0.13900093410326086
+                real: 0.87,  0.6396059782608695
+                fake: 0.49, 0.5062308933423914
+
+ran validation set (B:3701) in                         37.6 s.
+(epoch: 10, batches: 100, time: 0.006, data: 0.016) loss_G_comp: 0.872 loss_G_anti_sc: 0.408 loss_G: 1.280 loss_D_real: 0.445 loss_D_fake: 0.815 loss_D: 2.171 acc_real: 0.869 acc_fake: 0.487 loss_AUX: 0.515 loss_D_gr_fake: 0.396 acc_grfake: 0.967 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1754}
+validation accuracies:
+                gf: 0.97, 0.14425526494565216
+                real: 0.86,  0.62646484375
+                fake: 0.49, 0.5048403532608695
+
+ran validation set (B:3801) in                         37.4 s.
+(epoch: 10, batches: 200, time: 0.006, data: 0.019) loss_G_comp: 0.591 loss_G_anti_sc: 0.620 loss_G: 1.211 loss_D_real: 0.587 loss_D_fake: 0.582 loss_D: 2.012 acc_real: 0.859 acc_fake: 0.488 loss_AUX: 0.491 loss_D_gr_fake: 0.353 acc_grfake: 0.968 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1854}
+validation accuracies:
+                gf: 0.97, 0.14152195142663043
+                real: 0.84,  0.6247877038043478
+                fake: 0.54, 0.4905422044836957
+
+ran validation set (B:3901) in                         37.8 s.
+(epoch: 10, batches: 300, time: 0.006, data: 0.017) loss_G_comp: 0.618 loss_G_anti_sc: 0.588 loss_G: 1.206 loss_D_real: 0.618 loss_D_fake: 0.694 loss_D: 2.124 acc_real: 0.837 acc_fake: 0.543 loss_AUX: 0.456 loss_D_gr_fake: 0.356 acc_grfake: 0.968 
+{'scale': 131072.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1954}
+validation accuracies:
+                gf: 0.98, 0.12541928498641305
+                real: 0.61,  0.5373853600543478
+                fake: 0.81, 0.4103897758152174
+
+ran validation set (B:4001) in                         37.3 s.
+(epoch: 10, batches: 400, time: 0.006, data: 0.030) loss_G_comp: 0.704 loss_G_anti_sc: 0.467 loss_G: 1.171 loss_D_real: 0.515 loss_D_fake: 0.750 loss_D: 2.085 acc_real: 0.611 acc_fake: 0.813 loss_AUX: 0.463 loss_D_gr_fake: 0.356 acc_grfake: 0.985 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 54}
+saving the model at the end of epoch 10, iters 259840
+learning rate 0.0002000 -> 0.0002000
+End of epoch 10 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12407385784646739
+                real: 0.62,  0.5470660665760869
+                fake: 0.76, 0.4358547044836957
+
+ran validation set (B:4101) in                         37.4 s.
+(epoch: 11, batches: 100, time: 0.005, data: 0.007) loss_G_comp: 0.650 loss_G_anti_sc: 0.535 loss_G: 1.185 loss_D_real: 0.620 loss_D_fake: 0.587 loss_D: 1.992 acc_real: 0.624 acc_fake: 0.762 loss_AUX: 0.440 loss_D_gr_fake: 0.344 acc_grfake: 0.979 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 160}
+validation accuracies:
+                gf: 0.97, 0.1546630859375
+                real: 0.84,  0.6254245923913043
+                fake: 0.58, 0.4861476732336957
+
+ran validation set (B:4201) in                         36.6 s.
+(epoch: 11, batches: 200, time: 0.007, data: 0.002) loss_G_comp: 0.789 loss_G_anti_sc: 0.477 loss_G: 1.266 loss_D_real: 0.482 loss_D_fake: 0.798 loss_D: 2.083 acc_real: 0.840 acc_fake: 0.578 loss_AUX: 0.439 loss_D_gr_fake: 0.364 acc_grfake: 0.967 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 260}
+validation accuracies:
+                gf: 0.97, 0.1369973887567935
+                real: 0.82,  0.6210725203804348
+                fake: 0.52, 0.49813179347826086
+
+ran validation set (B:4301) in                         37.3 s.
+(epoch: 11, batches: 300, time: 0.007, data: 0.002) loss_G_comp: 0.786 loss_G_anti_sc: 0.478 loss_G: 1.264 loss_D_real: 0.505 loss_D_fake: 0.779 loss_D: 2.057 acc_real: 0.823 acc_fake: 0.523 loss_AUX: 0.429 loss_D_gr_fake: 0.343 acc_grfake: 0.968 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 360}
+validation accuracies:
+                gf: 0.96, 0.16102135699728262
+                real: 0.95,  0.6789869225543478
+                fake: 0.30, 0.5508449388586957
+
+ran validation set (B:4401) in                         36.9 s.
+(epoch: 11, batches: 400, time: 0.006, data: 0.007) loss_G_comp: 0.631 loss_G_anti_sc: 0.608 loss_G: 1.239 loss_D_real: 0.621 loss_D_fake: 0.611 loss_D: 2.005 acc_real: 0.953 acc_fake: 0.301 loss_AUX: 0.417 loss_D_gr_fake: 0.356 acc_grfake: 0.958 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 460}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 11 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.96, 0.14836319633152173
+                real: 0.90,  0.6445100203804348
+                fake: 0.38, 0.5309527853260869
+
+ran validation set (B:4501) in                         37.9 s.
+(epoch: 12, batches: 100, time: 0.006, data: 0.012) loss_G_comp: 0.884 loss_G_anti_sc: 0.369 loss_G: 1.253 loss_D_real: 0.489 loss_D_fake: 0.798 loss_D: 2.113 acc_real: 0.898 acc_fake: 0.375 loss_AUX: 0.447 loss_D_gr_fake: 0.379 acc_grfake: 0.959 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 566}
+validation accuracies:
+                gf: 0.98, 0.11978016728940218
+                real: 0.58,  0.5387015964673914
+                fake: 0.77, 0.42464546535326086
+
+ran validation set (B:4601) in                         36.9 s.
+(epoch: 12, batches: 200, time: 0.006, data: 0.004) loss_G_comp: 0.602 loss_G_anti_sc: 0.561 loss_G: 1.163 loss_D_real: 0.581 loss_D_fake: 0.591 loss_D: 1.901 acc_real: 0.583 acc_fake: 0.773 loss_AUX: 0.400 loss_D_gr_fake: 0.328 acc_grfake: 0.982 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 666}
+validation accuracies:
+                gf: 0.97, 0.13830301036005435
+                real: 0.80,  0.6053838315217391
+                fake: 0.51, 0.49808933423913043
+
+ran validation set (B:4701) in                         36.9 s.
+(epoch: 12, batches: 300, time: 0.007, data: 0.016) loss_G_comp: 0.762 loss_G_anti_sc: 0.461 loss_G: 1.223 loss_D_real: 0.426 loss_D_fake: 0.904 loss_D: 2.106 acc_real: 0.798 acc_fake: 0.506 loss_AUX: 0.416 loss_D_gr_fake: 0.361 acc_grfake: 0.972 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 766}
+validation accuracies:
+                gf: 0.99, 0.14095405910326086
+                real: 0.38,  0.47848378057065216
+                fake: 0.92, 0.381889011548913
+
+ran validation set (B:4801) in                         37.0 s.
+(epoch: 12, batches: 400, time: 0.005, data: 0.628) loss_G_comp: 0.698 loss_G_anti_sc: 0.515 loss_G: 1.213 loss_D_real: 0.524 loss_D_fake: 0.722 loss_D: 1.459 acc_real: 0.382 acc_fake: 0.922 loss_AUX: 0.213 loss_D_gr_fake: 0.440 acc_grfake: 0.990 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 866}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 12 / 60 	 Time Taken: 384 sec
+validation accuracies:
+                gf: 0.98, 0.13770592730978262
+                real: 0.62,  0.5531589673913043
+                fake: 0.71, 0.444389011548913
+
+ran validation set (B:4901) in                         38.0 s.
+(epoch: 13, batches: 100, time: 0.006, data: 0.455) loss_G_comp: 0.757 loss_G_anti_sc: 0.429 loss_G: 1.186 loss_D_real: 0.512 loss_D_fake: 0.759 loss_D: 2.012 acc_real: 0.623 acc_fake: 0.709 loss_AUX: 0.386 loss_D_gr_fake: 0.355 acc_grfake: 0.981 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 972}
+validation accuracies:
+                gf: 0.96, 0.14534328294836957
+                real: 0.91,  0.6608568274456522
+                fake: 0.33, 0.5414189877717391
+
+ran validation set (B:5001) in                         37.6 s.
+(epoch: 13, batches: 200, time: 0.006, data: 0.319) loss_G_comp: 0.798 loss_G_anti_sc: 0.452 loss_G: 1.250 loss_D_real: 0.445 loss_D_fake: 0.863 loss_D: 2.062 acc_real: 0.909 acc_fake: 0.334 loss_AUX: 0.389 loss_D_gr_fake: 0.364 acc_grfake: 0.960 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1072}
+validation accuracies:
+                gf: 0.97, 0.13852592136548914
+                real: 0.83,  0.6194166100543478
+                fake: 0.46, 0.5076532778532609
+
+ran validation set (B:5101) in                         37.4 s.
+(epoch: 13, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.819 loss_G_anti_sc: 0.404 loss_G: 1.223 loss_D_real: 0.533 loss_D_fake: 0.768 loss_D: 2.064 acc_real: 0.833 acc_fake: 0.461 loss_AUX: 0.382 loss_D_gr_fake: 0.380 acc_grfake: 0.970 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1172}
+validation accuracies:
+                gf: 0.97, 0.13073465098505435
+                real: 0.86,  0.6293520720108695
+                fake: 0.50, 0.5006050441576086
+
+ran validation set (B:5201) in                         37.7 s.
+(epoch: 13, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.578 loss_G_anti_sc: 0.564 loss_G: 1.142 loss_D_real: 0.547 loss_D_fake: 0.659 loss_D: 1.942 acc_real: 0.857 acc_fake: 0.498 loss_AUX: 0.378 loss_D_gr_fake: 0.357 acc_grfake: 0.974 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1272}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 13 / 60 	 Time Taken: 390 sec
+validation accuracies:
+                gf: 0.97, 0.12886379076086957
+                real: 0.79,  0.6055536684782609
+                fake: 0.54, 0.4877292798913043
+
+ran validation set (B:5301) in                         37.4 s.
+(epoch: 14, batches: 100, time: 0.006, data: 0.015) loss_G_comp: 0.867 loss_G_anti_sc: 0.480 loss_G: 1.347 loss_D_real: 0.484 loss_D_fake: 0.845 loss_D: 2.094 acc_real: 0.787 acc_fake: 0.540 loss_AUX: 0.380 loss_D_gr_fake: 0.386 acc_grfake: 0.974 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1378}
+validation accuracies:
+                gf: 0.97, 0.13423488451086957
+                real: 0.87,  0.6193953804347826
+                fake: 0.47, 0.5057426120923914
+
+ran validation set (B:5401) in                         37.5 s.
+(epoch: 14, batches: 200, time: 0.006, data: 0.004) loss_G_comp: 0.744 loss_G_anti_sc: 0.449 loss_G: 1.193 loss_D_real: 0.462 loss_D_fake: 0.848 loss_D: 2.022 acc_real: 0.867 acc_fake: 0.465 loss_AUX: 0.364 loss_D_gr_fake: 0.349 acc_grfake: 0.969 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1478}
+validation accuracies:
+                gf: 0.97, 0.13023575492527173
+                real: 0.76,  0.5773819633152174
+                fake: 0.60, 0.4774329144021739
+
+ran validation set (B:5501) in                         37.1 s.
+(epoch: 14, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.849 loss_G_anti_sc: 0.432 loss_G: 1.281 loss_D_real: 0.433 loss_D_fake: 1.017 loss_D: 2.181 acc_real: 0.760 acc_fake: 0.601 loss_AUX: 0.373 loss_D_gr_fake: 0.358 acc_grfake: 0.975 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1578}
+validation accuracies:
+                gf: 0.97, 0.13416323454483695
+                real: 0.85,  0.6221340013586957
+                fake: 0.47, 0.5066873301630435
+
+ran validation set (B:5601) in                         36.8 s.
+(epoch: 14, batches: 400, time: 0.006, data: 0.014) loss_G_comp: 0.665 loss_G_anti_sc: 0.474 loss_G: 1.140 loss_D_real: 0.515 loss_D_fake: 0.830 loss_D: 2.082 acc_real: 0.846 acc_fake: 0.470 loss_AUX: 0.360 loss_D_gr_fake: 0.377 acc_grfake: 0.968 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1678}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 14 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.96, 0.14192000679347827
+                real: 0.85,  0.6229619565217391
+                fake: 0.47, 0.5062521229619565
+
+ran validation set (B:5701) in                         36.6 s.
+(epoch: 15, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.644 loss_G_anti_sc: 0.531 loss_G: 1.175 loss_D_real: 0.543 loss_D_fake: 0.711 loss_D: 1.966 acc_real: 0.851 acc_fake: 0.466 loss_AUX: 0.367 loss_D_gr_fake: 0.344 acc_grfake: 0.963 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1784}
+validation accuracies:
+                gf: 0.98, 0.1331787109375
+                real: 0.68,  0.5617569633152174
+                fake: 0.68, 0.45114003057065216
+
+ran validation set (B:5801) in                         37.5 s.
+(epoch: 15, batches: 200, time: 0.006, data: 0.062) loss_G_comp: 0.666 loss_G_anti_sc: 0.496 loss_G: 1.162 loss_D_real: 0.590 loss_D_fake: 0.629 loss_D: 1.905 acc_real: 0.679 acc_fake: 0.681 loss_AUX: 0.360 loss_D_gr_fake: 0.327 acc_grfake: 0.976 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1884}
+validation accuracies:
+                gf: 0.97, 0.1434273097826087
+                real: 0.91,  0.652449898097826
+                fake: 0.37, 0.5335427989130435
+
+ran validation set (B:5901) in                         36.7 s.
+(epoch: 15, batches: 300, time: 0.007, data: 0.004) loss_G_comp: 0.837 loss_G_anti_sc: 0.452 loss_G: 1.289 loss_D_real: 0.468 loss_D_fake: 0.885 loss_D: 2.037 acc_real: 0.910 acc_fake: 0.366 loss_AUX: 0.323 loss_D_gr_fake: 0.361 acc_grfake: 0.967 
+{'scale': 262144.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1984}
+validation accuracies:
+                gf: 0.97, 0.12602698284646738
+                real: 0.77,  0.5943019701086957
+                fake: 0.59, 0.4713293987771739
+
+ran validation set (B:6001) in                         36.7 s.
+(epoch: 15, batches: 400, time: 0.006, data: 0.033) loss_G_comp: 0.618 loss_G_anti_sc: 0.554 loss_G: 1.172 loss_D_real: 0.680 loss_D_fake: 0.545 loss_D: 1.930 acc_real: 0.769 acc_fake: 0.595 loss_AUX: 0.337 loss_D_gr_fake: 0.367 acc_grfake: 0.972 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 84}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 15 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.95, 0.17353091032608695
+                real: 0.98,  0.7034646739130435
+                fake: 0.10, 0.6140242866847826
+
+ran validation set (B:6101) in                         36.5 s.
+(epoch: 16, batches: 100, time: 0.006, data: 0.081) loss_G_comp: 0.710 loss_G_anti_sc: 0.462 loss_G: 1.172 loss_D_real: 0.572 loss_D_fake: 0.728 loss_D: 2.027 acc_real: 0.983 acc_fake: 0.096 loss_AUX: 0.359 loss_D_gr_fake: 0.368 acc_grfake: 0.951 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 190}
+validation accuracies:
+                gf: 0.98, 0.12822690217391305
+                real: 0.76,  0.5861710258152174
+                fake: 0.54, 0.48550016983695654
+
+ran validation set (B:6201) in                         36.7 s.
+(epoch: 16, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.721 loss_G_anti_sc: 0.459 loss_G: 1.180 loss_D_real: 0.597 loss_D_fake: 0.666 loss_D: 1.977 acc_real: 0.764 acc_fake: 0.538 loss_AUX: 0.350 loss_D_gr_fake: 0.363 acc_grfake: 0.978 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 290}
+validation accuracies:
+                gf: 0.98, 0.11214546535326086
+                real: 0.66,  0.5596976902173914
+                fake: 0.66, 0.45261548913043476
+
+ran validation set (B:6301) in                         37.3 s.
+(epoch: 16, batches: 300, time: 0.007, data: 0.004) loss_G_comp: 0.657 loss_G_anti_sc: 0.546 loss_G: 1.204 loss_D_real: 0.548 loss_D_fake: 0.689 loss_D: 1.933 acc_real: 0.661 acc_fake: 0.660 loss_AUX: 0.350 loss_D_gr_fake: 0.345 acc_grfake: 0.983 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 390}
+validation accuracies:
+                gf: 0.97, 0.14119023862092392
+                real: 0.83,  0.6250636888586957
+                fake: 0.39, 0.5265582540760869
+
+ran validation set (B:6401) in                         37.1 s.
+(epoch: 16, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.720 loss_G_anti_sc: 0.446 loss_G: 1.166 loss_D_real: 0.498 loss_D_fake: 0.882 loss_D: 2.072 acc_real: 0.828 acc_fake: 0.394 loss_AUX: 0.338 loss_D_gr_fake: 0.353 acc_grfake: 0.974 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 490}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 16 / 60 	 Time Taken: 387 sec
+validation accuracies:
+                gf: 0.96, 0.15410050101902173
+                real: 0.94,  0.6819166100543478
+                fake: 0.23, 0.5771272078804348
+
+ran validation set (B:6501) in                         38.0 s.
+(epoch: 17, batches: 100, time: 0.006, data: 0.007) loss_G_comp: 0.676 loss_G_anti_sc: 0.513 loss_G: 1.189 loss_D_real: 0.597 loss_D_fake: 0.619 loss_D: 1.905 acc_real: 0.942 acc_fake: 0.226 loss_AUX: 0.331 loss_D_gr_fake: 0.358 acc_grfake: 0.956 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 596}
+validation accuracies:
+                gf: 0.97, 0.13543966542119565
+                real: 0.80,  0.5924549932065217
+                fake: 0.46, 0.5060079823369565
+
+ran validation set (B:6601) in                         37.6 s.
+(epoch: 17, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.681 loss_G_anti_sc: 0.511 loss_G: 1.192 loss_D_real: 0.514 loss_D_fake: 0.747 loss_D: 1.933 acc_real: 0.798 acc_fake: 0.459 loss_AUX: 0.311 loss_D_gr_fake: 0.362 acc_grfake: 0.975 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 696}
+validation accuracies:
+                gf: 0.97, 0.14529551630434784
+                real: 0.91,  0.6366550611413043
+                fake: 0.28, 0.5510784646739131
+
+ran validation set (B:6701) in                         36.0 s.
+(epoch: 17, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.647 loss_G_anti_sc: 0.505 loss_G: 1.152 loss_D_real: 0.528 loss_D_fake: 0.729 loss_D: 1.942 acc_real: 0.909 acc_fake: 0.284 loss_AUX: 0.336 loss_D_gr_fake: 0.350 acc_grfake: 0.965 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 796}
+validation accuracies:
+                gf: 0.96, 0.1462136973505435
+                real: 0.95,  0.6923191236413043
+                fake: 0.19, 0.5830715013586957
+
+ran validation set (B:6801) in                         36.9 s.
+(epoch: 17, batches: 400, time: 0.006, data: 0.004) loss_G_comp: 0.810 loss_G_anti_sc: 0.436 loss_G: 1.246 loss_D_real: 0.401 loss_D_fake: 1.001 loss_D: 2.113 acc_real: 0.955 acc_fake: 0.193 loss_AUX: 0.337 loss_D_gr_fake: 0.374 acc_grfake: 0.964 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 896}
+validation accuracies:
+                gf: 0.97, 0.12450375764266304
+                real: 0.79,  0.5981020720108695
+                fake: 0.49, 0.499458644701087
+
+ran validation set (B:6901) in                         35.9 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 17 / 60 	 Time Taken: 426 sec
+validation accuracies:
+                gf: 0.98, 0.12383767832880435
+                real: 0.78,  0.5972953464673914
+                fake: 0.50, 0.49643342391304346
+
+ran validation set (B:7001) in                         37.1 s.
+(epoch: 18, batches: 100, time: 0.006, data: 0.020) loss_G_comp: 0.654 loss_G_anti_sc: 0.500 loss_G: 1.154 loss_D_real: 0.532 loss_D_fake: 0.708 loss_D: 1.944 acc_real: 0.785 acc_fake: 0.498 loss_AUX: 0.335 loss_D_gr_fake: 0.369 acc_grfake: 0.980 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1002}
+validation accuracies:
+                gf: 0.98, 0.12260636039402174
+                real: 0.75,  0.5802055027173914
+                fake: 0.58, 0.47641389266304346
+
+ran validation set (B:7101) in                         36.8 s.
+(epoch: 18, batches: 200, time: 0.005, data: 0.024) loss_G_comp: 0.674 loss_G_anti_sc: 0.506 loss_G: 1.180 loss_D_real: 0.565 loss_D_fake: 0.673 loss_D: 1.896 acc_real: 0.751 acc_fake: 0.581 loss_AUX: 0.306 loss_D_gr_fake: 0.351 acc_grfake: 0.979 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1102}
+validation accuracies:
+                gf: 0.99, 0.11131485648777174
+                real: 0.71,  0.5734544836956522
+                fake: 0.64, 0.4609375
+
+ran validation set (B:7201) in                         37.4 s.
+(epoch: 18, batches: 300, time: 0.005, data: 0.006) loss_G_comp: 0.674 loss_G_anti_sc: 0.444 loss_G: 1.118 loss_D_real: 0.568 loss_D_fake: 0.696 loss_D: 1.971 acc_real: 0.707 acc_fake: 0.645 loss_AUX: 0.343 loss_D_gr_fake: 0.364 acc_grfake: 0.986 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1202}
+validation accuracies:
+                gf: 0.97, 0.12722645635190216
+                real: 0.83,  0.6155528192934783
+                fake: 0.46, 0.5059336786684783
+
+ran validation set (B:7301) in                         36.5 s.
+(epoch: 18, batches: 400, time: 0.005, data: 0.005) loss_G_comp: 0.680 loss_G_anti_sc: 0.482 loss_G: 1.162 loss_D_real: 0.488 loss_D_fake: 0.761 loss_D: 1.946 acc_real: 0.832 acc_fake: 0.457 loss_AUX: 0.332 loss_D_gr_fake: 0.366 acc_grfake: 0.972 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1302}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 18 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.98, 0.1268867824388587
+                real: 0.75,  0.5896739130434783
+                fake: 0.56, 0.48141346807065216
+
+ran validation set (B:7401) in                         37.2 s.
+(epoch: 19, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.780 loss_G_anti_sc: 0.447 loss_G: 1.227 loss_D_real: 0.497 loss_D_fake: 0.851 loss_D: 2.062 acc_real: 0.753 acc_fake: 0.555 loss_AUX: 0.329 loss_D_gr_fake: 0.384 acc_grfake: 0.978 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1408}
+validation accuracies:
+                gf: 0.98, 0.1103515625
+                real: 0.55,  0.5216542119565217
+                fake: 0.88, 0.39596424932065216
+
+ran validation set (B:7501) in                         36.8 s.
+(epoch: 19, batches: 200, time: 0.005, data: 0.021) loss_G_comp: 0.764 loss_G_anti_sc: 0.431 loss_G: 1.195 loss_D_real: 0.512 loss_D_fake: 0.807 loss_D: 2.046 acc_real: 0.549 acc_fake: 0.877 loss_AUX: 0.340 loss_D_gr_fake: 0.387 acc_grfake: 0.985 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1508}
+validation accuracies:
+                gf: 0.97, 0.1393087635869565
+                real: 0.88,  0.6358907948369565
+                fake: 0.41, 0.5182999320652174
+
+ran validation set (B:7601) in                         36.9 s.
+(epoch: 19, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.664 loss_G_anti_sc: 0.550 loss_G: 1.214 loss_D_real: 0.604 loss_D_fake: 0.720 loss_D: 1.956 acc_real: 0.883 acc_fake: 0.413 loss_AUX: 0.306 loss_D_gr_fake: 0.325 acc_grfake: 0.971 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1608}
+validation accuracies:
+                gf: 0.98, 0.12020475968070653
+                real: 0.73,  0.5667459239130435
+                fake: 0.56, 0.48013969089673914
+
+ran validation set (B:7701) in                         37.3 s.
+(epoch: 19, batches: 400, time: 0.006, data: 0.018) loss_G_comp: 0.650 loss_G_anti_sc: 0.555 loss_G: 1.205 loss_D_real: 0.634 loss_D_fake: 0.588 loss_D: 1.885 acc_real: 0.734 acc_fake: 0.559 loss_AUX: 0.314 loss_D_gr_fake: 0.350 acc_grfake: 0.983 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1708}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 19 / 60 	 Time Taken: 388 sec
+validation accuracies:
+                gf: 0.98, 0.11775804602581522
+                real: 0.61,  0.5349864130434783
+                fake: 0.73, 0.43501613451086957
+
+ran validation set (B:7801) in                         38.1 s.
+(epoch: 20, batches: 100, time: 0.006, data: 0.006) loss_G_comp: 0.666 loss_G_anti_sc: 0.470 loss_G: 1.135 loss_D_real: 0.559 loss_D_fake: 0.738 loss_D: 1.936 acc_real: 0.613 acc_fake: 0.733 loss_AUX: 0.291 loss_D_gr_fake: 0.349 acc_grfake: 0.982 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1814}
+validation accuracies:
+                gf: 0.96, 0.1535379161005435
+                real: 0.97,  0.7104067595108695
+                fake: 0.15, 0.604874320652174
+
+ran validation set (B:7901) in                         36.7 s.
+(epoch: 20, batches: 200, time: 0.007, data: 0.002) loss_G_comp: 0.738 loss_G_anti_sc: 0.420 loss_G: 1.158 loss_D_real: 0.539 loss_D_fake: 0.689 loss_D: 1.900 acc_real: 0.974 acc_fake: 0.147 loss_AUX: 0.285 loss_D_gr_fake: 0.387 acc_grfake: 0.956 
+{'scale': 524288.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1914}
+validation accuracies:
+                gf: 0.98, 0.11985181725543478
+                real: 0.70,  0.5614809782608695
+                fake: 0.64, 0.45710555366847827
+
+ran validation set (B:8001) in                         36.6 s.
+(epoch: 20, batches: 300, time: 0.006, data: 0.004) loss_G_comp: 0.807 loss_G_anti_sc: 0.427 loss_G: 1.234 loss_D_real: 0.479 loss_D_fake: 0.868 loss_D: 1.952 acc_real: 0.702 acc_fake: 0.644 loss_AUX: 0.265 loss_D_gr_fake: 0.340 acc_grfake: 0.983 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 14}
+validation accuracies:
+                gf: 0.96, 0.14438795006793478
+                real: 0.89,  0.6522163722826086
+                fake: 0.31, 0.5454950747282609
+
+ran validation set (B:8101) in                         36.5 s.
+(epoch: 20, batches: 400, time: 0.006, data: 0.016) loss_G_comp: 0.651 loss_G_anti_sc: 0.478 loss_G: 1.129 loss_D_real: 0.539 loss_D_fake: 0.722 loss_D: 1.949 acc_real: 0.895 acc_fake: 0.315 loss_AUX: 0.330 loss_D_gr_fake: 0.357 acc_grfake: 0.963 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 114}
+saving the model at the end of epoch 20, iters 519680
+learning rate 0.0002000 -> 0.0001600
+End of epoch 20 / 60 	 Time Taken: 390 sec
+validation accuracies:
+                gf: 0.98, 0.12343431555706522
+                real: 0.79,  0.6028787364130435
+                fake: 0.55, 0.48783542798913043
+
+ran validation set (B:8201) in                         36.8 s.
+(epoch: 21, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.651 loss_G_anti_sc: 0.449 loss_G: 1.100 loss_D_real: 0.553 loss_D_fake: 0.692 loss_D: 1.929 acc_real: 0.787 acc_fake: 0.549 loss_AUX: 0.310 loss_D_gr_fake: 0.374 acc_grfake: 0.977 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 220}
+validation accuracies:
+                gf: 0.97, 0.13364576256793478
+                real: 0.92,  0.6511548913043478
+                fake: 0.31, 0.5424592391304348
+
+ran validation set (B:8301) in                         37.5 s.
+(epoch: 21, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.644 loss_G_anti_sc: 0.511 loss_G: 1.155 loss_D_real: 0.500 loss_D_fake: 0.793 loss_D: 1.907 acc_real: 0.920 acc_fake: 0.311 loss_AUX: 0.272 loss_D_gr_fake: 0.342 acc_grfake: 0.972 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 320}
+validation accuracies:
+                gf: 0.97, 0.13887090268342392
+                real: 0.92,  0.6563136888586957
+                fake: 0.34, 0.5363238790760869
+
+ran validation set (B:8401) in                         37.9 s.
+(epoch: 21, batches: 300, time: 0.007, data: 0.002) loss_G_comp: 0.666 loss_G_anti_sc: 0.487 loss_G: 1.152 loss_D_real: 0.527 loss_D_fake: 0.737 loss_D: 1.906 acc_real: 0.919 acc_fake: 0.345 loss_AUX: 0.288 loss_D_gr_fake: 0.354 acc_grfake: 0.969 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 420}
+validation accuracies:
+                gf: 0.97, 0.13905135444972827
+                real: 0.92,  0.647567085597826
+                fake: 0.27, 0.5547511888586957
+
+ran validation set (B:8501) in                         37.0 s.
+(epoch: 21, batches: 400, time: 0.006, data: 0.006) loss_G_comp: 0.761 loss_G_anti_sc: 0.441 loss_G: 1.203 loss_D_real: 0.433 loss_D_fake: 0.859 loss_D: 1.978 acc_real: 0.918 acc_fake: 0.271 loss_AUX: 0.319 loss_D_gr_fake: 0.368 acc_grfake: 0.971 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 520}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 21 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.98, 0.12980320142663043
+                real: 0.91,  0.6409434442934783
+                fake: 0.29, 0.5509086277173914
+
+ran validation set (B:8601) in                         36.9 s.
+(epoch: 22, batches: 100, time: 0.006, data: 0.030) loss_G_comp: 0.635 loss_G_anti_sc: 0.483 loss_G: 1.118 loss_D_real: 0.533 loss_D_fake: 0.741 loss_D: 1.900 acc_real: 0.906 acc_fake: 0.289 loss_AUX: 0.279 loss_D_gr_fake: 0.348 acc_grfake: 0.978 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 626}
+validation accuracies:
+                gf: 0.97, 0.13396155315896738
+                real: 0.88,  0.643936820652174
+                fake: 0.38, 0.5259213654891305
+
+ran validation set (B:8701) in                         37.3 s.
+(epoch: 22, batches: 200, time: 0.006, data: 0.006) loss_G_comp: 0.647 loss_G_anti_sc: 0.471 loss_G: 1.118 loss_D_real: 0.504 loss_D_fake: 0.795 loss_D: 1.924 acc_real: 0.877 acc_fake: 0.378 loss_AUX: 0.291 loss_D_gr_fake: 0.335 acc_grfake: 0.967 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 726}
+validation accuracies:
+                gf: 0.98, 0.12199335512907608
+                real: 0.82,  0.6045134171195652
+                fake: 0.46, 0.5054984714673914
+
+ran validation set (B:8801) in                         37.5 s.
+(epoch: 22, batches: 300, time: 0.006, data: 0.007) loss_G_comp: 0.627 loss_G_anti_sc: 0.485 loss_G: 1.112 loss_D_real: 0.564 loss_D_fake: 0.698 loss_D: 1.890 acc_real: 0.822 acc_fake: 0.456 loss_AUX: 0.291 loss_D_gr_fake: 0.336 acc_grfake: 0.979 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 826}
+validation accuracies:
+                gf: 0.98, 0.13045601222826086
+                real: 0.92,  0.653702445652174
+                fake: 0.35, 0.5353897758152174
+
+ran validation set (B:8901) in                         37.4 s.
+(epoch: 22, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.753 loss_G_anti_sc: 0.452 loss_G: 1.204 loss_D_real: 0.491 loss_D_fake: 0.792 loss_D: 1.884 acc_real: 0.916 acc_fake: 0.347 loss_AUX: 0.265 loss_D_gr_fake: 0.336 acc_grfake: 0.978 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 926}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 22 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12903097401494565
+                real: 0.76,  0.591796875
+                fake: 0.53, 0.48972486413043476
+
+ran validation set (B:9001) in                         36.8 s.
+(epoch: 23, batches: 100, time: 0.006, data: 0.017) loss_G_comp: 0.733 loss_G_anti_sc: 0.439 loss_G: 1.172 loss_D_real: 0.477 loss_D_fake: 0.836 loss_D: 1.981 acc_real: 0.759 acc_fake: 0.534 loss_AUX: 0.305 loss_D_gr_fake: 0.363 acc_grfake: 0.977 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1032}
+validation accuracies:
+                gf: 0.98, 0.12551216457201086
+                real: 0.80,  0.6093325407608695
+                fake: 0.51, 0.49137015964673914
+
+ran validation set (B:9101) in                         36.6 s.
+(epoch: 23, batches: 200, time: 0.006, data: 0.021) loss_G_comp: 0.616 loss_G_anti_sc: 0.498 loss_G: 1.114 loss_D_real: 0.633 loss_D_fake: 0.618 loss_D: 1.953 acc_real: 0.802 acc_fake: 0.515 loss_AUX: 0.319 loss_D_gr_fake: 0.384 acc_grfake: 0.979 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1132}
+validation accuracies:
+                gf: 0.98, 0.12821894106657608
+                real: 0.81,  0.5925399116847826
+                fake: 0.51, 0.4937584918478261
+
+ran validation set (B:9201) in                         37.5 s.
+(epoch: 23, batches: 300, time: 0.006, data: 0.007) loss_G_comp: 0.857 loss_G_anti_sc: 0.411 loss_G: 1.269 loss_D_real: 0.489 loss_D_fake: 0.784 loss_D: 1.934 acc_real: 0.810 acc_fake: 0.507 loss_AUX: 0.291 loss_D_gr_fake: 0.370 acc_grfake: 0.978 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1232}
+validation accuracies:
+                gf: 0.97, 0.1365091075067935
+                real: 0.86,  0.6411769701086957
+                fake: 0.36, 0.5386379076086957
+
+ran validation set (B:9301) in                         36.8 s.
+(epoch: 23, batches: 400, time: 0.007, data: 0.019) loss_G_comp: 0.716 loss_G_anti_sc: 0.500 loss_G: 1.216 loss_D_real: 0.547 loss_D_fake: 0.655 loss_D: 1.844 acc_real: 0.864 acc_fake: 0.357 loss_AUX: 0.294 loss_D_gr_fake: 0.348 acc_grfake: 0.971 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1332}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 23 / 60 	 Time Taken: 388 sec
+validation accuracies:
+                gf: 0.97, 0.12657364555027173
+                real: 0.85,  0.6232591711956522
+                fake: 0.44, 0.5105935801630435
+
+ran validation set (B:9401) in                         36.0 s.
+(epoch: 24, batches: 100, time: 0.006, data: 0.029) loss_G_comp: 0.700 loss_G_anti_sc: 0.476 loss_G: 1.176 loss_D_real: 0.565 loss_D_fake: 0.689 loss_D: 1.916 acc_real: 0.852 acc_fake: 0.439 loss_AUX: 0.311 loss_D_gr_fake: 0.351 acc_grfake: 0.973 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1438}
+validation accuracies:
+                gf: 0.98, 0.11912204908288043
+                real: 0.79,  0.600479789402174
+                fake: 0.59, 0.4762015964673913
+
+ran validation set (B:9501) in                         37.5 s.
+(epoch: 24, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.816 loss_G_anti_sc: 0.399 loss_G: 1.215 loss_D_real: 0.462 loss_D_fake: 0.878 loss_D: 2.000 acc_real: 0.792 acc_fake: 0.590 loss_AUX: 0.284 loss_D_gr_fake: 0.375 acc_grfake: 0.979 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1538}
+validation accuracies:
+                gf: 0.98, 0.11648161514945653
+                real: 0.74,  0.5875721807065217
+                fake: 0.63, 0.46480129076086957
+
+ran validation set (B:9601) in                         37.8 s.
+(epoch: 24, batches: 300, time: 0.007, data: 0.004) loss_G_comp: 0.742 loss_G_anti_sc: 0.464 loss_G: 1.206 loss_D_real: 0.427 loss_D_fake: 0.935 loss_D: 2.023 acc_real: 0.739 acc_fake: 0.629 loss_AUX: 0.296 loss_D_gr_fake: 0.365 acc_grfake: 0.981 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1638}
+validation accuracies:
+                gf: 0.97, 0.14433487601902173
+                real: 0.95,  0.689835258152174
+                fake: 0.24, 0.5737729279891305
+
+ran validation set (B:9701) in                         36.6 s.
+(epoch: 24, batches: 400, time: 0.006, data: 0.004) loss_G_comp: 0.672 loss_G_anti_sc: 0.513 loss_G: 1.185 loss_D_real: 0.484 loss_D_fake: 0.810 loss_D: 1.910 acc_real: 0.951 acc_fake: 0.239 loss_AUX: 0.261 loss_D_gr_fake: 0.355 acc_grfake: 0.965 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1738}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 24 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12999692170516305
+                real: 0.87,  0.6333432404891305
+                fake: 0.36, 0.5353473165760869
+
+ran validation set (B:9801) in                         36.5 s.
+(epoch: 25, batches: 100, time: 0.006, data: 0.014) loss_G_comp: 0.589 loss_G_anti_sc: 0.541 loss_G: 1.130 loss_D_real: 0.527 loss_D_fake: 0.707 loss_D: 1.828 acc_real: 0.869 acc_fake: 0.357 loss_AUX: 0.271 loss_D_gr_fake: 0.324 acc_grfake: 0.977 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1844}
+validation accuracies:
+                gf: 0.97, 0.14518406080163043
+                real: 0.91,  0.6753141983695652
+                fake: 0.35, 0.5422681725543478
+
+ran validation set (B:9901) in                         37.8 s.
+(epoch: 25, batches: 200, time: 0.007, data: 0.002) loss_G_comp: 0.804 loss_G_anti_sc: 0.398 loss_G: 1.202 loss_D_real: 0.482 loss_D_fake: 0.820 loss_D: 1.940 acc_real: 0.914 acc_fake: 0.347 loss_AUX: 0.282 loss_D_gr_fake: 0.356 acc_grfake: 0.970 
+{'scale': 1048576.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1944}
+validation accuracies:
+                gf: 0.97, 0.13144849694293478
+                real: 0.88,  0.6403065557065217
+                fake: 0.39, 0.5244565217391305
+
+ran validation set (B:10001) in                         36.9 s.
+(epoch: 25, batches: 300, time: 0.007, data: 0.020) loss_G_comp: 0.629 loss_G_anti_sc: 0.473 loss_G: 1.102 loss_D_real: 0.555 loss_D_fake: 0.696 loss_D: 1.869 acc_real: 0.885 acc_fake: 0.394 loss_AUX: 0.254 loss_D_gr_fake: 0.363 acc_grfake: 0.970 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 44}
+validation accuracies:
+                gf: 0.98, 0.12208358101222826
+                real: 0.85,  0.6166143002717391
+                fake: 0.47, 0.5004458220108695
+
+ran validation set (B:10101) in                         37.0 s.
+(epoch: 25, batches: 400, time: 0.006, data: 0.012) loss_G_comp: 0.698 loss_G_anti_sc: 0.477 loss_G: 1.176 loss_D_real: 0.486 loss_D_fake: 0.815 loss_D: 1.948 acc_real: 0.847 acc_fake: 0.474 loss_AUX: 0.291 loss_D_gr_fake: 0.357 acc_grfake: 0.981 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 144}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 25 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.13422957710597827
+                real: 0.88,  0.6185037364130435
+                fake: 0.37, 0.5282353940217391
+
+ran validation set (B:10201) in                         36.7 s.
+(epoch: 26, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.822 loss_G_anti_sc: 0.423 loss_G: 1.245 loss_D_real: 0.488 loss_D_fake: 0.821 loss_D: 2.036 acc_real: 0.877 acc_fake: 0.367 loss_AUX: 0.340 loss_D_gr_fake: 0.388 acc_grfake: 0.976 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 250}
+validation accuracies:
+                gf: 0.97, 0.13041886039402173
+                real: 0.83,  0.6073369565217391
+                fake: 0.50, 0.4966881793478261
+
+ran validation set (B:10301) in                         36.7 s.
+(epoch: 26, batches: 200, time: 0.007, data: 0.029) loss_G_comp: 0.596 loss_G_anti_sc: 0.616 loss_G: 1.212 loss_D_real: 0.571 loss_D_fake: 0.666 loss_D: 1.830 acc_real: 0.825 acc_fake: 0.497 loss_AUX: 0.273 loss_D_gr_fake: 0.320 acc_grfake: 0.970 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 350}
+validation accuracies:
+                gf: 0.98, 0.12450110394021739
+                real: 0.79,  0.6005859375
+                fake: 0.50, 0.49477751358695654
+
+ran validation set (B:10401) in                         37.4 s.
+(epoch: 26, batches: 300, time: 0.007, data: 0.004) loss_G_comp: 0.685 loss_G_anti_sc: 0.494 loss_G: 1.179 loss_D_real: 0.513 loss_D_fake: 0.788 loss_D: 1.992 acc_real: 0.791 acc_fake: 0.497 loss_AUX: 0.310 loss_D_gr_fake: 0.381 acc_grfake: 0.979 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 450}
+validation accuracies:
+                gf: 0.97, 0.13722295346467392
+                real: 0.92,  0.6455290421195652
+                fake: 0.30, 0.5457286005434783
+
+ran validation set (B:10501) in                         37.5 s.
+(epoch: 26, batches: 400, time: 0.007, data: 0.004) loss_G_comp: 0.663 loss_G_anti_sc: 0.489 loss_G: 1.152 loss_D_real: 0.575 loss_D_fake: 0.617 loss_D: 1.775 acc_real: 0.921 acc_fake: 0.304 loss_AUX: 0.254 loss_D_gr_fake: 0.329 acc_grfake: 0.972 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 550}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 26 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.97, 0.12989608101222827
+                real: 0.87,  0.6316448709239131
+                fake: 0.38, 0.5267705502717391
+
+ran validation set (B:10601) in                         37.1 s.
+(epoch: 27, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.671 loss_G_anti_sc: 0.447 loss_G: 1.118 loss_D_real: 0.550 loss_D_fake: 0.725 loss_D: 1.898 acc_real: 0.865 acc_fake: 0.379 loss_AUX: 0.260 loss_D_gr_fake: 0.363 acc_grfake: 0.974 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 656}
+validation accuracies:
+                gf: 0.97, 0.13746974779211957
+                real: 0.93,  0.6637865149456522
+                fake: 0.32, 0.5431385869565217
+
+ran validation set (B:10701) in                         37.7 s.
+(epoch: 27, batches: 200, time: 0.007, data: 0.189) loss_G_comp: 0.764 loss_G_anti_sc: 0.450 loss_G: 1.215 loss_D_real: 0.508 loss_D_fake: 0.812 loss_D: 1.933 acc_real: 0.931 acc_fake: 0.320 loss_AUX: 0.279 loss_D_gr_fake: 0.333 acc_grfake: 0.966 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 756}
+validation accuracies:
+                gf: 0.97, 0.12803318189538043
+                real: 0.84,  0.6222189198369565
+                fake: 0.45, 0.510848335597826
+
+ran validation set (B:10801) in                         37.7 s.
+(epoch: 27, batches: 300, time: 0.007, data: 0.002) loss_G_comp: 0.777 loss_G_anti_sc: 0.460 loss_G: 1.237 loss_D_real: 0.546 loss_D_fake: 0.726 loss_D: 1.922 acc_real: 0.844 acc_fake: 0.452 loss_AUX: 0.291 loss_D_gr_fake: 0.360 acc_grfake: 0.975 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 856}
+validation accuracies:
+                gf: 0.98, 0.12003492272418478
+                real: 0.74,  0.5844089673913043
+                fake: 0.61, 0.46596891983695654
+
+ran validation set (B:10901) in                         36.1 s.
+(epoch: 27, batches: 400, time: 0.006, data: 0.017) loss_G_comp: 0.775 loss_G_anti_sc: 0.457 loss_G: 1.232 loss_D_real: 0.471 loss_D_fake: 0.843 loss_D: 1.932 acc_real: 0.744 acc_fake: 0.614 loss_AUX: 0.274 loss_D_gr_fake: 0.345 acc_grfake: 0.983 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 956}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 27 / 60 	 Time Taken: 390 sec
+validation accuracies:
+                gf: 0.97, 0.13236402428668478
+                real: 0.91,  0.6501783288043478
+                fake: 0.29, 0.5508237092391305
+
+ran validation set (B:11001) in                         36.4 s.
+(epoch: 28, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.633 loss_G_anti_sc: 0.529 loss_G: 1.163 loss_D_real: 0.560 loss_D_fake: 0.712 loss_D: 1.890 acc_real: 0.911 acc_fake: 0.291 loss_AUX: 0.262 loss_D_gr_fake: 0.356 acc_grfake: 0.974 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1062}
+validation accuracies:
+                gf: 0.98, 0.12169879415760869
+                real: 0.83,  0.6151494565217391
+                fake: 0.47, 0.500870414402174
+
+ran validation set (B:11101) in                         37.0 s.
+(epoch: 28, batches: 200, time: 0.007, data: 0.018) loss_G_comp: 0.721 loss_G_anti_sc: 0.478 loss_G: 1.199 loss_D_real: 0.487 loss_D_fake: 0.766 loss_D: 1.871 acc_real: 0.828 acc_fake: 0.475 loss_AUX: 0.270 loss_D_gr_fake: 0.348 acc_grfake: 0.979 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1162}
+validation accuracies:
+                gf: 0.98, 0.12002696161684782
+                real: 0.81,  0.5983568274456522
+                fake: 0.54, 0.4839928668478261
+
+ran validation set (B:11201) in                         37.9 s.
+(epoch: 28, batches: 300, time: 0.006, data: 0.059) loss_G_comp: 0.868 loss_G_anti_sc: 0.428 loss_G: 1.296 loss_D_real: 0.558 loss_D_fake: 0.716 loss_D: 1.906 acc_real: 0.813 acc_fake: 0.537 loss_AUX: 0.258 loss_D_gr_fake: 0.375 acc_grfake: 0.980 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1262}
+validation accuracies:
+                gf: 0.98, 0.13126804517663043
+                real: 0.90,  0.6530655570652174
+                fake: 0.37, 0.5286387567934783
+
+ran validation set (B:11301) in                         36.9 s.
+(epoch: 28, batches: 400, time: 0.006, data: 0.023) loss_G_comp: 0.776 loss_G_anti_sc: 0.410 loss_G: 1.186 loss_D_real: 0.466 loss_D_fake: 0.858 loss_D: 1.933 acc_real: 0.898 acc_fake: 0.369 loss_AUX: 0.260 loss_D_gr_fake: 0.350 acc_grfake: 0.975 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1362}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 28 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.96, 0.147216796875
+                real: 0.96,  0.6824473505434783
+                fake: 0.22, 0.5710130774456522
+
+ran validation set (B:11401) in                         37.6 s.
+(epoch: 29, batches: 100, time: 0.007, data: 0.004) loss_G_comp: 0.507 loss_G_anti_sc: 0.656 loss_G: 1.163 loss_D_real: 0.621 loss_D_fake: 0.637 loss_D: 1.918 acc_real: 0.960 acc_fake: 0.216 loss_AUX: 0.291 loss_D_gr_fake: 0.369 acc_grfake: 0.959 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1468}
+validation accuracies:
+                gf: 0.97, 0.13678243885869565
+                real: 0.92,  0.6540208899456522
+                fake: 0.29, 0.548721976902174
+
+ran validation set (B:11501) in                         37.4 s.
+(epoch: 29, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.749 loss_G_anti_sc: 0.453 loss_G: 1.202 loss_D_real: 0.481 loss_D_fake: 0.771 loss_D: 1.880 acc_real: 0.923 acc_fake: 0.288 loss_AUX: 0.273 loss_D_gr_fake: 0.354 acc_grfake: 0.966 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1568}
+validation accuracies:
+                gf: 0.98, 0.13247813349184784
+                real: 0.88,  0.6339164402173914
+                fake: 0.38, 0.5269828464673914
+
+ran validation set (B:11601) in                         37.0 s.
+(epoch: 29, batches: 300, time: 0.006, data: 0.199) loss_G_comp: 0.543 loss_G_anti_sc: 0.504 loss_G: 1.047 loss_D_real: 0.588 loss_D_fake: 0.620 loss_D: 1.838 acc_real: 0.876 acc_fake: 0.377 loss_AUX: 0.283 loss_D_gr_fake: 0.346 acc_grfake: 0.977 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1668}
+validation accuracies:
+                gf: 0.97, 0.12934941830842392
+                real: 0.88,  0.6277598505434783
+                fake: 0.39, 0.5221424932065217
+
+ran validation set (B:11701) in                         36.4 s.
+(epoch: 29, batches: 400, time: 0.006, data: 0.224) loss_G_comp: 0.651 loss_G_anti_sc: 0.464 loss_G: 1.115 loss_D_real: 0.492 loss_D_fake: 0.815 loss_D: 1.897 acc_real: 0.885 acc_fake: 0.386 loss_AUX: 0.260 loss_D_gr_fake: 0.330 acc_grfake: 0.974 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1768}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 29 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.97, 0.13377579398777173
+                real: 0.91,  0.6511124320652174
+                fake: 0.31, 0.5474481997282609
+
+ran validation set (B:11801) in                         36.3 s.
+(epoch: 30, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.662 loss_G_anti_sc: 0.507 loss_G: 1.169 loss_D_real: 0.539 loss_D_fake: 0.690 loss_D: 1.820 acc_real: 0.908 acc_fake: 0.308 loss_AUX: 0.261 loss_D_gr_fake: 0.329 acc_grfake: 0.974 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1874}
+validation accuracies:
+                gf: 0.98, 0.12470278532608696
+                real: 0.77,  0.5921577785326086
+                fake: 0.63, 0.45656419836956524
+
+ran validation set (B:11901) in                         37.5 s.
+(epoch: 30, batches: 200, time: 0.006, data: 0.007) loss_G_comp: 0.649 loss_G_anti_sc: 0.478 loss_G: 1.128 loss_D_real: 0.509 loss_D_fake: 0.741 loss_D: 1.911 acc_real: 0.774 acc_fake: 0.633 loss_AUX: 0.286 loss_D_gr_fake: 0.374 acc_grfake: 0.980 
+{'scale': 2097152.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1974}
+validation accuracies:
+                gf: 0.98, 0.12130869989809782
+                real: 0.75,  0.5860011888586957
+                fake: 0.54, 0.4829738451086957
+
+ran validation set (B:12001) in                         36.1 s.
+(epoch: 30, batches: 300, time: 0.006, data: 0.004) loss_G_comp: 0.710 loss_G_anti_sc: 0.488 loss_G: 1.197 loss_D_real: 0.485 loss_D_fake: 0.799 loss_D: 1.882 acc_real: 0.746 acc_fake: 0.536 loss_AUX: 0.254 loss_D_gr_fake: 0.344 acc_grfake: 0.976 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 74}
+validation accuracies:
+                gf: 0.98, 0.12547235903532608
+                real: 0.86,  0.6267620584239131
+                fake: 0.54, 0.48561693274456524
+
+ran validation set (B:12101) in                         35.9 s.
+(epoch: 30, batches: 400, time: 0.007, data: 0.002) loss_G_comp: 0.714 loss_G_anti_sc: 0.509 loss_G: 1.223 loss_D_real: 0.529 loss_D_fake: 0.747 loss_D: 1.893 acc_real: 0.862 acc_fake: 0.543 loss_AUX: 0.273 loss_D_gr_fake: 0.343 acc_grfake: 0.978 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 174}
+saving the model at the end of epoch 30, iters 779520
+learning rate 0.0001600 -> 0.0001600
+End of epoch 30 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12055770210597826
+                real: 0.82,  0.6083559782608695
+                fake: 0.49, 0.49714461616847827
+
+ran validation set (B:12201) in                         36.9 s.
+(epoch: 31, batches: 100, time: 0.007, data: 0.006) loss_G_comp: 0.722 loss_G_anti_sc: 0.471 loss_G: 1.192 loss_D_real: 0.520 loss_D_fake: 0.775 loss_D: 1.917 acc_real: 0.817 acc_fake: 0.492 loss_AUX: 0.253 loss_D_gr_fake: 0.369 acc_grfake: 0.981 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 280}
+validation accuracies:
+                gf: 0.98, 0.12012249490489131
+                real: 0.78,  0.5992697010869565
+                fake: 0.52, 0.4859672214673913
+
+ran validation set (B:12301) in                         37.3 s.
+(epoch: 31, batches: 200, time: 0.006, data: 0.024) loss_G_comp: 0.784 loss_G_anti_sc: 0.420 loss_G: 1.205 loss_D_real: 0.471 loss_D_fake: 0.825 loss_D: 2.010 acc_real: 0.785 acc_fake: 0.517 loss_AUX: 0.282 loss_D_gr_fake: 0.432 acc_grfake: 0.979 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 380}
+validation accuracies:
+                gf: 0.98, 0.12031090777853261
+                real: 0.76,  0.5918817934782609
+                fake: 0.64, 0.45417586616847827
+
+ran validation set (B:12401) in                         38.0 s.
+(epoch: 31, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.773 loss_G_anti_sc: 0.419 loss_G: 1.192 loss_D_real: 0.445 loss_D_fake: 0.900 loss_D: 1.993 acc_real: 0.759 acc_fake: 0.643 loss_AUX: 0.265 loss_D_gr_fake: 0.383 acc_grfake: 0.983 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 480}
+validation accuracies:
+                gf: 0.98, 0.12426492442255435
+                real: 0.81,  0.5957880434782609
+                fake: 0.50, 0.4947562839673913
+
+ran validation set (B:12501) in                         36.9 s.
+(epoch: 31, batches: 400, time: 0.006, data: 0.019) loss_G_comp: 0.744 loss_G_anti_sc: 0.439 loss_G: 1.183 loss_D_real: 0.447 loss_D_fake: 0.822 loss_D: 1.891 acc_real: 0.811 acc_fake: 0.500 loss_AUX: 0.263 loss_D_gr_fake: 0.358 acc_grfake: 0.981 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 580}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 31 / 60 	 Time Taken: 388 sec
+validation accuracies:
+                gf: 0.98, 0.12422777258831522
+                real: 0.84,  0.5974227241847826
+                fake: 0.56, 0.4820397418478261
+
+ran validation set (B:12601) in                         37.6 s.
+(epoch: 32, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.756 loss_G_anti_sc: 0.448 loss_G: 1.204 loss_D_real: 0.525 loss_D_fake: 0.707 loss_D: 1.814 acc_real: 0.837 acc_fake: 0.560 loss_AUX: 0.264 loss_D_gr_fake: 0.319 acc_grfake: 0.977 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 686}
+validation accuracies:
+                gf: 0.98, 0.12595267917798914
+                real: 0.86,  0.6321543817934783
+                fake: 0.42, 0.5134808084239131
+
+ran validation set (B:12701) in                         36.6 s.
+(epoch: 32, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.559 loss_G_anti_sc: 0.696 loss_G: 1.255 loss_D_real: 0.597 loss_D_fake: 0.677 loss_D: 1.894 acc_real: 0.863 acc_fake: 0.420 loss_AUX: 0.284 loss_D_gr_fake: 0.336 acc_grfake: 0.978 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 786}
+validation accuracies:
+                gf: 0.97, 0.13234014096467392
+                real: 0.89,  0.6446161684782609
+                fake: 0.40, 0.5243291440217391
+
+ran validation set (B:12801) in                         36.6 s.
+(epoch: 32, batches: 300, time: 0.006, data: 0.020) loss_G_comp: 0.606 loss_G_anti_sc: 0.534 loss_G: 1.140 loss_D_real: 0.627 loss_D_fake: 0.602 loss_D: 1.841 acc_real: 0.886 acc_fake: 0.396 loss_AUX: 0.272 loss_D_gr_fake: 0.341 acc_grfake: 0.973 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 886}
+validation accuracies:
+                gf: 0.97, 0.13940695057744565
+                real: 0.94,  0.6713442595108695
+                fake: 0.32, 0.5498046875
+
+ran validation set (B:12901) in                         36.8 s.
+(epoch: 32, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.646 loss_G_anti_sc: 0.518 loss_G: 1.164 loss_D_real: 0.493 loss_D_fake: 0.814 loss_D: 1.934 acc_real: 0.943 acc_fake: 0.316 loss_AUX: 0.259 loss_D_gr_fake: 0.369 acc_grfake: 0.970 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 986}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 32 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.98, 0.11846393087635869
+                real: 0.63,  0.5456224524456522
+                fake: 0.74, 0.42861540421195654
+
+ran validation set (B:13001) in                         37.0 s.
+(epoch: 33, batches: 100, time: 0.006, data: 0.006) loss_G_comp: 0.676 loss_G_anti_sc: 0.474 loss_G: 1.150 loss_D_real: 0.470 loss_D_fake: 0.823 loss_D: 1.929 acc_real: 0.630 acc_fake: 0.739 loss_AUX: 0.274 loss_D_gr_fake: 0.362 acc_grfake: 0.984 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1092}
+validation accuracies:
+                gf: 0.99, 0.11647630774456522
+                real: 0.73,  0.5719259510869565
+                fake: 0.61, 0.462158203125
+
+ran validation set (B:13101) in                         37.2 s.
+(epoch: 33, batches: 200, time: 0.006, data: 0.290) loss_G_comp: 0.757 loss_G_anti_sc: 0.449 loss_G: 1.206 loss_D_real: 0.547 loss_D_fake: 0.728 loss_D: 1.848 acc_real: 0.726 acc_fake: 0.609 loss_AUX: 0.261 loss_D_gr_fake: 0.313 acc_grfake: 0.987 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1192}
+validation accuracies:
+                gf: 0.99, 0.12125562584918478
+                real: 0.76,  0.5785920516304348
+                fake: 0.60, 0.4712020210597826
+
+ran validation set (B:13201) in                         36.7 s.
+(epoch: 33, batches: 300, time: 0.006, data: 0.012) loss_G_comp: 0.741 loss_G_anti_sc: 0.442 loss_G: 1.183 loss_D_real: 0.503 loss_D_fake: 0.771 loss_D: 1.894 acc_real: 0.761 acc_fake: 0.597 loss_AUX: 0.277 loss_D_gr_fake: 0.342 acc_grfake: 0.985 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1292}
+validation accuracies:
+                gf: 0.97, 0.13598367442255435
+                real: 0.91,  0.6605171535326086
+                fake: 0.23, 0.5701851222826086
+
+ran validation set (B:13301) in                         37.3 s.
+(epoch: 33, batches: 400, time: 0.006, data: 0.369) loss_G_comp: 0.747 loss_G_anti_sc: 0.422 loss_G: 1.169 loss_D_real: 0.477 loss_D_fake: 0.815 loss_D: 1.932 acc_real: 0.914 acc_fake: 0.233 loss_AUX: 0.280 loss_D_gr_fake: 0.359 acc_grfake: 0.972 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1392}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 33 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.11648161514945653
+                real: 0.81,  0.6005859375
+                fake: 0.54, 0.482612941576087
+
+ran validation set (B:13401) in                         36.8 s.
+(epoch: 34, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.718 loss_G_anti_sc: 0.472 loss_G: 1.190 loss_D_real: 0.457 loss_D_fake: 0.832 loss_D: 1.930 acc_real: 0.815 acc_fake: 0.541 loss_AUX: 0.259 loss_D_gr_fake: 0.382 acc_grfake: 0.981 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1498}
+validation accuracies:
+                gf: 0.98, 0.11662226137907608
+                real: 0.73,  0.5770847486413043
+                fake: 0.62, 0.4626570991847826
+
+ran validation set (B:13501) in                         36.7 s.
+(epoch: 34, batches: 200, time: 0.006, data: 0.017) loss_G_comp: 0.640 loss_G_anti_sc: 0.414 loss_G: 1.055 loss_D_real: 0.501 loss_D_fake: 0.818 loss_D: 1.935 acc_real: 0.733 acc_fake: 0.620 loss_AUX: 0.271 loss_D_gr_fake: 0.345 acc_grfake: 0.983 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1598}
+validation accuracies:
+                gf: 0.97, 0.1572265625
+                real: 0.91,  0.6475883152173914
+                fake: 0.30, 0.547469429347826
+
+ran validation set (B:13601) in                         37.0 s.
+(epoch: 34, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.667 loss_G_anti_sc: 0.463 loss_G: 1.131 loss_D_real: 0.491 loss_D_fake: 0.824 loss_D: 1.883 acc_real: 0.909 acc_fake: 0.301 loss_AUX: 0.247 loss_D_gr_fake: 0.320 acc_grfake: 0.966 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1698}
+validation accuracies:
+                gf: 0.97, 0.13194473930027173
+                real: 0.89,  0.6395210597826086
+                fake: 0.35, 0.5332243546195652
+
+ran validation set (B:13701) in                         36.5 s.
+(epoch: 34, batches: 400, time: 0.006, data: 0.012) loss_G_comp: 0.720 loss_G_anti_sc: 0.451 loss_G: 1.171 loss_D_real: 0.507 loss_D_fake: 0.742 loss_D: 1.914 acc_real: 0.890 acc_fake: 0.353 loss_AUX: 0.273 loss_D_gr_fake: 0.393 acc_grfake: 0.971 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1798}
+validation accuracies:
+                gf: 0.97, 0.14149541440217392
+                real: 0.93,  0.677352241847826
+                fake: 0.25, 0.567000679347826
+
+ran validation set (B:13801) in                         35.1 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 34 / 60 	 Time Taken: 425 sec
+validation accuracies:
+                gf: 0.97, 0.12986689028532608
+                real: 0.95,  0.6792841372282609
+                fake: 0.26, 0.555557914402174
+
+ran validation set (B:13901) in                         36.0 s.
+(epoch: 35, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.692 loss_G_anti_sc: 0.463 loss_G: 1.155 loss_D_real: 0.546 loss_D_fake: 0.716 loss_D: 1.867 acc_real: 0.949 acc_fake: 0.264 loss_AUX: 0.277 loss_D_gr_fake: 0.328 acc_grfake: 0.970 
+{'scale': 4194304.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1904}
+validation accuracies:
+                gf: 0.97, 0.13436756963315216
+                real: 0.92,  0.650772758152174
+                fake: 0.33, 0.5358992866847826
+
+ran validation set (B:14001) in                         37.2 s.
+(epoch: 35, batches: 200, time: 0.007, data: 0.002) loss_G_comp: 0.583 loss_G_anti_sc: 0.527 loss_G: 1.110 loss_D_real: 0.576 loss_D_fake: 0.675 loss_D: 1.844 acc_real: 0.924 acc_fake: 0.331 loss_AUX: 0.269 loss_D_gr_fake: 0.325 acc_grfake: 0.970 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 4}
+validation accuracies:
+                gf: 0.97, 0.13957944123641305
+                real: 0.97,  0.688858695652174
+                fake: 0.19, 0.579971976902174
+
+ran validation set (B:14101) in                         37.3 s.
+(epoch: 35, batches: 300, time: 0.005, data: 0.002) loss_G_comp: 0.703 loss_G_anti_sc: 0.442 loss_G: 1.146 loss_D_real: 0.586 loss_D_fake: 0.667 loss_D: 1.844 acc_real: 0.967 acc_fake: 0.189 loss_AUX: 0.258 loss_D_gr_fake: 0.333 acc_grfake: 0.970 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 104}
+validation accuracies:
+                gf: 0.99, 0.11206850798233696
+                real: 0.79,  0.5862771739130435
+                fake: 0.61, 0.47018299932065216
+
+ran validation set (B:14201) in                         36.9 s.
+(epoch: 35, batches: 400, time: 0.005, data: 0.020) loss_G_comp: 0.610 loss_G_anti_sc: 0.399 loss_G: 1.010 loss_D_real: 0.518 loss_D_fake: 0.748 loss_D: 1.890 acc_real: 0.787 acc_fake: 0.607 loss_AUX: 0.265 loss_D_gr_fake: 0.360 acc_grfake: 0.987 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 204}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 35 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12422246518342392
+                real: 0.87,  0.6307956861413043
+                fake: 0.42, 0.515030570652174
+
+ran validation set (B:14301) in                         37.6 s.
+(epoch: 36, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.636 loss_G_anti_sc: 0.485 loss_G: 1.121 loss_D_real: 0.507 loss_D_fake: 0.782 loss_D: 1.905 acc_real: 0.873 acc_fake: 0.418 loss_AUX: 0.250 loss_D_gr_fake: 0.366 acc_grfake: 0.977 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 310}
+validation accuracies:
+                gf: 0.97, 0.12888236667798914
+                real: 0.89,  0.6271441915760869
+                fake: 0.41, 0.5139584748641305
+
+ran validation set (B:14401) in                         36.6 s.
+(epoch: 36, batches: 200, time: 0.006, data: 0.004) loss_G_comp: 0.643 loss_G_anti_sc: 0.559 loss_G: 1.202 loss_D_real: 0.574 loss_D_fake: 0.693 loss_D: 1.878 acc_real: 0.887 acc_fake: 0.413 loss_AUX: 0.260 loss_D_gr_fake: 0.351 acc_grfake: 0.975 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 410}
+validation accuracies:
+                gf: 0.98, 0.12026844853940218
+                real: 0.86,  0.6200534986413043
+                fake: 0.52, 0.4905952785326087
+
+ran validation set (B:14501) in                         36.5 s.
+(epoch: 36, batches: 300, time: 0.006, data: 0.023) loss_G_comp: 0.684 loss_G_anti_sc: 0.477 loss_G: 1.161 loss_D_real: 0.493 loss_D_fake: 0.804 loss_D: 1.933 acc_real: 0.858 acc_fake: 0.517 loss_AUX: 0.266 loss_D_gr_fake: 0.370 acc_grfake: 0.978 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 510}
+validation accuracies:
+                gf: 0.98, 0.12773596722146738
+                real: 0.87,  0.6364639945652174
+                fake: 0.47, 0.5054560122282609
+
+ran validation set (B:14601) in                         56.7 s.
+(epoch: 36, batches: 400, time: 0.006, data: 0.020) loss_G_comp: 0.648 loss_G_anti_sc: 0.480 loss_G: 1.128 loss_D_real: 0.590 loss_D_fake: 0.659 loss_D: 1.881 acc_real: 0.869 acc_fake: 0.465 loss_AUX: 0.277 loss_D_gr_fake: 0.354 acc_grfake: 0.982 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 610}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 36 / 60 	 Time Taken: 431 sec
+validation accuracies:
+                gf: 0.98, 0.12389605978260869
+                real: 0.88,  0.6294582201086957
+                fake: 0.42, 0.513289741847826
+
+ran validation set (B:14701) in                         36.7 s.
+(epoch: 37, batches: 100, time: 0.006, data: 0.008) loss_G_comp: 0.644 loss_G_anti_sc: 0.505 loss_G: 1.149 loss_D_real: 0.527 loss_D_fake: 0.670 loss_D: 1.751 acc_real: 0.877 acc_fake: 0.420 loss_AUX: 0.240 loss_D_gr_fake: 0.314 acc_grfake: 0.979 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 716}
+validation accuracies:
+                gf: 0.98, 0.1256660793138587
+                real: 0.86,  0.6351265285326086
+                fake: 0.41, 0.5183317764945652
+
+ran validation set (B:14801) in                         55.9 s.
+(epoch: 37, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.649 loss_G_anti_sc: 0.469 loss_G: 1.118 loss_D_real: 0.546 loss_D_fake: 0.653 loss_D: 1.792 acc_real: 0.861 acc_fake: 0.407 loss_AUX: 0.248 loss_D_gr_fake: 0.345 acc_grfake: 0.982 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 816}
+validation accuracies:
+                gf: 0.98, 0.13969089673913043
+                real: 0.94,  0.6749320652173914
+                fake: 0.22, 0.57421875
+
+ran validation set (B:14901) in                         36.7 s.
+(epoch: 37, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.766 loss_G_anti_sc: 0.416 loss_G: 1.182 loss_D_real: 0.476 loss_D_fake: 0.740 loss_D: 1.824 acc_real: 0.941 acc_fake: 0.216 loss_AUX: 0.262 loss_D_gr_fake: 0.345 acc_grfake: 0.976 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 916}
+validation accuracies:
+                gf: 0.97, 0.13175632642663043
+                real: 0.90,  0.6469938858695652
+                fake: 0.39, 0.5263884171195652
+
+ran validation set (B:15001) in                         35.7 s.
+(epoch: 37, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.594 loss_G_anti_sc: 0.489 loss_G: 1.083 loss_D_real: 0.539 loss_D_fake: 0.699 loss_D: 1.831 acc_real: 0.903 acc_fake: 0.386 loss_AUX: 0.247 loss_D_gr_fake: 0.346 acc_grfake: 0.973 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1016}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 37 / 60 	 Time Taken: 654 sec
+validation accuracies:
+                gf: 0.98, 0.12130339249320653
+                real: 0.87,  0.6146187160326086
+                fake: 0.43, 0.5071331521739131
+
+ran validation set (B:15101) in                         36.5 s.
+(epoch: 38, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.726 loss_G_anti_sc: 0.447 loss_G: 1.173 loss_D_real: 0.502 loss_D_fake: 0.750 loss_D: 1.872 acc_real: 0.865 acc_fake: 0.435 loss_AUX: 0.257 loss_D_gr_fake: 0.364 acc_grfake: 0.979 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1122}
+validation accuracies:
+                gf: 0.98, 0.11833920686141304
+                real: 0.83,  0.6183763586956522
+                fake: 0.48, 0.498291015625
+
+ran validation set (B:15201) in                         36.7 s.
+(epoch: 38, batches: 200, time: 0.006, data: 0.010) loss_G_comp: 0.563 loss_G_anti_sc: 0.486 loss_G: 1.049 loss_D_real: 0.593 loss_D_fake: 0.676 loss_D: 1.872 acc_real: 0.827 acc_fake: 0.481 loss_AUX: 0.258 loss_D_gr_fake: 0.346 acc_grfake: 0.983 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1222}
+validation accuracies:
+                gf: 0.98, 0.13340162194293478
+                real: 0.95,  0.6833814538043478
+                fake: 0.23, 0.5675738790760869
+
+ran validation set (B:15301) in                         36.5 s.
+(epoch: 38, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.728 loss_G_anti_sc: 0.515 loss_G: 1.242 loss_D_real: 0.452 loss_D_fake: 0.894 loss_D: 1.979 acc_real: 0.946 acc_fake: 0.233 loss_AUX: 0.279 loss_D_gr_fake: 0.354 acc_grfake: 0.975 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1322}
+validation accuracies:
+                gf: 0.97, 0.14135476817255435
+                real: 0.94,  0.6715777853260869
+                fake: 0.24, 0.5681683084239131
+
+ran validation set (B:15401) in                         37.8 s.
+(epoch: 38, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.850 loss_G_anti_sc: 0.441 loss_G: 1.291 loss_D_real: 0.408 loss_D_fake: 1.018 loss_D: 2.126 acc_real: 0.939 acc_fake: 0.236 loss_AUX: 0.281 loss_D_gr_fake: 0.418 acc_grfake: 0.966 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1422}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 38 / 60 	 Time Taken: 393 sec
+validation accuracies:
+                gf: 0.97, 0.14628800101902173
+                real: 0.96,  0.6833177649456522
+                fake: 0.25, 0.5607167119565217
+
+ran validation set (B:15501) in                         37.3 s.
+(epoch: 39, batches: 100, time: 0.007, data: 0.024) loss_G_comp: 0.745 loss_G_anti_sc: 0.422 loss_G: 1.167 loss_D_real: 0.536 loss_D_fake: 0.721 loss_D: 1.892 acc_real: 0.959 acc_fake: 0.247 loss_AUX: 0.263 loss_D_gr_fake: 0.373 acc_grfake: 0.969 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1528}
+validation accuracies:
+                gf: 0.98, 0.12293276579483696
+                real: 0.88,  0.6321543817934783
+                fake: 0.37, 0.5249235733695652
+
+ran validation set (B:15601) in                         37.5 s.
+(epoch: 39, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.620 loss_G_anti_sc: 0.448 loss_G: 1.068 loss_D_real: 0.509 loss_D_fake: 0.774 loss_D: 1.913 acc_real: 0.876 acc_fake: 0.373 loss_AUX: 0.265 loss_D_gr_fake: 0.366 acc_grfake: 0.985 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1628}
+validation accuracies:
+                gf: 0.98, 0.12878683338994565
+                real: 0.90,  0.6391176970108695
+                fake: 0.35, 0.5325450067934783
+
+ran validation set (B:15701) in                         36.6 s.
+(epoch: 39, batches: 300, time: 0.007, data: 0.004) loss_G_comp: 0.774 loss_G_anti_sc: 0.396 loss_G: 1.170 loss_D_real: 0.492 loss_D_fake: 0.735 loss_D: 1.854 acc_real: 0.897 acc_fake: 0.350 loss_AUX: 0.271 loss_D_gr_fake: 0.356 acc_grfake: 0.976 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1728}
+validation accuracies:
+                gf: 0.98, 0.11399509595788043
+                real: 0.83,  0.6100331182065217
+                fake: 0.51, 0.4892578125
+
+ran validation set (B:15801) in                         36.0 s.
+(epoch: 39, batches: 400, time: 0.006, data: 0.005) loss_G_comp: 0.648 loss_G_anti_sc: 0.501 loss_G: 1.149 loss_D_real: 0.498 loss_D_fake: 0.763 loss_D: 1.879 acc_real: 0.832 acc_fake: 0.506 loss_AUX: 0.264 loss_D_gr_fake: 0.354 acc_grfake: 0.983 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1828}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 39 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.97, 0.14302925441576086
+                real: 0.97,  0.7038680366847826
+                fake: 0.18, 0.5926460597826086
+
+ran validation set (B:15901) in                         37.4 s.
+(epoch: 40, batches: 100, time: 0.006, data: 0.011) loss_G_comp: 0.592 loss_G_anti_sc: 0.500 loss_G: 1.092 loss_D_real: 0.514 loss_D_fake: 0.770 loss_D: 1.900 acc_real: 0.966 acc_fake: 0.182 loss_AUX: 0.248 loss_D_gr_fake: 0.367 acc_grfake: 0.969 
+{'scale': 8388608.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1934}
+validation accuracies:
+                gf: 0.97, 0.13603940217391305
+                real: 0.93,  0.6620456861413043
+                fake: 0.26, 0.5552394701086957
+
+ran validation set (B:16001) in                         36.4 s.
+(epoch: 40, batches: 200, time: 0.006, data: 0.004) loss_G_comp: 0.581 loss_G_anti_sc: 0.483 loss_G: 1.063 loss_D_real: 0.496 loss_D_fake: 0.750 loss_D: 1.872 acc_real: 0.931 acc_fake: 0.262 loss_AUX: 0.263 loss_D_gr_fake: 0.362 acc_grfake: 0.972 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 34}
+validation accuracies:
+                gf: 0.99, 0.11877176036005435
+                real: 0.76,  0.5786981997282609
+                fake: 0.63, 0.45991847826086957
+
+ran validation set (B:16101) in                         37.7 s.
+(epoch: 40, batches: 300, time: 0.006, data: 0.006) loss_G_comp: 0.652 loss_G_anti_sc: 0.459 loss_G: 1.111 loss_D_real: 0.476 loss_D_fake: 0.784 loss_D: 1.866 acc_real: 0.755 acc_fake: 0.626 loss_AUX: 0.254 loss_D_gr_fake: 0.352 acc_grfake: 0.987 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 134}
+validation accuracies:
+                gf: 0.98, 0.1288797129755435
+                real: 0.85,  0.6152131453804348
+                fake: 0.53, 0.48899244225543476
+
+ran validation set (B:16201) in                         37.7 s.
+(epoch: 40, batches: 400, time: 0.006, data: 0.006) loss_G_comp: 0.620 loss_G_anti_sc: 0.506 loss_G: 1.126 loss_D_real: 0.533 loss_D_fake: 0.731 loss_D: 1.873 acc_real: 0.848 acc_fake: 0.529 loss_AUX: 0.250 loss_D_gr_fake: 0.358 acc_grfake: 0.983 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 234}
+saving the model at the end of epoch 40, iters 1039360
+learning rate 0.0001600 -> 0.0001280
+End of epoch 40 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.99, 0.11134139351222826
+                real: 0.67,  0.5598038383152174
+                fake: 0.65, 0.4462890625
+
+ran validation set (B:16301) in                         36.8 s.
+(epoch: 41, batches: 100, time: 0.006, data: 0.012) loss_G_comp: 0.674 loss_G_anti_sc: 0.477 loss_G: 1.151 loss_D_real: 0.514 loss_D_fake: 0.761 loss_D: 1.890 acc_real: 0.670 acc_fake: 0.652 loss_AUX: 0.275 loss_D_gr_fake: 0.341 acc_grfake: 0.988 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 340}
+validation accuracies:
+                gf: 0.98, 0.12252940302309782
+                real: 0.86,  0.640030570652174
+                fake: 0.47, 0.496337890625
+
+ran validation set (B:16401) in                         36.1 s.
+(epoch: 41, batches: 200, time: 0.006, data: 0.020) loss_G_comp: 0.632 loss_G_anti_sc: 0.494 loss_G: 1.127 loss_D_real: 0.501 loss_D_fake: 0.769 loss_D: 1.881 acc_real: 0.858 acc_fake: 0.472 loss_AUX: 0.252 loss_D_gr_fake: 0.359 acc_grfake: 0.981 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 440}
+validation accuracies:
+                gf: 0.98, 0.11858334748641304
+                real: 0.82,  0.5959154211956522
+                fake: 0.54, 0.48214588994565216
+
+ran validation set (B:16501) in                         37.5 s.
+(epoch: 41, batches: 300, time: 0.006, data: 0.004) loss_G_comp: 0.820 loss_G_anti_sc: 0.381 loss_G: 1.200 loss_D_real: 0.449 loss_D_fake: 0.920 loss_D: 1.999 acc_real: 0.817 acc_fake: 0.544 loss_AUX: 0.264 loss_D_gr_fake: 0.365 acc_grfake: 0.984 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 540}
+validation accuracies:
+                gf: 0.98, 0.12345554517663043
+                real: 0.88,  0.6414741847826086
+                fake: 0.42, 0.5132578974184783
+
+ran validation set (B:16601) in                         36.0 s.
+(epoch: 41, batches: 400, time: 0.006, data: 0.172) loss_G_comp: 0.616 loss_G_anti_sc: 0.425 loss_G: 1.041 loss_D_real: 0.481 loss_D_fake: 0.808 loss_D: 1.909 acc_real: 0.876 acc_fake: 0.423 loss_AUX: 0.259 loss_D_gr_fake: 0.362 acc_grfake: 0.981 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 640}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 41 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.98, 0.13126273777173914
+                real: 0.97,  0.6833814538043478
+                fake: 0.22, 0.5658755095108695
+
+ran validation set (B:16701) in                         36.2 s.
+(epoch: 42, batches: 100, time: 0.006, data: 0.018) loss_G_comp: 0.630 loss_G_anti_sc: 0.498 loss_G: 1.128 loss_D_real: 0.456 loss_D_fake: 0.821 loss_D: 1.873 acc_real: 0.969 acc_fake: 0.224 loss_AUX: 0.247 loss_D_gr_fake: 0.348 acc_grfake: 0.976 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 746}
+validation accuracies:
+                gf: 0.98, 0.11893363620923914
+                real: 0.87,  0.6203719429347826
+                fake: 0.46, 0.5011357846467391
+
+ran validation set (B:16801) in                         37.8 s.
+(epoch: 42, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.705 loss_G_anti_sc: 0.453 loss_G: 1.158 loss_D_real: 0.430 loss_D_fake: 0.944 loss_D: 2.077 acc_real: 0.867 acc_fake: 0.464 loss_AUX: 0.286 loss_D_gr_fake: 0.417 acc_grfake: 0.981 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 846}
+validation accuracies:
+                gf: 0.98, 0.11949356742527174
+                real: 0.87,  0.6189707880434783
+                fake: 0.41, 0.5124936311141305
+
+ran validation set (B:16901) in                         37.7 s.
+(epoch: 42, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.708 loss_G_anti_sc: 0.438 loss_G: 1.146 loss_D_real: 0.515 loss_D_fake: 0.721 loss_D: 1.830 acc_real: 0.869 acc_fake: 0.415 loss_AUX: 0.256 loss_D_gr_fake: 0.339 acc_grfake: 0.985 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 946}
+validation accuracies:
+                gf: 0.98, 0.12772800611413043
+                real: 0.90,  0.6593495244565217
+                fake: 0.31, 0.5516304347826086
+
+ran validation set (B:17001) in                         36.1 s.
+(epoch: 42, batches: 400, time: 0.007, data: 0.008) loss_G_comp: 0.720 loss_G_anti_sc: 0.412 loss_G: 1.132 loss_D_real: 0.463 loss_D_fake: 0.891 loss_D: 1.926 acc_real: 0.899 acc_fake: 0.305 loss_AUX: 0.229 loss_D_gr_fake: 0.343 acc_grfake: 0.979 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1046}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 42 / 60 	 Time Taken: 395 sec
+validation accuracies:
+                gf: 0.98, 0.12026579483695653
+                real: 0.82,  0.6091202445652174
+                fake: 0.48, 0.49685801630434784
+
+ran validation set (B:17101) in                         37.2 s.
+(epoch: 43, batches: 100, time: 0.007, data: 0.003) loss_G_comp: 0.678 loss_G_anti_sc: 0.488 loss_G: 1.166 loss_D_real: 0.461 loss_D_fake: 0.799 loss_D: 1.873 acc_real: 0.816 acc_fake: 0.478 loss_AUX: 0.249 loss_D_gr_fake: 0.364 acc_grfake: 0.982 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1152}
+validation accuracies:
+                gf: 0.98, 0.11575450067934782
+                real: 0.85,  0.6132175611413043
+                fake: 0.45, 0.5062308933423914
+
+ran validation set (B:17201) in                         36.9 s.
+(epoch: 43, batches: 200, time: 0.007, data: 0.454) loss_G_comp: 0.685 loss_G_anti_sc: 0.471 loss_G: 1.156 loss_D_real: 0.477 loss_D_fake: 0.836 loss_D: 1.958 acc_real: 0.848 acc_fake: 0.449 loss_AUX: 0.253 loss_D_gr_fake: 0.393 acc_grfake: 0.980 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1252}
+validation accuracies:
+                gf: 0.98, 0.12357230808423914
+                real: 0.89,  0.6341075067934783
+                fake: 0.42, 0.5128120754076086
+
+ran validation set (B:17301) in                         37.6 s.
+(epoch: 43, batches: 300, time: 0.005, data: 0.002) loss_G_comp: 0.635 loss_G_anti_sc: 0.449 loss_G: 1.084 loss_D_real: 0.483 loss_D_fake: 0.805 loss_D: 1.866 acc_real: 0.892 acc_fake: 0.422 loss_AUX: 0.248 loss_D_gr_fake: 0.330 acc_grfake: 0.980 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1352}
+validation accuracies:
+                gf: 0.99, 0.11856477156929347
+                real: 0.79,  0.5923276154891305
+                fake: 0.55, 0.47554347826086957
+
+ran validation set (B:17401) in                         36.6 s.
+(epoch: 43, batches: 400, time: 0.007, data: 0.058) loss_G_comp: 0.630 loss_G_anti_sc: 0.470 loss_G: 1.100 loss_D_real: 0.541 loss_D_fake: 0.689 loss_D: 1.822 acc_real: 0.794 acc_fake: 0.549 loss_AUX: 0.244 loss_D_gr_fake: 0.348 acc_grfake: 0.985 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1452}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 43 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.98, 0.11345374065896739
+                real: 0.78,  0.5855978260869565
+                fake: 0.52, 0.48904551630434784
+
+ran validation set (B:17501) in                         36.4 s.
+(epoch: 44, batches: 100, time: 0.006, data: 0.429) loss_G_comp: 0.830 loss_G_anti_sc: 0.391 loss_G: 1.221 loss_D_real: 0.458 loss_D_fake: 0.854 loss_D: 1.952 acc_real: 0.784 acc_fake: 0.518 loss_AUX: 0.258 loss_D_gr_fake: 0.382 acc_grfake: 0.984 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1558}
+validation accuracies:
+                gf: 0.98, 0.13279127038043478
+                real: 0.94,  0.6848250679347826
+                fake: 0.25, 0.5654933763586957
+
+ran validation set (B:17601) in                         36.1 s.
+(epoch: 44, batches: 200, time: 0.007, data: 0.004) loss_G_comp: 0.702 loss_G_anti_sc: 0.502 loss_G: 1.204 loss_D_real: 0.528 loss_D_fake: 0.768 loss_D: 1.897 acc_real: 0.943 acc_fake: 0.249 loss_AUX: 0.261 loss_D_gr_fake: 0.340 acc_grfake: 0.977 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1658}
+validation accuracies:
+                gf: 0.98, 0.13255774456521738
+                real: 0.95,  0.6856742527173914
+                fake: 0.20, 0.5796110733695652
+
+ran validation set (B:17701) in                         36.9 s.
+(epoch: 44, batches: 300, time: 0.006, data: 0.451) loss_G_comp: 0.640 loss_G_anti_sc: 0.461 loss_G: 1.101 loss_D_real: 0.516 loss_D_fake: 0.764 loss_D: 1.892 acc_real: 0.953 acc_fake: 0.198 loss_AUX: 0.242 loss_D_gr_fake: 0.369 acc_grfake: 0.975 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1758}
+validation accuracies:
+                gf: 0.98, 0.12327509341032608
+                real: 0.87,  0.6292459239130435
+                fake: 0.48, 0.4962317425271739
+
+ran validation set (B:17801) in                         36.2 s.
+(epoch: 44, batches: 400, time: 0.006, data: 0.020) loss_G_comp: 0.695 loss_G_anti_sc: 0.452 loss_G: 1.147 loss_D_real: 0.509 loss_D_fake: 0.749 loss_D: 1.863 acc_real: 0.868 acc_fake: 0.483 loss_AUX: 0.255 loss_D_gr_fake: 0.349 acc_grfake: 0.980 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1858}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 44 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12378725798233696
+                real: 0.86,  0.6309867527173914
+                fake: 0.45, 0.5037257982336957
+
+ran validation set (B:17901) in                         36.2 s.
+(epoch: 45, batches: 100, time: 0.006, data: 0.022) loss_G_comp: 0.647 loss_G_anti_sc: 0.468 loss_G: 1.115 loss_D_real: 0.589 loss_D_fake: 0.652 loss_D: 1.833 acc_real: 0.856 acc_fake: 0.453 loss_AUX: 0.258 loss_D_gr_fake: 0.334 acc_grfake: 0.982 
+{'scale': 16777216.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1964}
+validation accuracies:
+                gf: 0.98, 0.11704685377038043
+                real: 0.80,  0.6043011209239131
+                fake: 0.50, 0.48685886548913043
+
+ran validation set (B:18001) in                         36.2 s.
+(epoch: 45, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.643 loss_G_anti_sc: 0.420 loss_G: 1.064 loss_D_real: 0.530 loss_D_fake: 0.729 loss_D: 1.878 acc_real: 0.805 acc_fake: 0.505 loss_AUX: 0.260 loss_D_gr_fake: 0.359 acc_grfake: 0.980 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 64}
+validation accuracies:
+                gf: 0.98, 0.12403670601222826
+                real: 0.87,  0.6261039402173914
+                fake: 0.47, 0.5000530740489131
+
+ran validation set (B:18101) in                         36.8 s.
+(epoch: 45, batches: 300, time: 0.006, data: 0.004) loss_G_comp: 0.709 loss_G_anti_sc: 0.491 loss_G: 1.200 loss_D_real: 0.483 loss_D_fake: 0.771 loss_D: 1.888 acc_real: 0.874 acc_fake: 0.471 loss_AUX: 0.259 loss_D_gr_fake: 0.374 acc_grfake: 0.977 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 164}
+validation accuracies:
+                gf: 0.98, 0.12559973675271738
+                real: 0.92,  0.6466329823369565
+                fake: 0.30, 0.5450492527173914
+
+ran validation set (B:18201) in                         36.9 s.
+(epoch: 45, batches: 400, time: 0.007, data: 0.004) loss_G_comp: 0.686 loss_G_anti_sc: 0.414 loss_G: 1.100 loss_D_real: 0.501 loss_D_fake: 0.789 loss_D: 1.857 acc_real: 0.918 acc_fake: 0.300 loss_AUX: 0.235 loss_D_gr_fake: 0.332 acc_grfake: 0.983 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 264}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 45 / 60 	 Time Taken: 393 sec
+validation accuracies:
+                gf: 0.98, 0.13017206606657608
+                real: 0.95,  0.6824261209239131
+                fake: 0.22, 0.5707795516304348
+
+ran validation set (B:18301) in                         36.7 s.
+(epoch: 46, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.638 loss_G_anti_sc: 0.478 loss_G: 1.116 loss_D_real: 0.557 loss_D_fake: 0.710 loss_D: 1.851 acc_real: 0.950 acc_fake: 0.220 loss_AUX: 0.230 loss_D_gr_fake: 0.355 acc_grfake: 0.981 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 370}
+validation accuracies:
+                gf: 0.98, 0.12102475373641304
+                real: 0.85,  0.6245329483695652
+                fake: 0.48, 0.4951171875
+
+ran validation set (B:18401) in                         37.7 s.
+(epoch: 46, batches: 200, time: 0.006, data: 0.199) loss_G_comp: 0.709 loss_G_anti_sc: 0.435 loss_G: 1.143 loss_D_real: 0.444 loss_D_fake: 0.847 loss_D: 1.861 acc_real: 0.847 acc_fake: 0.480 loss_AUX: 0.231 loss_D_gr_fake: 0.340 acc_grfake: 0.983 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 470}
+validation accuracies:
+                gf: 0.98, 0.12513533882472827
+                real: 0.90,  0.654679008152174
+                fake: 0.34, 0.5408670176630435
+
+ran validation set (B:18501) in                         36.0 s.
+(epoch: 46, batches: 300, time: 0.006, data: 0.493) loss_G_comp: 0.746 loss_G_anti_sc: 0.445 loss_G: 1.191 loss_D_real: 0.465 loss_D_fake: 0.804 loss_D: 1.881 acc_real: 0.899 acc_fake: 0.344 loss_AUX: 0.257 loss_D_gr_fake: 0.354 acc_grfake: 0.981 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 570}
+validation accuracies:
+                gf: 0.98, 0.11722465183423914
+                real: 0.79,  0.6000339673913043
+                fake: 0.56, 0.47587253736413043
+
+ran validation set (B:18601) in                         36.7 s.
+(epoch: 46, batches: 400, time: 0.007, data: 0.006) loss_G_comp: 0.667 loss_G_anti_sc: 0.482 loss_G: 1.149 loss_D_real: 0.450 loss_D_fake: 0.854 loss_D: 1.945 acc_real: 0.791 acc_fake: 0.558 loss_AUX: 0.261 loss_D_gr_fake: 0.379 acc_grfake: 0.980 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 670}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 46 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12032682999320653
+                real: 0.87,  0.6184825067934783
+                fake: 0.44, 0.5050844938858695
+
+ran validation set (B:18701) in                         36.5 s.
+(epoch: 47, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.630 loss_G_anti_sc: 0.468 loss_G: 1.099 loss_D_real: 0.479 loss_D_fake: 0.792 loss_D: 1.899 acc_real: 0.869 acc_fake: 0.440 loss_AUX: 0.259 loss_D_gr_fake: 0.369 acc_grfake: 0.980 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 776}
+validation accuracies:
+                gf: 0.98, 0.12301237686820653
+                real: 0.90,  0.6541058084239131
+                fake: 0.41, 0.517195991847826
+
+ran validation set (B:18801) in                         35.2 s.
+(epoch: 47, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.704 loss_G_anti_sc: 0.377 loss_G: 1.082 loss_D_real: 0.440 loss_D_fake: 0.959 loss_D: 1.972 acc_real: 0.899 acc_fake: 0.412 loss_AUX: 0.235 loss_D_gr_fake: 0.338 acc_grfake: 0.980 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 876}
+validation accuracies:
+                gf: 0.98, 0.12160060716711957
+                real: 0.90,  0.6489894701086957
+                fake: 0.36, 0.52978515625
+
+ran validation set (B:18901) in                         36.8 s.
+(epoch: 47, batches: 300, time: 0.006, data: 0.341) loss_G_comp: 0.675 loss_G_anti_sc: 0.472 loss_G: 1.147 loss_D_real: 0.450 loss_D_fake: 0.811 loss_D: 1.924 acc_real: 0.900 acc_fake: 0.359 loss_AUX: 0.269 loss_D_gr_fake: 0.395 acc_grfake: 0.980 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 976}
+validation accuracies:
+                gf: 0.98, 0.12512472401494565
+                real: 0.91,  0.6456776494565217
+                fake: 0.36, 0.5305069633152174
+
+ran validation set (B:19001) in                         35.9 s.
+(epoch: 47, batches: 400, time: 0.006, data: 0.016) loss_G_comp: 0.696 loss_G_anti_sc: 0.408 loss_G: 1.104 loss_D_real: 0.490 loss_D_fake: 0.753 loss_D: 1.915 acc_real: 0.913 acc_fake: 0.356 loss_AUX: 0.298 loss_D_gr_fake: 0.375 acc_grfake: 0.978 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1076}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 47 / 60 	 Time Taken: 389 sec
+validation accuracies:
+                gf: 0.98, 0.12940514605978262
+                real: 0.89,  0.6394361413043478
+                fake: 0.41, 0.5178116508152174
+
+ran validation set (B:19101) in                         36.7 s.
+(epoch: 48, batches: 100, time: 0.007, data: 0.197) loss_G_comp: 0.652 loss_G_anti_sc: 0.436 loss_G: 1.088 loss_D_real: 0.491 loss_D_fake: 0.780 loss_D: 1.855 acc_real: 0.886 acc_fake: 0.413 loss_AUX: 0.247 loss_D_gr_fake: 0.336 acc_grfake: 0.977 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1182}
+validation accuracies:
+                gf: 0.98, 0.11867091966711957
+                real: 0.83,  0.6281632133152174
+                fake: 0.47, 0.5019743546195652
+
+ran validation set (B:19201) in                         36.7 s.
+(epoch: 48, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.662 loss_G_anti_sc: 0.464 loss_G: 1.126 loss_D_real: 0.492 loss_D_fake: 0.801 loss_D: 1.883 acc_real: 0.831 acc_fake: 0.466 loss_AUX: 0.236 loss_D_gr_fake: 0.354 acc_grfake: 0.982 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1282}
+validation accuracies:
+                gf: 0.98, 0.12361211362092392
+                real: 0.90,  0.637801460597826
+                fake: 0.42, 0.51416015625
+
+ran validation set (B:19301) in                         37.5 s.
+(epoch: 48, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.733 loss_G_anti_sc: 0.444 loss_G: 1.178 loss_D_real: 0.492 loss_D_fake: 0.769 loss_D: 1.855 acc_real: 0.895 acc_fake: 0.416 loss_AUX: 0.244 loss_D_gr_fake: 0.350 acc_grfake: 0.979 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1382}
+validation accuracies:
+                gf: 0.98, 0.11694601307744565
+                real: 0.87,  0.6268045176630435
+                fake: 0.45, 0.5041291610054348
+
+ran validation set (B:19401) in                         36.2 s.
+(epoch: 48, batches: 400, time: 0.006, data: 0.019) loss_G_comp: 0.716 loss_G_anti_sc: 0.480 loss_G: 1.196 loss_D_real: 0.529 loss_D_fake: 0.697 loss_D: 1.883 acc_real: 0.871 acc_fake: 0.446 loss_AUX: 0.267 loss_D_gr_fake: 0.390 acc_grfake: 0.985 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1482}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 48 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.97, 0.13326362941576086
+                real: 0.95,  0.6864385190217391
+                fake: 0.26, 0.5614809782608695
+
+ran validation set (B:19501) in                         37.7 s.
+(epoch: 49, batches: 100, time: 0.007, data: 0.038) loss_G_comp: 0.613 loss_G_anti_sc: 0.472 loss_G: 1.085 loss_D_real: 0.509 loss_D_fake: 0.755 loss_D: 1.893 acc_real: 0.948 acc_fake: 0.258 loss_AUX: 0.245 loss_D_gr_fake: 0.384 acc_grfake: 0.971 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1588}
+validation accuracies:
+                gf: 0.98, 0.12349269701086957
+                real: 0.91,  0.6587550951086957
+                fake: 0.37, 0.5292544157608695
+
+ran validation set (B:19601) in                         36.0 s.
+(epoch: 49, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.712 loss_G_anti_sc: 0.467 loss_G: 1.179 loss_D_real: 0.496 loss_D_fake: 0.743 loss_D: 1.775 acc_real: 0.907 acc_fake: 0.374 loss_AUX: 0.222 loss_D_gr_fake: 0.314 acc_grfake: 0.980 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1688}
+validation accuracies:
+                gf: 0.98, 0.12628173828125
+                real: 0.90,  0.6416440217391305
+                fake: 0.36, 0.5262185801630435
+
+ran validation set (B:19701) in                         36.8 s.
+(epoch: 49, batches: 300, time: 0.006, data: 0.004) loss_G_comp: 0.623 loss_G_anti_sc: 0.517 loss_G: 1.139 loss_D_real: 0.533 loss_D_fake: 0.689 loss_D: 1.810 acc_real: 0.903 acc_fake: 0.361 loss_AUX: 0.254 loss_D_gr_fake: 0.334 acc_grfake: 0.979 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1788}
+validation accuracies:
+                gf: 0.98, 0.11526091202445653
+                real: 0.80,  0.6018809442934783
+                fake: 0.51, 0.49141261888586957
+
+ran validation set (B:19801) in                         36.2 s.
+(epoch: 49, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.723 loss_G_anti_sc: 0.468 loss_G: 1.191 loss_D_real: 0.470 loss_D_fake: 0.816 loss_D: 1.897 acc_real: 0.805 acc_fake: 0.505 loss_AUX: 0.255 loss_D_gr_fake: 0.355 acc_grfake: 0.984 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1888}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 49 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.98, 0.12513003141983695
+                real: 0.88,  0.63330078125
+                fake: 0.41, 0.5186183763586957
+
+ran validation set (B:19901) in                         37.1 s.
+(epoch: 50, batches: 100, time: 0.006, data: 0.014) loss_G_comp: 0.741 loss_G_anti_sc: 0.424 loss_G: 1.165 loss_D_real: 0.448 loss_D_fake: 0.861 loss_D: 1.970 acc_real: 0.883 acc_fake: 0.409 loss_AUX: 0.262 loss_D_gr_fake: 0.398 acc_grfake: 0.979 
+{'scale': 33554432.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1994}
+validation accuracies:
+                gf: 0.98, 0.12257716966711957
+                real: 0.86,  0.609375
+                fake: 0.50, 0.48881199048913043
+
+ran validation set (B:20001) in                         36.4 s.
+(epoch: 50, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.541 loss_G_anti_sc: 0.532 loss_G: 1.073 loss_D_real: 0.577 loss_D_fake: 0.680 loss_D: 1.831 acc_real: 0.858 acc_fake: 0.501 loss_AUX: 0.241 loss_D_gr_fake: 0.332 acc_grfake: 0.980 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 94}
+validation accuracies:
+                gf: 0.98, 0.12835958729619565
+                real: 0.89,  0.6600076426630435
+                fake: 0.34, 0.5412703804347826
+
+ran validation set (B:20101) in                         36.5 s.
+(epoch: 50, batches: 300, time: 0.006, data: 0.020) loss_G_comp: 0.628 loss_G_anti_sc: 0.434 loss_G: 1.063 loss_D_real: 0.457 loss_D_fake: 0.788 loss_D: 1.808 acc_real: 0.886 acc_fake: 0.342 loss_AUX: 0.232 loss_D_gr_fake: 0.331 acc_grfake: 0.976 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 194}
+validation accuracies:
+                gf: 0.98, 0.11971117102581522
+                real: 0.83,  0.6249363111413043
+                fake: 0.51, 0.48933211616847827
+
+ran validation set (B:20201) in                         36.4 s.
+(epoch: 50, batches: 400, time: 0.007, data: 0.002) loss_G_comp: 0.739 loss_G_anti_sc: 0.396 loss_G: 1.135 loss_D_real: 0.481 loss_D_fake: 0.796 loss_D: 1.980 acc_real: 0.825 acc_fake: 0.512 loss_AUX: 0.286 loss_D_gr_fake: 0.416 acc_grfake: 0.984 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 294}
+saving the model at the end of epoch 50, iters 1299200
+learning rate 0.0001280 -> 0.0001280
+End of epoch 50 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.99, 0.11483101222826086
+                real: 0.83,  0.609757133152174
+                fake: 0.54, 0.4813391644021739
+
+ran validation set (B:20301) in                         36.9 s.
+(epoch: 51, batches: 100, time: 0.032, data: 0.012) loss_G_comp: 0.734 loss_G_anti_sc: 0.452 loss_G: 1.185 loss_D_real: 0.439 loss_D_fake: 0.860 loss_D: 1.867 acc_real: 0.833 acc_fake: 0.544 loss_AUX: 0.237 loss_D_gr_fake: 0.331 acc_grfake: 0.987 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 400}
+validation accuracies:
+                gf: 0.99, 0.11014457370923914
+                real: 0.81,  0.5951936141304348
+                fake: 0.60, 0.46769913383152173
+
+ran validation set (B:20401) in                         36.4 s.
+(epoch: 51, batches: 200, time: 0.023, data: 0.009) loss_G_comp: 0.676 loss_G_anti_sc: 0.482 loss_G: 1.158 loss_D_real: 0.513 loss_D_fake: 0.695 loss_D: 1.862 acc_real: 0.809 acc_fake: 0.603 loss_AUX: 0.246 loss_D_gr_fake: 0.408 acc_grfake: 0.988 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 500}
+validation accuracies:
+                gf: 0.98, 0.12953252377717392
+                real: 0.91,  0.6475883152173914
+                fake: 0.35, 0.5324176290760869
+
+ran validation set (B:20501) in                         36.3 s.
+(epoch: 51, batches: 300, time: 0.022, data: 0.012) loss_G_comp: 0.685 loss_G_anti_sc: 0.441 loss_G: 1.126 loss_D_real: 0.469 loss_D_fake: 0.839 loss_D: 1.927 acc_real: 0.909 acc_fake: 0.347 loss_AUX: 0.257 loss_D_gr_fake: 0.364 acc_grfake: 0.977 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 600}
+validation accuracies:
+                gf: 0.98, 0.12029763926630435
+                real: 0.85,  0.6236837635869565
+                fake: 0.43, 0.5104237432065217
+
+ran validation set (B:20601) in                         36.0 s.
+(epoch: 51, batches: 400, time: 0.022, data: 0.304) loss_G_comp: 0.710 loss_G_anti_sc: 0.451 loss_G: 1.161 loss_D_real: 0.441 loss_D_fake: 0.856 loss_D: 1.846 acc_real: 0.852 acc_fake: 0.427 loss_AUX: 0.224 loss_D_gr_fake: 0.325 acc_grfake: 0.980 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 700}
+validation accuracies:
+                gf: 0.98, 0.12338124150815218
+                real: 0.88,  0.6375679347826086
+                fake: 0.43, 0.5085555366847826
+
+ran validation set (B:20701) in                         35.1 s.
+learning rate 0.0001280 -> 0.0001280
+End of epoch 51 / 60 	 Time Taken: 428 sec
+validation accuracies:
+                gf: 0.98, 0.11875849184782608
+                real: 0.92,  0.6414529551630435
+                fake: 0.36, 0.5251358695652174
+
+ran validation set (B:20801) in                         37.7 s.
+(epoch: 52, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.732 loss_G_anti_sc: 0.436 loss_G: 1.168 loss_D_real: 0.492 loss_D_fake: 0.786 loss_D: 1.899 acc_real: 0.923 acc_fake: 0.359 loss_AUX: 0.258 loss_D_gr_fake: 0.363 acc_grfake: 0.981 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 806}
+validation accuracies:
+                gf: 0.99, 0.1114501953125
+                real: 0.75,  0.5752165421195652
+                fake: 0.64, 0.45549210258152173
+
+ran validation set (B:20901) in                         37.1 s.
+(epoch: 52, batches: 200, time: 0.006, data: 0.021) loss_G_comp: 0.545 loss_G_anti_sc: 0.479 loss_G: 1.024 loss_D_real: 0.529 loss_D_fake: 0.707 loss_D: 1.803 acc_real: 0.747 acc_fake: 0.643 loss_AUX: 0.236 loss_D_gr_fake: 0.331 acc_grfake: 0.988 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 906}
+validation accuracies:
+                gf: 0.97, 0.13067626953125
+                real: 0.93,  0.6588400135869565
+                fake: 0.32, 0.539168648097826
+
+ran validation set (B:21001) in                         36.9 s.
+(epoch: 52, batches: 300, time: 0.005, data: 0.002) loss_G_comp: 0.710 loss_G_anti_sc: 0.438 loss_G: 1.148 loss_D_real: 0.444 loss_D_fake: 0.877 loss_D: 1.917 acc_real: 0.927 acc_fake: 0.315 loss_AUX: 0.243 loss_D_gr_fake: 0.353 acc_grfake: 0.974 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1006}
+validation accuracies:
+                gf: 0.97, 0.13529371178668478
+                real: 0.97,  0.7041227921195652
+                fake: 0.19, 0.5836447010869565
+
+ran validation set (B:21101) in                         36.5 s.
+(epoch: 52, batches: 400, time: 0.005, data: 0.004) loss_G_comp: 0.574 loss_G_anti_sc: 0.579 loss_G: 1.153 loss_D_real: 0.634 loss_D_fake: 0.637 loss_D: 1.846 acc_real: 0.968 acc_fake: 0.195 loss_AUX: 0.245 loss_D_gr_fake: 0.330 acc_grfake: 0.974 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1106}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 52 / 60 	 Time Taken: 393 sec
+validation accuracies:
+                gf: 0.98, 0.11804995329483696
+                real: 0.89,  0.6218367866847826
+                fake: 0.40, 0.5153171705163043
+
+ran validation set (B:21201) in                         36.6 s.
+(epoch: 53, batches: 100, time: 0.007, data: 0.006) loss_G_comp: 0.585 loss_G_anti_sc: 0.511 loss_G: 1.096 loss_D_real: 0.579 loss_D_fake: 0.603 loss_D: 1.758 acc_real: 0.893 acc_fake: 0.396 loss_AUX: 0.230 loss_D_gr_fake: 0.347 acc_grfake: 0.981 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1212}
+validation accuracies:
+                gf: 0.98, 0.12855330757472827
+                real: 0.96,  0.6824473505434783
+                fake: 0.26, 0.560546875
+
+ran validation set (B:21301) in                         37.3 s.
+(epoch: 53, batches: 200, time: 0.007, data: 0.002) loss_G_comp: 0.795 loss_G_anti_sc: 0.427 loss_G: 1.222 loss_D_real: 0.462 loss_D_fake: 0.868 loss_D: 1.966 acc_real: 0.962 acc_fake: 0.259 loss_AUX: 0.253 loss_D_gr_fake: 0.384 acc_grfake: 0.980 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1312}
+validation accuracies:
+                gf: 0.98, 0.12985096807065216
+                real: 0.94,  0.6586701766304348
+                fake: 0.33, 0.5364937160326086
+
+ran validation set (B:21401) in                         36.8 s.
+(epoch: 53, batches: 300, time: 0.006, data: 0.023) loss_G_comp: 0.772 loss_G_anti_sc: 0.390 loss_G: 1.162 loss_D_real: 0.448 loss_D_fake: 0.835 loss_D: 1.911 acc_real: 0.936 acc_fake: 0.327 loss_AUX: 0.253 loss_D_gr_fake: 0.374 acc_grfake: 0.976 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1412}
+validation accuracies:
+                gf: 0.98, 0.12716807489809784
+                real: 0.93,  0.6627462635869565
+                fake: 0.29, 0.5471934442934783
+
+ran validation set (B:21501) in                         36.1 s.
+(epoch: 53, batches: 400, time: 0.007, data: 0.002) loss_G_comp: 0.610 loss_G_anti_sc: 0.467 loss_G: 1.077 loss_D_real: 0.493 loss_D_fake: 0.756 loss_D: 1.836 acc_real: 0.934 acc_fake: 0.292 loss_AUX: 0.242 loss_D_gr_fake: 0.345 acc_grfake: 0.979 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1512}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 53 / 60 	 Time Taken: 393 sec
+validation accuracies:
+                gf: 0.99, 0.1082763671875
+                real: 0.73,  0.5739003057065217
+                fake: 0.70, 0.43057914402173914
+
+ran validation set (B:21601) in                         37.2 s.
+(epoch: 54, batches: 100, time: 0.007, data: 0.002) loss_G_comp: 0.685 loss_G_anti_sc: 0.441 loss_G: 1.126 loss_D_real: 0.492 loss_D_fake: 0.800 loss_D: 1.902 acc_real: 0.732 acc_fake: 0.699 loss_AUX: 0.260 loss_D_gr_fake: 0.350 acc_grfake: 0.989 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1618}
+validation accuracies:
+                gf: 0.98, 0.12314240828804347
+                real: 0.90,  0.6381623641304348
+                fake: 0.38, 0.5232888926630435
+
+ran validation set (B:21701) in                         35.7 s.
+(epoch: 54, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.544 loss_G_anti_sc: 0.541 loss_G: 1.085 loss_D_real: 0.568 loss_D_fake: 0.671 loss_D: 1.860 acc_real: 0.903 acc_fake: 0.379 loss_AUX: 0.268 loss_D_gr_fake: 0.353 acc_grfake: 0.981 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1718}
+validation accuracies:
+                gf: 0.97, 0.12200396993885869
+                real: 0.92,  0.6500297214673914
+                fake: 0.33, 0.5320354959239131
+
+ran validation set (B:21801) in                         36.7 s.
+(epoch: 54, batches: 300, time: 0.006, data: 0.008) loss_G_comp: 0.704 loss_G_anti_sc: 0.446 loss_G: 1.150 loss_D_real: 0.466 loss_D_fake: 0.794 loss_D: 1.849 acc_real: 0.919 acc_fake: 0.335 loss_AUX: 0.233 loss_D_gr_fake: 0.356 acc_grfake: 0.974 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1818}
+validation accuracies:
+                gf: 0.98, 0.12172002377717392
+                real: 0.92,  0.6551036005434783
+                fake: 0.39, 0.5204228940217391
+
+ran validation set (B:21901) in                         37.2 s.
+(epoch: 54, batches: 400, time: 0.007, data: 0.024) loss_G_comp: 0.666 loss_G_anti_sc: 0.464 loss_G: 1.130 loss_D_real: 0.528 loss_D_fake: 0.736 loss_D: 1.886 acc_real: 0.921 acc_fake: 0.393 loss_AUX: 0.250 loss_D_gr_fake: 0.371 acc_grfake: 0.980 
+{'scale': 67108864.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1918}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 54 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.98, 0.11397386633831522
+                real: 0.84,  0.6264436141304348
+                fake: 0.51, 0.48405655570652173
+
+ran validation set (B:22001) in                         36.7 s.
+(epoch: 55, batches: 100, time: 0.006, data: 0.006) loss_G_comp: 0.712 loss_G_anti_sc: 0.499 loss_G: 1.210 loss_D_real: 0.478 loss_D_fake: 0.794 loss_D: 1.833 acc_real: 0.839 acc_fake: 0.508 loss_AUX: 0.238 loss_D_gr_fake: 0.324 acc_grfake: 0.984 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 24}
+validation accuracies:
+                gf: 0.98, 0.11924146569293478
+                real: 0.81,  0.5935377038043478
+                fake: 0.66, 0.44644828464673914
+
+ran validation set (B:22101) in                         37.2 s.
+(epoch: 55, batches: 200, time: 0.005, data: 0.002) loss_G_comp: 0.652 loss_G_anti_sc: 0.437 loss_G: 1.088 loss_D_real: 0.473 loss_D_fake: 0.731 loss_D: 1.819 acc_real: 0.807 acc_fake: 0.659 loss_AUX: 0.245 loss_D_gr_fake: 0.369 acc_grfake: 0.983 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 124}
+validation accuracies:
+                gf: 0.96, 0.14002526324728262
+                real: 0.96,  0.7050144361413043
+                fake: 0.20, 0.5846212635869565
+
+ran validation set (B:22201) in                         36.2 s.
+(epoch: 55, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.646 loss_G_anti_sc: 0.489 loss_G: 1.134 loss_D_real: 0.630 loss_D_fake: 0.615 loss_D: 1.801 acc_real: 0.961 acc_fake: 0.197 loss_AUX: 0.238 loss_D_gr_fake: 0.317 acc_grfake: 0.965 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 224}
+validation accuracies:
+                gf: 0.98, 0.11686374830163043
+                real: 0.88,  0.6202021059782609
+                fake: 0.45, 0.5050101902173914
+
+ran validation set (B:22301) in                         36.4 s.
+(epoch: 55, batches: 400, time: 0.007, data: 0.004) loss_G_comp: 0.685 loss_G_anti_sc: 0.472 loss_G: 1.157 loss_D_real: 0.474 loss_D_fake: 0.816 loss_D: 1.896 acc_real: 0.877 acc_fake: 0.446 loss_AUX: 0.236 loss_D_gr_fake: 0.370 acc_grfake: 0.981 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 324}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 55 / 60 	 Time Taken: 392 sec
+validation accuracies:
+                gf: 0.99, 0.11178456182065218
+                real: 0.77,  0.5884425951086957
+                fake: 0.64, 0.4564262058423913
+
+ran validation set (B:22401) in                         36.4 s.
+(epoch: 56, batches: 100, time: 0.006, data: 0.020) loss_G_comp: 0.787 loss_G_anti_sc: 0.387 loss_G: 1.174 loss_D_real: 0.438 loss_D_fake: 0.873 loss_D: 1.892 acc_real: 0.768 acc_fake: 0.635 loss_AUX: 0.233 loss_D_gr_fake: 0.349 acc_grfake: 0.988 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 430}
+validation accuracies:
+                gf: 0.99, 0.11465852156929347
+                real: 0.80,  0.5962126358695652
+                fake: 0.58, 0.4719344429347826
+
+ran validation set (B:22501) in                         37.5 s.
+(epoch: 56, batches: 200, time: 0.006, data: 0.002) loss_G_comp: 0.619 loss_G_anti_sc: 0.502 loss_G: 1.122 loss_D_real: 0.505 loss_D_fake: 0.748 loss_D: 1.832 acc_real: 0.798 acc_fake: 0.575 loss_AUX: 0.234 loss_D_gr_fake: 0.345 acc_grfake: 0.986 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 530}
+validation accuracies:
+                gf: 0.98, 0.11573327105978261
+                real: 0.76,  0.5774031929347826
+                fake: 0.63, 0.45939835258152173
+
+ran validation set (B:22601) in                         36.7 s.
+(epoch: 56, batches: 300, time: 0.006, data: 0.019) loss_G_comp: 0.779 loss_G_anti_sc: 0.396 loss_G: 1.175 loss_D_real: 0.438 loss_D_fake: 0.858 loss_D: 1.884 acc_real: 0.762 acc_fake: 0.634 loss_AUX: 0.233 loss_D_gr_fake: 0.354 acc_grfake: 0.985 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 630}
+validation accuracies:
+                gf: 0.99, 0.11142896569293478
+                real: 0.85,  0.6122622282608695
+                fake: 0.49, 0.4921238111413043
+
+ran validation set (B:22701) in                         37.3 s.
+(epoch: 56, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.693 loss_G_anti_sc: 0.487 loss_G: 1.181 loss_D_real: 0.499 loss_D_fake: 0.797 loss_D: 1.882 acc_real: 0.849 acc_fake: 0.490 loss_AUX: 0.241 loss_D_gr_fake: 0.344 acc_grfake: 0.988 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 730}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 56 / 60 	 Time Taken: 393 sec
+validation accuracies:
+                gf: 0.98, 0.11559527853260869
+                real: 0.85,  0.6210300611413043
+                fake: 0.45, 0.5030782948369565
+
+ran validation set (B:22801) in                         36.0 s.
+(epoch: 57, batches: 100, time: 0.006, data: 0.037) loss_G_comp: 0.790 loss_G_anti_sc: 0.392 loss_G: 1.182 loss_D_real: 0.434 loss_D_fake: 0.918 loss_D: 1.977 acc_real: 0.855 acc_fake: 0.446 loss_AUX: 0.245 loss_D_gr_fake: 0.381 acc_grfake: 0.985 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 836}
+validation accuracies:
+                gf: 0.98, 0.12562096637228262
+                real: 0.94,  0.6818529211956522
+                fake: 0.26, 0.5598038383152174
+
+ran validation set (B:22901) in                         37.2 s.
+(epoch: 57, batches: 200, time: 0.006, data: 0.007) loss_G_comp: 0.641 loss_G_anti_sc: 0.435 loss_G: 1.076 loss_D_real: 0.514 loss_D_fake: 0.729 loss_D: 1.805 acc_real: 0.939 acc_fake: 0.256 loss_AUX: 0.237 loss_D_gr_fake: 0.325 acc_grfake: 0.978 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 936}
+validation accuracies:
+                gf: 0.99, 0.11478324558423914
+                real: 0.82,  0.6092476222826086
+                fake: 0.53, 0.4826554008152174
+
+ran validation set (B:23001) in                         35.9 s.
+(epoch: 57, batches: 300, time: 0.006, data: 0.354) loss_G_comp: 0.624 loss_G_anti_sc: 0.438 loss_G: 1.062 loss_D_real: 0.498 loss_D_fake: 0.734 loss_D: 1.814 acc_real: 0.823 acc_fake: 0.535 loss_AUX: 0.247 loss_D_gr_fake: 0.334 acc_grfake: 0.985 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1036}
+validation accuracies:
+                gf: 0.99, 0.11367134425951086
+                real: 0.78,  0.5909689198369565
+                fake: 0.60, 0.463920261548913
+
+ran validation set (B:23101) in                         36.8 s.
+(epoch: 57, batches: 400, time: 0.006, data: 0.020) loss_G_comp: 0.663 loss_G_anti_sc: 0.458 loss_G: 1.120 loss_D_real: 0.481 loss_D_fake: 0.770 loss_D: 1.860 acc_real: 0.776 acc_fake: 0.604 loss_AUX: 0.250 loss_D_gr_fake: 0.359 acc_grfake: 0.987 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1136}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 57 / 60 	 Time Taken: 393 sec
+validation accuracies:
+                gf: 0.99, 0.10687786599864131
+                real: 0.77,  0.5889521059782609
+                fake: 0.64, 0.44901706861413043
+
+ran validation set (B:23201) in                         35.4 s.
+(epoch: 58, batches: 100, time: 0.005, data: 0.002) loss_G_comp: 0.657 loss_G_anti_sc: 0.469 loss_G: 1.126 loss_D_real: 0.428 loss_D_fake: 0.857 loss_D: 1.344 acc_real: 0.765 acc_fake: 0.644 loss_AUX: 0.058 loss_D_gr_fake: 0.379 acc_grfake: 0.990 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1242}
+validation accuracies:
+                gf: 0.97, 0.1331840183423913
+                real: 0.94,  0.6731063179347826
+                fake: 0.26, 0.5560674252717391
+
+ran validation set (B:23301) in                         36.4 s.
+(epoch: 58, batches: 200, time: 0.006, data: 0.006) loss_G_comp: 0.770 loss_G_anti_sc: 0.427 loss_G: 1.197 loss_D_real: 0.422 loss_D_fake: 0.906 loss_D: 1.873 acc_real: 0.942 acc_fake: 0.262 loss_AUX: 0.234 loss_D_gr_fake: 0.311 acc_grfake: 0.974 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1342}
+validation accuracies:
+                gf: 0.97, 0.1332662831182065
+                real: 0.94,  0.6622579823369565
+                fake: 0.29, 0.5477878736413043
+
+ran validation set (B:23401) in                         38.1 s.
+(epoch: 58, batches: 300, time: 0.006, data: 0.002) loss_G_comp: 0.588 loss_G_anti_sc: 0.573 loss_G: 1.161 loss_D_real: 0.551 loss_D_fake: 0.671 loss_D: 1.819 acc_real: 0.941 acc_fake: 0.285 loss_AUX: 0.246 loss_D_gr_fake: 0.352 acc_grfake: 0.972 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1442}
+validation accuracies:
+                gf: 0.98, 0.11831797724184782
+                real: 0.91,  0.6435759171195652
+                fake: 0.42, 0.5155613111413043
+
+ran validation set (B:23501) in                         35.9 s.
+(epoch: 58, batches: 400, time: 0.006, data: 0.014) loss_G_comp: 0.670 loss_G_anti_sc: 0.485 loss_G: 1.155 loss_D_real: 0.454 loss_D_fake: 0.818 loss_D: 1.835 acc_real: 0.910 acc_fake: 0.416 loss_AUX: 0.240 loss_D_gr_fake: 0.323 acc_grfake: 0.978 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1542}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 58 / 60 	 Time Taken: 384 sec
+validation accuracies:
+                gf: 0.98, 0.13139542289402173
+                real: 0.98,  0.7080078125
+                fake: 0.17, 0.5923700747282609
+
+ran validation set (B:23601) in                         35.8 s.
+(epoch: 59, batches: 100, time: 0.006, data: 0.002) loss_G_comp: 0.618 loss_G_anti_sc: 0.546 loss_G: 1.164 loss_D_real: 0.451 loss_D_fake: 0.833 loss_D: 1.892 acc_real: 0.982 acc_fake: 0.165 loss_AUX: 0.244 loss_D_gr_fake: 0.365 acc_grfake: 0.976 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1648}
+validation accuracies:
+                gf: 0.98, 0.12006145974864131
+                real: 0.89,  0.6290548573369565
+                fake: 0.43, 0.5071119225543478
+
+ran validation set (B:23701) in                         36.1 s.
+(epoch: 59, batches: 200, time: 0.007, data: 0.004) loss_G_comp: 0.808 loss_G_anti_sc: 0.404 loss_G: 1.212 loss_D_real: 0.445 loss_D_fake: 0.823 loss_D: 1.856 acc_real: 0.890 acc_fake: 0.425 loss_AUX: 0.243 loss_D_gr_fake: 0.344 acc_grfake: 0.984 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1748}
+validation accuracies:
+                gf: 0.99, 0.11446480129076086
+                real: 0.74,  0.5812245244565217
+                fake: 0.64, 0.4512355638586957
+
+ran validation set (B:23801) in                         36.4 s.
+(epoch: 59, batches: 300, time: 0.006, data: 0.013) loss_G_comp: 0.626 loss_G_anti_sc: 0.526 loss_G: 1.152 loss_D_real: 0.510 loss_D_fake: 0.759 loss_D: 1.883 acc_real: 0.743 acc_fake: 0.644 loss_AUX: 0.256 loss_D_gr_fake: 0.358 acc_grfake: 0.987 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1848}
+validation accuracies:
+                gf: 0.98, 0.13101328974184784
+                real: 0.95,  0.68408203125
+                fake: 0.32, 0.5405910326086957
+
+ran validation set (B:23901) in                         35.8 s.
+(epoch: 59, batches: 400, time: 0.006, data: 0.006) loss_G_comp: 0.661 loss_G_anti_sc: 0.462 loss_G: 1.124 loss_D_real: 0.453 loss_D_fake: 0.832 loss_D: 1.823 acc_real: 0.950 acc_fake: 0.316 loss_AUX: 0.210 loss_D_gr_fake: 0.327 acc_grfake: 0.977 
+{'scale': 134217728.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 1948}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 59 / 60 	 Time Taken: 391 sec
+validation accuracies:
+                gf: 0.98, 0.12879744819972827
+                real: 0.92,  0.6632345448369565
+                fake: 0.36, 0.5297426970108695
+
+ran validation set (B:24001) in                         36.6 s.
+(epoch: 60, batches: 100, time: 0.006, data: 0.003) loss_G_comp: 0.827 loss_G_anti_sc: 0.374 loss_G: 1.201 loss_D_real: 0.448 loss_D_fake: 0.847 loss_D: 1.936 acc_real: 0.922 acc_fake: 0.359 loss_AUX: 0.252 loss_D_gr_fake: 0.389 acc_grfake: 0.977 
+{'scale': 268435456.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 54}
+validation accuracies:
+                gf: 0.97, 0.13727072010869565
+                real: 0.96,  0.693741508152174
+                fake: 0.20, 0.5781886888586957
+
+ran validation set (B:24101) in                         36.7 s.
+(epoch: 60, batches: 200, time: 0.006, data: 0.006) loss_G_comp: 0.738 loss_G_anti_sc: 0.426 loss_G: 1.164 loss_D_real: 0.451 loss_D_fake: 0.818 loss_D: 1.896 acc_real: 0.963 acc_fake: 0.201 loss_AUX: 0.256 loss_D_gr_fake: 0.370 acc_grfake: 0.975 
+{'scale': 268435456.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 154}
+validation accuracies:
+                gf: 0.99, 0.11557139521059782
+                real: 0.88,  0.6326002038043478
+                fake: 0.45, 0.5053074048913043
+
+ran validation set (B:24201) in                         36.2 s.
+(epoch: 60, batches: 300, time: 0.006, data: 0.008) loss_G_comp: 0.556 loss_G_anti_sc: 0.527 loss_G: 1.083 loss_D_real: 0.530 loss_D_fake: 0.731 loss_D: 1.851 acc_real: 0.881 acc_fake: 0.449 loss_AUX: 0.236 loss_D_gr_fake: 0.354 acc_grfake: 0.986 
+{'scale': 268435456.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 254}
+validation accuracies:
+                gf: 0.98, 0.12160060716711957
+                real: 0.88,  0.6514521059782609
+                fake: 0.40, 0.5168881623641305
+
+ran validation set (B:24301) in                         36.3 s.
+(epoch: 60, batches: 400, time: 0.006, data: 0.002) loss_G_comp: 0.589 loss_G_anti_sc: 0.442 loss_G: 1.030 loss_D_real: 0.507 loss_D_fake: 0.735 loss_D: 1.824 acc_real: 0.881 acc_fake: 0.403 loss_AUX: 0.243 loss_D_gr_fake: 0.339 acc_grfake: 0.981 
+{'scale': 268435456.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 354}
+saving the model at the end of epoch 60, iters 1559040
+learning rate 0.0001280 -> 0.0001024
+End of epoch 60 / 60 	 Time Taken: 391 sec
+Finished training, model is saved
+Batches trained - G: 11680, D: 12680 

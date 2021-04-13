@@ -1,0 +1,428 @@
+starting MoveGAN training run 9
+Tar file moved to scratch
+Current time : 15:13:48
+
+10k_train.tar.gz
+990000_img.jpg
+990000_mask_0.jpg
+990000_mask_1.jpg
+990000_mask_2.jpg
+Tar file extracted on scratch
+Current time : 15:13:53
+
+Validation tar copied to scratch
+Current time : 15:13:53
+
+validation tar extracted on scratch
+Current time : 15:13:54
+
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/ROOM/images/	[default: None]
+             dataset_mode: room                          
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 60                            	[default: 100]
+                    model: move                          	[default: copy]
+                 n_epochs: 5                             	[default: 100]
+           n_epochs_decay: 15                            	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize                        
+               print_freq: 20                            
+              real_target: 0.8                           
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 0                             
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 6                             	[default: 2]
+              tracemalloc: False                         
+         update_html_freq: 100                           
+                  use_amp: True                          
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: False                         
+----------------- End -------------------
+dataset [RoomDataset] and dataloder are created
+dataset [RoomDataset] and dataloder are created
+Starting training of move-model
+The number of training images = 10000
+The number of validation images = 1111
+The number of epochs to run = 20
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+[Network Conv] Total number of parameters : 4.732 M
+[Network D] Total number of parameters : 6.960 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+(epoch: 1, batches: 20, time: 0.004, data: 0.001) loss_D_real: 0.870 loss_D_fake: 0.608 loss_D: 0.739 loss_G: 1.127 loss_conv: 1.924 loss_eq: 0.797 acc_real: 0.464 acc_fake: 0.681 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 1, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.746 loss_D_fake: 0.593 loss_D: 0.669 loss_G: 0.958 loss_conv: 1.685 loss_eq: 0.727 acc_real: 0.520 acc_fake: 0.664 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 1, batches: 60, time: 0.003, data: 0.001) loss_D_real: 1.673 loss_D_fake: 0.219 loss_D: 0.946 loss_G: 1.623 loss_conv: 2.530 loss_eq: 0.907 acc_real: 0.025 acc_fake: 0.967 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 1, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.839 loss_D_fake: 0.596 loss_D: 0.717 loss_G: 1.020 loss_conv: 1.549 loss_eq: 0.529 acc_real: 0.408 acc_fake: 0.667 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 1, batches: 100, time: 0.005, data: 0.006) loss_D_real: 1.029 loss_D_fake: 0.414 loss_D: 0.721 loss_G: 0.856 loss_conv: 1.506 loss_eq: 0.650 acc_real: 0.148 acc_fake: 0.893 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 1, batches: 120, time: 0.004, data: 6.050) loss_D_real: 0.763 loss_D_fake: 0.567 loss_D: 0.665 loss_G: 0.851 loss_conv: 1.275 loss_eq: 0.424 acc_real: 0.487 acc_fake: 0.668 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 1, batches: 140, time: 0.005, data: 4.107) loss_D_real: 0.795 loss_D_fake: 0.660 loss_D: 0.727 loss_G: 0.960 loss_conv: 1.605 loss_eq: 0.645 acc_real: 0.373 acc_fake: 0.600 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 20 	 Time Taken: 589 sec
+(epoch: 2, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.739 loss_D_fake: 0.539 loss_D: 0.639 loss_G: 0.904 loss_conv: 1.587 loss_eq: 0.683 acc_real: 0.537 acc_fake: 0.708 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 2, batches: 40, time: 0.005, data: 0.002) loss_D_real: 1.014 loss_D_fake: 0.375 loss_D: 0.694 loss_G: 0.741 loss_conv: 1.653 loss_eq: 0.912 acc_real: 0.153 acc_fake: 0.899 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 2, batches: 60, time: 0.004, data: 0.002) loss_D_real: 0.923 loss_D_fake: 0.449 loss_D: 0.686 loss_G: 1.074 loss_conv: 1.663 loss_eq: 0.588 acc_real: 0.199 acc_fake: 0.835 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 2, batches: 80, time: 0.004, data: 9.248) loss_D_real: 0.715 loss_D_fake: 0.638 loss_D: 0.677 loss_G: 1.047 loss_conv: 1.767 loss_eq: 0.720 acc_real: 0.550 acc_fake: 0.621 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 2, batches: 100, time: 0.005, data: 6.290) loss_D_real: 0.786 loss_D_fake: 0.576 loss_D: 0.681 loss_G: 1.051 loss_conv: 1.650 loss_eq: 0.599 acc_real: 0.407 acc_fake: 0.698 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 2, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.937 loss_D_fake: 0.406 loss_D: 0.672 loss_G: 1.165 loss_conv: 1.729 loss_eq: 0.564 acc_real: 0.233 acc_fake: 0.905 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 2, batches: 140, time: 0.004, data: 2.241) loss_D_real: 0.818 loss_D_fake: 0.525 loss_D: 0.672 loss_G: 0.932 loss_conv: 1.477 loss_eq: 0.545 acc_real: 0.362 acc_fake: 0.742 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 20 	 Time Taken: 589 sec
+(epoch: 3, batches: 20, time: 0.004, data: 0.001) loss_D_real: 0.744 loss_D_fake: 0.403 loss_D: 0.573 loss_G: 1.196 loss_conv: 1.830 loss_eq: 0.634 acc_real: 0.500 acc_fake: 0.842 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.840 loss_D_fake: 0.385 loss_D: 0.613 loss_G: 1.122 loss_conv: 1.724 loss_eq: 0.603 acc_real: 0.332 acc_fake: 0.893 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.942 loss_D_fake: 0.383 loss_D: 0.663 loss_G: 1.125 loss_conv: 1.774 loss_eq: 0.649 acc_real: 0.246 acc_fake: 0.898 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 80, time: 0.003, data: 0.006) loss_D_real: 0.770 loss_D_fake: 0.585 loss_D: 0.678 loss_G: 1.186 loss_conv: 1.867 loss_eq: 0.681 acc_real: 0.496 acc_fake: 0.704 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 100, time: 0.005, data: 0.001) loss_D_real: 0.812 loss_D_fake: 0.533 loss_D: 0.673 loss_G: 1.063 loss_conv: 1.676 loss_eq: 0.613 acc_real: 0.483 acc_fake: 0.728 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 120, time: 0.005, data: 9.655) loss_D_real: 0.808 loss_D_fake: 0.409 loss_D: 0.609 loss_G: 1.061 loss_conv: 1.549 loss_eq: 0.487 acc_real: 0.393 acc_fake: 0.909 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 3, batches: 140, time: 0.005, data: 0.907) loss_D_real: 0.659 loss_D_fake: 0.636 loss_D: 0.647 loss_G: 1.401 loss_conv: 1.866 loss_eq: 0.465 acc_real: 0.728 acc_fake: 0.625 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 20 	 Time Taken: 580 sec
+(epoch: 4, batches: 20, time: 0.004, data: 6.648) loss_D_real: 0.834 loss_D_fake: 0.363 loss_D: 0.599 loss_G: 1.036 loss_conv: 1.564 loss_eq: 0.528 acc_real: 0.435 acc_fake: 0.901 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 4, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.624 loss_D_fake: 0.893 loss_D: 0.758 loss_G: 1.753 loss_conv: 2.377 loss_eq: 0.624 acc_real: 0.787 acc_fake: 0.342 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 4, batches: 60, time: 0.004, data: 0.001) loss_D_real: 0.781 loss_D_fake: 0.538 loss_D: 0.659 loss_G: 1.043 loss_conv: 1.540 loss_eq: 0.497 acc_real: 0.423 acc_fake: 0.726 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 4, batches: 80, time: 0.002, data: 0.001) loss_D_real: 0.826 loss_D_fake: 0.401 loss_D: 0.614 loss_G: 0.997 loss_conv: 1.568 loss_eq: 0.571 acc_real: 0.403 acc_fake: 0.883 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 4, batches: 100, time: 0.004, data: 0.001) loss_D_real: 0.818 loss_D_fake: 0.376 loss_D: 0.597 loss_G: 1.123 loss_conv: 1.687 loss_eq: 0.564 acc_real: 0.479 acc_fake: 0.864 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 4, batches: 120, time: 0.004, data: 0.001) loss_D_real: 0.702 loss_D_fake: 0.458 loss_D: 0.580 loss_G: 1.171 loss_conv: 1.724 loss_eq: 0.554 acc_real: 0.633 acc_fake: 0.821 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 4, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.959 loss_D_fake: 0.309 loss_D: 0.634 loss_G: 0.938 loss_conv: 1.547 loss_eq: 0.609 acc_real: 0.250 acc_fake: 0.938 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 20 	 Time Taken: 591 sec
+(epoch: 5, batches: 20, time: 0.005, data: 0.002) loss_D_real: 0.623 loss_D_fake: 0.688 loss_D: 0.656 loss_G: 1.121 loss_conv: 1.678 loss_eq: 0.557 acc_real: 0.789 acc_fake: 0.569 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 5, batches: 40, time: 0.004, data: 0.002) loss_D_real: 0.834 loss_D_fake: 0.423 loss_D: 0.629 loss_G: 1.119 loss_conv: 1.598 loss_eq: 0.479 acc_real: 0.429 acc_fake: 0.849 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 5, batches: 60, time: 0.004, data: 0.003) loss_D_real: 0.655 loss_D_fake: 0.559 loss_D: 0.607 loss_G: 1.026 loss_conv: 1.395 loss_eq: 0.369 acc_real: 0.754 acc_fake: 0.763 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 5, batches: 80, time: 0.005, data: 6.695) loss_D_real: 0.848 loss_D_fake: 0.324 loss_D: 0.586 loss_G: 1.071 loss_conv: 1.545 loss_eq: 0.475 acc_real: 0.412 acc_fake: 0.912 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 5, batches: 100, time: 0.005, data: 12.153) loss_D_real: 0.976 loss_D_fake: 0.269 loss_D: 0.622 loss_G: 0.940 loss_conv: 1.255 loss_eq: 0.315 acc_real: 0.242 acc_fake: 0.975 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 5, batches: 120, time: 0.005, data: 5.152) loss_D_real: 0.705 loss_D_fake: 0.418 loss_D: 0.562 loss_G: 1.093 loss_conv: 1.541 loss_eq: 0.448 acc_real: 0.623 acc_fake: 0.835 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 5, batches: 140, time: 0.005, data: 2.796) loss_D_real: 0.796 loss_D_fake: 0.348 loss_D: 0.572 loss_G: 1.298 loss_conv: 1.713 loss_eq: 0.414 acc_real: 0.470 acc_fake: 0.901 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+saving the model at the end of epoch 5, iters 49920
+learning rate 0.0002000 -> 0.0001600
+End of epoch 5 / 20 	 Time Taken: 580 sec
+(epoch: 6, batches: 20, time: 0.005, data: 0.006) loss_D_real: 0.888 loss_D_fake: 0.307 loss_D: 0.598 loss_G: 1.096 loss_conv: 1.586 loss_eq: 0.490 acc_real: 0.377 acc_fake: 0.952 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 6, batches: 40, time: 0.003, data: 0.002) loss_D_real: 0.793 loss_D_fake: 0.363 loss_D: 0.578 loss_G: 1.100 loss_conv: 1.738 loss_eq: 0.637 acc_real: 0.414 acc_fake: 0.888 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 6, batches: 60, time: 0.005, data: 0.001) loss_D_real: 0.764 loss_D_fake: 0.427 loss_D: 0.596 loss_G: 1.083 loss_conv: 1.417 loss_eq: 0.334 acc_real: 0.595 acc_fake: 0.853 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 6, batches: 80, time: 0.005, data: 0.001) loss_D_real: 0.856 loss_D_fake: 0.293 loss_D: 0.575 loss_G: 1.049 loss_conv: 1.571 loss_eq: 0.522 acc_real: 0.403 acc_fake: 0.953 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 6, batches: 100, time: 0.005, data: 0.001) loss_D_real: 0.786 loss_D_fake: 0.382 loss_D: 0.584 loss_G: 1.192 loss_conv: 1.529 loss_eq: 0.338 acc_real: 0.500 acc_fake: 0.851 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 6, batches: 120, time: 0.008, data: 0.001) loss_D_real: 0.739 loss_D_fake: 0.412 loss_D: 0.576 loss_G: 1.099 loss_conv: 1.723 loss_eq: 0.624 acc_real: 0.492 acc_fake: 0.869 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 6, batches: 140, time: 0.005, data: 0.001) loss_D_real: 0.723 loss_D_fake: 0.412 loss_D: 0.568 loss_G: 1.469 loss_conv: 2.028 loss_eq: 0.559 acc_real: 0.616 acc_fake: 0.804 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 6 / 20 	 Time Taken: 587 sec
+(epoch: 7, batches: 20, time: 0.005, data: 0.002) loss_D_real: 0.784 loss_D_fake: 0.307 loss_D: 0.545 loss_G: 1.007 loss_conv: 1.509 loss_eq: 0.502 acc_real: 0.475 acc_fake: 0.908 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 7, batches: 40, time: 0.005, data: 0.001) loss_D_real: 0.640 loss_D_fake: 0.559 loss_D: 0.600 loss_G: 1.329 loss_conv: 1.651 loss_eq: 0.322 acc_real: 0.710 acc_fake: 0.718 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 7, batches: 60, time: 0.005, data: 0.001) loss_D_real: 0.739 loss_D_fake: 0.383 loss_D: 0.561 loss_G: 1.220 loss_conv: 1.628 loss_eq: 0.407 acc_real: 0.532 acc_fake: 0.873 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 7, batches: 80, time: 0.006, data: 0.001) loss_D_real: 0.749 loss_D_fake: 0.385 loss_D: 0.567 loss_G: 1.158 loss_conv: 1.573 loss_eq: 0.415 acc_real: 0.570 acc_fake: 0.885 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 7, batches: 100, time: 0.005, data: 0.001) loss_D_real: 0.846 loss_D_fake: 0.370 loss_D: 0.608 loss_G: 1.065 loss_conv: 1.483 loss_eq: 0.418 acc_real: 0.388 acc_fake: 0.912 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 7, batches: 120, time: 0.005, data: 0.001) loss_D_real: 0.659 loss_D_fake: 0.513 loss_D: 0.586 loss_G: 1.051 loss_conv: 1.460 loss_eq: 0.409 acc_real: 0.730 acc_fake: 0.746 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 7, batches: 140, time: 0.005, data: 0.001) loss_D_real: 0.893 loss_D_fake: 0.303 loss_D: 0.598 loss_G: 1.227 loss_conv: 1.828 loss_eq: 0.601 acc_real: 0.292 acc_fake: 0.941 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 7 / 20 	 Time Taken: 577 sec
+(epoch: 8, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.793 loss_D_fake: 0.359 loss_D: 0.576 loss_G: 1.096 loss_conv: 1.572 loss_eq: 0.476 acc_real: 0.471 acc_fake: 0.879 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 8, batches: 40, time: 0.005, data: 0.001) loss_D_real: 0.748 loss_D_fake: 0.445 loss_D: 0.597 loss_G: 1.239 loss_conv: 1.488 loss_eq: 0.249 acc_real: 0.538 acc_fake: 0.814 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 8, batches: 60, time: 0.005, data: 0.001) loss_D_real: 0.734 loss_D_fake: 0.475 loss_D: 0.605 loss_G: 0.998 loss_conv: 1.462 loss_eq: 0.464 acc_real: 0.573 acc_fake: 0.758 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 8, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.845 loss_D_fake: 0.383 loss_D: 0.614 loss_G: 0.996 loss_conv: 1.419 loss_eq: 0.423 acc_real: 0.438 acc_fake: 0.867 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 8, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.805 loss_D_fake: 0.290 loss_D: 0.548 loss_G: 1.149 loss_conv: 1.618 loss_eq: 0.469 acc_real: 0.470 acc_fake: 0.953 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 8, batches: 120, time: 0.005, data: 0.001) loss_D_real: 0.687 loss_D_fake: 0.490 loss_D: 0.588 loss_G: 0.994 loss_conv: 1.626 loss_eq: 0.632 acc_real: 0.660 acc_fake: 0.779 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 8, batches: 140, time: 0.004, data: 0.808) loss_D_real: 0.725 loss_D_fake: 0.437 loss_D: 0.581 loss_G: 1.369 loss_conv: 1.795 loss_eq: 0.426 acc_real: 0.571 acc_fake: 0.842 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 8 / 20 	 Time Taken: 587 sec
+(epoch: 9, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.867 loss_D_fake: 0.415 loss_D: 0.641 loss_G: 1.136 loss_conv: 1.616 loss_eq: 0.481 acc_real: 0.474 acc_fake: 0.866 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 9, batches: 40, time: 0.004, data: 0.001) loss_D_real: 0.713 loss_D_fake: 0.357 loss_D: 0.535 loss_G: 1.465 loss_conv: 1.893 loss_eq: 0.428 acc_real: 0.629 acc_fake: 0.875 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 9, batches: 60, time: 0.002, data: 0.001) loss_D_real: 0.689 loss_D_fake: 0.473 loss_D: 0.581 loss_G: 0.954 loss_conv: 1.508 loss_eq: 0.554 acc_real: 0.701 acc_fake: 0.754 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 9, batches: 80, time: 0.005, data: 3.024) loss_D_real: 0.670 loss_D_fake: 0.536 loss_D: 0.603 loss_G: 1.409 loss_conv: 1.824 loss_eq: 0.416 acc_real: 0.658 acc_fake: 0.800 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 9, batches: 100, time: 0.005, data: 0.007) loss_D_real: 0.678 loss_D_fake: 0.565 loss_D: 0.621 loss_G: 1.387 loss_conv: 1.916 loss_eq: 0.529 acc_real: 0.672 acc_fake: 0.693 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 9, batches: 120, time: 0.005, data: 6.125) loss_D_real: 0.828 loss_D_fake: 0.359 loss_D: 0.594 loss_G: 1.370 loss_conv: 1.576 loss_eq: 0.206 acc_real: 0.439 acc_fake: 0.893 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 9, batches: 140, time: 0.005, data: 10.655) loss_D_real: 0.653 loss_D_fake: 0.502 loss_D: 0.577 loss_G: 1.199 loss_conv: 1.590 loss_eq: 0.391 acc_real: 0.716 acc_fake: 0.733 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 9 / 20 	 Time Taken: 590 sec
+(epoch: 10, batches: 20, time: 0.004, data: 5.465) loss_D_real: 0.760 loss_D_fake: 0.345 loss_D: 0.552 loss_G: 1.040 loss_conv: 1.524 loss_eq: 0.484 acc_real: 0.547 acc_fake: 0.903 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 10, batches: 40, time: 0.005, data: 3.019) loss_D_real: 0.885 loss_D_fake: 0.349 loss_D: 0.617 loss_G: 1.092 loss_conv: 1.520 loss_eq: 0.428 acc_real: 0.381 acc_fake: 0.910 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 10, batches: 60, time: 0.005, data: 4.719) loss_D_real: 0.727 loss_D_fake: 0.476 loss_D: 0.601 loss_G: 1.173 loss_conv: 1.726 loss_eq: 0.554 acc_real: 0.598 acc_fake: 0.770 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 10, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.833 loss_D_fake: 0.298 loss_D: 0.566 loss_G: 1.132 loss_conv: 1.643 loss_eq: 0.511 acc_real: 0.479 acc_fake: 0.904 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 10, batches: 100, time: 0.005, data: 0.021) loss_D_real: 0.705 loss_D_fake: 0.452 loss_D: 0.579 loss_G: 1.203 loss_conv: 1.695 loss_eq: 0.492 acc_real: 0.642 acc_fake: 0.810 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 10, batches: 120, time: 0.004, data: 6.119) loss_D_real: 0.902 loss_D_fake: 0.268 loss_D: 0.585 loss_G: 1.443 loss_conv: 1.885 loss_eq: 0.442 acc_real: 0.321 acc_fake: 0.978 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 10, batches: 140, time: 0.003, data: 2.931) loss_D_real: 0.637 loss_D_fake: 0.592 loss_D: 0.615 loss_G: 1.373 loss_conv: 1.925 loss_eq: 0.552 acc_real: 0.815 acc_fake: 0.647 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+saving the model at the end of epoch 10, iters 99840
+learning rate 0.0001600 -> 0.0001280
+End of epoch 10 / 20 	 Time Taken: 582 sec
+(epoch: 11, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.732 loss_D_fake: 0.397 loss_D: 0.564 loss_G: 1.229 loss_conv: 1.809 loss_eq: 0.579 acc_real: 0.586 acc_fake: 0.828 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 11, batches: 40, time: 0.006, data: 0.001) loss_D_real: 0.746 loss_D_fake: 0.399 loss_D: 0.573 loss_G: 1.394 loss_conv: 1.913 loss_eq: 0.519 acc_real: 0.640 acc_fake: 0.826 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 11, batches: 60, time: 0.004, data: 0.002) loss_D_real: 0.808 loss_D_fake: 0.429 loss_D: 0.618 loss_G: 1.050 loss_conv: 1.666 loss_eq: 0.617 acc_real: 0.447 acc_fake: 0.833 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 11, batches: 80, time: 0.005, data: 0.001) loss_D_real: 0.767 loss_D_fake: 0.324 loss_D: 0.546 loss_G: 1.269 loss_conv: 1.808 loss_eq: 0.539 acc_real: 0.476 acc_fake: 0.885 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 11, batches: 100, time: 0.005, data: 0.001) loss_D_real: 0.659 loss_D_fake: 0.456 loss_D: 0.558 loss_G: 1.399 loss_conv: 1.846 loss_eq: 0.447 acc_real: 0.721 acc_fake: 0.857 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 11, batches: 120, time: 0.005, data: 0.001) loss_D_real: 0.681 loss_D_fake: 0.463 loss_D: 0.572 loss_G: 1.001 loss_conv: 1.627 loss_eq: 0.625 acc_real: 0.671 acc_fake: 0.825 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 11, batches: 140, time: 0.006, data: 0.001) loss_D_real: 0.732 loss_D_fake: 0.411 loss_D: 0.571 loss_G: 1.143 loss_conv: 1.658 loss_eq: 0.516 acc_real: 0.581 acc_fake: 0.869 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 11 / 20 	 Time Taken: 597 sec
+(epoch: 12, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.813 loss_D_fake: 0.374 loss_D: 0.594 loss_G: 1.309 loss_conv: 1.654 loss_eq: 0.345 acc_real: 0.475 acc_fake: 0.847 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 12, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.742 loss_D_fake: 0.337 loss_D: 0.540 loss_G: 1.353 loss_conv: 1.938 loss_eq: 0.584 acc_real: 0.611 acc_fake: 0.893 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 12, batches: 60, time: 0.005, data: 0.001) loss_D_real: 0.813 loss_D_fake: 0.320 loss_D: 0.567 loss_G: 1.316 loss_conv: 1.780 loss_eq: 0.463 acc_real: 0.454 acc_fake: 0.938 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 12, batches: 80, time: 0.004, data: 0.001) loss_D_real: 0.719 loss_D_fake: 0.388 loss_D: 0.554 loss_G: 1.439 loss_conv: 1.933 loss_eq: 0.495 acc_real: 0.607 acc_fake: 0.881 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 12, batches: 100, time: 0.004, data: 2.575) loss_D_real: 0.767 loss_D_fake: 0.402 loss_D: 0.584 loss_G: 1.447 loss_conv: 2.022 loss_eq: 0.575 acc_real: 0.555 acc_fake: 0.824 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 12, batches: 120, time: 0.004, data: 3.596) loss_D_real: 0.790 loss_D_fake: 0.315 loss_D: 0.552 loss_G: 1.211 loss_conv: 1.749 loss_eq: 0.538 acc_real: 0.508 acc_fake: 0.928 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 12, batches: 140, time: 0.004, data: 5.526) loss_D_real: 0.755 loss_D_fake: 0.393 loss_D: 0.574 loss_G: 1.362 loss_conv: 1.818 loss_eq: 0.456 acc_real: 0.561 acc_fake: 0.807 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 12 / 20 	 Time Taken: 579 sec
+(epoch: 13, batches: 20, time: 0.005, data: 10.847) loss_D_real: 0.763 loss_D_fake: 0.395 loss_D: 0.579 loss_G: 1.187 loss_conv: 1.799 loss_eq: 0.612 acc_real: 0.459 acc_fake: 0.857 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 13, batches: 40, time: 0.004, data: 11.320) loss_D_real: 0.932 loss_D_fake: 0.304 loss_D: 0.618 loss_G: 1.045 loss_conv: 1.693 loss_eq: 0.648 acc_real: 0.354 acc_fake: 0.954 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 13, batches: 60, time: 0.003, data: 13.750) loss_D_real: 0.812 loss_D_fake: 0.336 loss_D: 0.574 loss_G: 1.272 loss_conv: 1.672 loss_eq: 0.400 acc_real: 0.517 acc_fake: 0.941 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 13, batches: 80, time: 0.004, data: 12.031) loss_D_real: 0.657 loss_D_fake: 0.534 loss_D: 0.596 loss_G: 1.306 loss_conv: 1.799 loss_eq: 0.493 acc_real: 0.738 acc_fake: 0.717 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 13, batches: 100, time: 0.005, data: 4.464) loss_D_real: 0.746 loss_D_fake: 0.341 loss_D: 0.543 loss_G: 1.361 loss_conv: 1.701 loss_eq: 0.340 acc_real: 0.525 acc_fake: 0.914 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 13, batches: 120, time: 0.004, data: 2.390) loss_D_real: 0.859 loss_D_fake: 0.390 loss_D: 0.625 loss_G: 1.327 loss_conv: 1.900 loss_eq: 0.573 acc_real: 0.414 acc_fake: 0.844 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 13, batches: 140, time: 0.004, data: 0.146) loss_D_real: 0.800 loss_D_fake: 0.394 loss_D: 0.597 loss_G: 1.248 loss_conv: 2.008 loss_eq: 0.760 acc_real: 0.508 acc_fake: 0.881 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 13 / 20 	 Time Taken: 580 sec
+(epoch: 14, batches: 20, time: 0.007, data: 14.373) loss_D_real: 0.729 loss_D_fake: 0.342 loss_D: 0.536 loss_G: 1.089 loss_conv: 1.698 loss_eq: 0.609 acc_real: 0.550 acc_fake: 0.887 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 14, batches: 40, time: 0.005, data: 9.775) loss_D_real: 0.805 loss_D_fake: 0.323 loss_D: 0.564 loss_G: 1.337 loss_conv: 1.871 loss_eq: 0.535 acc_real: 0.471 acc_fake: 0.917 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 14, batches: 60, time: 0.004, data: 11.095) loss_D_real: 1.019 loss_D_fake: 0.249 loss_D: 0.634 loss_G: 1.653 loss_conv: 2.232 loss_eq: 0.580 acc_real: 0.148 acc_fake: 0.975 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 14, batches: 80, time: 0.005, data: 13.598) loss_D_real: 0.815 loss_D_fake: 0.315 loss_D: 0.565 loss_G: 1.208 loss_conv: 1.541 loss_eq: 0.333 acc_real: 0.471 acc_fake: 0.942 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 14, batches: 100, time: 0.005, data: 13.241) loss_D_real: 0.780 loss_D_fake: 0.374 loss_D: 0.577 loss_G: 1.217 loss_conv: 1.609 loss_eq: 0.392 acc_real: 0.512 acc_fake: 0.854 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 14, batches: 120, time: 0.003, data: 11.944) loss_D_real: 0.822 loss_D_fake: 0.317 loss_D: 0.570 loss_G: 1.401 loss_conv: 1.868 loss_eq: 0.467 acc_real: 0.427 acc_fake: 0.915 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 14, batches: 140, time: 0.003, data: 13.626) loss_D_real: 0.853 loss_D_fake: 0.360 loss_D: 0.607 loss_G: 1.086 loss_conv: 1.662 loss_eq: 0.577 acc_real: 0.438 acc_fake: 0.871 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001280 -> 0.0001280
+End of epoch 14 / 20 	 Time Taken: 572 sec
+(epoch: 15, batches: 20, time: 0.005, data: 10.066) loss_D_real: 0.721 loss_D_fake: 0.423 loss_D: 0.572 loss_G: 1.183 loss_conv: 1.647 loss_eq: 0.465 acc_real: 0.536 acc_fake: 0.839 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 15, batches: 40, time: 0.004, data: 11.834) loss_D_real: 0.811 loss_D_fake: 0.300 loss_D: 0.556 loss_G: 1.209 loss_conv: 1.687 loss_eq: 0.479 acc_real: 0.389 acc_fake: 0.934 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 15, batches: 60, time: 0.005, data: 6.514) loss_D_real: 1.052 loss_D_fake: 0.182 loss_D: 0.617 loss_G: 1.740 loss_conv: 2.367 loss_eq: 0.627 acc_real: 0.325 acc_fake: 0.996 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 15, batches: 80, time: 0.005, data: 4.198) loss_D_real: 0.841 loss_D_fake: 0.375 loss_D: 0.608 loss_G: 1.333 loss_conv: 1.845 loss_eq: 0.512 acc_real: 0.464 acc_fake: 0.884 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 15, batches: 100, time: 0.003, data: 2.809) loss_D_real: 0.757 loss_D_fake: 0.361 loss_D: 0.559 loss_G: 1.506 loss_conv: 2.022 loss_eq: 0.516 acc_real: 0.573 acc_fake: 0.884 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 15, batches: 120, time: 0.005, data: 6.043) loss_D_real: 0.889 loss_D_fake: 0.289 loss_D: 0.589 loss_G: 1.438 loss_conv: 1.987 loss_eq: 0.549 acc_real: 0.435 acc_fake: 0.891 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 15, batches: 140, time: 0.004, data: 7.778) loss_D_real: 0.788 loss_D_fake: 0.348 loss_D: 0.568 loss_G: 1.299 loss_conv: 1.858 loss_eq: 0.559 acc_real: 0.480 acc_fake: 0.926 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+saving the model at the end of epoch 15, iters 149760
+learning rate 0.0001280 -> 0.0001024
+End of epoch 15 / 20 	 Time Taken: 584 sec
+(epoch: 16, batches: 20, time: 0.007, data: 0.001) loss_D_real: 0.756 loss_D_fake: 0.319 loss_D: 0.538 loss_G: 1.481 loss_conv: 2.093 loss_eq: 0.611 acc_real: 0.570 acc_fake: 0.939 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 16, batches: 40, time: 0.004, data: 4.018) loss_D_real: 0.778 loss_D_fake: 0.303 loss_D: 0.541 loss_G: 1.302 loss_conv: 1.748 loss_eq: 0.446 acc_real: 0.533 acc_fake: 0.951 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 16, batches: 60, time: 0.007, data: 0.001) loss_D_real: 0.862 loss_D_fake: 0.303 loss_D: 0.583 loss_G: 1.333 loss_conv: 1.882 loss_eq: 0.549 acc_real: 0.345 acc_fake: 0.931 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 16, batches: 80, time: 0.004, data: 0.001) loss_D_real: 0.784 loss_D_fake: 0.335 loss_D: 0.560 loss_G: 1.366 loss_conv: 1.699 loss_eq: 0.333 acc_real: 0.484 acc_fake: 0.914 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 16, batches: 100, time: 0.004, data: 0.001) loss_D_real: 0.748 loss_D_fake: 0.392 loss_D: 0.570 loss_G: 1.265 loss_conv: 1.775 loss_eq: 0.510 acc_real: 0.569 acc_fake: 0.853 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 16, batches: 120, time: 0.004, data: 2.490) loss_D_real: 0.665 loss_D_fake: 0.470 loss_D: 0.568 loss_G: 1.106 loss_conv: 1.614 loss_eq: 0.508 acc_real: 0.697 acc_fake: 0.746 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 16, batches: 140, time: 0.004, data: 0.001) loss_D_real: 0.810 loss_D_fake: 0.341 loss_D: 0.576 loss_G: 1.154 loss_conv: 1.733 loss_eq: 0.579 acc_real: 0.484 acc_fake: 0.919 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001024 -> 0.0001024
+End of epoch 16 / 20 	 Time Taken: 580 sec
+(epoch: 17, batches: 20, time: 0.005, data: 0.001) loss_D_real: 0.788 loss_D_fake: 0.352 loss_D: 0.570 loss_G: 1.284 loss_conv: 1.627 loss_eq: 0.343 acc_real: 0.457 acc_fake: 0.888 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 17, batches: 40, time: 0.005, data: 0.001) loss_D_real: 0.877 loss_D_fake: 0.284 loss_D: 0.580 loss_G: 1.203 loss_conv: 1.684 loss_eq: 0.480 acc_real: 0.354 acc_fake: 0.942 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 17, batches: 60, time: 0.005, data: 0.788) loss_D_real: 0.694 loss_D_fake: 0.370 loss_D: 0.532 loss_G: 1.114 loss_conv: 1.583 loss_eq: 0.469 acc_real: 0.686 acc_fake: 0.886 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 17, batches: 80, time: 0.005, data: 0.001) loss_D_real: 0.647 loss_D_fake: 0.421 loss_D: 0.534 loss_G: 1.395 loss_conv: 1.696 loss_eq: 0.300 acc_real: 0.732 acc_fake: 0.830 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 17, batches: 100, time: 0.004, data: 3.123) loss_D_real: 0.708 loss_D_fake: 0.351 loss_D: 0.529 loss_G: 1.407 loss_conv: 1.871 loss_eq: 0.464 acc_real: 0.623 acc_fake: 0.852 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 17, batches: 120, time: 0.004, data: 9.076) loss_D_real: 0.816 loss_D_fake: 0.290 loss_D: 0.553 loss_G: 1.431 loss_conv: 1.932 loss_eq: 0.501 acc_real: 0.517 acc_fake: 0.904 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 17, batches: 140, time: 0.003, data: 14.924) loss_D_real: 0.705 loss_D_fake: 0.358 loss_D: 0.531 loss_G: 1.362 loss_conv: 1.846 loss_eq: 0.483 acc_real: 0.602 acc_fake: 0.877 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001024 -> 0.0001024
+End of epoch 17 / 20 	 Time Taken: 593 sec
+(epoch: 18, batches: 20, time: 0.005, data: 6.236) loss_D_real: 0.682 loss_D_fake: 0.389 loss_D: 0.535 loss_G: 1.194 loss_conv: 1.659 loss_eq: 0.465 acc_real: 0.674 acc_fake: 0.809 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 18, batches: 40, time: 0.005, data: 0.001) loss_D_real: 0.780 loss_D_fake: 0.320 loss_D: 0.550 loss_G: 1.294 loss_conv: 1.659 loss_eq: 0.365 acc_real: 0.509 acc_fake: 0.931 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 18, batches: 60, time: 0.004, data: 0.001) loss_D_real: 0.675 loss_D_fake: 0.479 loss_D: 0.577 loss_G: 1.141 loss_conv: 1.627 loss_eq: 0.486 acc_real: 0.698 acc_fake: 0.758 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 18, batches: 80, time: 0.005, data: 0.001) loss_D_real: 0.753 loss_D_fake: 0.394 loss_D: 0.574 loss_G: 1.339 loss_conv: 1.850 loss_eq: 0.511 acc_real: 0.579 acc_fake: 0.854 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 18, batches: 100, time: 0.004, data: 0.001) loss_D_real: 0.664 loss_D_fake: 0.389 loss_D: 0.527 loss_G: 1.273 loss_conv: 1.742 loss_eq: 0.470 acc_real: 0.705 acc_fake: 0.877 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 18, batches: 120, time: 0.005, data: 0.001) loss_D_real: 0.742 loss_D_fake: 0.394 loss_D: 0.568 loss_G: 1.376 loss_conv: 1.963 loss_eq: 0.588 acc_real: 0.534 acc_fake: 0.853 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 18, batches: 140, time: 0.005, data: 0.002) loss_D_real: 0.715 loss_D_fake: 0.331 loss_D: 0.523 loss_G: 1.427 loss_conv: 1.988 loss_eq: 0.561 acc_real: 0.651 acc_fake: 0.893 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001024 -> 0.0001024
+End of epoch 18 / 20 	 Time Taken: 589 sec
+(epoch: 19, batches: 20, time: 0.005, data: 7.068) loss_D_real: 0.731 loss_D_fake: 0.430 loss_D: 0.580 loss_G: 1.451 loss_conv: 1.875 loss_eq: 0.425 acc_real: 0.583 acc_fake: 0.767 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 19, batches: 40, time: 0.003, data: 5.922) loss_D_real: 0.791 loss_D_fake: 0.332 loss_D: 0.562 loss_G: 1.074 loss_conv: 1.487 loss_eq: 0.413 acc_real: 0.556 acc_fake: 0.871 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 19, batches: 60, time: 0.004, data: 6.237) loss_D_real: 0.651 loss_D_fake: 0.401 loss_D: 0.526 loss_G: 1.207 loss_conv: 1.631 loss_eq: 0.424 acc_real: 0.714 acc_fake: 0.827 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 19, batches: 80, time: 0.006, data: 0.016) loss_D_real: 0.715 loss_D_fake: 0.402 loss_D: 0.558 loss_G: 1.646 loss_conv: 2.027 loss_eq: 0.381 acc_real: 0.659 acc_fake: 0.845 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 19, batches: 100, time: 0.005, data: 0.001) loss_D_real: 0.729 loss_D_fake: 0.330 loss_D: 0.529 loss_G: 1.140 loss_conv: 1.720 loss_eq: 0.580 acc_real: 0.581 acc_fake: 0.864 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 19, batches: 120, time: 0.004, data: 0.083) loss_D_real: 0.744 loss_D_fake: 0.401 loss_D: 0.572 loss_G: 1.260 loss_conv: 1.803 loss_eq: 0.542 acc_real: 0.530 acc_fake: 0.828 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 19, batches: 140, time: 0.005, data: 1.595) loss_D_real: 0.788 loss_D_fake: 0.359 loss_D: 0.573 loss_G: 1.393 loss_conv: 1.874 loss_eq: 0.481 acc_real: 0.556 acc_fake: 0.911 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+learning rate 0.0001024 -> 0.0001024
+End of epoch 19 / 20 	 Time Taken: 574 sec
+(epoch: 20, batches: 20, time: 0.005, data: 13.502) loss_D_real: 0.702 loss_D_fake: 0.325 loss_D: 0.513 loss_G: 1.319 loss_conv: 1.885 loss_eq: 0.566 acc_real: 0.627 acc_fake: 0.911 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 20, batches: 40, time: 0.005, data: 0.001) loss_D_real: 1.047 loss_D_fake: 0.208 loss_D: 0.627 loss_G: 1.105 loss_conv: 1.419 loss_eq: 0.315 acc_real: 0.225 acc_fake: 0.983 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 20, batches: 60, time: 0.004, data: 0.001) loss_D_real: 0.750 loss_D_fake: 0.324 loss_D: 0.537 loss_G: 1.305 loss_conv: 1.844 loss_eq: 0.540 acc_real: 0.560 acc_fake: 0.923 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 20, batches: 80, time: 0.003, data: 0.001) loss_D_real: 0.806 loss_D_fake: 0.298 loss_D: 0.552 loss_G: 1.118 loss_conv: 1.614 loss_eq: 0.496 acc_real: 0.516 acc_fake: 0.918 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 20, batches: 100, time: 0.004, data: 1.356) loss_D_real: 0.720 loss_D_fake: 0.359 loss_D: 0.539 loss_G: 1.367 loss_conv: 1.706 loss_eq: 0.339 acc_real: 0.579 acc_fake: 0.875 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 20, batches: 120, time: 0.005, data: 9.189) loss_D_real: 0.781 loss_D_fake: 0.289 loss_D: 0.535 loss_G: 1.328 loss_conv: 1.851 loss_eq: 0.523 acc_real: 0.575 acc_fake: 0.917 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+(epoch: 20, batches: 140, time: 0.004, data: 2.782) loss_D_real: 0.672 loss_D_fake: 0.402 loss_D: 0.537 loss_G: 1.578 loss_conv: 2.023 loss_eq: 0.444 acc_real: 0.698 acc_fake: 0.817 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 0}
+saving the model at the end of epoch 20, iters 199680
+learning rate 0.0001024 -> 0.0000819
+End of epoch 20 / 20 	 Time Taken: 671 sec
+Finished training, model is saved
+Batches trained - G: 2080, D: 1040 

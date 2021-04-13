@@ -15,11 +15,11 @@ else:
     VisdomExceptionBase = ConnectionError
 
 
-def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
+def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256, score=""):
     """Save images to the disk.
 
     Parameters:
-        webpage (the HTML class) -- the HTML webpage class that stores these imaegs (see html.py for more details)
+        webpage (the HTML class) -- the HTML webpage class that stores these images (see html.py for more details)
         visuals (OrderedDict)    -- an ordered dictionary that stores (name, images (either tensor or numpy) ) pairs
         image_path (str)         -- the string is used to create image paths
         aspect_ratio (float)     -- the aspect ratio of saved images
@@ -30,8 +30,9 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
     image_dir = webpage.get_image_dir()
     short_path = ntpath.basename(image_path[0])
     name = os.path.splitext(short_path)[0]
+    header = f"{name}. IOU: {score}" if score else name
 
-    webpage.add_header(name)
+    webpage.add_header(header)
     ims, txts, links = [], [], []
 
     for label, im_data in visuals.items():
@@ -105,7 +106,7 @@ class Visualizer():
         # Popen(cmd, shell=True)#, stdout=PIPE, stderr=PIPE)
         Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
-    def display_current_results(self, visuals, epoch, save_result, overall_batch=0):
+    def display_current_results(self, visuals, epoch, save_result, overall_batch=0, D_fakes=None):
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -149,6 +150,9 @@ class Visualizer():
                     label_html = '<table>%s</table>' % label_html
                     self.vis.text(table_css + label_html, win=self.display_id + 2,
                                   opts=dict(title=title + ' labels'))
+                    if D_fakes:
+                        self.vis.text(f"D prediction composite:\n {D_fakes[-1]}", win=self.display_id + 3,
+                                  opts=dict(title=f"D prediction composite"))
                 except VisdomExceptionBase:
                     self.create_visdom_connections()
 
@@ -173,8 +177,11 @@ class Visualizer():
 
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=0)
-            for i in range(overall_batch, 0, -self.opt.update_html_freq):
-                webpage.add_header('overall batch: %d' % (i))
+            for idx, i in enumerate(range(overall_batch, 0, -self.opt.update_html_freq)):
+                header = f'Overall batch: {i}'
+                if D_fakes:
+                    header += f" (composite pred: {D_fakes[-idx]})"
+                webpage.add_header(header)
                 ims, txts, links = [], [], []
 
                 for label, image_numpy in visuals.items():

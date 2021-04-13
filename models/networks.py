@@ -60,7 +60,7 @@ def get_scheduler(optimizer, opt):
             return lr_l
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
     elif opt.lr_policy == 'step':
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.n_epochs, gamma=0.8)
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.n_epochs, gamma=0.8) # changed this to 0.7
     elif opt.lr_policy == 'plateau':
         scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.2, threshold=0.01, patience=5)
     elif opt.lr_policy == 'cosine':
@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    patchGAN=False, aux=True, theta_dim=2):
+    pool=False, aux=True, two_stream=False):
     """
     Returns a discriminator
 
@@ -186,7 +186,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         gpu_ids (int list)  -- which GPUs the network runs on: e.g., 0,1,2
         img_dim (int)       -- image dimension (assume squares)
         sigma_blur (float)  -- sigma used for gaussian blurring
-        patchGAN (bool)     -- whether to use patch verion of D
+        pool (bool)         -- whether to use pooling verion of D
         aux (bool)          -- use auxiliary loss or not, only possible in
                             copy discriminator
 
@@ -208,7 +208,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
 
     if netD == "copy":
         net = CopyDiscriminator(input_nc, 1, norm_layer=norm_layer,
-            img_dim=img_dim, sigma_blur=sigma_blur, patchGAN=patchGAN, aux=aux)
+            img_dim=img_dim, sigma_blur=sigma_blur, pool=pool, aux=aux)
     elif netD == 'basic':  # default PatchGAN classifier
         net = NLayerDiscriminator(input_nc, ndf, n_layers=3,
             norm_layer=norm_layer)
@@ -216,7 +216,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
             norm_layer=norm_layer)
     elif netD == "move":
-        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, theta_dim=theta_dim)
+        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -361,18 +361,18 @@ class CopyGenerator(nn.Module):
             self.upscale = nn.Sequential(*self.upscale)
 
         # set up encoder layers
-        self.enc1 = EncoderBlock(input_nc, 64, stride=1)
-        self.enc2 = EncoderBlock(64, 128)
-        self.enc3 = EncoderBlock(128, 256)
-        self.enc4 = EncoderBlock(256, 512)
+        self.enc1 = EncoderBlock(input_nc, 64, stride=1, norm_layer=norm_layer)
+        self.enc2 = EncoderBlock(64, 128, norm_layer=norm_layer)
+        self.enc3 = EncoderBlock(128, 256, norm_layer=norm_layer)
+        self.enc4 = EncoderBlock(256, 512, norm_layer=norm_layer)
 
         # set up decoder layers
-        self.dec4 = DecoderBlock(512, 256)
-        self.dec3 = DecoderBlock(512, 128)
-        self.dec2 = DecoderBlock(256, 64)
+        self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
+        self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
+        self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
         # this is always set to last layer, also when upsampling afterwards to
         # make the dimensions correct
-        self.dec1 = DecoderBlock(128, dec1_channels, last_layer=True)
+        self.dec1 = DecoderBlock(128, dec1_channels, last_layer=True, norm_layer=norm_layer)
 
         self.sigmoid = nn.Sigmoid()
 
@@ -440,7 +440,7 @@ class CopyDiscriminator(nn.Module):
     implementation details in the paper.
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, patchGAN=False, aux=True):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, pool=False, aux=True):
         """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)      -- the number of channels in input images
@@ -449,7 +449,7 @@ class CopyDiscriminator(nn.Module):
             dropout (bool)      -- Use dropout or not
             sigma_blur (float)  -- sigma for gaussian blur filter
             img_dim (int)       -- image dimension, assume square
-            patchGAN (bool)     -- use patch implementation
+            pool (bool)     -- use patch implementation
             aux (bool)          -- use auxiliary loss
 
         The network is constructed from encoder and decoder building blocks
@@ -459,7 +459,7 @@ class CopyDiscriminator(nn.Module):
 
         self.img_dim = img_dim
         self.aux = aux
-        self.patchGAN = patchGAN
+        self.pool = pool
 
         if sigma_blur:
             self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
@@ -487,60 +487,56 @@ class CopyDiscriminator(nn.Module):
             self.upscale = nn.Sequential(*self.upscale)
 
         # set up encoder layers
-        self.enc1 = EncoderBlock(input_nc, 64, stride=1)
-        self.enc2 = EncoderBlock(64, 128)
-        self.enc3 = EncoderBlock(128, 256)
-        self.enc4 = EncoderBlock(256, 512)
+        self.enc1 = EncoderBlock(input_nc, 64, stride=1, norm_layer=norm_layer)
+        self.enc2 = EncoderBlock(64, 128, norm_layer=norm_layer)
+        self.enc3 = EncoderBlock(128, 256, norm_layer=norm_layer)
+        self.enc4 = EncoderBlock(256, 512, norm_layer=norm_layer)
 
         # set up decoder layers
-        self.dec4 = DecoderBlock(512, 256)
-        self.dec3 = DecoderBlock(512, 128)
-        self.dec2 = DecoderBlock(256, 64)
+        self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
+        self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
+        self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
         # this being the last layer depends on possible upsampling operations
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)))
+        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)), norm_layer=norm_layer)
 
         self.sigmoid = nn.Sigmoid()
 
-        if self.patchGAN:
-            # define conv layers for patch prediction
-            self.patch_conv = nn.Sequential(
-                EncoderBlock(512, 128, 3, 2, 1),
-                nn.Conv2d(128, 1, 3, 1, 1))
 
-            # define linear layer for scaler prediction
-            self.patch_fc = nn.Sequential(nn.Flatten(), nn.Linear(16, 1),
-                self.sigmoid)
 
-        else:
+        if self.pool:
             # define average pooling, followed by two linear layers
-            self.pool = nn.Sequential(nn.AvgPool2d(8, stride=2),
-                nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
-                nn.Linear(256, 1), self.sigmoid)
+            # original implementation: only uses different avgpool layer
 
+            # self.pred_layers = nn.Sequential(nn.AvgPool2d(8, stride=2),
+            #     nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
+            #     nn.Linear(256, 1), self.sigmoid
+            #     )
 
-    def get_realness_score(self, enc_out, patch=False):
-        """
-        Takes the encoder output and computes the realness score.
-        The realness score can be a scalar (patch=False), or a tensor, scoring
-        different patches
-        """
-
-        if patch:
-            conv_out = self.patch_conv(enc_out)
-            single_out = self.patch_fc(conv_out)
-            patch_out = self.sigmoid(conv_out)
+            # implementation from basilevh github
+            self.pred_layers = nn.Sequential(
+                nn.AdaptiveAvgPool2d(1),
+                nn.Flatten(),
+                nn.Linear(512, 256),
+                nn.LeakyReLU(0.01),
+                nn.Linear(256, 1),
+                nn.Sigmoid()
+            )
         else:
-            single_out = self.pool(enc_out)
-            patch_out = None
+            # outputs a single value too, but uses convolutions
+            self.pred_layers =  nn.Sequential(
+                EncoderBlock(512, 128, 3, 2, 1),
+                nn.Conv2d(128, 1, 3, 1, 1),
+                nn.Flatten(),
+                nn.Linear(16, 1),
+                nn.Sigmoid())
 
-        return single_out, patch_out
 
 
     def forward(self, input):
         """
         Standard forward, return a dictionary with the mask if generator,
         and the realness prediction and predicted mask if in discriminator
-        mode (dependend on if auxiliary loss is  used)
+        mode (dependend on if auxiliary loss is used)
         """
 
         # check if the image dimensions are correct
@@ -565,11 +561,11 @@ class CopyDiscriminator(nn.Module):
         enc4 = self.enc4(enc3)
 
         # compute realness scores
-        single_out, patch_out = self.get_realness_score(enc4, self.patchGAN)
+        pred = self.pred_layers(enc4)
 
         # if auxiliary loss is not used, return score and skip decoder
         if not self.aux:
-            return single_out, patch_out, None
+            return pred, None
 
         # forward pass (decoder): skip connections are used
         dec4 = self.dec4(enc4)
@@ -585,7 +581,7 @@ class CopyDiscriminator(nn.Module):
         # decoder output: the copy-mask
         copy_mask = self.sigmoid(dec1)
 
-        return single_out, patch_out, copy_mask
+        return pred, copy_mask
 
 
 class EncoderBlock(nn.Module):
@@ -595,7 +591,7 @@ class EncoderBlock(nn.Module):
     normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, kernel=3, stride=2, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=2, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=True):
         """
         Construct a Unet encoder block.
 
@@ -612,9 +608,9 @@ class EncoderBlock(nn.Module):
         super(EncoderBlock, self).__init__()
 
         layers = [
-            nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias),
+            nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=stride, padding=padding, bias=use_bias, padding_mode="replicate"),
             norm_layer(output_nc),
-            nn.LeakyReLU(slope, True)
+            nn.LeakyReLU(slope)
         ]
 
         if dropout:
@@ -634,7 +630,7 @@ class DecoderBlock(nn.Module):
     a convolutional layer, normalization and a leakyReLU non-linearity.
     """
 
-    def __init__(self, input_nc, output_nc, kernel=3, stride=1, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=False, last_layer=False):
+    def __init__(self, input_nc, output_nc, kernel=3, stride=1, padding=1, norm_layer=nn.InstanceNorm2d, slope=0.2, dropout=False, use_bias=True, last_layer=False):
         """Construct a Unet encoder block
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -652,11 +648,12 @@ class DecoderBlock(nn.Module):
         layers = []
         if not last_layer:
             layers += [nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True),
-                       nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding)]
-            layers += [norm_layer(output_nc), nn.LeakyReLU(slope, True)]
+                       nn.Conv2d(input_nc, output_nc, stride=stride, kernel_size=kernel, padding=padding, padding_mode="replicate")]
+            layers += [norm_layer(output_nc), nn.LeakyReLU(slope)]
+
         # if this is the last layer, don't upsample, only conv layer
         else:
-            layers.append(nn.Conv2d(input_nc, output_nc, stride=1, kernel_size=kernel, padding=padding))
+            layers.append(nn.Conv2d(input_nc, output_nc, stride=1, kernel_size=kernel, padding=padding, padding_mode='replicate'))
 
         if dropout:
             layers.append(nn.Dropout(0.5))
@@ -705,6 +702,7 @@ class GaussianSmoothing(nn.Module):
         kernel = kernel.view(1, 1, *kernel.size())
         kernel = kernel.repeat(channels, *[1] * (kernel.dim() - 1))
 
+        # register weights as buffer, so they are not optimized
         self.register_buffer('weight', kernel)
         self.groups = channels
 
@@ -733,7 +731,7 @@ class GANLoss(nn.Module):
     that has the same size as the input.
     """
 
-    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0, patch=False):
+    def __init__(self, gan_mode, target_real_label=0.8, target_fake_label=0.0, noisy_labels=False, sigma=0.05):
         """ Initialize the GANLoss class.
 
         Parameters:
@@ -741,6 +739,7 @@ class GANLoss(nn.Module):
             target_real_label (bool) - - label for a real image, set to 0.8 to
                 prevent overconfidence
             target_fake_label (bool) - - label of a fake image
+            noisy (bool) - - Add random noise to the target label
 
         Note: the BCE loss is used as the sigmoid is computed in the model
         """
@@ -748,7 +747,9 @@ class GANLoss(nn.Module):
         self.register_buffer('real_label', torch.tensor(target_real_label))
         self.register_buffer('fake_label', torch.tensor(target_fake_label))
         self.gan_mode = gan_mode
-        self.patch = patch
+        self.noisy_labels = noisy_labels
+        self.sigma = sigma
+
         if gan_mode == 'lsgan':
             self.loss = nn.MSELoss()
         elif gan_mode == 'vanilla':
@@ -773,28 +774,17 @@ class GANLoss(nn.Module):
         # if patch is not used, set to the real/fake label
         if target_is_real:
             target_tensor = self.real_label
-        elif self.patch:
-            # this sets the unchanged patches to the real label;
-            # target_tensor = self.logical_mask * self.real_label
-
-            # this sets the unchanged patches to the predicted value, yielding a loss of 0, not taking into account the unchanged patches
-            target_tensor = self.logical_mask * self.fake_label
         else:
             target_tensor = self.fake_label
 
-        return target_tensor.expand_as(prediction)
+        target = target_tensor.expand_as(prediction)
 
 
-    def set_copy_mask(self, copy_mask):
-        self.mask = copy_mask
-        if self.patch:
-            s = self.mask.shape[-1]//4
-            maxpool = nn.MaxPool2d(s, s)
-            max_mask = maxpool(self.mask)
-            min_mask = -maxpool(-self.mask)
-
-            self.logical_mask = torch.logical_or((min_mask>0.95), (max_mask<0.05)).int()
-
+        if self.noisy_labels:
+            std = torch.ones_like(prediction) * self.sigma
+            return torch.normal(target, std)
+        else:
+            return target
 
 
     def __call__(self, prediction, target_is_real):
@@ -844,10 +834,9 @@ class ConfidenceLoss(nn.Module):
 
 
 class MaskLoss(nn.Module):
-    """Define different GAN objectives.
+    """
+    Computes the auxiliary loss, based on the compositing mask, and the predict mask by the discriminator
 
-    The GANLoss class abstracts away the need to create the target label tensor
-    that has the same size as the input.
     """
 
     def __init__(self):
@@ -939,32 +928,101 @@ class DotLoss(nn.Module):
 class MoveConvNET(nn.Module):
     """
     """
-    def __init__(self, input_nc, ndf, n_layers, norm, theta_dim=6):
+    def __init__(self, input_nc, ndf, n_layers, norm, two_stream=False):
         super(MoveConvNET, self).__init__()
 
-        layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
+
+        # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
-
         use_bias = norm_layer.func == nn.InstanceNorm2d
+        self.two_stream = two_stream
 
-        nf_mult_prev = nf_mult = 1
+        ########### TWO STREAM INPUT ##############
 
-        for n in range(1, n_layers+1):
-            nf_mult_prev = nf_mult
-            nf_mult = min(2 ** n, 8)
-            layers += [
-                nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
-                norm_layer(ndf * nf_mult),
-                nn.LeakyReLU(0.2, True)
-            ]
+        if two_stream:
+            # define two separate layers for the input
+            self.obj_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
+            self.tgt_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
 
-        layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, theta_dim), nn.Tanh()]
+            ndf *= 2
 
-        self.model = nn.Sequential(*layers)
+            layers = []
 
 
-    def forward(self, input):
-        return self.model(input)
+
+            nf_mult_prev, nf_mult = 1, 1
+
+            for n in range(1, n_layers+1):
+                nf_mult_prev = nf_mult
+                nf_mult = min(2 ** n, 8)
+                layers += [
+                    nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
+                    norm_layer(ndf * nf_mult),
+                    nn.LeakyReLU(0.2)
+                ]
+
+            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+            self.model = nn.Sequential(*layers)
+
+        ##### SINGLE STREAM INPUT ########
+        else:
+            layers = [nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), nn.LeakyReLU(0.2, True)]
+            norm_layer = get_norm_layer(norm_type=norm)
+
+            nf_mult_prev, nf_mult = 1, 1
+
+            for n in range(1, n_layers+1):
+                nf_mult_prev = nf_mult
+                nf_mult = min(2 ** n, 8)
+                layers += [
+                    nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=3, stride=2, padding=1, bias=use_bias),
+                    norm_layer(ndf * nf_mult),
+                    nn.LeakyReLU(0.2, True)
+                ]
+
+            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+            self.model = nn.Sequential(*layers)
+
+
+        #############################
+
+        # define two seperate linear layers for final layer
+        self.zero_c = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
+        self.one_c = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
+        self.trans = nn.Sequential(nn.Linear(100, 2), nn.Tanh())
+
+
+    def forward(self, obj, tgt=None):
+
+        # either two streams are used, if not, there must only be one input.
+        assert self.two_stream or not tgt
+
+        # forward object and targets through separate streams, or
+        if self.two_stream:
+            obj_out = self.obj_layer(obj)
+            tgt_out = self.tgt_layer(tgt)
+            concat = torch.cat([tgt_out, obj_out], 1)
+        else:
+            concat = obj
+
+        last_layer =  self.model(concat)
+
+        # shape: B * 2, range: [-.5, .5]
+        zero_centered = torch.divide(self.zero_c(last_layer), 2)
+
+        # shape: B * 2; add one to make it one-centered
+        # the one centered are from 0.75 to 1.25 (old, 4,4. Now: 0.5, 1.5;2,2)
+        one_centered = torch.divide(torch.add(self.one_c(last_layer), 4), 4)
+
+        # shape B * 2
+        translation = torch.divide(self.trans(last_layer), 1.5) # was 1.2, then 1.5, now no constraints
+
+        # for run 9:
+        # zero centered, no scaling (-1, 1)
+        # scale, one_centered: +4 /4 (0.75, 1.25)
+        # translation, /1.5
+
+        return zero_centered, one_centered, translation
 
 
 
@@ -1057,7 +1115,7 @@ class NLayerDiscriminator(nn.Module):
 
         kw = 4
         padw = 1
-        sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
+        sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2)]
         nf_mult = 1
         nf_mult_prev = 1
         for n in range(1, n_layers+1):  # gradually increase the number of filters
@@ -1066,7 +1124,7 @@ class NLayerDiscriminator(nn.Module):
             sequence += [
                 nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=2, padding=padw, bias=use_bias),
                 norm_layer(ndf * nf_mult),
-                nn.LeakyReLU(0.2, True)
+                nn.LeakyReLU(0.2)
             ]
 
         nf_mult_prev = nf_mult
@@ -1074,7 +1132,7 @@ class NLayerDiscriminator(nn.Module):
         sequence += [
             nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=1, padding=padw, bias=use_bias),
             norm_layer(ndf * nf_mult),
-            nn.LeakyReLU(0.2, True)
+            nn.LeakyReLU(0.2)
         ]
 
         sequence += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
@@ -1151,7 +1209,7 @@ class UnetSkipConnectionBlock(nn.Module):
             input_nc = outer_nc
         downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=3,
                              stride=2, padding=1, bias=use_bias)
-        downrelu = nn.LeakyReLU(0.2, True)
+        downrelu = nn.LeakyReLU(0.2)
         downnorm = norm_layer(inner_nc)
         uprelu = nn.ReLU(True)
         upnorm = norm_layer(outer_nc)

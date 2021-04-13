@@ -1,0 +1,168 @@
+starting MoveGAN training run 11
+Tar file moved to scratch
+Current time : 17:45:48
+
+10k_train.tar.gz
+990000_img.jpg
+990000_mask_0.jpg
+990000_mask_1.jpg
+990000_mask_2.jpg
+Tar file extracted on scratch
+Current time : 17:45:53
+
+Validation tar copied to scratch
+Current time : 17:45:54
+
+validation tar extracted on scratch
+Current time : 17:45:54
+
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 64                            
+                 dataroot: /scratch/datasets/ROOM/images/	[default: None]
+             dataset_mode: room                          
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 60                            	[default: 100]
+                    model: move                          	[default: copy]
+                 n_epochs: 2                             	[default: 100]
+           n_epochs_decay: 2                             	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize                        
+               print_freq: 20                            
+              real_target: 0.8                           
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 0                             
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 6                             	[default: 2]
+              tracemalloc: False                         
+         update_html_freq: 100                           
+                  use_amp: True                          
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: False                         
+----------------- End -------------------
+dataset [RoomDataset] and dataloder are created
+dataset [RoomDataset] and dataloder are created
+Starting training of move-model
+The number of training images = 10000
+The number of validation images = 1111
+The number of epochs to run = 4
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+[Network Conv] Total number of parameters : 17.276 M
+[Network D] Total number of parameters : 6.960 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+(epoch: 1, batches: 20, time: 0.003, data: 0.001) loss_D_real: 0.573 loss_D_fake: 2.327 loss_D: 1.450 loss_G: 0.560 loss_conv: 1.787 loss_eq: 1.227 acc_real: 0.991 acc_fake: 0.004 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 20}
+(epoch: 1, batches: 40, time: 0.011, data: 0.001) loss_D_real: 0.535 loss_D_fake: 1.811 loss_D: 1.173 loss_G: 0.535 loss_conv: 1.771 loss_eq: 1.237 acc_real: 0.988 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 40}
+(epoch: 1, batches: 60, time: 0.003, data: 0.002) loss_D_real: 0.536 loss_D_fake: 1.960 loss_D: 1.248 loss_G: 0.538 loss_conv: 1.660 loss_eq: 1.123 acc_real: 0.996 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 60}
+(epoch: 1, batches: 80, time: 0.003, data: 0.005) loss_D_real: 0.517 loss_D_fake: 1.696 loss_D: 1.107 loss_G: 0.523 loss_conv: 1.519 loss_eq: 0.996 acc_real: 0.996 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 80}
+(epoch: 1, batches: 100, time: 0.004, data: 0.005) loss_D_real: 0.523 loss_D_fake: 1.639 loss_D: 1.081 loss_G: 0.528 loss_conv: 1.640 loss_eq: 1.113 acc_real: 0.996 acc_fake: 0.013 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 100}
+(epoch: 1, batches: 120, time: 0.003, data: 0.002) loss_D_real: 0.516 loss_D_fake: 1.742 loss_D: 1.129 loss_G: 0.518 loss_conv: 1.701 loss_eq: 1.183 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 120}
+(epoch: 1, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.521 loss_D_fake: 1.844 loss_D: 1.182 loss_G: 0.514 loss_conv: 1.852 loss_eq: 1.338 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 140}
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 4 	 Time Taken: 423 sec
+(epoch: 2, batches: 20, time: 0.003, data: 0.004) loss_D_real: 0.515 loss_D_fake: 1.557 loss_D: 1.036 loss_G: 0.522 loss_conv: 1.565 loss_eq: 1.043 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 176}
+(epoch: 2, batches: 40, time: 0.003, data: 0.001) loss_D_real: 0.516 loss_D_fake: 1.550 loss_D: 1.033 loss_G: 0.523 loss_conv: 1.840 loss_eq: 1.316 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 196}
+(epoch: 2, batches: 60, time: 0.003, data: 0.016) loss_D_real: 0.519 loss_D_fake: 1.433 loss_D: 0.976 loss_G: 0.516 loss_conv: 1.598 loss_eq: 1.082 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 216}
+(epoch: 2, batches: 80, time: 0.003, data: 0.004) loss_D_real: 0.510 loss_D_fake: 1.634 loss_D: 1.072 loss_G: 0.511 loss_conv: 1.720 loss_eq: 1.210 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 236}
+(epoch: 2, batches: 100, time: 0.003, data: 0.002) loss_D_real: 0.507 loss_D_fake: 1.636 loss_D: 1.071 loss_G: 0.508 loss_conv: 1.597 loss_eq: 1.089 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 256}
+(epoch: 2, batches: 120, time: 0.002, data: 0.001) loss_D_real: 0.510 loss_D_fake: 1.694 loss_D: 1.102 loss_G: 0.509 loss_conv: 1.562 loss_eq: 1.053 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 276}
+(epoch: 2, batches: 140, time: 0.003, data: 0.001) loss_D_real: 0.511 loss_D_fake: 1.654 loss_D: 1.082 loss_G: 0.508 loss_conv: 1.585 loss_eq: 1.077 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 296}
+learning rate 0.0002000 -> 0.0001600
+End of epoch 2 / 4 	 Time Taken: 425 sec
+(epoch: 3, batches: 20, time: 0.003, data: 0.005) loss_D_real: 0.506 loss_D_fake: 1.588 loss_D: 1.047 loss_G: 0.505 loss_conv: 1.627 loss_eq: 1.122 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 332}
+(epoch: 3, batches: 40, time: 0.003, data: 0.005) loss_D_real: 0.506 loss_D_fake: 1.658 loss_D: 1.082 loss_G: 0.505 loss_conv: 1.513 loss_eq: 1.009 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 352}
+(epoch: 3, batches: 60, time: 0.003, data: 0.005) loss_D_real: 0.505 loss_D_fake: 1.669 loss_D: 1.087 loss_G: 0.504 loss_conv: 1.612 loss_eq: 1.108 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 372}
+(epoch: 3, batches: 80, time: 0.003, data: 0.004) loss_D_real: 0.504 loss_D_fake: 1.666 loss_D: 1.085 loss_G: 0.505 loss_conv: 1.563 loss_eq: 1.058 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 392}
+(epoch: 3, batches: 100, time: 0.003, data: 0.001) loss_D_real: 0.504 loss_D_fake: 1.646 loss_D: 1.075 loss_G: 0.504 loss_conv: 1.487 loss_eq: 0.983 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 412}
+(epoch: 3, batches: 120, time: 0.003, data: 0.001) loss_D_real: 0.504 loss_D_fake: 1.615 loss_D: 1.059 loss_G: 0.504 loss_conv: 1.547 loss_eq: 1.044 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 432}
+(epoch: 3, batches: 140, time: 0.003, data: 0.002) loss_D_real: 0.504 loss_D_fake: 1.642 loss_D: 1.073 loss_G: 0.504 loss_conv: 1.577 loss_eq: 1.072 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 452}
+learning rate 0.0001600 -> 0.0001600
+End of epoch 3 / 4 	 Time Taken: 422 sec
+(epoch: 4, batches: 20, time: 0.003, data: 0.004) loss_D_real: 0.504 loss_D_fake: 1.599 loss_D: 1.052 loss_G: 0.504 loss_conv: 1.697 loss_eq: 1.193 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 488}
+(epoch: 4, batches: 40, time: 0.003, data: 0.503) loss_D_real: 0.503 loss_D_fake: 1.543 loss_D: 1.023 loss_G: 0.504 loss_conv: 1.660 loss_eq: 1.156 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 508}
+(epoch: 4, batches: 60, time: 0.003, data: 0.652) loss_D_real: 0.504 loss_D_fake: 1.690 loss_D: 1.097 loss_G: 0.504 loss_conv: 1.702 loss_eq: 1.198 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 528}
+(epoch: 4, batches: 80, time: 0.003, data: 0.806) loss_D_real: 0.503 loss_D_fake: 1.647 loss_D: 1.075 loss_G: 0.504 loss_conv: 1.832 loss_eq: 1.328 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 548}
+(epoch: 4, batches: 100, time: 0.003, data: 0.815) loss_D_real: 0.507 loss_D_fake: 1.545 loss_D: 1.026 loss_G: 0.505 loss_conv: 1.632 loss_eq: 1.126 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 568}
+(epoch: 4, batches: 120, time: 0.002, data: 0.894) loss_D_real: 0.504 loss_D_fake: 1.706 loss_D: 1.105 loss_G: 0.504 loss_conv: 1.526 loss_eq: 1.022 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 588}
+(epoch: 4, batches: 140, time: 0.003, data: 0.004) loss_D_real: 0.518 loss_D_fake: 1.898 loss_D: 1.208 loss_G: 0.515 loss_conv: 1.684 loss_eq: 1.170 acc_real: 1.000 acc_fake: 0.000 
+{'scale': 65536.0, 'growth_factor': 2.0, 'backoff_factor': 0.5, 'growth_interval': 2000, '_growth_tracker': 608}
+learning rate 0.0001600 -> 0.0001280
+End of epoch 4 / 4 	 Time Taken: 422 sec
+Finished training, model is saved
+Batches trained - G: 416, D: 208 

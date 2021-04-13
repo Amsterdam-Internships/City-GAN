@@ -1,20 +1,3 @@
-"""Model class template
-
-This module provides a template for users to implement custom models.
-You can specify '--model template' to use this model.
-The class name should be consistent with both the filename and its model option.
-The filename should be <model>_dataset.py
-The class name should be <Model>Dataset.py
-It implements a simple image-to-image translation baseline based on regression loss.
-Given input-output pairs (data_A, data_B), it learns a network netG that can minimize the following L1 loss:
-    min_<netG> ||netG(data_A) - data_B||_1
-You need to implement the following functions:
-    <modify_commandline_options>:　Add model-specific options and rewrite default values for existing options.
-    <__init__>: Initialize this model class.
-    <set_input>: Unpack input data and perform data pre-processing.
-    <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test>.
-    <optimize_parameters>: Update network weights; it will be called in every training iteration.
-"""
 import torch
 import numpy as np
 from .base_model import BaseModel
@@ -25,6 +8,7 @@ from torchvision.transforms.functional import affine
 import matplotlib.pyplot as plt
 from torch.cuda.amp import GradScaler, autocast
 import random
+import torch.nn.functional as F
 
 
 class MoveModel(BaseModel):
@@ -39,10 +23,11 @@ class MoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
         if is_train:
-            parser.add_argument('--theta_dim', type=int, default=2, help=
-                "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
+            parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
+            parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
+            parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
 
 
         return parser
@@ -59,24 +44,41 @@ class MoveModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_Conv", "acc_real", "acc_fake", "scaled_theta_X", "scaled_theta_Y"]
+        # specify random seed
+        if opt.seed == 0:
+            opt.seed = np.random.randint(0, 42)
+            print(f"Random seed is set to {opt.seed}")
+
+        torch.manual_seed(opt.seed)
+        np.random.seed(opt.seed)
+
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "loss_eq", "acc_real", "acc_fake"]
+        # for sanity checking
+        # self.loss_names = ["loss_G"]
 
         for loss in self.loss_names:
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
 
-        self.scaler = GradScaler()
+
+        # for sanity checking
+        # self.visual_names =  ["tgt", "src", "mask_binary", "obj", "transf_obj_mask", "GT"]
+
+        self.count_G, self.count_D = 0, 0
+
+        self.scaler = GradScaler(enabled=opt.use_amp)
 
         if opt.tracemalloc:
             import tracemalloc
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
-        self.netConv = networks.define_D(opt.input_nc * 2, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, theta_dim=opt.theta_dim)
+        conv_input_nc = 3 if opt.two_stream else 6
 
-        # self.netConv = networks.MoveConvNET(opt.input_nc*2, opt.ngf, n_layers=opt.n_layers_conv, norm=opt.norm, theta_dim=opt.theta_dim)
+        self.netConv = networks.define_D(conv_input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, two_stream=opt.two_stream)
+
 
         self.model_names = ["Conv"]
 
@@ -86,7 +88,16 @@ class MoveModel(BaseModel):
             self.model_names.append("D")
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label=opt.real_target).to(self.device)
+            self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label= opt.real_target, target_fake_label=opt.fake_target, noisy_labels=opt.noisy_labels).to(self.device)
+            self.MSE = torch.nn.MSELoss(reduction='none')
+
+            # blur to apply on input to discriminator
+            self.blur = networks.GaussianSmoothing(sigma=(0.5, 0.5)).to(self.device)
+
+            # for sanity checking
+            # self.theta_gt_single = torch.Tensor([[1.2, 0, -0.5],[0, 0.8, 0.3]]).to(self.device)
+            # self.pred_fake = torch.tensor([0])
+
 
             # define optimizers
             self.optimizer_Conv = torch.optim.Adam(
@@ -94,6 +105,7 @@ class MoveModel(BaseModel):
             self.optimizer_D = torch.optim.Adam(
                 self.netD.parameters(), lr=opt.lr, betas=(opt.beta1,opt.beta2))
             self.optimizers = [self.optimizer_Conv, self.optimizer_D]
+            # self.optimizers = [self.optimizer_Conv]
 
 
         # The program will automatically call <model.setup> to define schedulers, load networks, and print networks
@@ -109,10 +121,10 @@ class MoveModel(BaseModel):
         """
 
         # get the surface per mask in the batch
-        surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
+        self.surface = self.mask_binary.sum([2, 3]).view(-1, 1, 1, 1)
         # center and return the object
         # inspired on https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
-        mask_pdist = self.mask_binary / surface
+        mask_pdist = self.mask_binary / self.surface
 
         [self.B, _, self.w, self.h] = list(mask_pdist.shape)
         # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
@@ -120,26 +132,21 @@ class MoveModel(BaseModel):
         x_center, y_center = self.w//2, self.h//2
 
         # marginal distributions
-        dx = torch.sum(mask_pdist, 2).squeeze()
-        dy = torch.sum(mask_pdist, 3).squeeze()
-
+        dx = torch.sum(mask_pdist, 2).view(-1, self.w)
+        dy = torch.sum(mask_pdist, 3).view(-1, self.h)
 
         # expected values
         cx = torch.sum(dx * torch.arange(self.w).to(self.device), 1)
         cy = torch.sum(dy * torch.arange(self.h).to(self.device), 1)
 
-        # print("cx, cy", cx, cy)
-
         # compute necessary translations
         x_t = x_center - cx
         y_t = y_center - cy
 
-        # print("x_t, y_t", x_t, y_t)
-
         # extract object from src
         obj = (self.mask_binary) * self.src
 
-        # translate the object and mask
+        # translate the object and mask to center
         obj_centered = torch.stack([affine(o, shear=0, translate=[x, y], scale=1, angle=0) for o, x, y in zip(obj, x_t, y_t)], 0)
 
         obj_mask = torch.stack([affine(m, shear=0, translate=[x, y], scale=1, angle=0) for m, x, y in zip(self.mask_binary, x_t, y_t)], 0)
@@ -156,7 +163,6 @@ class MoveModel(BaseModel):
             - target image
 
         """
-
         self.src = input['src'].to(self.device)
         self.tgt = input['tgt'].to(self.device)
         self.mask = input['mask'].to(self.device)
@@ -168,7 +174,7 @@ class MoveModel(BaseModel):
 
 
 
-    def forward(self, valid=False):
+    def forward(self, valid=False, generator=False):
         """
         what needs to be done:
             - target image and centered object are fed to convnet (initialized in the init)
@@ -176,38 +182,67 @@ class MoveModel(BaseModel):
             - affine transformation on the object and the object mask
             - the transformed object and object masks are composited --> output img
         """
-        # concatenate the target and object on channel dimension
-        tgt_obj_concat = torch.cat([self.tgt, self.obj], 1)
-
         # compute theta using the convolutional network
-        self.theta = self.netConv(tgt_obj_concat).squeeze()
 
-        # print("theta:", self.theta)
-        # make sure theta is scaled: preventing object from moving outside img
+        # two-stream input
+        if self.opt.two_stream:
+            zero_centered, one_centered, translation = self.netConv(self.obj, self.tgt)
+        else:
+            # single stream input
+            # concatenate the target and object on channel dimension
+            tgt_obj_cat = torch.cat([self.tgt, self.obj], 1)
+            zero_centered, one_centered,translation = self.netConv(tgt_obj_cat)
 
-        self.scaled_theta = (self.theta * torch.tensor([self.w//2, self.h//2]).to(self.device)).int().view(-1, self.opt.theta_dim)
+        B = zero_centered.shape[0]
 
-        # for plotting and printing purposes
-        self.scaled_theta_X = self.scaled_theta[0][0]
-        self.scaled_theta_Y = self.scaled_theta[0][1]
+        # initialize theta
+        theta = torch.zeros(B, 2, 2).to(self.device)
+        # set the diagonal of theta
+        theta[:, torch.eye(2).bool()] = one_centered.float()
+        # concatenate the translation parameters
+        self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
+        # set the other two parameters, constrain to zero for now
+        # self.theta[:, 0, 1] = zero_centered[:, 0]
+        # self.theta[:, 1, 0] = zero_centered[:, 1]
 
-        # print("scaled_theta:", self.scaled_theta)
+        #print(self.theta[0])
 
-        # use theta to transform the object and the mask
-        # is affine the correct function? perhaps we should use affine_grid
+        # experimenting with theta
+        # min/max 0.83
+        # self.theta[0] = torch.Tensor([[1.5, 0, 0], [0, 0.5, 0.5]])
 
-        self.transf_obj = torch.stack([affine(obj, translate=list(theta), angle=0, scale=1, shear=0) for obj, theta in zip(self.obj, self.scaled_theta)], 0)
-        self.transf_obj_mask = torch.stack([affine(mask, translate=list(theta), angle=0, scale=1, shear=0) for mask, theta in zip(self.obj_mask, self.scaled_theta)], 0)
+        # self.obj[0, :, 32, 32] = torch.tensor([1, 0, 0])
 
+
+        # TODO: check if align_corners should be true or false
+        grid = F.affine_grid(self.theta, self.obj.size(), align_corners=True).float()
+        self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
+        self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=True, padding_mode='border')
+
+        # get the surfaces of the transformed objects
+        self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
+
+        ############### SANITY CHECKING USING GT theta
+
+        # self.theta_gt = self.theta_gt_single.expand(B, 2, 3)
+
+        # grid_gt = F.affine_grid(self.theta_gt, self.obj.size(), align_corners=False).float()
+        # # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=False)
+        # self.GT = F.grid_sample(self.obj_mask.float(), grid_gt, align_corners=False)
+        ###############
 
         # composite the moved object with the background from the target
         self.composite, _ = networks.composite_image(self.transf_obj, self.tgt, self.transf_obj_mask)
 
-        # get the prediction on the fake image
-        self.pred_fake = self.netD(self.composite)
+        # detach composite if we are training the discriminator
+        if not generator:
+            self.composite = self.composite.detach()
 
-        if valid:
-            self.pred_real = self.netD(self.src)
+        # get the prediction on the fake image, and blur the image
+        self.pred_fake = self.netD(self.blur(self.composite))
+
+        if valid or not generator:
+            self.pred_real = self.netD(self.blur(self.src))
             self.compute_accs()
 
 
@@ -227,11 +262,13 @@ class MoveModel(BaseModel):
             - backward over the loss for D
         """
 
-        # get the prediction on the real image
-        self.pred_real = self.netD(self.src)
+        # get the prediction on the real image: Now done in forward pass
+        # self.pred_real = self.netD(self.src)
 
 
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
+
+
         self.loss_D_fake = self.criterionGAN(self.pred_fake, False)
 
         self.loss_D = (self.loss_D_fake + self.loss_D_real) / 2
@@ -249,39 +286,107 @@ class MoveModel(BaseModel):
 
         """
 
-        self.loss_Conv = self.criterionGAN(self.pred_fake, True)
+        self.loss_G = self.criterionGAN(self.pred_fake, True)
+        # for sanity checking
+        # self.loss_G = self.MSE(self.GT, self.transf_obj_mask)
 
-        # self.scaler.scale(self.loss_Conv).backward()
-        self.loss_Conv.backward()
+        # use the inverse MSE loss to enforce the object to be in the image
+        # perhaps we should scale this based on the object surface
+
+        #TODO: Sum nr of pixels in transf max
+
+        MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+        # size_correction = self.trans_obj_surface/self.opt.load_size**2
 
 
-    def optimize_parameters(self, data, overall_batch):
+        # replace zeros with 1
+        # size_correction[size_correction==0] = 1
+
+        # Replace 0 in size_corrction with 1
+
+        ####### this was the code used for run 9
+        # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+        size_correction = self.surface.squeeze()/self.opt.load_size**2
+        self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
+
+
+
+        # TODO: size correction is 0 if the object is moved out of the image
+        # self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
+
+        self.loss_conv = self.loss_G + self.loss_eq
+
+        # self.scaler.scale(self.loss_G).backward()
+        self.loss_conv.backward()
+
+
+    def optimize_parameters(self, data):
         """Update network weights; it will be called in every training iteration.
         """
 
+
+        ########## FORWARD PASS RUN 9 (NO SCALER)
         self.set_input(data)
 
+        train_G = not(self.overall_batch % 3 == 0)
+        # train_G = True
+
         # run the forward pass
-        self.forward()
+        self.forward(generator=train_G)
+
+        # train convnet predicting theta
+        if train_G:
+            # print("Training Convnet")
+            self.optimizer_Conv.zero_grad()
+            self.backward_Conv()
+
+            # self.scaler.step(self.optimizer_Conv)
+            # self.scaler.update()
+            self.optimizer_Conv.step()
+            self.count_G += 1
 
         # train discriminator
-        if overall_batch % 3 == 0:
+        else:
             # print("Training D")
             self.optimizer_D.zero_grad()
             self.backward_D()
             # self.scaler.step(self.optimizer_D)
             # self.scaler.update()
             self.optimizer_D.step()
+            self.count_D += 1
 
-        # train convnet predicting theta
-        else:
-            # print("Training Convnet")
-            self.optimizer_Conv.zero_grad()
-            self.backward_Conv()
-            # self.scaler.step(self.optimizer_Conv)
-            # self.scaler.update()
-            self.optimizer_Conv.step()
+        ##############
 
+        # self.set_input(data)
+
+        # train_G = not(self.overall_batch % 3 == 0)
+        # # train_G = True
+
+        # # run the forward pass
+        # self.forward(generator=train_G)
+
+        # # train convnet predicting theta
+        # if train_G:
+        #     # print("Training Convnet")
+
+        #     self.backward_Conv()
+
+        #     self.scaler.step(self.optimizer_Conv)
+        #     self.scaler.update()
+        #     # self.optimizer_Conv.step()
+        #     self.count_G += 1
+        #     self.optimizer_Conv.zero_grad()
+
+        # # train discriminator
+        # else:
+        #     # print("Training D")
+
+        #     self.backward_D()
+        #     self.scaler.step(self.optimizer_D)
+        #     self.scaler.update()
+        #     # self.optimizer_D.step()
+        #     self.count_D += 1
+        #     self.optimizer_D.zero_grad()
 
 
     def baseline(self, data, type_='random'):
@@ -343,6 +448,15 @@ class MoveModel(BaseModel):
         return self.tgt, self.moved
 
 
+    def run_batch(self, data, overall_batch):
+        """
+        Wrapper function for optimize_parameters, general compatibility
+        """
+        self.overall_batch = overall_batch
+        self.optimize_parameters(data)
+
+
+
     def run_validation(self, val_data):
         """
         Run the complete validation set, and set booleans describing the model
@@ -356,8 +470,8 @@ class MoveModel(BaseModel):
             tracemalloc.start()
 
         # init average lists
-        acc_real = []
-        acc_fake = []
+        acc_real, acc_fake = [], []
+        preds_real, preds_fake = [], []
 
         # compute accuracy on the validation data
         with torch.no_grad():
@@ -371,6 +485,9 @@ class MoveModel(BaseModel):
                 acc_fake.append(self.acc_fake)
                 acc_real.append(self.acc_real)
 
+                preds_real.append(torch.mean(self.pred_real).item())
+                preds_fake.append(torch.mean(self.pred_fake).item())
+
         # set accuracies to mean for plotting purposes
         self.acc_fake = np.mean(acc_fake)
         self.acc_real = np.mean(acc_real)
@@ -380,8 +497,8 @@ class MoveModel(BaseModel):
         if self.opt.verbose:
             print(
                 f"validation accuracies:\n\
-                real: {self.acc_real:.2f}\n\
-                fake: {self.acc_fake:.2f}\n"
+                real: {self.acc_real:.2f}, {np.mean(preds_real)}\n\
+                fake: {self.acc_fake:.2f}, {np.mean(preds_fake)}\n"
             )
 
         if self.opt.tracemalloc:

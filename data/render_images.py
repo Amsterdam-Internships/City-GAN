@@ -608,7 +608,7 @@ def render_shadeless(blender_objects, path='flat.png'):
     # this codeblock comes from Relja Arandjelovic, above is original
     r, g = [random.random() for _ in range(2)]
     # r, g = 0.6, 0.6
-    b_channel = float(i) / num_objects
+    b_channel = float(i+1) / num_objects
     obj_color = (r, g, b_channel, 1.0)
 
     #diffuse = material.node_tree.nodes.new('ShaderNodeBsdfDiffuse')

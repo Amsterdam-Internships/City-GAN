@@ -22,8 +22,8 @@ mkdir "$TMPDIR"/datasets/CLEVR_default
 #Copy data files to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_default/images "$TMPDIR"/datasets/CLEVR_default/
 
-# Execute training script 
-python $HOME/City-GAN/train.py --model copypasteGAN \
+# Execute training script
+python $HOME/City-GAN/train.py --model copy \
        --dataroot "$TMPDIR"/datasets/CLEVR_default/images \
        --n_epochs 1 --batch_size 50\
        --save_epoch_freq 1\
