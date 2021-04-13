@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 10:00:00
+#SBATCH -t 15:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=86
+run=88
 echo "starting training run $run"
 
 #Create output directory on scratch
