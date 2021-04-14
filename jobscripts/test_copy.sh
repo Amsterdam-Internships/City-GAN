@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 15:00:00
+#SBATCH -t 3:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -24,14 +24,15 @@ mkdir "$TMPDIR"/datasets/CLEVR_colorized
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
 # copy the model to scratch
-cp
+cp "$HOME"/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/latest_net_G
 
 # execute training script
 python $HOME/City-GAN/test.py \
     --model copy \
     --num_test 5000\
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
-    --checkpoints_dir "$TMPDIR"/checkpoints\
+    --checkpoints_dir "$TMPDIR"\
+    --results_dir "$TMPDIR"/results/ \
     --display_freq 10\
     --seed 42\
 
