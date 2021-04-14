@@ -28,9 +28,8 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256, score
     This function will save images stored in 'visuals' to the HTML file specified by 'webpage'.
     """
     image_dir = webpage.get_image_dir()
-    short_path = ntpath.basename(image_path[0])
-    name = os.path.splitext(short_path)[0]
-    header = f"{name}. IOU: {score}" if score else name
+    name = image_path
+    header = f"{name}. {score}" if score else name
 
     webpage.add_header(header)
     ims, txts, links = [], [], []

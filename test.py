@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-04-14 15:29
+# @Last Modified time: 2021-04-14 17:10
 
 """
 This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. Instead, the model is loaded from memory.
@@ -81,7 +81,7 @@ if __name__ == '__main__':
             model.used_comb_gt = used_mask_gt
             # add visuals to webpage
             visuals = model.get_current_visuals()  # get image results
-            msg = f"{model.gt_num_obj[0].item()}, success: {mask_success} ({n_obj})"
+            msg = f"num objects: {model.gt_num_obj[0].item()}, success: {mask_success} ({n_obj})"
             save_images(webpage, visuals, image_path=str(i), aspect_ratio=opt.aspect_ratio, width=opt.display_winsize, score=msg)
     webpage.save()  # save the HTML
 
