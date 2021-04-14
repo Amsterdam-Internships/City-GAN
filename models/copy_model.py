@@ -198,14 +198,15 @@ class CopyModel(BaseModel):
             self.visual_names =[
                     "src",
                     "tgt",
+                    "composite",
                     "g_mask",
                     "g_mask_binary",
                     "gt",
                     "gt_og",
-                    "eroded_mask",
-                    "composite_eroded",
-                    "composite",
-                    "labelled_mask"]
+                    "used_comb_gt",]
+                    # "eroded_mask",
+                    # "composite_eroded",
+                    # "labelled_mask"]
         else:
             if self.aux:
                 self.visual_names = [
@@ -610,22 +611,22 @@ class CopyModel(BaseModel):
             # kernel = torch.ones((3,3))
             # kernel = torch.Tensor([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
 
-            kernel_plus = torch.Tensor([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+            # kernel_plus = torch.Tensor([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
 
-            kernel_ones = torch.ones(3, 3)
-            self.eroded_mask = dilation(erosion(self.g_mask_binary, kernel_plus), kernel_ones)
+            # kernel_ones = torch.ones(3, 3)
+            # self.eroded_mask = dilation(erosion(self.g_mask_binary, kernel_plus), kernel_ones)
 
 
-            self.labelled_mask, self.num_mask = ndimage.label(self.eroded_mask)
+            # self.labelled_mask, self.num_mask = ndimage.label(self.eroded_mask)
 
-            self.labelled_mask = torch.Tensor(self.labelled_mask)
-            self.labelled_mask= (self.labelled_mask / self.labelled_mask.max())
+            # self.labelled_mask = torch.Tensor(self.labelled_mask)
+            # self.labelled_mask= (self.labelled_mask / self.labelled_mask.max())
 
             self.composite, _ = networks.composite_image(
                     self.src, self.tgt, self.g_mask_binary, device=self.device)
 
-            self.composite_eroded, _ = networks.composite_image(
-                    self.src, self.tgt, self.eroded_mask, device=self.device)
+            # self.composite_eroded, _ = networks.composite_image(
+                    # self.src, self.tgt, self.eroded_mask, device=self.device)
 
 
 
