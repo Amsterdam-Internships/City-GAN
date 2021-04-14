@@ -136,5 +136,5 @@ DataParallel(
 [Network G] Total number of parameters : 3.470 M
 -----------------------------------------------
 creating web directory /scratch/results/CopyGAN/test_latest
-Arandjelovic score: total number of masks: 4999, succesfull: 3738, ODP: 74.8%
-11344/17761 objects are recognized (65.4%)
+Arandjelovic score: total number of masks: 4999, succesfull: 3791, ODP: 75.8%
+11453/17761 objects are recognized (66.1%)
