@@ -19,12 +19,13 @@ echo "Testing CopyGAN saved in run $run"
 #Create output directory on scratch
 mkdir "$TMPDIR"/datasets
 mkdir "$TMPDIR"/datasets/CLEVR_colorized
+mkdir "$TMPDIR"/CopyGAN
 
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
 # copy the model to scratch
-cp "$HOME"/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/latest_net_G
+cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/CopyGAN/
 
 # execute training script
 python $HOME/City-GAN/test.py \
@@ -35,8 +36,9 @@ python $HOME/City-GAN/test.py \
     --results_dir "$TMPDIR"/results/ \
     --display_freq 10\
     --seed 42\
+    --verbose
 
 # copy results to home directory
-mkdir -p $HOME/City-GAN/results/run"${run}"
+mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"
 cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"
 
