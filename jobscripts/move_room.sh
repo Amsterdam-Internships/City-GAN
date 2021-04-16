@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=19
+run=20
 echo "starting MoveGAN training run $run"
 
 #Create output directory on scratch
@@ -65,7 +65,7 @@ python $HOME/City-GAN/train.py --model move \
     --max_dataset_size 10000\
     --batch_size 64\
     --n_epochs 10\
-    --n_epochs_decay 40\
+    --n_epochs_decay 5\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
@@ -74,8 +74,8 @@ python $HOME/City-GAN/train.py --model move \
     --display_freq 100\
     --update_html 100\
     --theta_dim 6\
-    --fake_target 0\
-    --real_target 0.8\
+    --fake_target 0.1\
+    --real_target 0.9\
     --verbose
 
 

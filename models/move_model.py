@@ -28,6 +28,8 @@ class MoveModel(BaseModel):
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
             parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
+            parser.add_argument('--use_eq_loss', action='store_true', help='If specified, the equality loss will be used, penalizing little difference with the original image')
+
 
 
         return parser
@@ -52,7 +54,10 @@ class MoveModel(BaseModel):
         torch.manual_seed(opt.seed)
         np.random.seed(opt.seed)
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "loss_eq", "acc_real", "acc_fake"]
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "acc_real", "acc_fake"]
+        if opt.use_eq_loss:
+            self.loss_names.append("loss_eq")
+
         # for sanity checking
         # self.loss_names = ["loss_G"]
 
@@ -60,7 +65,7 @@ class MoveModel(BaseModel):
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj", "scaled_obj", "transf_obj_seq", "transf_obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
 
         for v in self.visual_names:
             setattr(self, v, torch.ones(1, 1, 64, 64))
@@ -215,12 +220,12 @@ class MoveModel(BaseModel):
         # theta_complete = torch.Tensor([[[1.5, 0, 1], [0, 0.5, 1]]])
         # theta_scale = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
         # theta_translate = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
-        self.theta_complete[0] = torch.Tensor([[1.5, 0, 1], [0, 0.5, 1]])
-
+        # self.theta_complete[0] = torch.Tensor([[1.5, 0, 1], [0, 0.5, 1]])
 
 
         # preset affine settings
         align_corners = True
+        # set to zero because of weird artefacts when set to "border"
         pad = "zeros"
 
         # 1) APPLY SCALING FACTOR
@@ -229,11 +234,7 @@ class MoveModel(BaseModel):
         theta_scale[:, torch.eye(2).bool()] = scale.float()
         # add translation params as zeros
         self.theta_scale = torch.cat((theta_scale, torch.zeros(B, 2, 1)), 2)
-
-        # for testing purposes
-        self.theta_scale[0] = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
-
-        # compute the flow field (grid) and execute affine transform
+        # compute the flow field (grid) and execute scaling on object and mask
         grid_scale = F.affine_grid(self.theta_scale, self.obj.size(), align_corners=align_corners).float()
         self.scaled_obj = F.grid_sample(self.obj, grid_scale, align_corners=align_corners, padding_mode=pad)
         self.scaled_obj_mask = F.grid_sample(self.obj_mask.float(), grid_scale, align_corners=align_corners, padding_mode=pad)
@@ -244,28 +245,11 @@ class MoveModel(BaseModel):
         # set the diagonal of theta to be the scale
         theta_translate[:, torch.eye(2).bool()] = 1
         self.theta_translate = torch.cat((theta_translate, translation.unsqueeze(2)), 2)
-
-        # for testing purposes
-        self.theta_translate[0] = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
-
-        # compute the flow field for the transformation
+        # compute the flow field and execute translation on object and mask
         grid_translate = F.affine_grid(self.theta_translate, self.obj.size(), align_corners=align_corners).float()
-        self.transf_obj_seq = F.grid_sample(self.scaled_obj, grid_translate, align_corners=align_corners, padding_mode=pad)
+        self.transf_obj = F.grid_sample(self.scaled_obj, grid_translate, align_corners=align_corners, padding_mode=pad)
         self.transf_obj_mask = F.grid_sample(self.scaled_obj_mask.float(), grid_translate, align_corners=align_corners, padding_mode=pad)
 
-
-        # this is the original implementation, directly applying scale and translation
-        grid_complete = F.affine_grid(self.theta_complete, self.obj.size(), align_corners=True).float()
-        self.transf_obj = F.grid_sample(self.obj, grid_complete, align_corners=align_corners, padding_mode=pad)
-
-
-        # self.transf_obj = F.grid_sample(transl_obj, grid_scale, align_corners=True, padding_mode='border')
-
-
-        # TODO: check if align_corners should be true or false
-        # grid = F.affine_grid(self.theta, self.obj.size(), align_corners=True).float()
-        # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
-        # self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid_complete, align_corners=True, padding_mode='border')
 
         # get the surfaces of the transformed objects
         self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
@@ -280,7 +264,7 @@ class MoveModel(BaseModel):
         ###############
 
         # composite the moved object with the background from the target
-        self.composite, _ = networks.composite_image(self.transf_obj_seq, self.tgt, self.transf_obj_mask)
+        self.composite, _ = networks.composite_image(self.transf_obj, self.tgt, self.transf_obj_mask)
 
         # detach composite if we are training the discriminator
         if not generator:
@@ -342,27 +326,23 @@ class MoveModel(BaseModel):
         # perhaps we should scale this based on the object surface
 
         #TODO: Sum nr of pixels in transf max
+        if self.opt.use_eq_loss:
+            MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+            # size_correction = self.trans_obj_surface/self.opt.load_size**2
 
-        MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        # size_correction = self.trans_obj_surface/self.opt.load_size**2
-
-
-        # replace zeros with 1
-        # size_correction[size_correction==0] = 1
-
-        # Replace 0 in size_corrction with 1
-
-        ####### this was the code used for run 9
-        # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        size_correction = self.surface.squeeze()/self.opt.load_size**2
-        self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
+            ####### this was the code used for run 9
+            # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+            size_correction = self.surface.squeeze()/self.opt.load_size**2
+            self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
 
 
 
-        # TODO: size correction is 0 if the object is moved out of the image
-        # self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
+            # TODO: size correction is 0 if the object is moved out of the image
+            # self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
 
-        self.loss_conv = self.loss_G + self.loss_eq
+            self.loss_conv = self.loss_G + self.loss_eq
+        else:
+            self.loss_conv = self.loss_G
 
         # self.scaler.scale(self.loss_G).backward()
         self.loss_conv.backward()
