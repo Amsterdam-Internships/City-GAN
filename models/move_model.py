@@ -60,7 +60,7 @@ class MoveModel(BaseModel):
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj", "scaled_obj", "transl_obj", "transf_obj_seq", "transf_obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj", "scaled_obj", "transf_obj_seq", "transf_obj", "composite"]
 
         for v in self.visual_names:
             setattr(self, v, torch.ones(1, 1, 64, 64))
@@ -189,62 +189,74 @@ class MoveModel(BaseModel):
 
         # two-stream input
         if self.opt.two_stream:
-            zero_centered, one_centered, translation = self.netConv(self.obj, self.tgt)
+            zero_centered,scale,translation = self.netConv(self.obj, self.tgt)
         else:
             # single stream input
             # concatenate the target and object on channel dimension
             tgt_obj_cat = torch.cat([self.tgt, self.obj], 1)
-            zero_centered, one_centered,translation = self.netConv(tgt_obj_cat)
+            zero_centered,scale,translation = self.netConv(tgt_obj_cat)
 
         B = translation.shape[0]
 
         # initialize theta
         theta = torch.zeros(B, 2, 2).to(self.device)
         # set the diagonal of theta
-        theta[:, torch.eye(2).bool()] = one_centered.float()
+        theta[:, torch.eye(2).bool()] = scale.float()
         # concatenate the translation parameters
-        self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
+        self.theta_complete = torch.cat((theta, translation.unsqueeze(2)), 2)
 
         # set the other two parameters, constrain to zero for now
         # self.theta[:, 0, 1] = zero_centered[:, 0]
         # self.theta[:, 1, 0] = zero_centered[:, 1]
 
-        #print(self.theta[0])
 
-        # experimenting with theta
-        # mincontmax 0.83
-        # self.theta[0] = torch.Tensor([[1.5, 0, 1], [0, 0.5, 1]])
-
+        # testing with theta
         # first do scaling, translation, then scaling, or opposite
-        theta_complete = torch.Tensor([[[1.5, 0, 1], [0, 0.5, 1]]])
-        theta_scale = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
-        theta_translate = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
+        # theta_complete = torch.Tensor([[[1.5, 0, 1], [0, 0.5, 1]]])
+        # theta_scale = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
+        # theta_translate = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
+        self.theta_complete[0] = torch.Tensor([[1.5, 0, 1], [0, 0.5, 1]])
+
 
 
         # preset affine settings
         align_corners = True
         pad = "zeros"
 
-        # first apply scaling factor
-        grid_scale = F.affine_grid(theta_scale, self.obj.size(), align_corners=align_corners).float()
+        # 1) APPLY SCALING FACTOR
+        theta_scale = torch.zeros(B, 2, 2).to(self.device)
+        # set the diagonal of theta to be the scale
+        theta_scale[:, torch.eye(2).bool()] = scale.float()
+        # add translation params as zeros
+        self.theta_scale = torch.cat((theta_scale, torch.zeros(B, 2, 1)), 2)
 
-        grid_translate = F.affine_grid(theta_translate, self.obj.size(), align_corners=align_corners).float()
+        # for testing purposes
+        self.theta_scale[0] = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
 
-        grid_complete =  F.affine_grid(theta_complete, self.obj.size(), align_corners=align_corners).float()
-
-        self.transl_obj = F.grid_sample(self.obj, grid_translate, align_corners=align_corners, padding_mode=pad)
-
+        # compute the flow field (grid) and execute affine transform
+        grid_scale = F.affine_grid(self.theta_scale, self.obj.size(), align_corners=align_corners).float()
         self.scaled_obj = F.grid_sample(self.obj, grid_scale, align_corners=align_corners, padding_mode=pad)
+        self.scaled_obj_mask = F.grid_sample(self.obj_mask.float(), grid_scale, align_corners=align_corners, padding_mode=pad)
 
-        # breakpoint()
-#
+
+        # 2) APPLY TRANSLATION
+        theta_translate = torch.zeros(B, 2, 2).to(self.device)
+        # set the diagonal of theta to be the scale
+        theta_translate[:, torch.eye(2).bool()] = 1
+        self.theta_translate = torch.cat((theta_translate, translation.unsqueeze(2)), 2)
+
+        # for testing purposes
+        self.theta_translate[0] = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
+
+        # compute the flow field for the transformation
+        grid_translate = F.affine_grid(self.theta_translate, self.obj.size(), align_corners=align_corners).float()
         self.transf_obj_seq = F.grid_sample(self.scaled_obj, grid_translate, align_corners=align_corners, padding_mode=pad)
+        self.transf_obj_mask = F.grid_sample(self.scaled_obj_mask.float(), grid_translate, align_corners=align_corners, padding_mode=pad)
 
+
+        # this is the original implementation, directly applying scale and translation
+        grid_complete = F.affine_grid(self.theta_complete, self.obj.size(), align_corners=True).float()
         self.transf_obj = F.grid_sample(self.obj, grid_complete, align_corners=align_corners, padding_mode=pad)
-
-
-
-        # breakpoint()
 
 
         # self.transf_obj = F.grid_sample(transl_obj, grid_scale, align_corners=True, padding_mode='border')
@@ -253,7 +265,7 @@ class MoveModel(BaseModel):
         # TODO: check if align_corners should be true or false
         # grid = F.affine_grid(self.theta, self.obj.size(), align_corners=True).float()
         # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
-        self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid_complete, align_corners=True, padding_mode='border')
+        # self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid_complete, align_corners=True, padding_mode='border')
 
         # get the surfaces of the transformed objects
         self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
@@ -268,7 +280,7 @@ class MoveModel(BaseModel):
         ###############
 
         # composite the moved object with the background from the target
-        self.composite, _ = networks.composite_image(self.transf_obj, self.tgt, self.transf_obj_mask)
+        self.composite, _ = networks.composite_image(self.transf_obj_seq, self.tgt, self.transf_obj_mask)
 
         # detach composite if we are training the discriminator
         if not generator:

@@ -97,7 +97,7 @@ if __name__ == '__main__':
                 D_fakes.append(D_fake)
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fakes=D_fakes)
                 if opt.model=='move':
-                    print(overall_batch, model.theta[0])
+                    print(overall_batch, model.theta_complete[0])
 
             # print training losses and save logging information to the disk
             # Why is this epoch_batch? now set to overall_batch
