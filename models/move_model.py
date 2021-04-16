@@ -60,7 +60,10 @@ class MoveModel(BaseModel):
             setattr(self, loss, 0)
 
         # define variables for plotting and saving
-        self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
+        self.visual_names = ["tgt", "src", "mask_binary", "obj", "scaled_obj", "transl_obj", "transf_obj_seq", "transf_obj", "composite"]
+
+        for v in self.visual_names:
+            setattr(self, v, torch.ones(1, 1, 64, 64))
 
 
         # for sanity checking
@@ -193,7 +196,7 @@ class MoveModel(BaseModel):
             tgt_obj_cat = torch.cat([self.tgt, self.obj], 1)
             zero_centered, one_centered,translation = self.netConv(tgt_obj_cat)
 
-        B = zero_centered.shape[0]
+        B = translation.shape[0]
 
         # initialize theta
         theta = torch.zeros(B, 2, 2).to(self.device)
@@ -201,6 +204,7 @@ class MoveModel(BaseModel):
         theta[:, torch.eye(2).bool()] = one_centered.float()
         # concatenate the translation parameters
         self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
+
         # set the other two parameters, constrain to zero for now
         # self.theta[:, 0, 1] = zero_centered[:, 0]
         # self.theta[:, 1, 0] = zero_centered[:, 1]
@@ -208,16 +212,48 @@ class MoveModel(BaseModel):
         #print(self.theta[0])
 
         # experimenting with theta
-        # min/max 0.83
-        # self.theta[0] = torch.Tensor([[1.5, 0, 0], [0, 0.5, 0.5]])
+        # mincontmax 0.83
+        # self.theta[0] = torch.Tensor([[1.5, 0, 1], [0, 0.5, 1]])
 
-        # self.obj[0, :, 32, 32] = torch.tensor([1, 0, 0])
+        # first do scaling, translation, then scaling, or opposite
+        theta_complete = torch.Tensor([[[1.5, 0, 1], [0, 0.5, 1]]])
+        theta_scale = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
+        theta_translate = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
+
+
+        # preset affine settings
+        align_corners = True
+        pad = "zeros"
+
+        # first apply scaling factor
+        grid_scale = F.affine_grid(theta_scale, self.obj.size(), align_corners=align_corners).float()
+
+        grid_translate = F.affine_grid(theta_translate, self.obj.size(), align_corners=align_corners).float()
+
+        grid_complete =  F.affine_grid(theta_complete, self.obj.size(), align_corners=align_corners).float()
+
+        self.transl_obj = F.grid_sample(self.obj, grid_translate, align_corners=align_corners, padding_mode=pad)
+
+        self.scaled_obj = F.grid_sample(self.obj, grid_scale, align_corners=align_corners, padding_mode=pad)
+
+        # breakpoint()
+#
+        self.transf_obj_seq = F.grid_sample(self.scaled_obj, grid_translate, align_corners=align_corners, padding_mode=pad)
+
+        self.transf_obj = F.grid_sample(self.obj, grid_complete, align_corners=align_corners, padding_mode=pad)
+
+
+
+        # breakpoint()
+
+
+        # self.transf_obj = F.grid_sample(transl_obj, grid_scale, align_corners=True, padding_mode='border')
 
 
         # TODO: check if align_corners should be true or false
-        grid = F.affine_grid(self.theta, self.obj.size(), align_corners=True).float()
-        self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
-        self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=True, padding_mode='border')
+        # grid = F.affine_grid(self.theta, self.obj.size(), align_corners=True).float()
+        # self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
+        self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid_complete, align_corners=True, padding_mode='border')
 
         # get the surfaces of the transformed objects
         self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
