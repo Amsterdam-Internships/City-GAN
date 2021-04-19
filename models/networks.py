@@ -1012,10 +1012,11 @@ class MoveConvNET(nn.Module):
 
         # shape: B * 2; add one to make it one-centered
         # the one centered are from 0.75 to 1.25 (old, 4,4. Now: 0.5, 1.5;2,2)
-        one_centered = torch.divide(torch.add(self.one_c(last_layer), 4), 4)
+        one_centered = torch.divide(torch.add(self.one_c(last_layer), 2), 2)
 
         # shape B * 2
-        translation = torch.divide(self.trans(last_layer), 1.5) # was 1.2, then 1.5, now no constraints
+        translation = torch.divide(self.trans(last_layer), 1)
+        # was 1.2, then 1.5, now no constraints
 
         # for run 9:
         # zero centered, no scaling (-1, 1)
