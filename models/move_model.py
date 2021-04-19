@@ -233,7 +233,7 @@ class MoveModel(BaseModel):
         # set the diagonal of theta to be the scale
         theta_scale[:, torch.eye(2).bool()] = scale.float()
         # add translation params as zeros
-        self.theta_scale = torch.cat((theta_scale, torch.zeros(B, 2, 1)), 2)
+        self.theta_scale = torch.cat((theta_scale, torch.zeros(B, 2, 1).to(self.device)), 2)
         # compute the flow field (grid) and execute scaling on object and mask
         grid_scale = F.affine_grid(self.theta_scale, self.obj.size(), align_corners=align_corners).float()
         self.scaled_obj = F.grid_sample(self.obj, grid_scale, align_corners=align_corners, padding_mode=pad)
