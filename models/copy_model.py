@@ -366,7 +366,6 @@ class CopyModel(BaseModel):
         if (self.train_on_gf and not generator) or valid:
             self.pred_grfake,self.D_mask_grfake = self.netD(self.grounded_fake)
 
-        breakpoint()
         # compute accuracy of discriminator if in validation mode
         if valid:
             self.compute_accs()
