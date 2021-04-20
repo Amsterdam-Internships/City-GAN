@@ -1178,7 +1178,7 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, input):
         """Standard forward."""
-        return self.model(input)
+        return self.model(input), None
 
 
 

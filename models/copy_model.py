@@ -95,7 +95,7 @@ class CopyModel(BaseModel):
                 this threshold, only train D",
         )
         parser.add_argument(
-            "--pred_type_D", type=str,
+            "--pred_type_D", type=str, default='pool',
             help="Choose type of layers for discriminator prediction. Baseline follows Arandjelovic, pool adds an extra linear layer, and conv makes use of convolutional layers instead of pooling", choices=["baseline", "pool", "conv"]
         )
         parser.add_argument(
@@ -366,13 +366,14 @@ class CopyModel(BaseModel):
         if (self.train_on_gf and not generator) or valid:
             self.pred_grfake,self.D_mask_grfake = self.netD(self.grounded_fake)
 
+        breakpoint()
         # compute accuracy of discriminator if in validation mode
         if valid:
             self.compute_accs()
 
 
     def compute_accs(self):
-        B = self.opt.val_batch_size
+        B = self.opt.val_batch_size * (self.pred_real.shape[-1]) ** 2
         # use 0.5 as cutoff value for accuracy
         self.acc_real = len(self.pred_real[self.pred_real>0.5])/B
         self.acc_fake = len(self.pred_fake[self.pred_fake<0.5])/B
