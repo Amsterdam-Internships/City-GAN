@@ -252,7 +252,7 @@ class MoveModel(BaseModel):
 
 
         # get the surfaces of the transformed objects
-        if self.use_eq_loss:
+        if self.opt.use_eq_loss:
             self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
 
         ############### SANITY CHECKING USING GT theta
