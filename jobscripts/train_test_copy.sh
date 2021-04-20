@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=89
+run=91
 echo "starting training and testing run $run"
 
 #Create output directory on scratch
@@ -46,11 +46,11 @@ python $HOME/City-GAN/train.py --model copy \
     --display_id 0\
     --lambda_aux 0.0\
     --D_threshold 0.5\
-    --netD basic\
+    --netD copy\
     --real_target 0.9\
     --fake_target 0.1\
     --seed 42\
-    --pred_type_D "pool"\
+    --pred_type_D "baseline"\
     --use_amp\
     --noisy_labels\
     --n_alternating_batches 20\
