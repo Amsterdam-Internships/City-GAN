@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=21
+run=22
 echo "starting MoveGAN training run $run"
 
 #Create output directory on scratch
@@ -76,7 +76,8 @@ python $HOME/City-GAN/train.py --model move \
     --theta_dim 6\
     --fake_target 0.1\
     --real_target 0.9\
-    --verbose
+    --verbose\
+    --use_eq_loss
 
 
 # copy checkpoints to home directory

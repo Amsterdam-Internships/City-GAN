@@ -252,7 +252,8 @@ class MoveModel(BaseModel):
 
 
         # get the surfaces of the transformed objects
-        self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
+        if self.use_eq_loss:
+            self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
 
         ############### SANITY CHECKING USING GT theta
 
@@ -328,17 +329,13 @@ class MoveModel(BaseModel):
         #TODO: Sum nr of pixels in transf max
         if self.opt.use_eq_loss:
             MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-            # size_correction = self.trans_obj_surface/self.opt.load_size**2
+            # correct for transformed object surface
+            size_correction = self.trans_obj_surface/self.opt.load_size**2
 
             ####### this was the code used for run 9
             # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-            size_correction = self.surface.squeeze()/self.opt.load_size**2
+            # size_correction = self.surface.squeeze()/self.opt.load_size**2
             self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
-
-
-
-            # TODO: size correction is 0 if the object is moved out of the image
-            # self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
 
             self.loss_conv = self.loss_G + self.loss_eq
         else:
