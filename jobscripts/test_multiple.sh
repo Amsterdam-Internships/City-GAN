@@ -12,15 +12,16 @@
 module load 2020
 module load Python
 
+
+#Create output directory on scratch
+mkdir "$TMPDIR"/datasets
+mkdir "$TMPDIR"/datasets/CLEVR_colorized
+mkdir "$TMPDIR"/CopyGAN
+
 # declare run
 for run in 13 14 55 74
 do
     echo "Testing CopyGAN saved in run $run"
-
-    #Create output directory on scratch
-    mkdir "$TMPDIR"/datasets
-    mkdir "$TMPDIR"/datasets/CLEVR_colorized
-    mkdir "$TMPDIR"/CopyGAN
 
     #Copy data file to scratch
     cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/

@@ -49,7 +49,7 @@ python $HOME/City-GAN/train.py --model copy \
     --real_target 0.9\
     --fake_target 0.1\
     --seed 42\
-    --pool_D\
+    --pred_type_D "pool"\
     --use_amp\
     --noisy_labels\
     --n_alternating_batches 20\

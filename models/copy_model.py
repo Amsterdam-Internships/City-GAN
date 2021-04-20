@@ -95,8 +95,8 @@ class CopyModel(BaseModel):
                 this threshold, only train D",
         )
         parser.add_argument(
-            "--pool_D", action="store_true",
-            help="If true, discriminator uses avg pooling to get its prediction, like Arandjelovic, otherwise conv & linear layers are used",
+            "--pred_type_D", type=str,
+            help="Choose type of layers for discriminator prediction. Baseline follows Arandjelovic, pool adds an extra linear layer, and conv makes use of convolutional layers instead of pooling", choices=["baseline", "pool", "conv"]
         )
         parser.add_argument(
             "--accumulation_steps", type=int, default=1,
@@ -130,7 +130,7 @@ class CopyModel(BaseModel):
         BaseModel.__init__(self, opt)
 
         self.D_headstart = opt.D_headstart
-        self.pool = opt.pool_D
+        self.pred_type_D = opt.pred_type_D
 
         # specify random seed
         if opt.seed == 0:
@@ -266,7 +266,7 @@ class CopyModel(BaseModel):
                 gpu_ids=self.gpu_ids,
                 img_dim=opt.crop_size,
                 sigma_blur=opt.sigma_blur,
-                pool=opt.pool_D,
+                pred_type=self.pred_type_D,
                 aux=self.aux,
             )
             self.model_names.append("D")

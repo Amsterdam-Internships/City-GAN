@@ -36,9 +36,12 @@ python $HOME/City-GAN/test.py \
     --results_dir "$TMPDIR"/results/ \
     --display_freq 10\
     --seed 42\
-    --verbose
+    --verbose\
+    > "$TMPDIR"/test_results_run"${run}".txt
+
 
 # copy results to home directory
 mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"
 cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"
+cp "$TMPDIR"/test_results_run"${run}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
 
