@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-04-14 17:10
+# @Last Modified time: 2021-04-20 10:38
 
 """
 This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. Instead, the model is loaded from memory.
@@ -15,9 +15,12 @@ from models import create_model
 from util.visualizer import save_images
 from util import html, evaluate
 import numpy as np
+import time
 
 
 if __name__ == '__main__':
+
+    start_time = time.time()
 
     opt = TestOptions().parse()  # get test options
     # hard-code some parameters for test
@@ -100,6 +103,7 @@ if __name__ == '__main__':
 
     print(f"Arandjelovic score: total number of masks: {i}, succesfull: {total_success_masks}, ODP: {(ODP * 100):.1f}%")
     print(f"{total_n_obj_recognized}/{total_n_obj} objects are recognized ({recognized_fraction*100:.1f}%)")
+    print(f"Total run time: {time.time()-start_time:.1f} sec")
 
 
 
