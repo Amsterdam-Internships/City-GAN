@@ -1,8 +1,8 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 120:00:00
-#SBATCH -p gpu_shared
+#SBATCH -t 1:00:00
+#SBATCH -p gpu_short
 #SBATCH --gpus-per-node=1
 
 #SBATCH --mail-type=BEGIN,END
@@ -35,10 +35,10 @@ do
         python $HOME/City-GAN/train.py --model copy \
             --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
             --batch_size 64\
-            --n_epochs 10\
-            --n_epochs_decay 30\
+            --n_epochs 1\
+            --n_epochs_decay 0\
             --save_epoch_freq 10\
-            --checkpoints_dir "$TMPDIR"/checkpoints/"${run}"/"${seed}"\
+            --checkpoints_dir "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"\
             --print_freq 100\
             --update_html 100\
             --display_freq 100\
@@ -61,17 +61,17 @@ do
             --use_amp\
             --noisy_labels\
             --n_alternating_batches 20\
-            --val_freq 20
+            --val_freq 100
 
 
         # copy checkpoints to home directory
         mkdir -p $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"
-        cp -r "$TMPDIR"/checkpoints/"${run}"/"${seed}"/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
+        cp -r "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
 
         #### TESTING PART
 
         # copy the model to scratch
-        cp $HOME/City-GAN/checkpoints/run"${run}"/"${seed}"/latest_net_G.pth "$TMPDIR"/CopyGAN/
+        cp $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/latest_net_G.pth "$TMPDIR"/CopyGAN/
 
         # execute training script
         python $HOME/City-GAN/test.py \
@@ -87,9 +87,9 @@ do
 
 
         # copy results to home directory
-        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"
-        cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"
-        cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"/
+        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
+        cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
+        cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
     done
     # Increment run number
     ((run=run+1))
