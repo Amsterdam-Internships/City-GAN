@@ -8,6 +8,58 @@ import os
 import linecache
 
 
+def get_visuals_copy(opt, isTrain, aux):
+    # specify the images that are saved and displayed
+    # (via base_model.get_current_visuals)
+    if not isTrain:
+        visual_names =[
+                "src",
+                "tgt",
+                "composite",
+                "g_mask",
+                "g_mask_binary",
+                "gt",
+                "gt_og",
+                "used_comb_gt",]
+                # "eroded_mask",
+                # "composite_eroded",
+                # "labelled_mask"]
+    else:
+        if aux:
+            visual_names = [
+                "src",
+                "tgt",
+                "g_mask",
+                "g_mask_binary",
+                "composite",
+                "D_mask_fake",
+                "irrel",
+                "anti_sc",
+                "D_mask_antisc",
+                "D_mask_real",
+            ]
+            if not opt.no_grfakes:
+                visual_names.extend(
+                    ["grounded_fake", "D_mask_grfake", "mask_gf"]
+                )
+        else:
+            visual_names = [
+                "src",
+                "tgt",
+                "g_mask",
+                "g_mask_binary",
+                "composite",
+                "irrel",
+                "anti_sc",
+            ]
+            if not opt.no_grfakes:
+                visual_names.extend(["grounded_fake", "mask_gf"])
+
+
+
+    return visual_names
+
+
 def print_gradients(net):
     print(f"{net.__class__.__name__}")
     for name, param in net.named_parameters():

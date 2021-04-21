@@ -67,11 +67,22 @@ class CopyModel(BaseModel):
         )
 
         # define new arguments for this model
-        if is_train:
-            parser.add_argument(
-                "--lambda_aux", type=float, default=0.1,
-                help="weight for the auxiliary mask loss",
+        parser.add_argument(
+                "--no_border_zeroing", action="store_true",
+                help="default: clamp borders of generated mask to 0 \
+                (store_false)",
             )
+        parser.add_argument(
+            "--lambda_aux", type=float, default=0.1,
+            help="weight for the auxiliary mask loss",
+        )
+        parser.add_argument(
+            "--flip_vertical", action="store_true",
+            help="If specified, the data will be flipped vertically",
+        )
+
+        # arguments only needed during training phase
+        if is_train:
             parser.add_argument(
                 "--confidence_weight", type=float, default=0.0,
                 help="weight for the confidence loss for generator",
@@ -84,11 +95,6 @@ class CopyModel(BaseModel):
                 "--sigma_blur", type=float, default=1.0,
                 help="Sigma used in Gaussian filter used for blurring \
                 discriminator input",
-            )
-            parser.add_argument(
-                "--no_border_zeroing", action="store_true",
-                help="default: clamp borders of generated mask to 0 \
-                    (store_false)",
             )
             parser.add_argument(
                 "--D_threshold", type=float, default=0.5,
@@ -109,10 +115,6 @@ class CopyModel(BaseModel):
                 help="If true, no grounded fakes will be used in training",
             )
             parser.add_argument(
-                "--flip_vertical", action="store_true",
-                help="If specified, the data will be flipped vertically",
-            )
-            parser.add_argument(
                 "--n_alternating_batches", type=int, default=1,
                 help="Specify for how many consecutive batches G and D are trained. E.g. if set to 1, G and D will be trained alternating"
             )
@@ -130,8 +132,6 @@ class CopyModel(BaseModel):
         """
         BaseModel.__init__(self, opt)
 
-        self.D_headstart = opt.D_headstart
-        self.pred_type_D = opt.pred_type_D
 
         # specify random seed
         if opt.seed == 0:
@@ -141,103 +141,10 @@ class CopyModel(BaseModel):
         torch.manual_seed(opt.seed)
         np.random.seed(opt.seed)
 
-        # specify the training losses to print (base_model.get_current_losses)
-        self.loss_names = [
-            "loss_G_comp",
-            "loss_G_anti_sc",
-            "loss_G",
-            "loss_D_real",
-            "loss_D_fake",
-            "loss_D",
-            "acc_real",
-            "acc_fake",
-        ]
-
-        # if the model is not copy, we cannot use the auxiliary loss
-        if opt.netD != "copy" and opt.lambda_aux > 0:
-            print(
-                f"CopyDiscriminator not used, auxiliary weight set to 0 \
-                (instead of {opt.lambda_aux})"
-            )
-            opt.lambda_aux = 0
-
-        # make sure invalid combination cannot be used
+        # determine if auxiliary loss is used
         self.aux = opt.lambda_aux > 0
-        if opt.no_grfakes and self.aux:
-            raise Exception(
-                "invalid options combination. If grounded fakes are not used,\
-                 auxiliary loss cannot be used either.\n Exiting..."
-            )
 
-        # add other losses if specified
-        if opt.confidence_weight > 0:
-            self.loss_names.append("loss_G_conf")
-        if self.aux:
-            self.loss_names.append("loss_AUX")
-        if not opt.no_grfakes:
-            self.loss_names.extend(["loss_D_gr_fake", "acc_grfake"])
-            self.train_on_gf = False
-        else:
-            self.train_on_gf = True
-
-        # init all losses and accs that are used at 0 for plotting
-        for loss in self.loss_names:
-            setattr(self, loss, 0)
-
-        # init for training curriculum
-        self.D_gf_perfect, self.D_above_thresh = False, False
-
-        # keep count of training steps (also for gradient accumulation)
-        self.count_D, self.count_G = 0, 0
-
-        # init gradient scaler from cuda AMP
-        self.scaler = GradScaler(enabled=opt.use_amp)
-
-        # specify the images that are saved and displayed
-        # (via base_model.get_current_visuals)
-        if not self.isTrain:
-            self.visual_names =[
-                    "src",
-                    "tgt",
-                    "composite",
-                    "g_mask",
-                    "g_mask_binary",
-                    "gt",
-                    "gt_og",
-                    "used_comb_gt",]
-                    # "eroded_mask",
-                    # "composite_eroded",
-                    # "labelled_mask"]
-        else:
-            if self.aux:
-                self.visual_names = [
-                    "src",
-                    "tgt",
-                    "g_mask",
-                    "g_mask_binary",
-                    "composite",
-                    "D_mask_fake",
-                    "irrel",
-                    "anti_sc",
-                    "D_mask_antisc",
-                    "D_mask_real",
-                ]
-                if not opt.no_grfakes:
-                    self.visual_names.extend(
-                        ["grounded_fake", "D_mask_grfake", "mask_gf"]
-                    )
-            else:
-                self.visual_names = [
-                    "src",
-                    "tgt",
-                    "g_mask",
-                    "g_mask_binary",
-                    "composite",
-                    "irrel",
-                    "anti_sc",
-                ]
-                if not opt.no_grfakes:
-                    self.visual_names.extend(["grounded_fake", "mask_gf"])
+        self.visual_names = util.get_visuals_copy(opt, self.isTrain, self.aux)
 
         for vis in self.visual_names:
             setattr(self, vis, torch.zeros(1, 3, 64, 64))
@@ -257,7 +164,24 @@ class CopyModel(BaseModel):
         # G must be saved to disk
         self.model_names = ["G"]
 
+        # define parameters only needed in training phase
         if self.isTrain:
+
+            # set some parameters for training of D
+            self.D_headstart = opt.D_headstart
+            self.pred_type_D = opt.pred_type_D
+            self.D_gf_perfect, self.D_above_thresh = False, False
+
+            # keep count of training steps (also for gradient accumulation)
+            self.count_D, self.count_G = 0, 0
+
+            # init gradient scaler from cuda AMP
+            self.scaler = GradScaler(enabled=opt.use_amp)
+
+            # make sure no invalid combinations are used
+            if (opt.no_grfakes or opt.netG != "copy") and self.aux:
+                raise Exception("invalid options combination. If grounded fakes are not used, auxiliary loss cannot be used either.\n Exiting...")
+
             # only define the discriminator if in training phase
             self.netD = networks.define_D(
                 opt.input_nc,
@@ -270,7 +194,46 @@ class CopyModel(BaseModel):
                 pred_type=self.pred_type_D,
                 aux=self.aux,
             )
+
             self.model_names.append("D")
+
+            # specify the training losses to print (base_model.get_current_losses)
+            self.loss_names = [
+                "loss_G_comp",
+                "loss_G_anti_sc",
+                "loss_G",
+                "loss_D_real",
+                "loss_D_fake",
+                "loss_D",
+                "acc_real",
+                "acc_fake",
+            ]
+
+            # if the model is not copy, we cannot use the auxiliary loss
+            if opt.netD != "copy" and opt.lambda_aux > 0:
+                print(
+                    f"CopyDiscriminator not used, auxiliary weight set to 0 \
+                    (instead of {opt.lambda_aux})"
+                )
+                opt.lambda_aux = 0
+
+
+
+            # add other losses if specified
+            if opt.confidence_weight > 0:
+                self.loss_names.append("loss_G_conf")
+            if self.aux:
+                self.loss_names.append("loss_AUX")
+            if not opt.no_grfakes:
+                self.loss_names.extend(["loss_D_gr_fake", "acc_grfake"])
+                self.train_on_gf = False
+            else:
+                self.train_on_gf = True
+
+            # init all losses and accs that are used at 0 for plotting
+            for loss in self.loss_names:
+                setattr(self, loss, 0)
+
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(
@@ -313,11 +276,12 @@ class CopyModel(BaseModel):
 
             # convert the mask to binary in grayscale
             self.bin_gt = util.mask_to_binary((self.gt[:, -1]+1)/2)
-        # create a grounded fake, the function samples a random polygon mask
-        if self.train_on_gf and not self.opt.no_grfakes:
-            self.grounded_fake, self.mask_gf = networks.composite_image(
-                self.src, self.tgt, device=self.device
-            )
+        else:
+            # create a grounded fake, the function samples a random polygon mask
+            if self.train_on_gf and not self.opt.no_grfakes:
+                self.grounded_fake, self.mask_gf = networks.composite_image(
+                    self.src, self.tgt, device=self.device
+                )
 
 
     def forward(self, valid=False, generator=False):
