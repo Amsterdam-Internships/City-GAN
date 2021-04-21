@@ -24,17 +24,10 @@ mkdir "$TMPDIR"/CopyGAN
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
-for type in "basic" "baseline" "pool" "conv"
+for type in "baseline" "pool" "conv"
 do
     echo "\n\nTraining run ${run} with pred-type ${type}"
     # set aux loss correctly
-    if "${type}" -eq "basic"
-    then
-        aux=0.0
-    else
-        aux=0.1
-    fi
-
     for seed in 1 10 20 30 42
     do
         echo "Seed: $seed"
@@ -58,7 +51,7 @@ do
             --val_batch_size 128\
             --accumulation_steps 1\
             --display_id 0\
-            --lambda_aux "${aux}"\
+            --lambda_aux 0.1\
             --D_threshold 0.5\
             --netD copy\
             --real_target 0.9\
