@@ -12,4 +12,3 @@ checkpoints/CopyGAN/*
 checkpoints/visdom_test
 checkpoints/test_run
 *.icloud
-results/*
