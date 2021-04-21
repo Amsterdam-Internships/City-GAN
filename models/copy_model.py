@@ -67,54 +67,55 @@ class CopyModel(BaseModel):
         )
 
         # define new arguments for this model
-        parser.add_argument(
-            "--lambda_aux", type=float, default=0.1,
-            help="weight for the auxiliary mask loss",
-        )
-        parser.add_argument(
-            "--confidence_weight", type=float, default=0.0,
-            help="weight for the confidence loss for generator",
-        )
-        parser.add_argument(
-            "--D_headstart", type=int, default=0,
-            help="First train only discriminator for D_headstart batches",
-        )
-        parser.add_argument(
-            "--sigma_blur", type=float, default=1.0,
-            help="Sigma used in Gaussian filter used for blurring \
-            discriminator input",
-        )
-        parser.add_argument(
-            "--no_border_zeroing", action="store_true",
-            help="default: clamp borders of generated mask to 0 \
-                (store_false)",
-        )
-        parser.add_argument(
-            "--D_threshold", type=float, default=0.5,
-            help="when the accuracy of the discriminator is lower than \
-                this threshold, only train D",
-        )
-        parser.add_argument(
-            "--pred_type_D", type=str, default='pool',
-            help="Choose type of layers for discriminator prediction. Baseline follows Arandjelovic, pool adds an extra linear layer, and conv makes use of convolutional layers instead of pooling", choices=["baseline", "pool", "conv"]
-        )
-        parser.add_argument(
-            "--accumulation_steps", type=int, default=1,
-            help="accumulate gradients for this amount of batches, \
-                before backpropagating, to simulate a larger batch size",
-        )
-        parser.add_argument(
-            "--no_grfakes", action="store_true",
-            help="If true, no grounded fakes will be used in training",
-        )
-        parser.add_argument(
-            "--flip_vertical", action="store_true",
-            help="If specified, the data will be flipped vertically",
-        )
-        parser.add_argument(
-            "--n_alternating_batches", type=int, default=1,
-            help="Specify for how many consecutive batches G and D are trained. E.g. if set to 1, G and D will be trained alternating"
-        )
+        if is_train:
+            parser.add_argument(
+                "--lambda_aux", type=float, default=0.1,
+                help="weight for the auxiliary mask loss",
+            )
+            parser.add_argument(
+                "--confidence_weight", type=float, default=0.0,
+                help="weight for the confidence loss for generator",
+            )
+            parser.add_argument(
+                "--D_headstart", type=int, default=0,
+                help="First train only discriminator for D_headstart batches",
+            )
+            parser.add_argument(
+                "--sigma_blur", type=float, default=1.0,
+                help="Sigma used in Gaussian filter used for blurring \
+                discriminator input",
+            )
+            parser.add_argument(
+                "--no_border_zeroing", action="store_true",
+                help="default: clamp borders of generated mask to 0 \
+                    (store_false)",
+            )
+            parser.add_argument(
+                "--D_threshold", type=float, default=0.5,
+                help="when the accuracy of the discriminator is lower than \
+                    this threshold, only train D",
+            )
+            parser.add_argument(
+                "--pred_type_D", type=str, default='pool',
+                help="Choose type of layers for discriminator prediction. Baseline follows Arandjelovic, pool adds an extra linear layer, and conv makes use of convolutional layers instead of pooling", choices=["baseline", "pool", "conv"]
+            )
+            parser.add_argument(
+                "--accumulation_steps", type=int, default=1,
+                help="accumulate gradients for this amount of batches, \
+                    before backpropagating, to simulate a larger batch size",
+            )
+            parser.add_argument(
+                "--no_grfakes", action="store_true",
+                help="If true, no grounded fakes will be used in training",
+            )
+            parser.add_argument(
+                "--flip_vertical", action="store_true",
+                help="If specified, the data will be flipped vertically",
+            )
+            parser.add_argument(
+                "--n_alternating_batches", type=int, default=1,
+                help="Specify for how many consecutive batches G and D are trained. E.g. if set to 1, G and D will be trained alternating"
+            )
 
         return parser
 
