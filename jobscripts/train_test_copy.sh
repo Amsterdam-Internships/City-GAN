@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=92
+run=96
 echo "starting training and testing run $run"
 
 #Create output directory on scratch
@@ -54,7 +54,7 @@ python $HOME/City-GAN/train.py --model copy \
     --use_amp\
     --noisy_labels\
     --n_alternating_batches 20\
-    --val_freq 20
+    --val_freq 100
 
 
 # copy checkpoints to home directory
