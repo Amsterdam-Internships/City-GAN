@@ -1,11 +1,7 @@
 ----------------- Options ---------------
-              D_headstart: 0                             
-              D_threshold: 0.5                           
-       accumulation_steps: 1                             
              aspect_ratio: 1.0                           
                batch_size: 64                            
           checkpoints_dir: /scratch                      	[default: ./checkpoints]
-        confidence_weight: 0.0                           
                 crop_size: 64                            
                  dataroot: /scratch/datasets/CLEVR_colorized/images	[default: datasets]
              dataset_mode: double                        
@@ -28,7 +24,6 @@
                 lr_policy: step                          
          max_dataset_size: inf                           
                     model: copy                          
-    n_alternating_batches: 1                             
                  n_epochs: 20                            
            n_epochs_decay: 10                            
                n_layers_D: 3                             
@@ -40,13 +35,11 @@
         no_border_zeroing: False                         
                no_dropout: False                         
                   no_flip: False                         
-               no_grfakes: False                         
                      norm: instance                      
                  num_test: 5000                          
               num_threads: 4                             
                 output_nc: 3                             
                     phase: test                          
-              pred_type_D: pool                          
                preprocess: resize_and_crop               
                print_freq: 20                            
               real_target: 0.9                           
@@ -54,7 +47,6 @@
           save_epoch_freq: 10                            
                      seed: 42                            	[default: 0]
            serial_batches: False                         
-               sigma_blur: 1.0                           
                    suffix:                               
                   use_amp: True                          
                   verbose: True                          	[default: False]
@@ -131,6 +123,6 @@ DataParallel(
 [Network G] Total number of parameters : 3.470 M
 -----------------------------------------------
 creating web directory /scratch/results/CopyGAN/test_latest
-Arandjelovic score: total number of masks: 4999, succesfull: 4208, ODP: 84.2%
-14792/17761 objects are recognized (79.8%)
-Total run time: 279.5 sec
+Arandjelovic score: total number of masks: 4999, succesfull: 4201, ODP: 84.0%
+14795/17761 objects are recognized (79.8%)
+Total run time: 277.7 sec
