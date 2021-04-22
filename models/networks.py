@@ -482,7 +482,8 @@ class CopyDiscriminator(nn.Module):
             for i in range(nr_scale_ops):
                 next_nc = 64 // (nr_scale_ops - i)
                 self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i == nr_scale_ops - 1)))
+                if self.aux:
+                    self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i == nr_scale_ops - 1)))
                 input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
@@ -495,11 +496,12 @@ class CopyDiscriminator(nn.Module):
         self.enc4 = EncoderBlock(256, 512, norm_layer=norm_layer)
 
         # set up decoder layers
-        self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
-        self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
-        self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
-        # this being the last layer depends on possible upsampling operations
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)), norm_layer=norm_layer)
+        if self.aux:
+            self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
+            self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
+            self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
+            # this being the last layer depends on possible upsampling operations
+            self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)), norm_layer=norm_layer)
 
         self.sigmoid = nn.Sigmoid()
 
