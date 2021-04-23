@@ -13,7 +13,8 @@ module load 2020
 module load Python
 
 # declare run
-run=88
+run=92
+epoch="latest"
 echo "Testing CopyGAN saved in run $run"
 
 #Create output directory on scratch
@@ -24,24 +25,29 @@ mkdir "$TMPDIR"/CopyGAN
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
-# copy the model to scratch
-cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/CopyGAN/
+# copy all models to scratch
+cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/* "$TMPDIR"/CopyGAN/
 
-# execute training script
-python $HOME/City-GAN/test.py \
-    --model copy \
-    --num_test 5000\
-    --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
-    --checkpoints_dir "$TMPDIR"\
-    --results_dir "$TMPDIR"/results/ \
-    --display_freq 10\
-    --seed 42\
-    --verbose\
-    > "$TMPDIR"/test_results_run"${run}".txt
-
-
-# copy results to home directory
+# create directory in home for results
 mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"
-cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"
-cp "$TMPDIR"/test_results_run"${run}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+
+for epoch in "10", "20", "30", "latest"
+do
+    echo "${epoch}"
+    # execute training script
+    python $HOME/City-GAN/test.py \
+        --model copy \
+        --num_test 5000\
+        --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
+        --checkpoints_dir "$TMPDIR"\
+        --epoch "${epoch}"\
+        --results_dir "$TMPDIR"/results/ \
+        --display_freq 10/\
+        --seed 42\
+        --verbose\
+        > "$TMPDIR"/test_results_run"${run}"_epoch_"${epoch}".txt
+
+    cp -r "$TMPDIR"/results/CopyGAN/* $HOME/City-GAN/results/CopyGAN/run"${run}"
+    cp "$TMPDIR"/test_results_run"${run}"_epoch_"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+done
 
