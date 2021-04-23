@@ -63,7 +63,8 @@ class CopyModel(BaseModel):
             print_freq=20,
             real_target=0.9,
             fake_target=0.1,
-            use_amp=True
+            use_amp=True,
+            val_batch_size=512
         )
 
         # define new arguments for this model
