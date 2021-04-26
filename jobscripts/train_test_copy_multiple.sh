@@ -1,8 +1,8 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 1:00:00
-#SBATCH -p gpu_short
+#SBATCH -t 120:00:00
+#SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
 #SBATCH --mail-type=BEGIN,END
@@ -13,8 +13,10 @@ module load 2020
 module load Python
 
 # declare run
-run=92
-echo "starting training and testing run $run"
+run=100
+aux=0.0
+
+echo "starting training and testing run $run with lambda_aux $aux"
 
 #Create output directory on scratch
 mkdir "$TMPDIR"/datasets
@@ -28,16 +30,16 @@ for type in "baseline" "pool" "conv"
 do
     echo "\n\nTraining run ${run} with pred-type ${type}"
     # set aux loss correctly
-    for seed in 1 10 20 30 42
+    for seed in 0 10 20 30 42
     do
         echo "Seed: $seed"
         # execute training script
         python $HOME/City-GAN/train.py --model copy \
             --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
             --batch_size 64\
-            --n_epochs 1\
-            --n_epochs_decay 0\
-            --save_epoch_freq 10\
+            --n_epochs 10\
+            --n_epochs_decay 20\
+            --save_epoch_freq 20\
             --checkpoints_dir "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"\
             --print_freq 100\
             --update_html 100\
@@ -48,10 +50,9 @@ do
             --crop_size 64\
             --D_headstart 0\
             --confidence_weight 0.0\
-            --val_batch_size 128\
             --accumulation_steps 1\
             --display_id 0\
-            --lambda_aux 0.1\
+            --lambda_aux "${aux}"\
             --D_threshold 0.5\
             --netD copy\
             --real_target 0.9\
@@ -61,7 +62,7 @@ do
             --use_amp\
             --noisy_labels\
             --n_alternating_batches 20\
-            --val_freq 100
+            --val_freq 20
 
 
         # copy checkpoints to home directory
@@ -87,9 +88,9 @@ do
 
 
         # copy results to home directory
-        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
+        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/
         cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
-        cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
+        cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
     done
     # Increment run number
     ((run=run+1))
