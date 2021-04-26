@@ -31,7 +31,7 @@ cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/* "$TMPDIR"/CopyGA
 # create directory in home for results
 mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"
 
-for epoch in "10", "20", "30", "latest"
+for epoch in "10" "20" "30" "latest"
 do
     echo "${epoch}"
     # execute training script
@@ -42,7 +42,7 @@ do
         --checkpoints_dir "$TMPDIR"\
         --epoch "${epoch}"\
         --results_dir "$TMPDIR"/results/ \
-        --display_freq 10/\
+        --display_freq 10\
         --seed 42\
         --verbose\
         > "$TMPDIR"/test_results_run"${run}"_epoch_"${epoch}".txt
