@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 15:00:00
+#SBATCH -t 50:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -13,7 +13,11 @@ module load 2020
 module load Python
 
 # declare run
-run=96
+run=100
+pred_type="conv"
+netD="basic"
+seed=42
+
 echo "starting training and testing run $run"
 
 #Create output directory on scratch
@@ -28,8 +32,8 @@ cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_co
 python $HOME/City-GAN/train.py --model copy \
     --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
     --batch_size 64\
-    --n_epochs 10\
-    --n_epochs_decay 30\
+    --n_epochs 20\
+    --n_epochs_decay 80\
     --save_epoch_freq 10\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --print_freq 100\
@@ -46,15 +50,15 @@ python $HOME/City-GAN/train.py --model copy \
     --display_id 0\
     --lambda_aux 0.0\
     --D_threshold 0.5\
-    --netD copy\
+    --netD "${netD}"\
     --real_target 0.9\
     --fake_target 0.1\
-    --seed 42\
-    --pred_type_D "conv"\
+    --seed "${seed}"\
+    --pred_type_D "${pred_type}"\
     --use_amp\
     --noisy_labels\
     --n_alternating_batches 20\
-    --val_freq 100
+    --val_freq 20
 
 
 # copy checkpoints to home directory

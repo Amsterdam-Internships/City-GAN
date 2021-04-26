@@ -560,9 +560,9 @@ class CopyModel(BaseModel):
         if self.opt.verbose:
             print(
                 f"validation accuracies:\n\
-                gf: {self.acc_grfake:.2f}, {np.mean(self.pred_grfake)}\n\
-                real: {self.acc_real:.2f},  {np.mean(self.pred_real)}\n\
-                fake: {self.acc_fake:.2f}, {np.mean(self.pred_fake)}\n"
+                gf: {self.acc_grfake:.2f},{torch.mean(self.pred_grfake):.2f}\n\
+                real: {self.acc_real:.2f}, {torch.mean(self.pred_real):.2f}\n\
+                fake: {self.acc_fake:.2f}, {torch.mean(self.pred_fake):.2f}\n"
             )
 
         if self.opt.tracemalloc:
