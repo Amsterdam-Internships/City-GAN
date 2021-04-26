@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 50:00:00
+#SBATCH -t 100:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -16,7 +16,7 @@ module load Python
 run=100
 pred_type="conv"
 netD="basic"
-seed=42
+# seed=42
 
 echo "starting training and testing run $run"
 
@@ -28,66 +28,71 @@ mkdir "$TMPDIR"/CopyGAN
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
-# execute training script
-python $HOME/City-GAN/train.py --model copy \
-    --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
-    --batch_size 64\
-    --n_epochs 20\
-    --n_epochs_decay 80\
-    --save_epoch_freq 10\
-    --checkpoints_dir "$TMPDIR"/checkpoints\
-    --print_freq 100\
-    --update_html 100\
-    --display_freq 100\
-    --verbose \
-    --sigma_blur 1\
-    --load_size 70\
-    --crop_size 64\
-    --D_headstart 0\
-    --confidence_weight 0.0\
-    --val_batch_size 128\
-    --accumulation_steps 1\
-    --display_id 0\
-    --lambda_aux 0.0\
-    --D_threshold 0.5\
-    --netD "${netD}"\
-    --real_target 0.9\
-    --fake_target 0.1\
-    --seed "${seed}"\
-    --pred_type_D "${pred_type}"\
-    --use_amp\
-    --noisy_labels\
-    --n_alternating_batches 20\
-    --val_freq 20
+for seed in 0 10 20 30 42
+do
+    echo "Seed: $seed"
+
+    # execute training script
+    python $HOME/City-GAN/train.py --model copy \
+        --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
+        --batch_size 64\
+        --n_epochs 10\
+        --n_epochs_decay 30\
+        --save_epoch_freq 10\
+        --checkpoints_dir "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"\
+        --print_freq 100\
+        --update_html 100\
+        --display_freq 100\
+        --verbose \
+        --sigma_blur 1\
+        --load_size 70\
+        --crop_size 64\
+        --D_headstart 0\
+        --confidence_weight 0.0\
+        --val_batch_size 128\
+        --accumulation_steps 1\
+        --display_id 0\
+        --lambda_aux 0.0\
+        --D_threshold 0.5\
+        --netD "${netD}"\
+        --real_target 0.9\
+        --fake_target 0.1\
+        --seed "${seed}"\
+        --pred_type_D "${pred_type}"\
+        --use_amp\
+        --noisy_labels\
+        --n_alternating_batches 20\
+        --val_freq 20
 
 
-# copy checkpoints to home directory
-mkdir -p $HOME/City-GAN/checkpoints/run"${run}"
-cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run"${run}"
+    # copy checkpoints to home directory
+    mkdir -p $HOME/City-GAN/checkpoints/run"${run}"/"${seed}"
+    cp -r "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
 
 
-#### TESTING PART
+    #### TESTING PART
 
-# copy the model to scratch
-cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/CopyGAN/
+    # copy the model to scratch
+    cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/CopyGAN/
 
-# execute training script
-python $HOME/City-GAN/test.py \
-    --model copy \
-    --num_test 5000\
-    --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
-    --checkpoints_dir "$TMPDIR"\
-    --results_dir "$TMPDIR"/results/ \
-    --display_freq 10\
-    --seed 42\
-    --verbose\
-    > "$TMPDIR"/test_results_run"${run}".txt
+    # execute training script
+    python $HOME/City-GAN/test.py \
+        --model copy \
+        --num_test 5000\
+        --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
+        --checkpoints_dir "$TMPDIR"\
+        --results_dir "$TMPDIR"/results/ \
+        --display_freq 10\
+        --seed 42\
+        --verbose\
+        > "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt
 
 
-# copy results to home directory
-mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"
-cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"
-cp "$TMPDIR"/test_results_run"${run}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+    # copy results to home directory
+    mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"
+    cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/   CopyGAN/run"${run}"/seed"${seed}"
+    cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+done
 
 
 

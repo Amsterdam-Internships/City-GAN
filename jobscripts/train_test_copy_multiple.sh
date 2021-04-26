@@ -38,7 +38,7 @@ do
             --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
             --batch_size 64\
             --n_epochs 10\
-            --n_epochs_decay 20\
+            --n_epochs_decay 30\
             --save_epoch_freq 20\
             --checkpoints_dir "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"\
             --print_freq 100\
@@ -88,7 +88,7 @@ do
 
 
         # copy results to home directory
-        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/
+        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"
         cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
         cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
     done
