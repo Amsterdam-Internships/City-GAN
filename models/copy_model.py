@@ -516,26 +516,35 @@ class CopyModel(BaseModel):
 
         # compute accuracy on the validation data
         with torch.no_grad():
-            for i, data in enumerate(val_data):
-                # preprocess data and perform forward pass
-                self.set_input(data)
-                with autocast():
-                    self.forward(valid=True)
-
-                # save accuracies
-                acc_gf.append(self.acc_grfake)
-                acc_fake.append(self.acc_fake)
-                acc_real.append(self.acc_real)
-
-                preds_grfake.append(self.pred_grfake.mean().item())
-                preds_fake.append(self.pred_fake.mean().item())
-                preds_real.append(self.pred_real.mean().item())
+            data = next(iter(val_data))
+            self.set_input(data)
+            with autocast():
+                self.forward(valid=True)
 
 
-        # set accuracies to mean for plotting purposes
-        self.acc_grfake = np.mean(acc_gf)
-        self.acc_fake = np.mean(acc_fake)
-        self.acc_real = np.mean(acc_real)
+
+        #### OLD method, runs the complete validation set
+
+        #     for i, data in enumerate(val_data):
+        #         # preprocess data and perform forward pass
+        #         self.set_input(data)
+        #         with autocast():
+        #             self.forward(valid=True)
+
+        #         # save accuracies
+        #         acc_gf.append(self.acc_grfake)
+        #         acc_fake.append(self.acc_fake)
+        #         acc_real.append(self.acc_real)
+
+        #         preds_grfake.append(self.pred_grfake.mean().item())
+        #         preds_fake.append(self.pred_fake.mean().item())
+        #         preds_real.append(self.pred_real.mean().item())
+
+
+        # # set accuracies to mean for plotting purposes
+        # self.acc_grfake = np.mean(acc_gf)
+        # self.acc_fake = np.mean(acc_fake)
+        # self.acc_real = np.mean(acc_real)
 
         # set all training curriculum booleans for the coming eval_freq batches
         # performance of discriminator on grounded fakes
@@ -551,9 +560,9 @@ class CopyModel(BaseModel):
         if self.opt.verbose:
             print(
                 f"validation accuracies:\n\
-                gf: {self.acc_grfake:.2f}, {np.mean(preds_grfake)}\n\
-                real: {self.acc_real:.2f},  {np.mean(preds_real)}\n\
-                fake: {self.acc_fake:.2f}, {np.mean(preds_fake)}\n"
+                gf: {self.acc_grfake:.2f}, {np.mean(self.pred_grfake)}\n\
+                real: {self.acc_real:.2f},  {np.mean(self.pred_real)}\n\
+                fake: {self.acc_fake:.2f}, {np.mean(self.pred_fake)}\n"
             )
 
         if self.opt.tracemalloc:
