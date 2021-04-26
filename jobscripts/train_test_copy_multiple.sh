@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=100
+run=101
 aux=0.0
 
 echo "starting training and testing run $run with lambda_aux $aux"
