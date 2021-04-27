@@ -14,7 +14,8 @@ module load Python
 
 # declare run
 run=92
-epoch="latest"
+# epoch="latest"
+seed=0
 echo "Testing CopyGAN saved in run $run"
 
 #Create output directory on scratch
@@ -29,7 +30,7 @@ cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_co
 cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/* "$TMPDIR"/CopyGAN/
 
 # create directory in home for results
-mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"
+mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
 
 for epoch in "10" "20" "30" "latest"
 do
@@ -43,11 +44,13 @@ do
         --epoch "${epoch}"\
         --results_dir "$TMPDIR"/results/ \
         --display_freq 10\
-        --seed 42\
+        --seed "${seed}"\
         --verbose\
-        > "$TMPDIR"/test_results_run"${run}"_epoch_"${epoch}".txt
+        > "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt
 
-    cp -r "$TMPDIR"/results/CopyGAN/* $HOME/City-GAN/results/CopyGAN/run"${run}"
-    cp "$TMPDIR"/test_results_run"${run}"_epoch_"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+
+
+    cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"/
+    cp "$TMPDIR"/test_results_run"${run}"_seed"{seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
 done
 

@@ -15,6 +15,7 @@ module load Python
 # declare run
 run=101
 aux=0.0
+epoch="latest"
 
 echo "starting training and testing run $run with lambda_aux $aux"
 
@@ -82,15 +83,16 @@ do
             --checkpoints_dir "$TMPDIR"\
             --results_dir "$TMPDIR"/results/ \
             --display_freq 10\
-            --seed 42\
+            --seed "${seed}"\
+            --epoch "${epoch}"\
             --verbose\
-            > "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt
+            > "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt
 
 
         # copy results to home directory
         mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
-        cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
-        cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+        cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
+        cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
     done
     # Increment run number
     ((run=run+1))
