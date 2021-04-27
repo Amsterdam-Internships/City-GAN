@@ -66,14 +66,14 @@ do
 
 
     # copy checkpoints to home directory
-    mkdir -p $HOME/City-GAN/checkpoints/run"${run}"/"${seed}"
+    mkdir -p $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"
     cp -r "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
 
 
     #### TESTING PART
 
     # copy the model to scratch
-    cp $HOME/City-GAN/checkpoints/run"${run}"/checkpoints/CopyGAN/latest_net_G.pth "$TMPDIR"/CopyGAN/
+    cp $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/latest_net_G.pth "$TMPDIR"/CopyGAN/
 
     # execute training script
     python $HOME/City-GAN/test.py \
@@ -89,7 +89,7 @@ do
 
 
     # copy results to home directory
-    mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"
+    mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
     cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/   CopyGAN/run"${run}"/seed"${seed}"
     cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
 done

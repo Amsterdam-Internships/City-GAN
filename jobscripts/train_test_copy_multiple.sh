@@ -88,8 +88,8 @@ do
 
 
         # copy results to home directory
-        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/"${seed}"
-        cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
+        mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
+        cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
         cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
     done
     # Increment run number
