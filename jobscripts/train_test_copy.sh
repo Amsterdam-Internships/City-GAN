@@ -68,7 +68,7 @@ do
 
     # copy checkpoints to home directory
     mkdir -p $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"
-    cp -r "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
+    cp -r "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"/CopyGAN/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
 
 
     #### TESTING PART
