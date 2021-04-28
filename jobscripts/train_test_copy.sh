@@ -92,7 +92,7 @@ do
 
     # copy results to home directory
     mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
-    cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/   CopyGAN/run"${run}"/seed"${seed}"/
+    cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
     cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
 done
 
