@@ -13,8 +13,8 @@ module load 2020
 module load Python
 
 # declare run
-run=101
-aux=0.0
+run=104
+aux=0.1
 epoch="latest"
 
 echo "starting training and testing run $run with lambda_aux $aux"
@@ -31,7 +31,7 @@ for type in "baseline" "pool" "conv"
 do
     echo "\n\nTraining run ${run} with pred-type ${type}"
     # set aux loss correctly
-    for seed in 0 10 20 30 42
+    for seed in 1 10 20 30 42
     do
         echo "Seed: $seed"
         # execute training script
