@@ -1,20 +1,3 @@
-"""Model class template
-
-This module provides a template for users to implement custom models.
-You can specify '--model template' to use this model.
-The class name should be consistent with both the filename and its model option.
-The filename should be <model>_dataset.py
-The class name should be <Model>Dataset.py
-It implements a simple image-to-image translation baseline based on regression loss.
-Given input-output pairs (data_A, data_B), it learns a network netG that can minimize the following L1 loss:
-    min_<netG> ||netG(data_A) - data_B||_1
-You need to implement the following functions:
-    <modify_commandline_options>:　Add model-specific options and rewrite default values for existing options.
-    <__init__>: Initialize this model class.
-    <set_input>: Unpack input data and perform data pre-processing.
-    <forward>: Run forward pass. This will be called by both <optimize_parameters> and <test>.
-    <optimize_parameters>: Update network weights; it will be called in every training iteration.
-"""
 import torch
 from .base_model import BaseModel
 from . import networks
@@ -32,9 +15,7 @@ class ClassifierMoveModel(BaseModel):
         Returns:
             the modified parser.
         """
-        parser.set_defaults(dataset_mode='move_eval', netG='classifier')  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
-        if is_train:
-            pass
+        parser.set_defaults(dataset_mode='move_eval', netG='classifier', data_root="datasets/ROOM_composite")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
 
         return parser
 
@@ -79,6 +60,7 @@ class ClassifierMoveModel(BaseModel):
         self.fake = input['fake']
         self.random = input['random']
         self.scanline = input['scanline']
+
 
     def forward(self):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
