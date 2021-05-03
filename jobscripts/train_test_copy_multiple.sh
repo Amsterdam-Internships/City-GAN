@@ -14,7 +14,7 @@ module load Python
 
 # declare run
 run=104
-aux=0.1
+aux=0.0
 epoch="latest"
 
 echo "starting training and testing run $run with lambda_aux $aux"
