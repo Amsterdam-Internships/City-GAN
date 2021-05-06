@@ -24,6 +24,7 @@ class MoveModel(BaseModel):
             the modified parser.
         """
         parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        print("is Train?", is_train)
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
@@ -467,7 +468,7 @@ class MoveModel(BaseModel):
         fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
         ax1.imshow(util.tensor2im(self.src), origin="upper")
         ax1.set_title("source")
-        ax2.imshow(util.tensor2im(self.src), origin="upper")
+        ax2.imshow(util.tensor2im(self.tgt), origin="upper")
         ax2.set_title("target")
         ax3.imshow(util.tensor2im(moved_obj), origin="upper")
         ax3.set_title(f"moved_obj ({x_translation}, {y_translation})")
@@ -475,7 +476,7 @@ class MoveModel(BaseModel):
         ax4.set_title("result")
         ax5.imshow(util.tensor2im(obj), origin="upper")
         ax5.set_title("object")
-        ax6.imshow(util.tensor2im(obj), origin="upper")
+        ax6.imshow(util.tensor2im(new_background), origin="upper")
         ax6.set_title("background")
         plt.tight_layout()
         plt.show()
