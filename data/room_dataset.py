@@ -114,6 +114,10 @@ class RoomDataset(BaseDataset):
                 out_dict["mask"] = mask
                 return out_dict
 
+
+        # never return None
+        return self.__getitem__(random.randint(1, self.length-1))
+
         out_dict = None
 
         # # concatenate version:
