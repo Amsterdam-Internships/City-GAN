@@ -29,7 +29,7 @@ mkdir "$TMPDIR"/CopyGAN
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
-for seed in 0 10 20 30 42
+for seed in 1 10 20 30 42
 do
     echo "Seed: $seed"
 

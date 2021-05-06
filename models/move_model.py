@@ -24,6 +24,7 @@ class MoveModel(BaseModel):
             the modified parser.
         """
         parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        print("is Train?", is_train)
         if is_train:
             parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
             parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
@@ -416,18 +417,25 @@ class MoveModel(BaseModel):
 
     def baseline(self, data, type_='random'):
 
-        assert type_ in {"random", "scanline"}, f"Type {type_} not recognized, choose from \"random\" or \"scanline\""
+        assert type_ in {"random", "scanline", "move", "real"}, f"Type {type_} not recognized, choose from \"random\", \"scanline\", \"move\" or \"real\""
 
         assert self.opt.batch_size == 1,"for baselines, batch size should be 1"
 
+
+
         self.set_input(data)
+
+        if type_=="move":
+            self.forward(valid=True)
+            return self.src, self.composite
+        elif type_ == "real":
+            return self.src, self.src
 
         img_width, img_height = self.src.shape[2:4]
 
         obj_width = int(torch.max(torch.sum(self.obj_mask>0, axis=2)))
         obj_height = int(torch.max(torch.sum(self.obj_mask>0, axis=3)))
 
-        obj_size_approx = obj_width * obj_height
 
         # divide the image into segments
         # background includes the object to be moved
@@ -454,18 +462,22 @@ class MoveModel(BaseModel):
 
         moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)
         new_background = 1 - (moved_obj != 0).int()
-        self.moved = new_background  * self.src + moved_obj
+        self.moved = new_background  * self.tgt + moved_obj
 
         print(x_translation, y_translation)
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+        fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
         ax1.imshow(util.tensor2im(self.src), origin="upper")
-        ax1.set_title("original")
-        ax2.imshow(util.tensor2im(obj), origin="upper")
-        ax2.set_title("object")
+        ax1.set_title("source")
+        ax2.imshow(util.tensor2im(self.tgt), origin="upper")
+        ax2.set_title("target")
         ax3.imshow(util.tensor2im(moved_obj), origin="upper")
         ax3.set_title(f"moved_obj ({x_translation}, {y_translation})")
         ax4.imshow(util.tensor2im(self.moved), origin="upper")
         ax4.set_title("result")
+        ax5.imshow(util.tensor2im(obj), origin="upper")
+        ax5.set_title("object")
+        ax6.imshow(util.tensor2im(new_background), origin="upper")
+        ax6.set_title("background")
         plt.tight_layout()
         plt.show()
 

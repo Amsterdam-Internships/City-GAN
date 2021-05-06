@@ -7,7 +7,7 @@ import glob
 import random
 
 
-class RoomDataset(BaseDataset):
+class MoveEvalDataset(BaseDataset):
     """This dataset class can load a set of images specified by the path --dataroot /path/to/data.
 
     It can be used for generating CycleGAN results only for one side with the model option '-model test'.
@@ -32,7 +32,7 @@ class RoomDataset(BaseDataset):
         count = 0
         self.paths = {k:[] for k in self.data_dirs}
 
-        for directory, type_ in enumerate(self.data_dirs, self.types):
+        for directory, type_ in enumerate(zip(self.data_dirs, self.types)):
             for root, _, fnames in sorted(os.walk(directory)):
                 for fname in fnames:
                     if is_image_file(fname):
