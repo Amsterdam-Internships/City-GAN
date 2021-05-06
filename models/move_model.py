@@ -121,10 +121,9 @@ class MoveModel(BaseModel):
 
 
 
-    def center_object(self, mask):
+    def center_object(self):
         """
         This function performs the following steps:
-        - A valid mask from the mask_dict is selected
         - Mask is used to extract the object from the source image
         - The object and corresponding mask are centered
         """
@@ -138,19 +137,19 @@ class MoveModel(BaseModel):
         [self.B, _, self.w, self.h] = list(mask_pdist.shape)
         # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
 
-        x_center, y_center = self.w//2, self.h//2
+        self.x_center, self.y_center = self.w//2, self.h//2
 
         # marginal distributions
         dx = torch.sum(mask_pdist, 2).view(-1, self.w)
         dy = torch.sum(mask_pdist, 3).view(-1, self.h)
 
         # expected values
-        cx = torch.sum(dx * torch.arange(self.w).to(self.device), 1)
-        cy = torch.sum(dy * torch.arange(self.h).to(self.device), 1)
+        self.cx = torch.sum(dx * torch.arange(self.w).to(self.device), 1)
+        self.cy = torch.sum(dy * torch.arange(self.h).to(self.device), 1)
 
         # compute necessary translations
-        x_t = x_center - cx
-        y_t = y_center - cy
+        x_t = self.x_center - self.cx
+        y_t = self.y_center - self.cy
 
         # extract object from src
         obj = (self.mask_binary) * self.src
@@ -179,7 +178,7 @@ class MoveModel(BaseModel):
         self.mask_binary = (self.mask > 0).int().to(self.device)
 
         # find a suitable object to move from src to target
-        self.obj, self.obj_mask = self.center_object(self.mask)
+        self.obj, self.obj_mask = self.center_object()
 
 
 
@@ -421,12 +420,10 @@ class MoveModel(BaseModel):
 
         assert self.opt.batch_size == 1,"for baselines, batch size should be 1"
 
-
-
         self.set_input(data)
 
         if type_=="move":
-            self.forward(valid=True)
+            self.forward(generator=True)
             return self.src, self.composite
         elif type_ == "real":
             return self.src, self.src
@@ -436,20 +433,22 @@ class MoveModel(BaseModel):
         obj_width = int(torch.max(torch.sum(self.obj_mask>0, axis=2)))
         obj_height = int(torch.max(torch.sum(self.obj_mask>0, axis=3)))
 
+        # get object coordinates
+        self.cx, self.cy
 
-        # divide the image into segments
-        # background includes the object to be moved
+        # # background includes the object to be moved
         background = (1-self.mask_binary) * self.src
-        obj = self.mask_binary * self.src
-
+        # first we separated the object ourselves, but we can also center and then move, but we would need the initial y-coordinate in case of scanline translation
+        # obj = self.mask_binary * self.src
+        obj, obj_mask = self.center_object()
 
         # x translation is always used
         # x_translation = np.random.randint(obj_width, img_width - obj_width)
-        x_translation = (1 if np.random.random() < 0.5 else -1) * obj_width
+        x_translation = np.random.randint(-self.x_center, self.x_center)
         # x_translation = np.random.normal(obj_width, 2*obj_width)
 
         if type_=="random":
-            y_translation = (1 if np.random.random() < 0.5 else -1) * obj_height
+            y_translation = np.random.randint(-self.y_center, self.y_center)
 
         elif type_=="scanline":
             # we want to obtain x_min and x_max of the object, and the width of the object (x_max-x_min). Then we move the object to the right with at least width, and maximally (img_width - width), and modulo the transformation with img_width
@@ -458,28 +457,28 @@ class MoveModel(BaseModel):
                 print("object is too large, to be implemented (returns None)")
                 return None, None
 
-            y_translation = 0
+            y_translation = int((self.cy - self.y_center).item())
 
         moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)
         new_background = 1 - (moved_obj != 0).int()
         self.moved = new_background  * self.tgt + moved_obj
 
-        print(x_translation, y_translation)
-        fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
-        ax1.imshow(util.tensor2im(self.src), origin="upper")
-        ax1.set_title("source")
-        ax2.imshow(util.tensor2im(self.tgt), origin="upper")
-        ax2.set_title("target")
-        ax3.imshow(util.tensor2im(moved_obj), origin="upper")
-        ax3.set_title(f"moved_obj ({x_translation}, {y_translation})")
-        ax4.imshow(util.tensor2im(self.moved), origin="upper")
-        ax4.set_title("result")
-        ax5.imshow(util.tensor2im(obj), origin="upper")
-        ax5.set_title("object")
-        ax6.imshow(util.tensor2im(new_background), origin="upper")
-        ax6.set_title("background")
-        plt.tight_layout()
-        plt.show()
+        # print(x_translation, y_translation)
+        # fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
+        # ax1.imshow(util.tensor2im(self.src), origin="upper")
+        # ax1.set_title("source")
+        # ax2.imshow(util.tensor2im(self.tgt), origin="upper")
+        # ax2.set_title("target")
+        # ax3.imshow(util.tensor2im(moved_obj), origin="upper")
+        # ax3.set_title(f"moved_obj ({x_translation}, {y_translation})")
+        # ax4.imshow(util.tensor2im(self.moved), origin="upper")
+        # ax4.set_title("result")
+        # ax5.imshow(util.tensor2im(obj), origin="upper")
+        # ax5.set_title("object")
+        # ax6.imshow(util.tensor2im(new_background), origin="upper")
+        # ax6.set_title("background")
+        # plt.tight_layout()
+        # plt.show()
 
 
         return self.tgt, self.moved
