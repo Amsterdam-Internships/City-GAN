@@ -13,8 +13,8 @@ module load 2020
 module load Python
 
 # declare run
-run=104
-aux=0.0
+run=110
+aux=0.1
 epoch="latest"
 
 echo "starting training and testing run $run with lambda_aux $aux"
@@ -85,6 +85,7 @@ do
             --display_freq 10\
             --seed "${seed}"\
             --epoch "${epoch}"\
+	    --lambda_aux "${aux}"\
             --verbose\
             > "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt
 
