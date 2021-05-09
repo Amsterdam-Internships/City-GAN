@@ -181,7 +181,7 @@ class MoveModel(BaseModel):
 
 
 
-    def forward(self, valid=False, generator=False):
+    def forward(self, valid=False, generator=False, baseline=False):
         """
         what needs to be done:
             - target image and centered object are fed to convnet (initialized in the init)
@@ -271,7 +271,8 @@ class MoveModel(BaseModel):
             self.composite = self.composite.detach()
 
         # get the prediction on the fake image, and blur the image
-        self.pred_fake = self.netD(self.blur(self.composite))
+        if not baseline:
+            self.pred_fake = self.netD(self.blur(self.composite))
 
         if valid or not generator:
             self.pred_real = self.netD(self.blur(self.src))
@@ -422,7 +423,8 @@ class MoveModel(BaseModel):
         self.set_input(data)
 
         if type_=="move":
-            self.forward(generator=True)
+            # call forward pass without computing D
+            self.forward(generator=True, baseline=True)
             return self.src, self.composite
         elif type_ == "real":
             return self.src, self.src
