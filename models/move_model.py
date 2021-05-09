@@ -24,12 +24,11 @@ class MoveModel(BaseModel):
             the modified parser.
         """
         parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
-        print("is Train?", is_train)
-        if is_train:
-            parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
-            parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
-            parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
-            parser.add_argument('--use_eq_loss', action='store_true', help='If specified, the equality loss will be used, penalizing little difference with the original image')
+        parser.add_argument('--use_eq_loss', action='store_true', help='If specified, the equality loss will be used, penalizing little difference with the original image')
+        parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
+        parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
+        parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
+
 
 
 
@@ -77,11 +76,6 @@ class MoveModel(BaseModel):
 
         self.count_G, self.count_D = 0, 0
 
-        self.scaler = GradScaler(enabled=opt.use_amp)
-
-        if opt.tracemalloc:
-            import tracemalloc
-
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
         conv_input_nc = 3 if opt.two_stream else 6
@@ -95,6 +89,11 @@ class MoveModel(BaseModel):
             # define Discriminator
             self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids)
             self.model_names.append("D")
+
+            self.scaler = GradScaler(enabled=opt.use_amp)
+
+            if opt.tracemalloc:
+                import tracemalloc
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label= opt.real_target, target_fake_label=opt.fake_target, noisy_labels=opt.noisy_labels).to(self.device)

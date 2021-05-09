@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-05-06 19:46
+# @Last Modified time: 2021-05-09 11:13
 
 """
 This script is to generate the complete dataset for evaluating the moveGAN
@@ -15,7 +15,7 @@ if ".." not in sys.path:
     sys.path.insert(1, os.path.join(sys.path[0], '..'))
     sys.path.append("..")
 
-from options.train_options import TrainOptions
+from options.test_options import TestOptions
 from data import create_dataset
 from models import create_model
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    opt = TrainOptions().parse()  # get test options
+    opt = TestOptions().parse()  # get test options
     # hard-code some parameters for test
     opt.num_threads = 0   # test code only supports num_threads = 0
     opt.serial_batches = True  # disable data shuffling; comment this line if results on randomly chosen images are needed.
