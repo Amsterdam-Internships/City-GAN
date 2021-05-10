@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=110
+run=112
 aux=0.1
 epoch="latest"
 
@@ -27,11 +27,13 @@ mkdir "$TMPDIR"/CopyGAN
 #Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
 
-for type in "baseline" "pool" "conv"
+# for type in "baseline" "pool" "conv"
+for type in "conv"
 do
     echo "\n\nTraining run ${run} with pred-type ${type}"
     # set aux loss correctly
-    for seed in 1 10 20 30 42
+    # for seed in 1 10 20 30 42
+    for seed in 30 42
     do
         echo "Seed: $seed"
         # execute training script
@@ -85,7 +87,7 @@ do
             --display_freq 10\
             --seed "${seed}"\
             --epoch "${epoch}"\
-	    --lambda_aux "${aux}"\
+            --lambda_aux "${aux}"\
             --verbose\
             > "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt
 
