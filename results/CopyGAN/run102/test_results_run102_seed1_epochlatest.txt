@@ -1,56 +1,56 @@
 ----------------- Options ---------------
-             aspect_ratio: 1.0                           
-               batch_size: 64                            
+             aspect_ratio: 1.0
+               batch_size: 64
           checkpoints_dir: /scratch                      	[default: ./checkpoints]
-                crop_size: 64                            
+                crop_size: 64
                  dataroot: /scratch/datasets/CLEVR_colorized/images	[default: datasets]
-             dataset_mode: double                        
-                direction: None                          
+             dataset_mode: double
+                direction: None
              display_freq: 10                            	[default: 100]
-          display_winsize: 256                           
-                    epoch: latest                        
-              fake_target: 0.1                           
-            flip_vertical: False                         
-                  gpu_ids: 0                             
-                init_gain: 0.02                          
-                init_type: normal                        
-                 input_nc: 3                             
+          display_winsize: 256
+                    epoch: latest
+              fake_target: 0.1
+            flip_vertical: False
+                  gpu_ids: 0
+                init_gain: 0.02
+                init_type: normal
+                 input_nc: 3
                   isTrain: False                         	[default: None]
-          keep_last_batch: False                         
-               lambda_aux: 0.1                           
+          keep_last_batch: False
+               lambda_aux: 0.0
                 load_iter: 0                             	[default: 0]
-                load_size: 70                            
-                       lr: 0.0002                        
-                lr_policy: step                          
-         max_dataset_size: inf                           
-                  min_iou: 0.5                           
-                    model: copy                          
-                 n_epochs: 20                            
-           n_epochs_decay: 10                            
-               n_layers_D: 3                             
-                     name: CopyGAN                       
-                      ndf: 64                            
-                     netD: copy                          
-                     netG: copy                          
-                      ngf: 64                            
-        no_border_zeroing: False                         
-               no_dropout: False                         
-                  no_flip: False                         
-                     norm: instance                      
-                 num_test: 5000                          
-              num_threads: 4                             
-                output_nc: 3                             
-                    phase: test                          
-               preprocess: resize_and_crop               
-               print_freq: 20                            
-              real_target: 0.9                           
+                load_size: 70
+                       lr: 0.0002
+                lr_policy: step
+         max_dataset_size: inf
+                  min_iou: 0.5
+                    model: copy
+                 n_epochs: 20
+           n_epochs_decay: 10
+               n_layers_D: 3
+                     name: CopyGAN
+                      ndf: 64
+                     netD: copy
+                     netG: copy
+                      ngf: 64
+        no_border_zeroing: False
+               no_dropout: False
+                  no_flip: False
+                     norm: instance
+                 num_test: 5000
+              num_threads: 4
+                output_nc: 3
+                    phase: test
+               preprocess: resize_and_crop
+               print_freq: 20
+              real_target: 0.9
               results_dir: /scratch/results/             	[default: ./results/]
-          save_epoch_freq: 10                            
+          save_epoch_freq: 10
                      seed: 1                             	[default: 0]
-           serial_batches: False                         
-                   suffix:                               
-                  use_amp: True                          
-           val_batch_size: 512                           
+           serial_batches: False
+                   suffix:
+                  use_amp: True
+           val_batch_size: 512
                   verbose: True                          	[default: False]
 ----------------- End -------------------
 Batch size is set to 1 for testing
