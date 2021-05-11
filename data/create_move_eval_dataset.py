@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-05-09 11:13
+# @Last Modified time: 2021-05-11 15:42
 
 """
 This script is to generate the complete dataset for evaluating the moveGAN
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
 
     opt.batch_size = 1
-    opt.num_test = 5000
+    opt.num_test = 5000 if opt.data_phase=="train", else 1000
 
     # make sure MoveModel is loaded
     opt.epoch = "latest"
@@ -55,20 +55,24 @@ if __name__ == '__main__':
     # where opt.epoch is "latest" by default --> latest_net_G.pth
     model.setup(opt)
 
+    # create the target directory for the Move results
+    os.mkdir(f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/move/run{opt.run}", exist_ok=True)
+
     model.eval()
-    for baseline in ["move", "real"]:
+    for baseline in ["real", "move", "scanline", "random"]:
         print(f"baseline: {baseline}")
+        run_folder = f"run{opt.run}/" if baseline == "move" else ""
         for i, data in enumerate(dataset):
             if i >= opt.num_test:  # only apply our model to opt.num_test images.
                 break
             # get output image from model
-            src, composite = model.baseline(data,type_=baseline)
+            src, composite = model.baseline(data, type_=baseline)
 
             # convert to numpy
             img = util.tensor2im(composite)
 
             # save composites
-            util.save_image(img, f"/home/tlotze/City-GAN/datasets/ROOM_composite/{baseline}/{baseline}_{i}.png")
+            util.save_image(img, f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/{baseline}/{run_folder}{baseline}_{i}.png")
 
 
 

@@ -1,9 +1,10 @@
 import torch
 from .base_model import BaseModel
 from . import networks
+from torchvision.models import resnet18
 
 
-class ClassifierMoveModel(BaseModel):
+class ClassifierModel(BaseModel):
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
         """Add new model-specific options and rewrite default values for existing options.
@@ -16,6 +17,8 @@ class ClassifierMoveModel(BaseModel):
             the modified parser.
         """
         parser.set_defaults(dataset_mode='move_eval', netG='classifier', data_root="datasets/ROOM_composite")  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
+        parser.add_argument('--use_resnet18', action="store_true", help='If specified, use a Resnet18 model instead of own classification')
+        parser.add_argument('--use_pretrained', action="store_true", help='If specified, use a pretrained version of Resnet. Only possible in combination with --use_resnet18')
 
         return parser
 
@@ -38,7 +41,13 @@ class ClassifierMoveModel(BaseModel):
         # you can use opt.isTrain to specify different behaviors for training and test. For example, some networks will not be used during test, and you don't need to load them.
         self.model_names = ['Classifier']
         # define networks; you can use opt.isTrain to specify different behaviors for training and test.
-        self.netClassifier = networks.define_D(opt.input_nc, opt.output_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4)
+
+        #### TODO: move this to networks
+        if opt.use_resnet18:
+            self.netClassifier = resnet18(pretrained=opt.use_pretrained)
+        else:
+            self.netClassifier = networks.define_D(opt.input_nc, opt.output_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4)
+
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
             self.CELoss = torch.nn.CrossEntropyLoss()
@@ -69,6 +78,11 @@ class ClassifierMoveModel(BaseModel):
         self.pred_random = self.netClassifier(self.random)
         self.pred_scanline = self.netClassifier(self.scanline)
 
+    def get_accuracies(self):
+        for p in [self.pred_real, self.pred_fake, self.pred_random, self.pred_scanline]:
+            preds = torch.argmax(p, dim=0)
+
+
     def backward(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # caculate the intermediate results if necessary; here self.output has been computed during function <forward>
@@ -81,6 +95,11 @@ class ClassifierMoveModel(BaseModel):
         self.loss = self.loss_real + self.loss_fake + self.loss_random + self.loss_scanline
 
         self.loss.backward()
+
+
+        # save the losses and the predictions
+
+
 
     def optimize_parameters(self):
         """Update network weights; it will be called in every training iteration."""

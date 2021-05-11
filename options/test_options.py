@@ -15,8 +15,8 @@ class TestOptions(BaseOptions):
         parser.add_argument('--num_test', type=int, default=5000, help='how many test images to run')
         parser.add_argument('--display_freq', type=int, default=100, help='how many test images to run')
         parser.add_argument('--min_iou', type=float, default=0.5, help='Minimum IOU for a discovery to be successful')
-
-
+        # for generating data for MoveGAN classifier
+        parser.add_argument('--data_phase', type=str, default="train", help='Phase to save the generated data to, can be test or train')
 
         self.isTrain = False
         return parser

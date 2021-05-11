@@ -21,7 +21,7 @@ class MoveEvalDataset(BaseDataset):
         """
         BaseDataset.__init__(self, opt)
 
-        self.types = ["move", "real", "scanline", "random"]
+        self.types = [f"move/run{opt.run}", "real", "scanline", "random"]
 
         # images can be found directly in the phase folder
         self.data_dirs = [os.path.join(opt.dataroot, t) for t in self.types]

@@ -423,7 +423,7 @@ class MoveModel(BaseModel):
         self.set_input(data)
 
         if type_=="move":
-            # call forward pass without computing D
+            # call forward pass without computing
             self.forward(generator=True, baseline=True)
             return self.src, self.composite
         elif type_ == "real":
@@ -433,9 +433,6 @@ class MoveModel(BaseModel):
 
         obj_width = int(torch.max(torch.sum(self.obj_mask>0, axis=2)))
         obj_height = int(torch.max(torch.sum(self.obj_mask>0, axis=3)))
-
-        # get object coordinates
-        self.cx, self.cy
 
         # # background includes the object to be moved
         background = (1-self.mask_binary) * self.src

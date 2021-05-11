@@ -61,6 +61,8 @@ class BaseOptions():
                 help="Provide an integer for setting the random seed. Set to \
                     0 for random seed")
         parser.add_argument('--min_obj_surface', type=int, default=100, help= "Minimum number of pixels an object needs to be to be eligible for moving")
+        # only used in the classifier
+        parser.add_argument('--run', type=int, default=-1, help='Run number for creating dataset')
         self.initialized = True
         return parser
 
