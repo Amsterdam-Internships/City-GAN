@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 120:00:00
+#SBATCH -t 12:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
