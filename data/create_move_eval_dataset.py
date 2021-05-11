@@ -56,7 +56,7 @@ if __name__ == '__main__':
     model.setup(opt)
 
     model.eval()
-    for baseline in ["random", "scanline", "move", "real"]:
+    for baseline in ["move", "real"]:
         print(f"baseline: {baseline}")
         for i, data in enumerate(dataset):
             if i >= opt.num_test:  # only apply our model to opt.num_test images.
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             img = util.tensor2im(composite)
 
             # save composites
-            util.save_image(img, f"$HOME/datasets/ROOM_composite/{baseline}/{baseline}_{i}.png")
+            util.save_image(img, f"/home/tlotze/City-GAN/datasets/ROOM_composite/{baseline}/{baseline}_{i}.png")
 
 
 
