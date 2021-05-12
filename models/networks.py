@@ -7,7 +7,7 @@ import functools
 from torch.optim import lr_scheduler
 from math import log
 from PIL import Image, ImageDraw
-from torchvision import transforms
+from torchvision import transforms, models
 
 
 
@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    pred_type="pool", aux=True, two_stream=False, num_classes=4):
+    pred_type="pool", aux=True, two_stream=False, num_classes=4, resnet=False, pretrained=False):
     """
     Returns a discriminator
 
@@ -218,7 +218,17 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     elif netD == "move":
         net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
     elif netD == "classifier":
-        net = ConvClassifier(num_channels=input_nc, num_classes=4)
+        if resnet:
+            net = ResNet18(num_channels=input_nc, num_classes=4, pretrained=pretrained)
+            # if pretrained, do not innit weights, just put on device
+            if pretrained:
+                if len(gpu_ids) > 0:
+                    net.to(gpu_ids[0])
+                    return torch.nn.DataParallel(net, gpu_ids)
+                else:
+                    return net
+        else:
+            net = ConvClassifier(num_channels=input_nc, num_classes=4)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -1123,6 +1133,42 @@ class STN(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+
+
+
+
+
+
+##### RESNET 18 ######
+class ResNet18(nn.Module):
+    """docstring for ResNet18"""
+    def __init__(self, num_channels, num_classes, pretrained):
+        super(ResNet18, self).__init__()
+
+        self.model = models.resnet18(pretrained=pretrained)
+
+        # change setup if we use a pretrained network
+        if pretrained:
+            # freeze the parameters
+            for param in self.model.parameters():
+                param.requires_grad = False
+
+        # change last layer
+        fc_inputs = self.model.fc.in_features
+        self.model.fc = nn.Sequential(
+            nn.Linear(fc_inputs, 256),
+            nn.ReLU(),
+            nn.Dropout(0.4),
+            nn.Linear(256, num_classes),
+            nn.LogSoftmax(dim=1) # For using NLLLoss()
+        )
+
+
+    def forward(self, x):
+        return self.model(x)
+
+
+
 
 
 
