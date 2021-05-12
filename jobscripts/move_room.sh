@@ -24,7 +24,7 @@ mkdir "$TMPDIR"/datasets/ROOM/images/val
 
 
 # move the tar file in home to scratch
-cp $HOME/City-GAN/datasets/ROOM/images/train/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
+cp $HOME/City-GAN/datasets/ROOM/tars/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/train/
 
 # ls  "$TMPDIR"/datasets/ROOM/images/train | head -n 5
 
