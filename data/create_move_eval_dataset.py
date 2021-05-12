@@ -36,7 +36,7 @@ if __name__ == '__main__':
     opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
 
     opt.batch_size = 1
-    opt.num_test = 5000 if opt.data_phase=="train", else 1000
+    opt.num_test = 5000 if opt.data_phase=="train" else 1000
 
     # make sure MoveModel is loaded
     opt.epoch = "latest"
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     model.setup(opt)
 
     # create the target directory for the Move results
-    os.mkdir(f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/move/run{opt.run}", exist_ok=True)
+    os.mkdirs(f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/move/run{opt.run}", exist_ok=True)
 
     model.eval()
     for baseline in ["real", "move", "scanline", "random"]:

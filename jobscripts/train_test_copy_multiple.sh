@@ -65,7 +65,8 @@ do
             --use_amp\
             --noisy_labels\
             --n_alternating_batches 20\
-            --val_freq 20
+            --val_freq 20\
+	    --val_batch_size 400\
 
 
         # copy checkpoints to home directory
