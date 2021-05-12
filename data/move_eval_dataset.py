@@ -21,23 +21,24 @@ class MoveEvalDataset(BaseDataset):
         """
         BaseDataset.__init__(self, opt)
 
-        self.types = [f"move/run{opt.run}", "real", "scanline", "random"]
+        self.folders = [f"move/run{opt.run}", "real", "scanline", "random"]
+        self.types = [f"move", "real", "scanline", "random"]
 
         # images can be found directly in the phase folder
-        self.data_dirs = [os.path.join(opt.dataroot, t) for t in self.types]
+        self.data_dirs = [os.path.join(opt.dataroot, t) for t in self.folders]
 
         for i in self.data_dirs:
             assert os.path.isdir(i), f"{i} is not a valid dir"
 
         count = 0
-        self.paths = {k:[] for k in self.data_dirs}
+        self.paths = {k:[] for k in self.types}
 
-        for directory, type_ in enumerate(zip(self.data_dirs, self.types)):
+        for i,(directory, t) in enumerate(zip(self.data_dirs, self.types)):
             for root, _, fnames in sorted(os.walk(directory)):
                 for fname in fnames:
                     if is_image_file(fname):
                         path = os.path.join(root, fname)
-                        self.paths[type_].append(path)
+                        self.paths[t].append(path)
                         count += 1
                     if count >= opt.max_dataset_size:
                         break
@@ -73,4 +74,4 @@ class MoveEvalDataset(BaseDataset):
 
     def __len__(self):
         """Return the total number of images in the dataset."""
-        return len(self.types) * len(self.paths[types[0]])
+        return len(self.paths[self.types[0]])

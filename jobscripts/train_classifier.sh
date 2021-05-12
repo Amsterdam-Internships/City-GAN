@@ -13,7 +13,8 @@ module load 2020
 module load Python
 
 # declare run
-echo "starting training classifier"
+run=20
+echo "starting training classifier (run ${run})"
 
 #Create output directory on scratch
 mkdir -p "$TMPDIR"/datasets/ROOM_composite
@@ -23,7 +24,7 @@ cp -r $HOME/City-GAN/datasets/ROOM_composite/* "$TMPDIR"/datasets/ROOM_composite
 
 # execute training script
 python $HOME/City-GAN/train.py --model classifier \
-    --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
+    --dataroot "$TMPDIR"/datasets/ROOM_composite\
     --batch_size 64\
     --n_epochs 10\
     --n_epochs_decay 0\
@@ -37,8 +38,9 @@ python $HOME/City-GAN/train.py --model classifier \
     --crop_size 64\
     --display_id 0\
     --seed 42\
+    --data_phase "train"\
+    --run ${run}
 
 
 # copy results to home directory
-mkdir -p $HOME/City-GAN/checkpoints/run"${run}"
-cp -r "$TMPDIR"/checkpoints $HOME/City-GAN/checkpoints/run"${run}"
+cp -r "$TMPDIR"/checkpoints/* $HOME/City-GAN/Classifier/run"${run}"/
