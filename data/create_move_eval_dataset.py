@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-05-11 15:42
+# @Last Modified time: 2021-05-14 16:33
 
 """
 This script is to generate the complete dataset for evaluating the moveGAN
@@ -63,6 +63,8 @@ if __name__ == '__main__':
         print(f"baseline: {baseline}")
         run_folder = f"run{opt.run}/" if baseline == "move" else ""
         for i, data in enumerate(dataset):
+            if not data:
+                continue
             if i >= opt.num_test:  # only apply our model to opt.num_test images.
                 break
             # get output image from model
