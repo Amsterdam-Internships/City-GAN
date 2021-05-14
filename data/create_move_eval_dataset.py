@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-05-14 16:33
+# @Last Modified time: 2021-05-14 16:34
 
 """
 This script is to generate the complete dataset for evaluating the moveGAN
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     model.setup(opt)
 
     # create the target directory for the Move results
-    os.mkdirs(f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/move/run{opt.run}", exist_ok=True)
+    os.makedirs(f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/move/run{opt.run}", exist_ok=True)
 
     model.eval()
     for baseline in ["real", "move", "scanline", "random"]:
