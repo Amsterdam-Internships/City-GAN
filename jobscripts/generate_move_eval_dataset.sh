@@ -19,7 +19,7 @@ phase="test"
 mkdir -p "$TMPDIR"/datasets/ROOM/images/test
 
 #Copy data file to scratch
-if phase="train"
+if [ $phase = "train" ];
 then
     cp $HOME/City-GAN/datasets/ROOM/tars/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/test/
     tar -zxf "$TMPDIR"/datasets/ROOM/images/test/10k_train.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/test/
@@ -34,12 +34,14 @@ ls "$TMPDIR/datasets/ROOM/images/test" | head -n 5
 mkdir -p $TMPDIR/run"${run}"/MoveModel
 cp $HOME/City-GAN/checkpoints/room/run"${run}"/checkpoints/Move/latest_net_Conv.pth $TMPDIR/run"${run}"/MoveModel/
 
+echo $phase
+
 # execute training script
 python $HOME/City-GAN/data/create_move_eval_dataset.py --model move \
     --dataroot "$TMPDIR"/datasets/ROOM/images\
     --checkpoints_dir "$TMPDIR"/run"${run}"/\
     --verbose \
-    --min_obj_surface 50\
+    --min_obj_surface 30\
     --run "${run}"\
     --data_phase "${phase}"\
 
