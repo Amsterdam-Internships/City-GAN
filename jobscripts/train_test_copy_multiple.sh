@@ -33,7 +33,7 @@ do
     echo "\n\nTraining run ${run} with pred-type ${type}"
     # set aux loss correctly
     # for seed in 1 10 20 30 42
-    for seed in 30 42
+    for seed in 42
     do
         echo "Seed: $seed"
         # execute training script

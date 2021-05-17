@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=20
+run=21
 seed=42
 echo "starting training classifier (run ${run})"
 
@@ -39,7 +39,6 @@ python $HOME/City-GAN/train.py --model classifier \
     --crop_size 64\
     --display_id 0\
     --seed "${seed}"\
-    --data_phase "train"\
     --run ${run}
 
 

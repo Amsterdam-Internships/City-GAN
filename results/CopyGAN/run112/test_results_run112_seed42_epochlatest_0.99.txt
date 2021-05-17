@@ -24,7 +24,7 @@
                        lr: 0.0002                        
                 lr_policy: step                          
          max_dataset_size: inf                           
-                  min_iou: 0.5                           
+                  min_iou: 0.99                          	[default: 0.5]
           min_obj_surface: 100                           
                     model: copy                          
                  n_epochs: 20                            
@@ -130,4 +130,4 @@ DataParallel(
 creating web directory /scratch/results/CopyGAN/test_latest
 Arandjelovic score: total number of masks: 4999, succesfull: 0, ODP: 0.0%
 0/17761 objects are recognized (0.0%)
-Total run time: 287.1 sec
+Total run time: 291.1 sec

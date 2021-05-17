@@ -12,7 +12,7 @@
 module load 2020
 module load Python
 
-run=21
+run=20
 phase="test"
 
 #Create data directory on scratch
@@ -41,7 +41,7 @@ python $HOME/City-GAN/data/create_move_eval_dataset.py --model move \
     --dataroot "$TMPDIR"/datasets/ROOM/images\
     --checkpoints_dir "$TMPDIR"/run"${run}"/\
     --verbose \
-    --min_obj_surface 30\
+    --min_obj_surface 50\
     --run "${run}"\
     --data_phase "${phase}"\
 
