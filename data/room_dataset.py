@@ -96,7 +96,7 @@ class RoomDataset(BaseDataset):
         out_dict['src'] = self.transform_img(img_src)
         out_dict['tgt'] = self.transform_img(img_tgt)
 
-        # extract all src masks
+        # extract all src masks, skip the floor, sky and walls
         mask_paths = sorted(glob.glob(os.path.join(self.data_dir, f"{mask_idx}_mask_*.jpg")))[4:]
 
         random.shuffle(mask_paths)

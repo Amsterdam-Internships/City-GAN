@@ -14,6 +14,7 @@ module load Python
 
 # declare run
 run=20
+seed=42
 echo "starting training classifier (run ${run})"
 
 #Create output directory on scratch
@@ -37,10 +38,14 @@ python $HOME/City-GAN/train.py --model classifier \
     --load_size 70\
     --crop_size 64\
     --display_id 0\
-    --seed 42\
+    --seed "${seed}"\
     --data_phase "train"\
     --run ${run}
 
 
 # copy results to home directory
 cp -r "$TMPDIR"/checkpoints/* $HOME/City-GAN/Classifier/run"${run}"/
+
+
+# test the performance of the classifier
+# python $HOME/City-GAN/test.py --model classifier \
