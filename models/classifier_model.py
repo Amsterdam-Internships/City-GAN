@@ -99,7 +99,7 @@ class ClassifierModel(BaseModel):
         # caculate the intermediate results if necessary; here self.output has been computed during function <forward>
         # calculate loss given the input and intermediate results
         B = self.pred_move.shape[0]
-        y_base = torch.ones(B).long()
+        y_base = torch.ones(B).long().to(self.device)
 
         self.loss_real = self.CELoss(self.pred_real, y_base * 0)
         self.loss_move = self.CELoss(self.pred_move, y_base * 1)
