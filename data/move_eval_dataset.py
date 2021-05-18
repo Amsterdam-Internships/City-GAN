@@ -25,7 +25,8 @@ class MoveEvalDataset(BaseDataset):
         self.types = [f"move", "real", "scanline", "random"]
 
         # images can be found directly in the phase folder
-        self.data_dirs = [os.path.join(opt.dataroot, t) for t in self.folders]
+        dataroot = os.path.join(opt.dataroot, opt.phase)
+        self.data_dirs = [os.path.join(dataroot, t) for t in self.folders]
 
         for i in self.data_dirs:
             assert os.path.isdir(i), f"{i} is not a valid dir"

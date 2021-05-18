@@ -116,7 +116,7 @@ class RoomDataset(BaseDataset):
 
 
         # never return None
-        # return self.__getitem__(random.randint(1, self.length-1))
+        return self.__getitem__(random.randint(1, self.length-1))
 
         out_dict = None
 

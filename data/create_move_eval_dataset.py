@@ -59,7 +59,7 @@ if __name__ == '__main__':
     os.makedirs(f"/home/tlotze/City-GAN/datasets/ROOM_composite/{opt.data_phase}/move/run{opt.run}", exist_ok=True)
 
     model.eval()
-    for baseline in ["real", "move", "scanline", "random"]:
+    for baseline in ["move"]:
         print(f"baseline: {baseline}")
         run_folder = f"run{opt.run}/" if baseline == "move" else ""
         for i, data in enumerate(dataset):

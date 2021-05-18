@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 15:00:00
+#SBATCH -t 3:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=21
+run=20
 seed=42
 echo "starting training classifier (run ${run})"
 
@@ -41,7 +41,8 @@ python $HOME/City-GAN/train.py --model classifier \
 
 
 # copy results to home directory
-cp -r "$TMPDIR"/checkpoints/* $HOME/City-GAN/Classifier/run"${run}"/
+mkdir -p $HOME/City-GAN/checkpoints/Classifier/run"${run}"/
+cp -r "$TMPDIR"/checkpoints/Classifier/* $HOME/City-GAN/checkpoints/Classifier/run"${run}"/
 
 
 # test the performance of the classifier
