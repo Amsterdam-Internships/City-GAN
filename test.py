@@ -65,17 +65,17 @@ if __name__ == '__main__':
 
         # compute IOU
         # IOU_batch = evaluate.compute_IOU(model.g_mask_binary, model.bin_gt)
-        if opt.model == "copy"
-        mask_success, used_mask_gt, n_obj = evaluate.is_mask_success(model.gt_og[0], model.gt_num_obj[0], model.g_mask_binary[0], min_iou=opt.min_iou)
-        total_success_masks += mask_success
-        total_n_obj += model.gt_num_obj[0]
-        total_n_obj_recognized += n_obj
-        fractions_recognized.append(n_obj/model.gt_num_obj[0])
+        if opt.model == "copy":
+            mask_success, used_mask_gt, n_obj = evaluate.is_mask_success(model.gt_og[0], model.gt_num_obj[0], model.g_mask_binary[0], min_iou=opt.min_iou)
+            total_success_masks += mask_success
+            total_n_obj += model.gt_num_obj[0]
+            total_n_obj_recognized += n_obj
+            fractions_recognized.append(n_obj/model.gt_num_obj[0])
 
-        # IOU_list.extend(IOU_batch)
-
-        # IOU_eroded = evaluate.compute_IOU(model.eroded_mask, model.bin_gt)
-        # IOU_list_eroded.extend(IOU_eroded)
+            # IOU_list.extend(IOU_batch)
+            
+            # IOU_eroded = evaluate.compute_IOU(model.eroded_mask, model.bin_gt)
+            # IOU_list_eroded.extend(IOU_eroded)
 
 
         if (i+1) % opt.display_freq == 0 and opt.model=="copy":
