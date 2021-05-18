@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-04-26 13:53
+# @Last Modified time: 2021-05-18 15:51
 
 """
 This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. Instead, the model is loaded from memory.
@@ -65,6 +65,7 @@ if __name__ == '__main__':
 
         # compute IOU
         # IOU_batch = evaluate.compute_IOU(model.g_mask_binary, model.bin_gt)
+        if opt.model == "copy"
         mask_success, used_mask_gt, n_obj = evaluate.is_mask_success(model.gt_og[0], model.gt_num_obj[0], model.g_mask_binary[0], min_iou=opt.min_iou)
         total_success_masks += mask_success
         total_n_obj += model.gt_num_obj[0]
@@ -77,7 +78,7 @@ if __name__ == '__main__':
         # IOU_list_eroded.extend(IOU_eroded)
 
 
-        if (i+1) % opt.display_freq == 0:
+        if (i+1) % opt.display_freq == 0 and opt.model=="copy":
             # iou= f"{IOU_batch[0]:.2f} / {IOU_eroded[0]:.2f}, num_obj={model.gt_num_obj[0].item()}, succes: {mask_success}"
 
             # set used ground truth mask as visual
@@ -96,14 +97,18 @@ if __name__ == '__main__':
     # mean, min_, max_, std = np.mean(IOU_list_eroded), np.min(IOU_list_eroded), np.max(IOU_list_eroded), np.std(IOU_list_eroded)
 #
     # print(f"\n\nEroded: \nMean: {mean:.2f}\nMin: {min_:.2f}\nMax: {max_:.2f}\nSTD: {std:.2f}")
+    if opt.model == "copy":
+        ODP = total_success_masks / i
+        # recognized_fraction = total_n_obj_recognized/total_n_obj
+        recognized_fraction = np.mean(fractions_recognized)
 
-    ODP = total_success_masks / i
-    # recognized_fraction = total_n_obj_recognized/total_n_obj
-    recognized_fraction = np.mean(fractions_recognized)
+        print(f"Arandjelovic score: total number of masks: {i}, succesfull: {total_success_masks}, ODP: {(ODP * 100):.1f}%")
+        print(f"{total_n_obj_recognized}/{total_n_obj} objects are recognized ({recognized_fraction*100:.1f}%)")
+        print(f"Total run time: {time.time()-start_time:.1f} sec")
+    elif opt.model == "classifier":
+        print(f"overall accuracy: {model.get_accuracies():.2f}")
+        print(f"Confusion matrix: {model.confusion_matrix}")
 
-    print(f"Arandjelovic score: total number of masks: {i}, succesfull: {total_success_masks}, ODP: {(ODP * 100):.1f}%")
-    print(f"{total_n_obj_recognized}/{total_n_obj} objects are recognized ({recognized_fraction*100:.1f}%)")
-    print(f"Total run time: {time.time()-start_time:.1f} sec")
 
 
 

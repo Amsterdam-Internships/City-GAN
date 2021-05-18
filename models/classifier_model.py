@@ -46,7 +46,7 @@ class ClassifierModel(BaseModel):
         # define networks; you can use opt.isTrain to specify different behaviors for training and test.
 
         # create confusion matrix
-        self.confusion_matrix = torch.zeros(4, 4)
+        self.reset_conf_matrix()
 
 
         self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, resnet=opt.use_resnet18, pretrained=opt.use_pretrained)
@@ -93,6 +93,9 @@ class ClassifierModel(BaseModel):
                 for p in argmax_pred:
                     self.confusion_matrix[class_, p] += 1
 
+    def reset_conf_matrix(self):
+        self.confusion_matrix = torch.zeros(4, 4)
+
 
     def backward(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
@@ -122,10 +125,16 @@ class ClassifierModel(BaseModel):
 
 
     def run_batch(self, data, overall_batch):
+        self.reset_conf_matrix()
         self.set_input(data)
         self.optimize_parameters()
         self.update_conf_matrix()
         acc = self.get_accuracies()
+
+        if overall_batch % opt.print_freq == 0:
+            print("accuracy:", acc)
+            print(self.confusion_matrix)
+
 
     def test(self, data):
         assert not self.isTrain, "Model should be in testing state"
@@ -134,14 +143,8 @@ class ClassifierModel(BaseModel):
             self.set_input(data)
 
             self.forward()
-            # loop over class predictions
+            # update confusion matrix
             self.update_conf_matrix()
-            acc = self.get_accuracies
-            print(acc)
-
-
-
-            # add to confusion matrix
 
 
 
