@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 3:00:00
+#SBATCH -t 5:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -46,4 +46,19 @@ cp -r "$TMPDIR"/checkpoints/Classifier/* $HOME/City-GAN/checkpoints/Classifier/r
 
 
 # test the performance of the classifier
-# python $HOME/City-GAN/test.py --model classifier \
+python $HOME/City-GAN/test.py --model classifier\
+    --dataroot "$TMPDIR"/datasets/ROOM_composite\
+    --checkpoints_dir "$TMPDIR"/checkpoints\
+    --results_dir "$TMPDIR"/results/ \
+    --run ${run}\
+    --batch_size 64\
+    --seed "${seed}"\
+    > "$TMPDIR"/test_results_run"${run}".txt
+
+mkdir -p $HOME/City-GAN/results/Classifier/run"${run}"/
+    cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/Classifier/run"${run}"/
+    cp "$TMPDIR"/test_results_run"${run}".txt $HOME/City-GAN/results/Classifier/run"${run}"/
+
+
+
+
