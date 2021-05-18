@@ -35,8 +35,6 @@ python $HOME/City-GAN/train.py --model classifier \
     --update_html 100\
     --display_freq 100\
     --verbose \
-    --load_size 70\
-    --crop_size 64\
     --display_id 0\
     --seed "${seed}"\
     --run ${run}
