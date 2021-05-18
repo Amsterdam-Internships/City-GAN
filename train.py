@@ -12,13 +12,13 @@ if __name__ == '__main__':
     opt = TrainOptions().parse()
 
     dataset = create_dataset(opt)
-
-    opt_valid = copy.copy(opt)
-    opt_valid.phase = "val"
-    # opt_valid.num_threads = 0
-    opt_valid.batch_size = opt.val_batch_size
-    val_dataset = create_dataset(opt_valid)
-
+    if opt.model != "classifier":
+        opt_valid = copy.copy(opt)
+        opt_valid.phase = "val"
+        # opt_valid.num_threads = 0
+        opt_valid.batch_size = opt.val_batch_size
+        val_dataset = create_dataset(opt_valid)
+        print(f'The number of validation images = {len(val_dataset)}')
 
     # # get the number of images in the dataset.
     dataset_size = len(dataset)
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     print(f"Starting training of {opt.model}-model")
     print(f'The number of training images = {dataset_size}')
-    print(f'The number of validation images = {len(val_dataset)}')
+
     total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
     print(f'The number of epochs to run = {total_nr_epochs}')
 
