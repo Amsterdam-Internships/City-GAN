@@ -11,6 +11,8 @@ if __name__ == '__main__':
     # get training options
     opt = TrainOptions().parse()
 
+    script_start_time = time.time()
+
     dataset = create_dataset(opt)
     if opt.model != "classifier":
         opt_valid = copy.copy(opt)
@@ -133,6 +135,6 @@ if __name__ == '__main__':
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
 
     model.save_networks('latest')
-    print("Finished training, model is saved")
+    print(f"Finished training, model is saved ({epoch} epochs in {time.time()-script_start_time}s)")
     if opt.model != "classifier":
         print(f"Batches trained - G: {model.count_G}, D: {model.count_D} ")
