@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-11 11:16
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-04-13 17:26
+# @Last Modified time: 2021-04-20 11:38
 
 import itertools
 import torch
@@ -37,7 +37,7 @@ def compute_IOU(outputs: torch.Tensor, labels: torch.Tensor, smooth=1e-6):
 def get_powerset(iterable):
     """compute the combinations of all objects, with different subset sizes"""
     s = list(iterable)
-    return list(itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(1, len(s)+1)))
+    return list(itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s), 0, -1)))
 
 
 
@@ -59,7 +59,7 @@ def get_separate_masks(mask, num_obj):
 
 
 
-def is_mask_success(true_masks, object_cnt, pred_mask, min_iou=0.5):
+def is_mask_success(true_masks, object_cnt, pred_mask,min_iou=0.5,smooth=1e-6):
     '''
     Given a collection of ground truth masks for each individual object,
     calculates whether the predicted mask matches any possible subset.
@@ -74,6 +74,8 @@ def is_mask_success(true_masks, object_cnt, pred_mask, min_iou=0.5):
 
     # Loop over all possible subsets of ground truth objects
     for tm_subset in tm_powerset:
+        # count nr of objects in this specific combination
+        n_obj = len(tm_subset)
         # combine all indidividual object masks into one
         true_mask = (np.array(tm_subset).sum(axis=0) > 0.5)
         # compute intersection and union between GT and prediction
@@ -81,13 +83,13 @@ def is_mask_success(true_masks, object_cnt, pred_mask, min_iou=0.5):
         union = np.sum((true_mask + pred_mask) > 0.5)
 
         # compute IOU, if above threshold, the mask is correct
-        iou = intersection / union
+        iou = (intersection + smooth) / (union + smooth)
         if iou >= min_iou:
-            return True
+            return True, torch.from_numpy(true_mask).reshape(1, 1, 64, 64).float(), n_obj
 
 
     # The predicted mask does not match any subset whatsoever
-    return False
+    return False, torch.zeros(1, 1, 64, 64), 0
 
 
 

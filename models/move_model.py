@@ -24,10 +24,12 @@ class MoveModel(BaseModel):
             the modified parser.
         """
         parser.set_defaults(dataset_mode='room', preprocess="resize", load_size=64, crop_size=64, no_flip=True, netD='basic', init_type="normal", name="MoveModel", lr_policy="step", gan_mode="vanilla", real_target=0.9, fake_target=0.1)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
-        if is_train:
-            parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
-            parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
-            parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
+        parser.add_argument('--use_eq_loss', action='store_true', help='If specified, the equality loss will be used, penalizing little difference with the original image')
+        parser.add_argument('--theta_dim', type=int, default=2, choices=[2, 6], help= "specify how many params to use for the affine tranformation. Either 6 (full theta) or 2 (translation only)")
+        parser.add_argument('--n_layers_conv', type=int, default=4, help='used for convnet in move model')
+        parser.add_argument('--two_stream', action='store_true', help='If True, the object and target will separately go through a layer block before being concatenated, instead of concatenated beforehand and fed to the same layer directly')
+
+
 
 
         return parser
@@ -52,7 +54,10 @@ class MoveModel(BaseModel):
         torch.manual_seed(opt.seed)
         np.random.seed(opt.seed)
 
-        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "loss_eq", "acc_real", "acc_fake"]
+        self.loss_names = ["loss_D_real", "loss_D_fake",  "loss_D", "loss_G", "loss_conv", "acc_real", "acc_fake"]
+        if opt.use_eq_loss:
+            self.loss_names.append("loss_eq")
+
         # for sanity checking
         # self.loss_names = ["loss_G"]
 
@@ -62,16 +67,14 @@ class MoveModel(BaseModel):
         # define variables for plotting and saving
         self.visual_names = ["tgt", "src", "mask_binary", "obj", "transf_obj", "composite"]
 
+        for v in self.visual_names:
+            setattr(self, v, torch.ones(1, 1, 64, 64))
+
 
         # for sanity checking
         # self.visual_names =  ["tgt", "src", "mask_binary", "obj", "transf_obj_mask", "GT"]
 
         self.count_G, self.count_D = 0, 0
-
-        self.scaler = GradScaler(enabled=opt.use_amp)
-
-        if opt.tracemalloc:
-            import tracemalloc
 
         # define the convnet that predicts theta
         # perhaps we should treat the object and target separately first
@@ -86,6 +89,11 @@ class MoveModel(BaseModel):
             # define Discriminator
             self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids)
             self.model_names.append("D")
+
+            self.scaler = GradScaler(enabled=opt.use_amp)
+
+            if opt.tracemalloc:
+                import tracemalloc
 
             # define loss functions
             self.criterionGAN = networks.GANLoss(opt.gan_mode, target_real_label= opt.real_target, target_fake_label=opt.fake_target, noisy_labels=opt.noisy_labels).to(self.device)
@@ -112,10 +120,9 @@ class MoveModel(BaseModel):
 
 
 
-    def center_object(self, mask):
+    def center_object(self):
         """
         This function performs the following steps:
-        - A valid mask from the mask_dict is selected
         - Mask is used to extract the object from the source image
         - The object and corresponding mask are centered
         """
@@ -129,19 +136,19 @@ class MoveModel(BaseModel):
         [self.B, _, self.w, self.h] = list(mask_pdist.shape)
         # assert B == self.opt.batch_size, f"incorrect batch dim: {B}"
 
-        x_center, y_center = self.w//2, self.h//2
+        self.x_center, self.y_center = self.w//2, self.h//2
 
         # marginal distributions
         dx = torch.sum(mask_pdist, 2).view(-1, self.w)
         dy = torch.sum(mask_pdist, 3).view(-1, self.h)
 
         # expected values
-        cx = torch.sum(dx * torch.arange(self.w).to(self.device), 1)
-        cy = torch.sum(dy * torch.arange(self.h).to(self.device), 1)
+        self.cx = torch.sum(dx * torch.arange(self.w).to(self.device), 1)
+        self.cy = torch.sum(dy * torch.arange(self.h).to(self.device), 1)
 
         # compute necessary translations
-        x_t = x_center - cx
-        y_t = y_center - cy
+        x_t = self.x_center - self.cx
+        y_t = self.y_center - self.cy
 
         # extract object from src
         obj = (self.mask_binary) * self.src
@@ -170,11 +177,11 @@ class MoveModel(BaseModel):
         self.mask_binary = (self.mask > 0).int().to(self.device)
 
         # find a suitable object to move from src to target
-        self.obj, self.obj_mask = self.center_object(self.mask)
+        self.obj, self.obj_mask = self.center_object()
 
 
 
-    def forward(self, valid=False, generator=False):
+    def forward(self, valid=False, generator=False, baseline=False):
         """
         what needs to be done:
             - target image and centered object are fed to convnet (initialized in the init)
@@ -186,41 +193,66 @@ class MoveModel(BaseModel):
 
         # two-stream input
         if self.opt.two_stream:
-            zero_centered, one_centered, translation = self.netConv(self.obj, self.tgt)
+            zero_centered,scale,translation = self.netConv(self.obj, self.tgt)
         else:
             # single stream input
             # concatenate the target and object on channel dimension
             tgt_obj_cat = torch.cat([self.tgt, self.obj], 1)
-            zero_centered, one_centered,translation = self.netConv(tgt_obj_cat)
+            zero_centered,scale,translation = self.netConv(tgt_obj_cat)
 
-        B = zero_centered.shape[0]
+        B = translation.shape[0]
 
         # initialize theta
         theta = torch.zeros(B, 2, 2).to(self.device)
         # set the diagonal of theta
-        theta[:, torch.eye(2).bool()] = one_centered.float()
+        theta[:, torch.eye(2).bool()] = scale.float()
         # concatenate the translation parameters
-        self.theta = torch.cat((theta, translation.unsqueeze(2)), 2)
+        self.theta_complete = torch.cat((theta, translation.unsqueeze(2)), 2)
+
         # set the other two parameters, constrain to zero for now
         # self.theta[:, 0, 1] = zero_centered[:, 0]
         # self.theta[:, 1, 0] = zero_centered[:, 1]
 
-        #print(self.theta[0])
 
-        # experimenting with theta
-        # min/max 0.83
-        # self.theta[0] = torch.Tensor([[1.5, 0, 0], [0, 0.5, 0.5]])
+        # testing with theta
+        # first do scaling, translation, then scaling, or opposite
+        # theta_complete = torch.Tensor([[[1.5, 0, 1], [0, 0.5, 1]]])
+        # theta_scale = torch.Tensor([[[1.5, 0, 0], [0, 0.5, 0]]])
+        # theta_translate = torch.Tensor([[[1, 0, 1], [0, 1, 1]]])
+        # self.theta_complete[0] = torch.Tensor([[1.5, 0, 1], [0, 0.5, 1]])
 
-        # self.obj[0, :, 32, 32] = torch.tensor([1, 0, 0])
+
+        # preset affine settings
+        align_corners = True
+        # set to zero because of weird artefacts when set to "border"
+        pad = "zeros"
+
+        # 1) APPLY SCALING FACTOR
+        theta_scale = torch.zeros(B, 2, 2).to(self.device)
+        # set the diagonal of theta to be the scale
+        theta_scale[:, torch.eye(2).bool()] = scale.float()
+        # add translation params as zeros
+        self.theta_scale = torch.cat((theta_scale, torch.zeros(B, 2, 1).to(self.device)), 2)
+        # compute the flow field (grid) and execute scaling on object and mask
+        grid_scale = F.affine_grid(self.theta_scale, self.obj.size(), align_corners=align_corners).float()
+        self.scaled_obj = F.grid_sample(self.obj, grid_scale, align_corners=align_corners, padding_mode=pad)
+        self.scaled_obj_mask = F.grid_sample(self.obj_mask.float(), grid_scale, align_corners=align_corners, padding_mode=pad)
 
 
-        # TODO: check if align_corners should be true or false
-        grid = F.affine_grid(self.theta, self.obj.size(), align_corners=True).float()
-        self.transf_obj = F.grid_sample(self.obj, grid, align_corners=True, padding_mode='border')
-        self.transf_obj_mask = F.grid_sample(self.obj_mask.float(), grid, align_corners=True, padding_mode='border')
+        # 2) APPLY TRANSLATION
+        theta_translate = torch.zeros(B, 2, 2).to(self.device)
+        # set the diagonal of theta to be the scale
+        theta_translate[:, torch.eye(2).bool()] = 1
+        self.theta_translate = torch.cat((theta_translate, translation.unsqueeze(2)), 2)
+        # compute the flow field and execute translation on object and mask
+        grid_translate = F.affine_grid(self.theta_translate, self.obj.size(), align_corners=align_corners).float()
+        self.transf_obj = F.grid_sample(self.scaled_obj, grid_translate, align_corners=align_corners, padding_mode=pad)
+        self.transf_obj_mask = F.grid_sample(self.scaled_obj_mask.float(), grid_translate, align_corners=align_corners, padding_mode=pad)
+
 
         # get the surfaces of the transformed objects
-        self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
+        if self.opt.use_eq_loss:
+            self.trans_obj_surface = self.transf_obj_mask.sum((1, 2, 3))
 
         ############### SANITY CHECKING USING GT theta
 
@@ -239,7 +271,8 @@ class MoveModel(BaseModel):
             self.composite = self.composite.detach()
 
         # get the prediction on the fake image, and blur the image
-        self.pred_fake = self.netD(self.blur(self.composite))
+        if not baseline:
+            self.pred_fake = self.netD(self.blur(self.composite))
 
         if valid or not generator:
             self.pred_real = self.netD(self.blur(self.src))
@@ -294,27 +327,19 @@ class MoveModel(BaseModel):
         # perhaps we should scale this based on the object surface
 
         #TODO: Sum nr of pixels in transf max
+        if self.opt.use_eq_loss:
+            MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+            # correct for transformed object surface
+            size_correction = self.trans_obj_surface/self.opt.load_size**2
 
-        MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        # size_correction = self.trans_obj_surface/self.opt.load_size**2
+            ####### this was the code used for run 9
+            # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
+            # size_correction = self.surface.squeeze()/self.opt.load_size**2
+            self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
 
-
-        # replace zeros with 1
-        # size_correction[size_correction==0] = 1
-
-        # Replace 0 in size_corrction with 1
-
-        ####### this was the code used for run 9
-        # MSE_loss = torch.mean(self.MSE(self.composite, self.tgt), (1, 2, 3))
-        size_correction = self.surface.squeeze()/self.opt.load_size**2
-        self.loss_eq = 2 - torch.mean(MSE_loss/size_correction)
-
-
-
-        # TODO: size correction is 0 if the object is moved out of the image
-        # self.loss_eq = 8 - 5 * torch.mean(MSE_loss/(size_correction))
-
-        self.loss_conv = self.loss_G + self.loss_eq
+            self.loss_conv = self.loss_G + self.loss_eq
+        else:
+            self.loss_conv = self.loss_G
 
         # self.scaler.scale(self.loss_G).backward()
         self.loss_conv.backward()
@@ -391,32 +416,37 @@ class MoveModel(BaseModel):
 
     def baseline(self, data, type_='random'):
 
-        assert type_ in {"random", "scanline"}, f"Type {type_} not recognized, choose from \"random\" or \"scanline\""
+        assert type_ in {"random", "scanline", "move", "real"}, f"Type {type_} not recognized, choose from \"random\", \"scanline\", \"move\" or \"real\""
 
         assert self.opt.batch_size == 1,"for baselines, batch size should be 1"
 
         self.set_input(data)
+
+        if type_=="move":
+            # call forward pass without computing
+            self.forward(generator=True, baseline=True)
+            return self.src, self.composite
+        elif type_ == "real":
+            return self.src, self.src
 
         img_width, img_height = self.src.shape[2:4]
 
         obj_width = int(torch.max(torch.sum(self.obj_mask>0, axis=2)))
         obj_height = int(torch.max(torch.sum(self.obj_mask>0, axis=3)))
 
-        obj_size_approx = obj_width * obj_height
-
-        # divide the image into segments
-        # background includes the object to be moved
+        # # background includes the object to be moved
         background = (1-self.mask_binary) * self.src
-        obj = self.mask_binary * self.src
-
+        # first we separated the object ourselves, but we can also center and then move, but we would need the initial y-coordinate in case of scanline translation
+        # obj = self.mask_binary * self.src
+        obj, obj_mask = self.center_object()
 
         # x translation is always used
         # x_translation = np.random.randint(obj_width, img_width - obj_width)
-        x_translation = (1 if np.random.random() < 0.5 else -1) * obj_width
+        x_translation = np.random.randint(-self.x_center, self.x_center)
         # x_translation = np.random.normal(obj_width, 2*obj_width)
 
         if type_=="random":
-            y_translation = (1 if np.random.random() < 0.5 else -1) * obj_height
+            y_translation = np.random.randint(-self.y_center, self.y_center)
 
         elif type_=="scanline":
             # we want to obtain x_min and x_max of the object, and the width of the object (x_max-x_min). Then we move the object to the right with at least width, and maximally (img_width - width), and modulo the transformation with img_width
@@ -425,24 +455,28 @@ class MoveModel(BaseModel):
                 print("object is too large, to be implemented (returns None)")
                 return None, None
 
-            y_translation = 0
+            y_translation = int((self.cy - self.y_center).item())
 
         moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)
         new_background = 1 - (moved_obj != 0).int()
-        self.moved = new_background  * self.src + moved_obj
+        self.moved = new_background  * self.tgt + moved_obj
 
-        print(x_translation, y_translation)
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
-        ax1.imshow(util.tensor2im(self.src), origin="upper")
-        ax1.set_title("original")
-        ax2.imshow(util.tensor2im(obj), origin="upper")
-        ax2.set_title("object")
-        ax3.imshow(util.tensor2im(moved_obj), origin="upper")
-        ax3.set_title(f"moved_obj ({x_translation}, {y_translation})")
-        ax4.imshow(util.tensor2im(self.moved), origin="upper")
-        ax4.set_title("result")
-        plt.tight_layout()
-        plt.show()
+        # print(x_translation, y_translation)
+        # fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2)
+        # ax1.imshow(util.tensor2im(self.src), origin="upper")
+        # ax1.set_title("source")
+        # ax2.imshow(util.tensor2im(self.tgt), origin="upper")
+        # ax2.set_title("target")
+        # ax3.imshow(util.tensor2im(moved_obj), origin="upper")
+        # ax3.set_title(f"moved_obj ({x_translation}, {y_translation})")
+        # ax4.imshow(util.tensor2im(self.moved), origin="upper")
+        # ax4.set_title("result")
+        # ax5.imshow(util.tensor2im(obj), origin="upper")
+        # ax5.set_title("object")
+        # ax6.imshow(util.tensor2im(new_background), origin="upper")
+        # ax6.set_title("background")
+        # plt.tight_layout()
+        # plt.show()
 
 
         return self.tgt, self.moved

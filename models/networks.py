@@ -7,7 +7,7 @@ import functools
 from torch.optim import lr_scheduler
 from math import log
 from PIL import Image, ImageDraw
-from torchvision import transforms
+from torchvision import transforms, models
 
 
 
@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    pool=False, aux=True, two_stream=False):
+    pred_type="pool", aux=True, two_stream=False, num_classes=4, classifier_type=None):
     """
     Returns a discriminator
 
@@ -208,7 +208,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
 
     if netD == "copy":
         net = CopyDiscriminator(input_nc, 1, norm_layer=norm_layer,
-            img_dim=img_dim, sigma_blur=sigma_blur, pool=pool, aux=aux)
+            img_dim=img_dim, sigma_blur=sigma_blur, pred_type=pred_type, aux=aux)
     elif netD == 'basic':  # default PatchGAN classifier
         net = NLayerDiscriminator(input_nc, ndf, n_layers=3,
             norm_layer=norm_layer)
@@ -217,6 +217,18 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
             norm_layer=norm_layer)
     elif netD == "move":
         net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
+    elif netD == "classifier":
+        if "Resnet" in classifier_type:
+            net = ResNet18(num_channels=input_nc, num_classes=4, pretrained=pretrained)
+            # if pretrained, do not innit weights, just put on device
+            if "pretrained" in classifier_type:
+                if len(gpu_ids) > 0:
+                    net.to(gpu_ids[0])
+                    return torch.nn.DataParallel(net, gpu_ids)
+                else:
+                    return net
+        else:
+            net = ConvClassifier(num_channels=input_nc, num_classes=4)
     else:
         raise NotImplementedError(f'Discriminator model name [{netD}] is not \
             recognized')
@@ -440,7 +452,7 @@ class CopyDiscriminator(nn.Module):
     implementation details in the paper.
     """
 
-    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, pool=False, aux=True):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.InstanceNorm2d, dropout=False, sigma_blur=0, img_dim=64, aux=True, pred_type="pool"):
         """Construct a Unet generator from encoder and decoding building blocks
         Parameters:
             input_nc (int)      -- the number of channels in input images
@@ -449,7 +461,6 @@ class CopyDiscriminator(nn.Module):
             dropout (bool)      -- Use dropout or not
             sigma_blur (float)  -- sigma for gaussian blur filter
             img_dim (int)       -- image dimension, assume square
-            pool (bool)     -- use patch implementation
             aux (bool)          -- use auxiliary loss
 
         The network is constructed from encoder and decoder building blocks
@@ -459,7 +470,8 @@ class CopyDiscriminator(nn.Module):
 
         self.img_dim = img_dim
         self.aux = aux
-        self.pool = pool
+
+        assert pred_type in {'baseline', 'pool', 'conv'}
 
         if sigma_blur:
             self.blur_filter= GaussianSmoothing(sigma=(sigma_blur, sigma_blur))
@@ -480,7 +492,8 @@ class CopyDiscriminator(nn.Module):
             for i in range(nr_scale_ops):
                 next_nc = 64 // (nr_scale_ops - i)
                 self.downscale.append(EncoderBlock(input_nc, next_nc, stride=2, kernel=3, padding=1))
-                self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i == nr_scale_ops - 1)))
+                if self.aux:
+                    self.upscale.append(DecoderBlock(output_nc, output_nc, stride=1, kernel=3, padding=1, last_layer=(i == nr_scale_ops - 1)))
                 input_nc = next_nc
 
             self.downscale = nn.Sequential(*self.downscale)
@@ -493,26 +506,26 @@ class CopyDiscriminator(nn.Module):
         self.enc4 = EncoderBlock(256, 512, norm_layer=norm_layer)
 
         # set up decoder layers
-        self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
-        self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
-        self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
-        # this being the last layer depends on possible upsampling operations
-        self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)), norm_layer=norm_layer)
+        if self.aux:
+            self.dec4 = DecoderBlock(512, 256, norm_layer=norm_layer)
+            self.dec3 = DecoderBlock(512, 128, norm_layer=norm_layer)
+            self.dec2 = DecoderBlock(256, 64, norm_layer=norm_layer)
+            # this being the last layer depends on possible upsampling operations
+            self.dec1 = DecoderBlock(128, output_nc, last_layer=not(bool(self.upscale)), norm_layer=norm_layer)
 
         self.sigmoid = nn.Sigmoid()
 
 
+        if pred_type == "baseline":
+            self.pred_layers = nn.Sequential(
+                nn.AdaptiveAvgPool2d(1),
+                nn.Flatten(),
+                nn.Linear(512, 1),
+                nn.Sigmoid()
+            )
 
-        if self.pool:
-            # define average pooling, followed by two linear layers
-            # original implementation: only uses different avgpool layer
-
-            # self.pred_layers = nn.Sequential(nn.AvgPool2d(8, stride=2),
-            #     nn.Flatten(), nn.Linear(512, 256), nn.LeakyReLU(0.01),
-            #     nn.Linear(256, 1), self.sigmoid
-            #     )
-
-            # implementation from basilevh github
+        elif pred_type == "pool":
+            # average pooling + two linear layers
             self.pred_layers = nn.Sequential(
                 nn.AdaptiveAvgPool2d(1),
                 nn.Flatten(),
@@ -521,7 +534,8 @@ class CopyDiscriminator(nn.Module):
                 nn.Linear(256, 1),
                 nn.Sigmoid()
             )
-        else:
+
+        elif pred_type == "conv": # convolutional variant: two convolutional layers
             # outputs a single value too, but uses convolutions
             self.pred_layers =  nn.Sequential(
                 EncoderBlock(512, 128, 3, 2, 1),
@@ -1012,10 +1026,11 @@ class MoveConvNET(nn.Module):
 
         # shape: B * 2; add one to make it one-centered
         # the one centered are from 0.75 to 1.25 (old, 4,4. Now: 0.5, 1.5;2,2)
-        one_centered = torch.divide(torch.add(self.one_c(last_layer), 4), 4)
+        one_centered = torch.divide(torch.add(self.one_c(last_layer), 2), 2)
 
         # shape B * 2
-        translation = torch.divide(self.trans(last_layer), 1.5) # was 1.2, then 1.5, now no constraints
+        translation = torch.divide(self.trans(last_layer), 1)
+        # was 1.2, then 1.5, now no constraints
 
         # for run 9:
         # zero centered, no scaling (-1, 1)
@@ -1023,6 +1038,38 @@ class MoveConvNET(nn.Module):
         # translation, /1.5
 
         return zero_centered, one_centered, translation
+
+
+
+class ConvClassifier(nn.Module):
+    """Simple convolutional classifier, that can take an image, and classify
+    it as being real, fake, scanline, or random placement"""
+
+    def __init__(self, num_channels=3, num_classes=4):
+        super(ConvClassifier, self).__init__()
+        num_classes
+        layers = []
+
+        n_in = num_channels
+
+        max_pool_list = [0, 1, 3, 5, 6]
+        channel_list = [64, 128, 256, 256, 512, 512, 512]
+
+        for i, n_out in enumerate(channel_list):
+            layers.extend([nn.Conv2d(n_in, n_out, 3, stride=1, padding=1), nn.BatchNorm2d(n_out), nn.LeakyReLU(0.1)])
+            if i in max_pool_list:
+                layers.append(nn.MaxPool2d(3, stride=2, padding=1))
+            n_in = n_out
+
+        layers.append(nn.Flatten())
+        layers.append(nn.Linear(n_in*4, num_classes))
+
+        self.model = nn.Sequential(*layers)
+
+    def forward(self, input):
+        # return the class probabilities
+        return self.model(input)
+
 
 
 
@@ -1089,6 +1136,42 @@ class STN(nn.Module):
 
 
 
+
+
+
+##### RESNET 18 ######
+class ResNet18(nn.Module):
+    """docstring for ResNet18"""
+    def __init__(self, num_channels, num_classes, pretrained):
+        super(ResNet18, self).__init__()
+
+        self.model = models.resnet18(pretrained=pretrained)
+
+        # change setup if we use a pretrained network
+        if pretrained:
+            # freeze the parameters
+            for param in self.model.parameters():
+                param.requires_grad = False
+
+        # change last layer
+        fc_inputs = self.model.fc.in_features
+        self.model.fc = nn.Sequential(
+            nn.Linear(fc_inputs, 256),
+            nn.ReLU(),
+            nn.Dropout(0.4),
+            nn.Linear(256, num_classes),
+            nn.LogSoftmax(dim=1) # For using NLLLoss()
+        )
+
+
+    def forward(self, x):
+        return self.model(x)
+
+
+
+
+
+
 ######################################
 # OTHER ARCHITECTURES FROM PIX2PIX
 ######################################
@@ -1143,7 +1226,7 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, input):
         """Standard forward."""
-        return self.model(input)
+        return self.model(input), None
 
 
 

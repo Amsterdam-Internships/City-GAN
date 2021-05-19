@@ -11,24 +11,26 @@ if __name__ == '__main__':
     # get training options
     opt = TrainOptions().parse()
 
+    script_start_time = time.time()
+
     dataset = create_dataset(opt)
-
-    opt_valid = copy.copy(opt)
-    opt_valid.phase = "val"
-    # opt_valid.num_threads = 0
-    opt_valid.batch_size = opt.val_batch_size
-    val_dataset = create_dataset(opt_valid)
-
+    if opt.model != "classifier":
+        opt_valid = copy.copy(opt)
+        opt_valid.phase = "val"
+        # opt_valid.num_threads = 0
+        opt_valid.batch_size = opt.val_batch_size
+        val_dataset = create_dataset(opt_valid)
+        print(f'The number of validation images = {len(val_dataset)}')
 
     # # get the number of images in the dataset.
     dataset_size = len(dataset)
     opt.dataset_size = dataset_size
 
-    assert opt.model in {"copy", "move"}
+    assert opt.model in {"copy", "move", "classifier"}
 
     print(f"Starting training of {opt.model}-model")
     print(f'The number of training images = {dataset_size}')
-    print(f'The number of validation images = {len(val_dataset)}')
+
     total_nr_epochs = opt.n_epochs + opt.n_epochs_decay + 1 - opt.epoch_count
     print(f'The number of epochs to run = {total_nr_epochs}')
 
@@ -73,7 +75,7 @@ if __name__ == '__main__':
 
             # run everything on validation set every val_freq batches
             # also run the untrained model (batch = 0), for baseline
-            if (overall_batch -1) % opt.val_freq == 0:
+            if (overall_batch -1) % opt.val_freq == 0 and opt.model != "classifier":
                 model.eval()
                 val_start_time = time.time()
                 model.run_validation(val_dataset)
@@ -91,13 +93,16 @@ if __name__ == '__main__':
 
             # display images on visdom and save images to a HTML file
             if overall_batch % opt.display_freq == 0:
+                if opt.model != "classifier":
+                    D_fake = model.pred_fake[0]
+                    D_fake = D_fake.detach().squeeze().cpu().numpy().round(2)
+                    D_fakes.append(D_fake)
+                else:
+                    D_fakes = None
                 save_result = total_iters % opt.update_html_freq == 0
-                D_fake = model.pred_fake[0]
-                D_fake = D_fake.detach().squeeze().cpu().numpy().round(2)
-                D_fakes.append(D_fake)
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result, overall_batch=overall_batch, D_fakes=D_fakes)
                 if opt.model=='move':
-                    print(overall_batch, model.theta[0])
+                    print(overall_batch, model.theta_complete[0])
 
             # print training losses and save logging information to the disk
             # Why is this epoch_batch? now set to overall_batch
@@ -130,5 +135,6 @@ if __name__ == '__main__':
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
 
     model.save_networks('latest')
-    print("Finished training, model is saved")
-    print(f"Batches trained - G: {model.count_G}, D: {model.count_D} ")
+    print(f"Finished training, model is saved ({epoch} epochs in {time.time()-script_start_time}s)")
+    if opt.model != "classifier":
+        print(f"Batches trained - G: {model.count_G}, D: {model.count_D} ")

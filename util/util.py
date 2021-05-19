@@ -6,6 +6,60 @@ import numpy as np
 from PIL import Image
 import os
 import linecache
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
+
+
+def get_visuals_copy(opt, isTrain, aux):
+    # specify the images that are saved and displayed
+    # (via base_model.get_current_visuals)
+    if not isTrain:
+        visual_names =[
+                "src",
+                "tgt",
+                "composite",
+                "g_mask",
+                "g_mask_binary",
+                "gt",
+                "gt_og",
+                "used_comb_gt",]
+                # "eroded_mask",
+                # "composite_eroded",
+                # "labelled_mask"]
+    else:
+        if aux:
+            visual_names = [
+                "src",
+                "tgt",
+                "g_mask",
+                "g_mask_binary",
+                "composite",
+                "D_mask_fake",
+                "irrel",
+                "anti_sc",
+                "D_mask_antisc",
+                "D_mask_real",
+            ]
+            if not opt.no_grfakes:
+                visual_names.extend(
+                    ["grounded_fake", "D_mask_grfake", "mask_gf"]
+                )
+        else:
+            visual_names = [
+                "src",
+                "tgt",
+                "g_mask",
+                "g_mask_binary",
+                "composite",
+                "irrel",
+                "anti_sc",
+            ]
+            if not opt.no_grfakes:
+                visual_names.extend(["grounded_fake", "mask_gf"])
+
+
+
+    return visual_names
 
 
 def print_gradients(net):
@@ -13,6 +67,12 @@ def print_gradients(net):
     for name, param in net.named_parameters():
         if param.requires_grad:
             print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
+
+def plot_confusion_matrix(conf_matrix, labels, save_path):
+    plt.figure(figsize=(12, 12))
+    cmd = ConfusionMatrixDisplay(cm, display_labels=labels)
+    cmd.plot()
+    plt.savefig(save_path)
 
 
 def mask_to_binary(mask):

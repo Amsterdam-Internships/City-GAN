@@ -1,0 +1,22 @@
+Testing CopyGAN saved in run 92
+cp: -r not specified; omitting directory '/home/tlotze/City-GAN/checkpoints/run92/checkpoints/CopyGAN/web'
+10
+/sw/arch/Debian10/EB_production/2020/software/SciPy-bundle/2020.03-intel-2020a-Python-3.8.2/lib/python3.8/site-packages/numpy/core/_methods.py:38: RuntimeWarning: invalid value encountered in reduce
+  return umr_sum(a, axis, dtype, out, keepdims, initial, where)
+/home/tlotze/City-GAN/util/evaluate.py:80: RuntimeWarning: invalid value encountered in greater
+  true_mask = (np.array(tm_subset).sum(axis=0) > 0.5)
+20
+/sw/arch/Debian10/EB_production/2020/software/SciPy-bundle/2020.03-intel-2020a-Python-3.8.2/lib/python3.8/site-packages/numpy/core/_methods.py:38: RuntimeWarning: invalid value encountered in reduce
+  return umr_sum(a, axis, dtype, out, keepdims, initial, where)
+/home/tlotze/City-GAN/util/evaluate.py:80: RuntimeWarning: invalid value encountered in greater
+  true_mask = (np.array(tm_subset).sum(axis=0) > 0.5)
+30
+/sw/arch/Debian10/EB_production/2020/software/SciPy-bundle/2020.03-intel-2020a-Python-3.8.2/lib/python3.8/site-packages/numpy/core/_methods.py:38: RuntimeWarning: invalid value encountered in reduce
+  return umr_sum(a, axis, dtype, out, keepdims, initial, where)
+/home/tlotze/City-GAN/util/evaluate.py:80: RuntimeWarning: invalid value encountered in greater
+  true_mask = (np.array(tm_subset).sum(axis=0) > 0.5)
+latest
+/sw/arch/Debian10/EB_production/2020/software/SciPy-bundle/2020.03-intel-2020a-Python-3.8.2/lib/python3.8/site-packages/numpy/core/_methods.py:38: RuntimeWarning: invalid value encountered in reduce
+  return umr_sum(a, axis, dtype, out, keepdims, initial, where)
+/home/tlotze/City-GAN/util/evaluate.py:80: RuntimeWarning: invalid value encountered in greater
+  true_mask = (np.array(tm_subset).sum(axis=0) > 0.5)

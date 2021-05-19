@@ -25,7 +25,7 @@ class BaseOptions():
         parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
         parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         # model parameters
-        parser.add_argument('--model', type=str, default='copy', help='chooses which model to use. [copy | move]', choices=['copy', 'move'])
+        parser.add_argument('--model', type=str, default='copy', help='chooses which model to use. [copy | move]', choices=['copy', 'move', 'classifier'])
         parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels: 3 for RGB and 1 for grayscale')
         parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels: 3 for RGB and 1 for grayscale')
         parser.add_argument('--ngf', type=int, default=64, help='# of gen filters in the last conv layer')
@@ -60,6 +60,9 @@ class BaseOptions():
         parser.add_argument("--seed", type=int, default=0,
                 help="Provide an integer for setting the random seed. Set to \
                     0 for random seed")
+        parser.add_argument('--min_obj_surface', type=int, default=100, help= "Minimum number of pixels an object needs to be to be eligible for moving")
+        # only used in the classifier
+        parser.add_argument('--run', type=int, default=-1, help='Run number for creating dataset')
         self.initialized = True
         return parser
 
