@@ -104,6 +104,7 @@ The generated images, IOU scores (for CopyGAN) and confusion matrix (for MoveGAN
 
 Both the CopyGAN and the MoveGAN are based on adversarial learning, where two networks, the generator and discriminator, learn from each other. The generator produces the copy masks, or transformation parameters, respectively. The discriminator is tasked with evaluating the resulting images to be real or fake. Using this supervision from the discriminator, we can teach our generator to produce data that resembles real data (so that the discriminator cannot distinguish between the two anymore). 
 The copy-principle that is used to discover and segment objects is based on the following intuition: The task is to copy a part of an image into another image, such that the resulting composite is realistic. Now one of the solutions to this would be to cut out objects, as they can be transferred into another image and still look realistic (provided that we take some assumptions about the data, and prevent shortcut solutions). The big advantage of this approach is that we don't need any annotated data, which makes the algorithm easy to apply in a variety of settings, without needing expensive human annotations.
+
 The MoveGAN makes use of an affine transformation, to manipulate the object in order to fit in the target image. The scale can be adapted, as well as rotational parameters, and translation. The performance of the MoveGAN is compared to the current baselines: Random insertion, and scanline insertion, where the object is placed along the same y-coordinate, which is supposed to ensure consistent scales. To quantitatively evaluate this model, we train an image classifier, based on Resnet18. This model should classify images as being real, a MoveGAN image, or one of the baselines. Next, through the confusion matrix we hope to see that the classifier has difficulties distinguishing between the real and the MoveGAN images.  
 
 A schematic drawing of the models is as follows:
@@ -113,5 +114,6 @@ A schematic drawing of the models is as follows:
 ---
 ## Acknowledgements
 Supervisor University of Amsterdam: Dr. Nanne van Noord
+
 Supervisor Gemeente Amsterdam: Laurens Samson, MSc
 
