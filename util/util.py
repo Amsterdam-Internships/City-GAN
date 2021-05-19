@@ -6,6 +6,8 @@ import numpy as np
 from PIL import Image
 import os
 import linecache
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
 def get_visuals_copy(opt, isTrain, aux):
@@ -65,6 +67,12 @@ def print_gradients(net):
     for name, param in net.named_parameters():
         if param.requires_grad:
             print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
+
+def plot_confusion_matrix(conf_matrix, labels, save_path):
+    plt.figure(figsize=(12, 12))
+    cmd = ConfusionMatrixDisplay(cm, display_labels=)
+    cmd.plot()
+    plt.savefig(save_path)
 
 
 def mask_to_binary(mask):

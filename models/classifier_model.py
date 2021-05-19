@@ -158,4 +158,7 @@ class ClassifierModel(BaseModel):
 
         print(f"Confusion matrix:\n{self.confusion_matrix}")
 
+        # save plot
+        util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.checkpoints_dir, self.opt.name, 'confusion_matrix.png')
+
 
