@@ -13,3 +13,4 @@ checkpoints/visdom_test
 checkpoints/test_run
 *.icloud
 slurms
+*.xlsx
