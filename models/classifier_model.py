@@ -51,7 +51,7 @@ class ClassifierModel(BaseModel):
         self.reset_conf_matrix()
 
 
-        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=model_type)
+        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=p[t.model_type)
 
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
