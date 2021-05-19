@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 100:00:00
+#SBATCH -t 60:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 # declare run
-run=100
+run=1
 pred_type="baseline"
 netD="basic"
 epoch="latest"
@@ -27,7 +27,11 @@ mkdir "$TMPDIR"/datasets/Cityscapes
 mkdir "$TMPDIR"/CopyGAN
 
 #Copy data file to scratch
-cp -r $HOME/City-GAN/datasets/CLEVR_colorized/images "$TMPDIR"/datasets/CLEVR_colorized/
+cp -r $HOME/City-GAN/datasets/Cityscapes/leftImg8bit_trainvaltest.zip "$TMPDIR"/datasets/Cityscapes/data.zip
+
+# unzip the data and remove
+unzip "$TMPDIR"/datasets/Cityscapes/data.zip
+rm "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
 
 for seed in 1 10 20 30 42
 do
@@ -35,19 +39,19 @@ do
 
     # execute training script
     python $HOME/City-GAN/train.py --model copy \
-        --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
+        --dataroot "$TMPDIR"/datasets/Cityscapes\
         --batch_size 64\
-        --n_epochs 10\
-        --n_epochs_decay 30\
+        --n_epochs 5\
+        --n_epochs_decay 0\
         --save_epoch_freq 10\
-        --checkpoints_dir "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"\
+        --checkpoints_dir "$TMPDIR"/checkpoints/ \
         --print_freq 100\
         --update_html 100\
         --display_freq 100\
         --verbose \
         --sigma_blur 1\
-        --load_size 70\
-        --crop_size 64\
+        --load_size 256\
+        --crop_size 256\
         --D_headstart 0\
         --confidence_weight 0.0\
         --val_batch_size 128\
@@ -63,12 +67,12 @@ do
         --use_amp\
         --noisy_labels\
         --n_alternating_batches 20\
-        --val_freq 20
+        --val_freq 20\
 
 
     # copy checkpoints to home directory
-    mkdir -p $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"
-    cp -r "$TMPDIR"/checkpoints/run"${run}"/seed"${seed}"/CopyGAN/* $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/
+    mkdir -p $HOME/City-GAN/checkpoints/CopyGANCityscapes/run"${run}"/seed"${seed}"
+    cp -r "$TMPDIR"/checkpoints/CopyGAN/* $HOME/City-GAN/checkpoints/CopyGANCityscapes/run"${run}"/seed"${seed}"/
 
 
     #### TESTING PART

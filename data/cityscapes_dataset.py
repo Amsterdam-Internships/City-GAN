@@ -1,6 +1,6 @@
 import os
 from data.base_dataset import BaseDataset, get_params, get_transform
-from data.image_folder import make_dataset
+from data.image_folder import make_dataset, recursive_glob
 from PIL import Image
 import random
 import torch
@@ -20,6 +20,7 @@ class CityscapesDataset(BaseDataset):
         BaseDataset.__init__(self, opt)
         # get the image directory
         self.data_dir = os.path.join(opt.dataroot, opt.phase)
+
         # get paths to all images
         self.tgt_paths = sorted(make_dataset(self.data_dir, opt.max_dataset_size))
 
@@ -30,12 +31,13 @@ class CityscapesDataset(BaseDataset):
 
         if self.return_mask:
             self.mask_paths = [p[:-4]+"_mask"+p[-4:] for p in self.tgt_paths]
+            # masks are here in a completely different folder
 
         # crop_size should be smaller than the size of loaded image
         assert(self.opt.load_size >= self.opt.crop_size)
 
-        self.input_nc = self.opt.output_nc if self.opt.direction == 'BtoA' else self.opt.input_nc
-        self.output_nc = self.opt.input_nc if self.opt.direction == 'BtoA' else self.opt.output_nc
+        self.input_nc = self.opt.output_nc
+        self.output_nc = self.opt.input_nc
 
 
 
@@ -53,8 +55,11 @@ class CityscapesDataset(BaseDataset):
         """
         # read a image given a random integer index
         pathA = self.tgt_paths[index]
+
+        # get a target image
         indexB = (index + random.randint(1, self.size-1)) % self.size
         pathB = self.tgt_paths[indexB]
+
         # irrelevant other image
         indexC = random.randint(0, self.size-1)
         pathC = self.tgt_paths[indexC]
