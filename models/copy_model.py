@@ -17,14 +17,14 @@ import tracemalloc
 import linecache
 import os
 
-
 from models.base_model import BaseModel
 import models.networks as networks
-from util import util
+from util import util, evaluate
+from util.visualizer import save_images
 
 # for testing
-from kornia.morphology import erosion, dilation
-from scipy import ndimage
+# from kornia.morphology import erosion, dilation
+# from scipy import ndimage
 
 
 
@@ -218,8 +218,6 @@ class CopyModel(BaseModel):
                 )
                 opt.lambda_aux = 0
 
-
-
             # add other losses if specified
             if opt.confidence_weight > 0:
                 self.loss_names.append("loss_G_conf")
@@ -252,6 +250,12 @@ class CopyModel(BaseModel):
                 self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, opt.beta2)
             )
             self.optimizers = [self.optimizer_G, self.optimizer_D]
+
+        # during inference time, define other variables for testing
+        else:
+            self.total_success_masks, self.total_n_obj, self.total_n_obj_recognized = 0, 0, 0
+            self.fractions_recognized = []
+
 
 
     def set_input(self, input):
@@ -521,31 +525,6 @@ class CopyModel(BaseModel):
             with autocast():
                 self.forward(valid=True)
 
-
-
-        #### OLD method, runs the complete validation set
-
-        #     for i, data in enumerate(val_data):
-        #         # preprocess data and perform forward pass
-        #         self.set_input(data)
-        #         with autocast():
-        #             self.forward(valid=True)
-
-        #         # save accuracies
-        #         acc_gf.append(self.acc_grfake)
-        #         acc_fake.append(self.acc_fake)
-        #         acc_real.append(self.acc_real)
-
-        #         preds_grfake.append(self.pred_grfake.mean().item())
-        #         preds_fake.append(self.pred_fake.mean().item())
-        #         preds_real.append(self.pred_real.mean().item())
-
-
-        # # set accuracies to mean for plotting purposes
-        # self.acc_grfake = np.mean(acc_gf)
-        # self.acc_fake = np.mean(acc_fake)
-        # self.acc_real = np.mean(acc_real)
-
         # set all training curriculum booleans for the coming eval_freq batches
         # performance of discriminator on grounded fakes
         self.D_gf_perfect = self.acc_grfake > 0.99
@@ -577,33 +556,38 @@ class CopyModel(BaseModel):
         with torch.no_grad():
             self.set_input(data)
 
+            # forward pass
             self.g_mask = self.netG(self.src)
 
             # binary mask for visualization
             self.g_mask_binary = util.mask_to_binary(self.g_mask)
 
-            # try erosion to remove artefacts
-            # kernel = torch.ones((3,3))
-            # kernel = torch.Tensor([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
-
-            # kernel_plus = torch.Tensor([[0, 1, 0], [1, 1, 1], [0, 1, 0]])
-
-            # kernel_ones = torch.ones(3, 3)
-            # self.eroded_mask = dilation(erosion(self.g_mask_binary, kernel_plus), kernel_ones)
-
-
-            # self.labelled_mask, self.num_mask = ndimage.label(self.eroded_mask)
-
-            # self.labelled_mask = torch.Tensor(self.labelled_mask)
-            # self.labelled_mask= (self.labelled_mask / self.labelled_mask.max())
-
             self.composite, _ = networks.composite_image(
                     self.src, self.tgt, self.g_mask_binary, device=self.device)
 
-            # self.composite_eroded, _ = networks.composite_image(
-                    # self.src, self.tgt, self.eroded_mask, device=self.device)
+            # evaluate proposed copy masks
+            self.mask_success, self.used_mask_gt, self.n_obj = evaluate.is_mask_success(self.gt_og[0], self.gt_num_obj[0], self.g_mask_binary[0], min_iou=self.opt.min_iou)
+            self.total_success_masks += self.mask_success
+            self.total_n_obj += self.gt_num_obj[0]
+            self.total_n_obj_recognized += self.n_obj
+            self.fractions_recognized.append(self.n_obj/self.gt_num_obj[0])
 
 
+    def display_test(self, batch, webpage):
+        # set used ground truth mask as visual
+        self.used_comb_gt = self.used_mask_gt
+        # add visuals to webpage
+        visuals = self.get_current_visuals()  # get image results
+        msg = f"num objects: {self.gt_num_obj[0].item()}, success: {self.mask_success} ({self.n_obj})"
+        save_images(webpage, visuals, image_path=str(batch), aspect_ratio=self.opt.aspect_ratio, width=self.opt.display_winsize, score=msg)
+
+    def print_results(self, total_nr_batches):
+        ODP = self.total_success_masks / total_nr_batches
+        # recognized_fraction = total_n_obj_recognized/total_n_obj
+        recognized_fraction = np.mean(self.fractions_recognized)
+
+        print(f"Arandjelovic score: total number of masks: {total_nr_batches}, succesfull: {self.total_success_masks}, ODP: {(ODP * 100):.1f}%")
+        print(f"{self.total_n_obj_recognized}/{self.total_n_obj} objects are recognized ({recognized_fraction*100:.1f}%)")
 
 
 

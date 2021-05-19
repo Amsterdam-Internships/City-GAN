@@ -131,7 +131,7 @@ class ClassifierModel(BaseModel):
         self.update_conf_matrix()
         acc = self.get_accuracies()
 
-        if overall_batch % opt.print_freq == 0:
+        if overall_batch % self.opt.print_freq == 0:
             print("accuracy:", acc)
             print(self.confusion_matrix)
 
@@ -146,5 +146,12 @@ class ClassifierModel(BaseModel):
             # update confusion matrix
             self.update_conf_matrix()
 
+    def display_test(self, batch):
+        pass
+
+    def print_results(self, total_nr_batches)
+        print(f"Overall accuracy: {self.get_accuracies():.2f}")
+        print(f"Accuracy per class")
+        print(f"Confusion matrix:\n{self.confusion_matrix}")
 
 
