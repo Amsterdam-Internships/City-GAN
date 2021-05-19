@@ -151,7 +151,7 @@ class ClassifierModel(BaseModel):
     def display_test(self, batch):
         pass
 
-    def print_results(self, total_nr_batches)
+    def print_results(self, total_nr_batches):
         print(f"Overall accuracy: {self.get_accuracies():.2f}")
         print(f"statistics per class: real, move, random, scanline: \
             \nAccuracy: {self.confusion_matrix.diag()/self.confusion_matrix.sum(1)} \
