@@ -28,16 +28,18 @@ python $HOME/City-GAN/train.py --model classifier \
     --dataroot "$TMPDIR"/datasets/ROOM_composite\
     --batch_size 64\
     --n_epochs 10\
-    --n_epochs_decay 0\
+    --n_epochs_decay 10\
     --save_epoch_freq 10\
     --checkpoints_dir "$TMPDIR"/checkpoints\
-    --print_freq 100\
+    --print_freq 50\
     --update_html 100\
-    --display_freq 100\
+    --display_freq 50\
     --verbose \
     --display_id 0\
     --seed "${seed}"\
-    --run ${run}
+    --run ${run}\
+    --use_resnet18\
+    --use_pretrained\
 
 
 # copy results to home directory
@@ -53,11 +55,17 @@ python $HOME/City-GAN/test.py --model classifier\
     --run ${run}\
     --batch_size 64\
     --seed "${seed}"\
+    --use_resnet18\
+    --use_pretrained
     > "$TMPDIR"/test_results_run"${run}".txt
 
+echo "finished testing run '${run}'"
+
 mkdir -p $HOME/City-GAN/results/Classifier/run"${run}"/
-    cp -r "$TMPDIR"/results/CopyGAN/test_latest/* $HOME/City-GAN/results/Classifier/run"${run}"/
+    cp -r "$TMPDIR"/results/Classifier/test_latest/* $HOME/City-GAN/results/Classifier/run"${run}"/
     cp "$TMPDIR"/test_results_run"${run}".txt $HOME/City-GAN/results/Classifier/run"${run}"/
+
+echo "everything copied back to Home folder"
 
 
 
