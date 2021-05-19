@@ -15,6 +15,9 @@ module load Python
 # declare run
 run=20
 seed=42
+# mode="Resnet18"
+mode="Resnet18_pretrained"
+# mode="Default"
 echo "starting training classifier (run ${run})"
 
 #Create output directory on scratch
@@ -38,13 +41,12 @@ python $HOME/City-GAN/train.py --model classifier \
     --display_id 0\
     --seed "${seed}"\
     --run ${run}\
-    --use_resnet18\
-    --use_pretrained\
+    --model_type ${mode}
 
 
 # copy results to home directory
-mkdir -p $HOME/City-GAN/checkpoints/Classifier/run"${run}"/
-cp -r "$TMPDIR"/checkpoints/Classifier/* $HOME/City-GAN/checkpoints/Classifier/run"${run}"/
+mkdir -p $HOME/City-GAN/checkpoints/Classifier/run"${run}"/"${mode}"
+cp -r "$TMPDIR"/checkpoints/Classifier/* $HOME/City-GAN/checkpoints/Classifier/run"${run}"/"${mode}"/
 
 
 # test the performance of the classifier
@@ -55,15 +57,14 @@ python $HOME/City-GAN/test.py --model classifier\
     --run ${run}\
     --batch_size 64\
     --seed "${seed}"\
-    --use_resnet18\
-    --use_pretrained
-    > "$TMPDIR"/test_results_run"${run}".txt
+    --model_type "${mode}"
+    > "$TMPDIR"/test_results_run"${run}"_"${mode}".txt
 
 echo "finished testing run '${run}'"
 
-mkdir -p $HOME/City-GAN/results/Classifier/run"${run}"/
-    cp -r "$TMPDIR"/results/Classifier/test_latest/* $HOME/City-GAN/results/Classifier/run"${run}"/
-    cp "$TMPDIR"/test_results_run"${run}".txt $HOME/City-GAN/results/Classifier/run"${run}"/
+mkdir -p $HOME/City-GAN/results/Classifier/run"${run}"/"${mode}"
+    cp -r "$TMPDIR"/results/Classifier/test_latest/* $HOME/City-GAN/results/Classifier/run"${run}"/"${mode}"
+    cp "$TMPDIR"/test_results_run"${run}"_"${mode}".txt $HOME/City-GAN/results/Classifier/run"${run}"/"${mode}"
 
 echo "everything copied back to Home folder"
 
