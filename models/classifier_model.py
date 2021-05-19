@@ -17,8 +17,10 @@ class ClassifierModel(BaseModel):
             the modified parser.
         """
         parser.set_defaults(dataset_mode='move_eval', netG='classifier', data_root="datasets/ROOM_composite", preprocess="resize", load_size=64, crop_size=64, name="Classifier", no_flip=True)  # You can rewrite default values for this model. For example, this model usually uses aligned dataset as its dataset.
-        parser.add_argument('--use_resnet18', action="store_true", help='If specified, use a Resnet18 model instead of own classification')
-        parser.add_argument('--use_pretrained', action="store_true", help='If specified, use a pretrained version of Resnet. Only possible in combination with --use_resnet18')
+        # parser.add_argument('--use_resnet18', action="store_true", help='If specified, use a Resnet18 model instead of own classification')
+        # parser.add_argument('--use_pretrained', action="store_true", help='If specified, use a pretrained version of Resnet. Only possible in combination with --use_resnet18')
+
+        parser.add_argument('--model_type', default="default", help='Type of classifier model used: choose from default, Resnet18, or Resnet18_pretrained', choices=["default", "Resnet18", "Resnet18_pretrained"])
 
         return parser
 
@@ -49,7 +51,7 @@ class ClassifierModel(BaseModel):
         self.reset_conf_matrix()
 
 
-        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, resnet=opt.use_resnet18, pretrained=opt.use_pretrained)
+        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=model_type)
 
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.

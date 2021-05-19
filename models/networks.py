@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    pred_type="pool", aux=True, two_stream=False, num_classes=4, resnet=False, pretrained=False):
+    pred_type="pool", aux=True, two_stream=False, num_classes=4, classifier_type=None):
     """
     Returns a discriminator
 
@@ -218,10 +218,10 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     elif netD == "move":
         net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
     elif netD == "classifier":
-        if resnet:
+        if "Resnet" in classifier_type:
             net = ResNet18(num_channels=input_nc, num_classes=4, pretrained=pretrained)
             # if pretrained, do not innit weights, just put on device
-            if pretrained:
+            if "pretrained" in classifier_type:
                 if len(gpu_ids) > 0:
                     net.to(gpu_ids[0])
                     return torch.nn.DataParallel(net, gpu_ids)

@@ -70,7 +70,7 @@ def print_gradients(net):
 
 def plot_confusion_matrix(conf_matrix, labels, save_path):
     plt.figure(figsize=(12, 12))
-    cmd = ConfusionMatrixDisplay(cm, display_labels=)
+    cmd = ConfusionMatrixDisplay(cm, display_labels=labels)
     cmd.plot()
     plt.savefig(save_path)
 
