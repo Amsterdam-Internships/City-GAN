@@ -219,9 +219,10 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
     elif netD == "classifier":
         if "Resnet" in classifier_type:
+            pretrained = "pretrained" in classifier_type
             net = ResNet18(num_channels=input_nc, num_classes=4, pretrained=pretrained)
             # if pretrained, do not innit weights, just put on device
-            if "pretrained" in classifier_type:
+            if pretrained:
                 if len(gpu_ids) > 0:
                     net.to(gpu_ids[0])
                     return torch.nn.DataParallel(net, gpu_ids)

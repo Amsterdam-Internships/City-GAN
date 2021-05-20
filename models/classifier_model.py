@@ -2,6 +2,7 @@ import torch
 from .base_model import BaseModel
 from . import networks
 from torchvision.models import resnet18
+from util import util
 
 
 class ClassifierModel(BaseModel):
@@ -51,7 +52,7 @@ class ClassifierModel(BaseModel):
         self.reset_conf_matrix()
 
 
-        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=p[t.model_type)
+        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=opt.model_type)
 
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
@@ -87,6 +88,7 @@ class ClassifierModel(BaseModel):
 
     def get_accuracies(self):
         acc = self.confusion_matrix.diagonal().sum() / self.confusion_matrix.sum()
+        self.acc_real, self.acc_move, self.acc_random, self.acc_scanline = self.confusion_matrix.diag()/self.confusion_matrix.sum(1)
         return acc
 
     def update_conf_matrix(self):
@@ -148,19 +150,18 @@ class ClassifierModel(BaseModel):
             # update confusion matrix
             self.update_conf_matrix()
 
-    def display_test(self, batch):
+    def display_test(self, batch, webpage):
         pass
 
     def print_results(self, total_nr_batches):
+        print(f"Confusion matrix:\n{self.confusion_matrix}")
         print(f"Overall accuracy: {self.get_accuracies():.2f}")
         print(f"statistics per class: real, move, random, scanline: \
             \nAccuracy: {self.confusion_matrix.diag()/self.confusion_matrix.sum(1)} \
             \nPredicted per class: {self.confusion_matrix.sum(0)}\
             \nGT # instances per class: {self.confusion_matrix.sum(1)} ")
 
-        print(f"Confusion matrix:\n{self.confusion_matrix}")
-
         # save plot
-        util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.checkpoints_dir, self.opt.name, 'confusion_matrix.png')
+        util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.checkpoints_dir, self.opt.name, 'confusion_matrix.png'))
 
 
