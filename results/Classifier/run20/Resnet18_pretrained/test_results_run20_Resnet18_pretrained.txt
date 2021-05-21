@@ -1,0 +1,66 @@
+----------------- Options ---------------
+             aspect_ratio: 1.0                           
+               batch_size: 64                            	[default: 1]
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+                crop_size: 64                            
+               data_phase: train                         
+                data_root: datasets/ROOM_composite       
+                 dataroot: /scratch/datasets/ROOM_composite	[default: None]
+             dataset_mode: move_eval                     
+                direction: AtoB                          
+             display_freq: 100                           
+          display_winsize: 256                           
+                    epoch: latest                        
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: False                         	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 64                            
+         max_dataset_size: inf                           
+                  min_iou: 0.5                           
+          min_obj_surface: 100                           
+                    model: classifier                    	[default: copy]
+               model_type: Resnet18_pretrained           	[default: default]
+               n_layers_D: 3                             
+                     name: Classifier                    
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: classifier                    
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                     norm: instance                      
+                 num_test: 5000                          
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: test                          
+               preprocess: resize                        
+              results_dir: /scratch/results/             	[default: ./results/]
+                      run: 20                            	[default: -1]
+                     seed: 42                            	[default: 0]
+           serial_batches: False                         
+                   suffix:                               
+                  verbose: False                         
+----------------- End -------------------
+Batch size is set to 1 for testing
+dataset [MoveEvalDataset] and dataloder are created
+model [ClassifierModel] was created
+loading the model from /scratch/checkpoints/Classifier/latest_net_Classifier.pth
+---------- Networks initialized -------------
+[Network Classifier] Total number of parameters : 11.309 M
+-----------------------------------------------
+creating web directory /scratch/results/Classifier/test_latest
+Confusion matrix:
+tensor([[294., 219., 219., 268.],
+        [250., 239., 217., 294.],
+        [205., 186., 377., 232.],
+        [253., 210., 244., 293.]])
+Overall accuracy: 0.30
+statistics per class: real, move, random, scanline:             
+Accuracy: tensor([0.2940, 0.2390, 0.3770, 0.2930])             
+Predicted per class: tensor([1002.,  854., 1057., 1087.])            
+GT # instances per class: tensor([1000., 1000., 1000., 1000.]) 
+Total run time testing script: 30.8 sec (999 iterations)
