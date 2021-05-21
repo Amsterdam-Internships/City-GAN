@@ -4,6 +4,7 @@ from . import networks
 from torchvision.models import resnet18
 from util import util
 import os
+from util.visualizer import save_images
 
 
 class ClassifierModel(BaseModel):
@@ -152,7 +153,8 @@ class ClassifierModel(BaseModel):
             self.update_conf_matrix()
 
     def display_test(self, batch, webpage):
-        pass
+        visuals = self.get_current_visuals()  # get image results
+        save_images(webpage, visuals, image_path=str(batch), aspect_ratio=self.opt.aspect_ratio, width=self.opt.display_winsize)
 
     def print_results(self, total_nr_batches):
         print(f"Confusion matrix:\n{self.confusion_matrix}")
