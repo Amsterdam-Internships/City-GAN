@@ -1,14 +1,16 @@
 import os
 from data.base_dataset import BaseDataset, get_params, get_transform
-from data.image_folder import make_dataset, recursive_glob
+from data.image_folder import make_dataset
+
 from PIL import Image
 import random
 import torch
+from glob import glob
 
 
 class CityscapesDataset(BaseDataset):
     """A dataset class for paired image dataset from Cityscapes
-    A few source handpicked source images are used, and random images from the Cityscapes dataset as target images
+    A few source handpicked source images are used, and random images from the Cityscapes dataset as target images. To use, put --dataset_mode cityscapes as a command line argument.
     """
 
     def __init__(self, opt):
@@ -18,22 +20,28 @@ class CityscapesDataset(BaseDataset):
             opt (Option class) -- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         BaseDataset.__init__(self, opt)
+
         # get the image directory
-        self.data_dir = os.path.join(opt.dataroot, opt.phase)
+        image_root = os.path.join(opt.dataroot, "leftImg8bit")
+        self.image_dir = os.path.join(image_root, opt.phase)
 
         # get paths to all images
-        self.tgt_paths = sorted(make_dataset(self.data_dir, opt.max_dataset_size))
-
+        self.tgt_paths = sorted(make_dataset(self.image_dir, opt.max_dataset_size))
 
         self.size = self.__len__()
 
         self.return_mask = opt.phase == "test"
 
         if self.return_mask:
-            self.mask_paths = [p[:-4]+"_mask"+p[-4:] for p in self.tgt_paths]
-            # masks are here in a completely different folder
+            # get the segmentation map directory
+            segment_root = os.path.join(opt.dataroot, "gtFine")
+            self.segment_dir = os.path.join(segment_root, opt.phase)
+            # we want only the segmentation maps, ending in *color.png
+            self.mask_paths = glob(os.path.join(self.segment_dir, "*/*_color.png"))
+            # check if the number of segmentation masks equals the nr of imgs
+            assert len(self.mask_paths) == len(self.tgt_paths), f"Unequal nr of images and segmentation masks ({len(self.tgt_paths)} & {len(self.mask_paths)})"
 
-        # crop_size should be smaller than the size of loaded image
+        # crop_size should be smaller/equal than the size of loaded image
         assert(self.opt.load_size >= self.opt.crop_size)
 
         self.input_nc = self.opt.output_nc
@@ -82,13 +90,14 @@ class CityscapesDataset(BaseDataset):
 
         if self.return_mask:
             mask = Image.open(self.mask_paths[index]).convert('RGB')
-            out['gt_num_obj'] = len(set(list(mask.getdata())))-1#len(torch.unique(mask))-1
+            # count the nr of unique pixel values to find nr of objects
+            out['gt_num_obj'] = len(set(list(mask.getdata()))) - 1
             mask_transform = get_transform(self.opt, transform_params, grayscale=(self.output_nc == 1), method=Image.NEAREST)
             mask_visual = A_transform(mask)
+            # no interpolation (use nearest neighbor), to prevent new pixel values
             mask_og = mask_transform(mask)
             out['nearest_gt'] = mask_og
             out['visual_gt'] = mask_visual
-
 
         return out
 

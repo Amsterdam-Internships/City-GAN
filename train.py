@@ -10,6 +10,7 @@ import copy
 if __name__ == '__main__':
     # get training options
     opt = TrainOptions().parse()
+    assert opt.model in {"copy", "move", "classifier"}
 
     script_start_time = time.time()
 
@@ -25,8 +26,6 @@ if __name__ == '__main__':
     # # get the number of images in the dataset.
     dataset_size = len(dataset)
     opt.dataset_size = dataset_size
-
-    assert opt.model in {"copy", "move", "classifier"}
 
     print(f"Starting training of {opt.model}-model")
     print(f'The number of training images = {dataset_size}')
