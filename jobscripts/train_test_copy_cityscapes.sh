@@ -29,8 +29,10 @@ mkdir "$TMPDIR"/CopyGAN
 cp -r $HOME/City-GAN/datasets/Cityscapes/leftImg8bit_trainvaltest.zip "$TMPDIR"/datasets/Cityscapes/data.zip
 
 # unzip the data and remove
-unzip "$TMPDIR"/datasets/Cityscapes/data.zip
-rm "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
+unzip "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
+rm "$TMPDIR"/datasets/Cityscapes/data.zip
+
+ls "$TMPDIR"/datasets/Cityscapes/
 
 # copy the source images to scratch
 cp $HOME/City-GAN/datasets/COCO/* "$TMPDIR"/datasets/Cityscapes/src_imgs/
