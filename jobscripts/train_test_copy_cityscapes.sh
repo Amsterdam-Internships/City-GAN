@@ -40,6 +40,7 @@ do
     # execute training script
     python $HOME/City-GAN/train.py --model copy \
         --dataroot "$TMPDIR"/datasets/Cityscapes\
+        --dataset_mode cityscapes\
         --batch_size 64\
         --n_epochs 5\
         --n_epochs_decay 0\
@@ -83,6 +84,7 @@ do
     # execute training script
     python $HOME/City-GAN/test.py \
         --model copy \
+        --dataset_mode cityscapes \
         --num_test 5000\
         --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
         --checkpoints_dir "$TMPDIR"\
@@ -91,13 +93,13 @@ do
         --seed "${seed}"\
         --epoch "${epoch}"\
         --verbose\
-        > "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt
+        > "$TMPDIR"/test_results_cityscapes_run"${run}"_seed"${seed}"_epoch"${epoch}".txt
 
 
     # copy results to home directory
     mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
     cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
-    cp "$TMPDIR"/test_results_run"${run}"_seed"${seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+    cp "$TMPDIR"/test_results_cityscapes_run"${run}"_seed"${seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
 done
 
 
