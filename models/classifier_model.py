@@ -3,6 +3,7 @@ from .base_model import BaseModel
 from . import networks
 from torchvision.models import resnet18
 from util import util
+import os
 
 
 class ClassifierModel(BaseModel):
