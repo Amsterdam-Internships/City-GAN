@@ -24,7 +24,7 @@ class CityscapesDataset(BaseDataset):
         # source directory: few handpicked files
         self.src_dir = os.path.join(opt.dataroot, "src_imgs")
         self.src_paths = sorted(make_dataset(self.src_dir, opt.max_dataset_size))
-        self.src_len = len(src_paths)
+        self.src_len = len(self.src_paths)
 
         # get the image directory
         image_root = os.path.join(opt.dataroot, "leftImg8bit")

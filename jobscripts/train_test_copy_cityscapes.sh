@@ -29,7 +29,7 @@ mkdir "$TMPDIR"/CopyGAN
 cp -r $HOME/City-GAN/datasets/Cityscapes/leftImg8bit_trainvaltest.zip "$TMPDIR"/datasets/Cityscapes/data.zip
 
 # unzip the data and remove
-unzip "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
+unzip -q "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
 rm "$TMPDIR"/datasets/Cityscapes/data.zip
 
 ls "$TMPDIR"/datasets/Cityscapes/
@@ -45,7 +45,7 @@ do
     python $HOME/City-GAN/train.py --model copy \
         --dataroot "$TMPDIR"/datasets/Cityscapes\
         --dataset_mode cityscapes\
-        --batch_size 64\
+        --batch_size 32\
         --n_epochs 5\
         --n_epochs_decay 0\
         --save_epoch_freq 10\
@@ -90,7 +90,7 @@ do
         --model copy \
         --dataset_mode cityscapes \
         --num_test 5000\
-        --dataroot "$TMPDIR"/datasets/CLEVR_colorized/images\
+        --dataroot "$TMPDIR"/datasets/Cityscapes/ \
         --checkpoints_dir "$TMPDIR"\
         --results_dir "$TMPDIR"/results/ \
         --display_freq 10\
