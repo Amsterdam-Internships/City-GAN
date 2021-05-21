@@ -21,6 +21,11 @@ class CityscapesDataset(BaseDataset):
         """
         BaseDataset.__init__(self, opt)
 
+        # source directory: few handpicked files
+        self.src_dir = os.path.join(opt.dataroot, "src_imgs")
+        self.src_paths = sorted(make_dataset(self.src_dir, opt.max_dataset_size))
+        self.src_len = len(src_paths)
+
         # get the image directory
         image_root = os.path.join(opt.dataroot, "leftImg8bit")
         self.image_dir = os.path.join(image_root, opt.phase)
@@ -61,11 +66,11 @@ class CityscapesDataset(BaseDataset):
             A_paths (str) - - image paths
             B_paths (str) - - image paths (same as A_paths)
         """
-        # read a image given a random integer index
-        pathA = self.tgt_paths[index]
+        # read a image given a random integer index (from the source images)
+        pathA = self.src_paths[index % self.src_len]
 
         # get a target image
-        indexB = (index + random.randint(1, self.size-1)) % self.size
+        indexB = (index)
         pathB = self.tgt_paths[indexB]
 
         # irrelevant other image

@@ -22,8 +22,7 @@ epoch="latest"
 echo "starting training and testing run $run"
 
 #Create output directory on scratch
-mkdir "$TMPDIR"/datasets
-mkdir "$TMPDIR"/datasets/Cityscapes
+mkdir -p "$TMPDIR"/datasets/Cityscapes/src_imgs
 mkdir "$TMPDIR"/CopyGAN
 
 #Copy data file to scratch
@@ -32,6 +31,9 @@ cp -r $HOME/City-GAN/datasets/Cityscapes/leftImg8bit_trainvaltest.zip "$TMPDIR"/
 # unzip the data and remove
 unzip "$TMPDIR"/datasets/Cityscapes/data.zip
 rm "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
+
+# copy the source images to scratch
+cp $HOME/City-GAN/datasets/COCO/* "$TMPDIR"/datasets/Cityscapes/src_imgs/
 
 for seed in 1 10 20 30 42
 do
