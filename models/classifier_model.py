@@ -165,6 +165,6 @@ class ClassifierModel(BaseModel):
             \nGT # instances per class: {self.confusion_matrix.sum(1)} ")
 
         # save plot
-        util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.checkpoints_dir, self.opt.name, 'confusion_matrix.png'))
+        util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, "test_latest", 'confusion_matrix.png'))
 
 
