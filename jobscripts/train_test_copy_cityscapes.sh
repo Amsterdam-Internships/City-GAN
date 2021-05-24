@@ -99,6 +99,8 @@ do
         --checkpoints_dir "$TMPDIR"\
         --results_dir "$TMPDIR"/results/ \
         --display_freq 10\
+        --load_size 256\
+        --crop_size 256\
         --seed "${seed}"\
         --epoch "${epoch}"\
         --verbose\
