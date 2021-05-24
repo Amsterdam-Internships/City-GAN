@@ -15,7 +15,7 @@ module load Python
 # declare run
 run=1
 pred_type="baseline"
-netD="basic"
+netD="copy"
 epoch="latest"
 # seed=42
 
@@ -23,14 +23,19 @@ echo "starting training and testing run $run"
 
 #Create output directory on scratch
 mkdir -p "$TMPDIR"/datasets/Cityscapes/src_imgs
+mkdir -p "$TMPDIR"/datasets/Cityscapes/gtFine
 mkdir "$TMPDIR"/CopyGAN
 
-#Copy data file to scratch
+# Copy data file to scratch
 cp -r $HOME/City-GAN/datasets/Cityscapes/leftImg8bit_trainvaltest.zip "$TMPDIR"/datasets/Cityscapes/data.zip
-
-# unzip the data and remove
+# unzip the data and remove zip archive
 unzip -q "$TMPDIR"/datasets/Cityscapes/data.zip -d "$TMPDIR"/datasets/Cityscapes/
 rm "$TMPDIR"/datasets/Cityscapes/data.zip
+
+# copy the masks to scratch
+cp -r $HOME/City-GAN/datasets/Cityscapes/gtFine.zip "$TMPDIR"/datasets/Cityscapes/gtFine.zip
+unzip -q "$TMPDIR"/datasets/Cityscapes/gtFine.zip -d "$TMPDIR"/datasets/Cityscapes/gtFine
+rm "$TMPDIR"/datasets/Cityscapes/gtFine.zip
 
 ls "$TMPDIR"/datasets/Cityscapes/
 
@@ -59,7 +64,7 @@ do
         --crop_size 256\
         --D_headstart 0\
         --confidence_weight 0.0\
-        --val_batch_size 128\
+        --val_batch_size 64\
         --accumulation_steps 1\
         --display_id 0\
         --lambda_aux 0.0\
