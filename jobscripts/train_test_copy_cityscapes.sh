@@ -34,7 +34,7 @@ rm "$TMPDIR"/datasets/Cityscapes/data.zip
 
 # copy the masks to scratch
 cp -r $HOME/City-GAN/datasets/Cityscapes/gtFine.zip "$TMPDIR"/datasets/Cityscapes/gtFine.zip
-unzip -q "$TMPDIR"/datasets/Cityscapes/gtFine.zip -d "$TMPDIR"/datasets/Cityscapes/gtFine
+unzip -q "$TMPDIR"/datasets/Cityscapes/gtFine.zip -d "$TMPDIR"/datasets/Cityscapes
 rm "$TMPDIR"/datasets/Cityscapes/gtFine.zip
 
 ls "$TMPDIR"/datasets/Cityscapes/
@@ -88,7 +88,7 @@ do
     #### TESTING PART
 
     # copy the model to scratch
-    cp $HOME/City-GAN/checkpoints/run"${run}"/seed"${seed}"/latest_net_G.pth "$TMPDIR"/CopyGAN/
+    cp $HOME/City-GAN/checkpoints/CopyGANCityscapes/run"${run}"/seed"${seed}"/latest_net_G.pth "$TMPDIR"/CopyGAN/
 
     # execute training script
     python $HOME/City-GAN/test.py \
