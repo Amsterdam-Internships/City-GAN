@@ -8,7 +8,7 @@
                  dataroot: /scratch/datasets/ROOM_composite	[default: None]
              dataset_mode: move_eval                     
                 direction: AtoB                          
-             display_freq: 100                           
+             display_freq: 50                            	[default: 100]
           display_winsize: 256                           
                     epoch: latest                        
                   gpu_ids: 0                             
@@ -54,13 +54,13 @@ loading the model from /scratch/checkpoints/Classifier/latest_net_Classifier.pth
 -----------------------------------------------
 creating web directory /scratch/results/Classifier/test_latest
 Confusion matrix:
-tensor([[294., 219., 219., 268.],
-        [250., 239., 217., 294.],
-        [205., 186., 377., 232.],
-        [253., 210., 244., 293.]])
-Overall accuracy: 0.30
+tensor([[294., 227., 220., 259.],
+        [254., 227., 230., 289.],
+        [260., 188., 340., 212.],
+        [251., 227., 228., 294.]])
+Overall accuracy: 0.29
 statistics per class: real, move, random, scanline:             
-Accuracy: tensor([0.2940, 0.2390, 0.3770, 0.2930])             
-Predicted per class: tensor([1002.,  854., 1057., 1087.])            
+Accuracy: tensor([0.2940, 0.2270, 0.3400, 0.2940])             
+Predicted per class: tensor([1059.,  869., 1018., 1054.])            
 GT # instances per class: tensor([1000., 1000., 1000., 1000.]) 
-Total run time testing script: 30.8 sec (999 iterations)
+Total run time testing script: 31.4 sec (999 iterations)
