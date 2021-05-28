@@ -13,10 +13,11 @@ module load 2020
 module load Python
 
 # declare run
-run=1
+run=3
 pred_type="baseline"
 netD="copy"
 epoch="latest"
+img_size=128
 # seed=42
 
 echo "starting training and testing run $run"
@@ -42,7 +43,7 @@ ls "$TMPDIR"/datasets/Cityscapes/
 # copy the source images to scratch
 cp -r $HOME/City-GAN/datasets/COCO/* "$TMPDIR"/datasets/Cityscapes/src_imgs/
 
-for seed in 1 10 20 30 42
+for seed in 42
 do
     echo "Seed: $seed"
 
@@ -51,8 +52,8 @@ do
         --dataroot "$TMPDIR"/datasets/Cityscapes\
         --dataset_mode cityscapes\
         --batch_size 32\
-        --n_epochs 5\
-        --n_epochs_decay 0\
+        --n_epochs 30\
+        --n_epochs_decay 40\
         --save_epoch_freq 10\
         --checkpoints_dir "$TMPDIR"/checkpoints/ \
         --print_freq 100\
@@ -60,8 +61,8 @@ do
         --display_freq 100\
         --verbose \
         --sigma_blur 1\
-        --load_size 256\
-        --crop_size 256\
+        --load_size "${img_size}"\
+        --crop_size "${img_size}"\
         --D_headstart 0\
         --confidence_weight 0.0\
         --val_batch_size 64\
@@ -98,9 +99,9 @@ do
         --dataroot "$TMPDIR"/datasets/Cityscapes/ \
         --checkpoints_dir "$TMPDIR"\
         --results_dir "$TMPDIR"/results/ \
-        --display_freq 10\
-        --load_size 256\
-        --crop_size 256\
+        --display_freq 21\
+        --load_size "${img_size}"\
+        --crop_size "${img_size}"\
         --seed "${seed}"\
         --epoch "${epoch}"\
         --verbose\
