@@ -69,6 +69,10 @@ def print_gradients(net):
             print(f"name: {name}, norm gradient: {param.grad.norm():.5f}")
 
 def plot_confusion_matrix(conf_matrix, labels, save_path):
+    # normalize the matrix
+    conf_matrix = conf_matrix / conf_matrix.sum(1)
+    # represents how many samples per class have received their correct label
+
     plt.figure(figsize=(12, 12))
     cmd = ConfusionMatrixDisplay(conf_matrix.numpy(), display_labels=labels)
     cmd.plot()
