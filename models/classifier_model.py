@@ -119,8 +119,6 @@ class ClassifierModel(BaseModel):
 
         self.loss.backward()
 
-        # TODO: save the losses and the predictions
-
     def optimize_parameters(self):
         """Update network weights; it will be called in every training iteration."""
         self.forward()               # first call forward to calculate intermediate results
@@ -140,6 +138,19 @@ class ClassifierModel(BaseModel):
         if overall_batch % self.opt.print_freq == 0:
             print("accuracy:", acc)
             print(self.confusion_matrix)
+
+    def run_validation(self, data):
+        self.reset_conf_matrix()
+        # prepare the data and run forward pass
+        self.set_input(data)
+        self.forward()
+
+        self.update_conf_matrix()
+        acc = self.get_accuracies()
+        print(f"Validation accuracy overall: {acc}")
+        print(f"Accuracy per class: real: {self.acc_real}, move: {self.acc_move}, random: {self.acc_random}, scanline: {self.acc_scanline}")
+
+
 
 
     def test(self, data):

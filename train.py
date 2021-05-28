@@ -15,13 +15,13 @@ if __name__ == '__main__':
     script_start_time = time.time()
 
     dataset = create_dataset(opt)
-    if opt.model != "classifier":
-        opt_valid = copy.copy(opt)
-        opt_valid.phase = "val"
-        # opt_valid.num_threads = 0
-        opt_valid.batch_size = opt.val_batch_size
-        val_dataset = create_dataset(opt_valid)
-        print(f'The number of validation images = {len(val_dataset)}')
+
+    opt_valid = copy.copy(opt)
+    opt_valid.phase = "val"
+    # opt_valid.num_threads = 0
+    opt_valid.batch_size = opt.val_batch_size
+    val_dataset = create_dataset(opt_valid)
+    print(f'The number of validation images = {len(val_dataset)}')
 
     # # get the number of images in the dataset.
     dataset_size = len(dataset)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
             # run everything on validation set every val_freq batches
             # also run the untrained model (batch = 0), for baseline
-            if (overall_batch -1) % opt.val_freq == 0 and opt.model != "classifier":
+            if (overall_batch -1) % opt.val_freq == 0:
                 model.eval()
                 val_start_time = time.time()
                 model.run_validation(val_dataset)
