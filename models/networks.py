@@ -1143,13 +1143,13 @@ class STN(nn.Module):
 ##### RESNET 18 ######
 class ResNet18(nn.Module):
     """docstring for ResNet18"""
-    def __init__(self, num_channels, num_classes, pretrained):
+    def __init__(self, num_channels, num_classes, pretrained, freeze=False):
         super(ResNet18, self).__init__()
 
         self.model = models.resnet18(pretrained=pretrained)
 
         # change setup if we use a pretrained network
-        if pretrained:
+        if pretrained and freeze:
             # freeze the parameters
             for param in self.model.parameters():
                 param.requires_grad = False
