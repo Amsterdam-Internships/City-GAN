@@ -13,7 +13,7 @@ module load 2020
 module load Python
 
 run=20
-phase="test"
+phase="val"
 
 #Create data directory on scratch
 mkdir -p "$TMPDIR"/datasets/ROOM/images/test
@@ -23,9 +23,12 @@ if [ $phase = "train" ];
 then
     cp $HOME/City-GAN/datasets/ROOM/tars/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/test/
     tar -zxf "$TMPDIR"/datasets/ROOM/images/test/10k_train.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/test/
-else
+elif [ $phase = "test" ];
     cp $HOME/City-GAN/datasets/ROOM/tars/1k_test.tar.gz "$TMPDIR"/datasets/ROOM/images/test/
     tar -zxf "$TMPDIR"/datasets/ROOM/images/test/1k_test.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/test/
+else
+    cp $HOME/City-GAN/datasets/ROOM/tars/1k_val.tar.gz "$TMPDIR"/datasets/ROOM/images/val/
+    tar -zxf "$TMPDIR"/datasets/ROOM/images/val/1k_val.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/val/
 fi
 # show first five images
 ls "$TMPDIR/datasets/ROOM/images/test" | head -n 5

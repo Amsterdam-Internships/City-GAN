@@ -149,6 +149,7 @@ class ClassifierModel(BaseModel):
         acc = self.get_accuracies()
         print(f"Validation accuracy overall: {acc}")
         print(f"Accuracy per class: real: {self.acc_real}, move: {self.acc_move}, random: {self.acc_random}, scanline: {self.acc_scanline}")
+        print(f"confusion matrix: \n {self.confusion_matrix}")
 
 
 
