@@ -22,7 +22,7 @@ class CityscapesDataset(BaseDataset):
         BaseDataset.__init__(self, opt)
 
         # source directory: few handpicked files
-        self.src_dir = os.path.join(opt.dataroot, "src_imgs")
+        self.src_dir = os.path.join(opt.dataroot, "src_imgs/images")
         self.src_paths = sorted(make_dataset(self.src_dir, opt.max_dataset_size))
         self.src_len = len(self.src_paths)
 

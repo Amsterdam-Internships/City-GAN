@@ -40,7 +40,7 @@ rm "$TMPDIR"/datasets/Cityscapes/gtFine.zip
 ls "$TMPDIR"/datasets/Cityscapes/
 
 # copy the source images to scratch
-cp $HOME/City-GAN/datasets/COCO/* "$TMPDIR"/datasets/Cityscapes/src_imgs/
+cp -r $HOME/City-GAN/datasets/COCO/* "$TMPDIR"/datasets/Cityscapes/src_imgs/
 
 for seed in 1 10 20 30 42
 do
@@ -108,9 +108,9 @@ do
 
 
     # copy results to home directory
-    mkdir -p $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"
-    cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/CopyGAN/run"${run}"/seed"${seed}"/
-    cp "$TMPDIR"/test_results_cityscapes_run"${run}"_seed"${seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGAN/run"${run}"/
+    mkdir -p $HOME/City-GAN/results/CopyGANCityscapes/run"${run}"/seed"${seed}"
+    cp -r "$TMPDIR"/results/CopyGAN/test_"${epoch}" $HOME/City-GAN/results/CopyGANCityscapes/run"${run}"/seed"${seed}"/
+    cp "$TMPDIR"/test_results_cityscapes_run"${run}"_seed"${seed}"_epoch"${epoch}".txt $HOME/City-GAN/results/CopyGANCityscapes/run"${run}"/
 done
 
 
