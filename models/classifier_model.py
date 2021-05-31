@@ -139,11 +139,13 @@ class ClassifierModel(BaseModel):
             print("accuracy:", acc)
             print(self.confusion_matrix)
 
-    def run_validation(self, data):
+    def run_validation(self, val_data):
         self.reset_conf_matrix()
         # prepare the data and run forward pass
-        self.set_input(data)
-        self.forward()
+        with torch.no_grad():
+            data = next(iter(val_data))
+            self.set_input(data)
+            self.forward()
 
         self.update_conf_matrix()
         acc = self.get_accuracies()
