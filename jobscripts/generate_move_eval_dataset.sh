@@ -16,7 +16,7 @@ run=20
 phase="val"
 
 #Create data directory on scratch
-mkdir -p "$TMPDIR"/datasets/ROOM/images/test
+mkdir -p "$TMPDIR"/datasets/ROOM/images/"${phase}"
 
 #Copy data file to scratch
 if [ $phase = "train" ];
@@ -24,14 +24,13 @@ then
     cp $HOME/City-GAN/datasets/ROOM/tars/10k_train.tar.gz "$TMPDIR"/datasets/ROOM/images/test/
     tar -zxf "$TMPDIR"/datasets/ROOM/images/test/10k_train.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/test/
 elif [ $phase = "test" ];
+then
     cp $HOME/City-GAN/datasets/ROOM/tars/1k_test.tar.gz "$TMPDIR"/datasets/ROOM/images/test/
     tar -zxf "$TMPDIR"/datasets/ROOM/images/test/1k_test.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/test/
 else
     cp $HOME/City-GAN/datasets/ROOM/tars/1k_val.tar.gz "$TMPDIR"/datasets/ROOM/images/val/
     tar -zxf "$TMPDIR"/datasets/ROOM/images/val/1k_val.tar.gz --strip-components 1 --directory "$TMPDIR"/datasets/ROOM/images/val/
 fi
-# show first five images
-ls "$TMPDIR/datasets/ROOM/images/test" | head -n 5
 
 # copy model to scratch
 mkdir -p $TMPDIR/run"${run}"/MoveModel
@@ -47,6 +46,7 @@ python $HOME/City-GAN/data/create_move_eval_dataset.py --model move \
     --min_obj_surface 50\
     --run "${run}"\
     --data_phase "${phase}"\
+    --phase "${phase}"
 
 
 

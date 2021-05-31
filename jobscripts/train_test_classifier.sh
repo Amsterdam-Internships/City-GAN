@@ -32,7 +32,7 @@ python $HOME/City-GAN/train.py --model classifier \
     --batch_size 64\
     --n_epochs 100\
     --n_epochs_decay 200\
-    --save_epoch_freq 10\
+    --save_epoch_freq 100\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --print_freq 50\
     --update_html 100\
