@@ -24,6 +24,7 @@ class ClassifierModel(BaseModel):
         # parser.add_argument('--use_pretrained', action="store_true", help='If specified, use a pretrained version of Resnet. Only possible in combination with --use_resnet18')
 
         parser.add_argument('--model_type', default="default", help='Type of classifier model used: choose from default, Resnet18, or Resnet18_pretrained', choices=["default", "Resnet18", "Resnet18_pretrained"])
+        parser.add_argument('--freeze_resnet', action="store_true", help='If specified, the Resnet model will be fixed in the beginning of training, only the last layer is finetuned.')
 
         return parser
 
@@ -54,7 +55,7 @@ class ClassifierModel(BaseModel):
         self.reset_conf_matrix()
 
 
-        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=opt.model_type)
+        self.netClassifier = networks.define_D(opt.input_nc, opt.ngf, "classifier", gpu_ids=self.gpu_ids, num_classes=4, classifier_type=opt.model_type, freeze=opt.freeze_resnet)
 
         if self.isTrain:  # only defined during training time
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
@@ -129,6 +130,10 @@ class ClassifierModel(BaseModel):
 
 
     def run_batch(self, data, overall_batch):
+        # after certain threshold, make the complete model trainable
+        if overall_batch > 8000:
+            print("Complete model is trained (batch 8000)")
+            self.model.train_whole_model()
         self.reset_conf_matrix()
         self.set_input(data)
         self.optimize_parameters()

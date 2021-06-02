@@ -169,7 +169,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
 
 def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     'normal', init_gain=0.02, gpu_ids=[], img_dim=64, sigma_blur=1.0,
-    pred_type="pool", aux=True, two_stream=False, num_classes=4, classifier_type=None):
+    pred_type="pool", aux=True, two_stream=False, num_classes=4, classifier_type=None, freeze=False):
     """
     Returns a discriminator
 
@@ -220,7 +220,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
     elif netD == "classifier":
         if "Resnet" in classifier_type:
             pretrained = "pretrained" in classifier_type
-            net = ResNet18(num_channels=input_nc, num_classes=4, pretrained=pretrained)
+            net = ResNet18(num_channels=input_nc, num_classes=4, pretrained=pretrained, freeze=freeze)
             # if pretrained, do not innit weights, just put on device
             if pretrained:
                 if len(gpu_ids) > 0:
@@ -1146,14 +1146,19 @@ class ResNet18(nn.Module):
     def __init__(self, num_channels, num_classes, pretrained, freeze=False):
         super(ResNet18, self).__init__()
 
-        self.model = models.resnet18(pretrained=pretrained,
-            num_classes=num_classes)
+        if pretrained:
+            self.model = models.resnet18(pretrained=pretrained)
+            if freeze:
+                for param in self.model.parameters():
+                    param.requires_grad = False
+            self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+        else:
+            self.model = models.resnet18(pretrained=pretrained, num_classes=num_classes)
 
-        # change setup if we use a pretrained network
-        if pretrained and freeze:
-            # freeze the parameters
-            for param in self.model.parameters():
-                param.requires_grad = False
+    def train_whole_model(self):
+        """Update the weights in the whole model"""
+        for param in self.model.parameters():
+            param.requires_grad = True
 
     def forward(self, x):
         return self.model(x)

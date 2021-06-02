@@ -41,7 +41,8 @@ python $HOME/City-GAN/train.py --model classifier \
     --display_id 0\
     --seed "${seed}"\
     --run ${run}\
-    --model_type ${mode}
+    --model_type ${mode} \
+    --freeze_resnet
 
 
 # copy results to home directory
