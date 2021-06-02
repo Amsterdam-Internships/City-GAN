@@ -1146,24 +1146,14 @@ class ResNet18(nn.Module):
     def __init__(self, num_channels, num_classes, pretrained, freeze=False):
         super(ResNet18, self).__init__()
 
-        self.model = models.resnet18(pretrained=pretrained)
+        self.model = models.resnet18(pretrained=pretrained,
+            num_classes=num_classes)
 
         # change setup if we use a pretrained network
         if pretrained and freeze:
             # freeze the parameters
             for param in self.model.parameters():
                 param.requires_grad = False
-
-        # change last layer
-        fc_inputs = self.model.fc.in_features
-        self.model.fc = nn.Sequential(
-            nn.Linear(fc_inputs, 256),
-            nn.ReLU(),
-            nn.Dropout(0.4),
-            nn.Linear(256, num_classes),
-            nn.LogSoftmax(dim=1) # For using NLLLoss()
-        )
-
 
     def forward(self, x):
         return self.model(x)

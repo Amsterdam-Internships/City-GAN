@@ -139,6 +139,8 @@ class ClassifierModel(BaseModel):
             print("accuracy:", acc)
             print(self.confusion_matrix)
 
+        breakpoint()
+
     def run_validation(self, val_data):
         self.reset_conf_matrix()
         # prepare the data and run forward pass
@@ -148,12 +150,11 @@ class ClassifierModel(BaseModel):
             self.forward()
 
         self.update_conf_matrix()
-        acc = self.get_accuracies()
-        print(f"Validation accuracy overall: {acc}")
-        print(f"Accuracy per class: real: {self.acc_real}, move: {self.acc_move}, random: {self.acc_random}, scanline: {self.acc_scanline}")
-        print(f"confusion matrix: \n {self.confusion_matrix}")
-
-
+        self.print_results(None, save_plot=False)
+        # acc = self.get_accuracies()
+        # print(f"Validation accuracy overall: {acc}")
+        # print(f"Accuracy per class: real: {self.acc_real}, move: {self.acc_move}, random: {self.acc_random}, scanline: {self.acc_scanline}")
+        # print(f"confusion matrix: \n {self.confusion_matrix}")
 
 
     def test(self, data):
@@ -170,7 +171,7 @@ class ClassifierModel(BaseModel):
         visuals = self.get_current_visuals()  # get image results
         save_images(webpage, visuals, image_path=str(batch), aspect_ratio=self.opt.aspect_ratio, width=self.opt.display_winsize)
 
-    def print_results(self, total_nr_batches):
+    def print_results(self, total_nr_batches, save_plot=True):
         print(f"Confusion matrix:\n{self.confusion_matrix}")
         print(f"Overall accuracy: {self.get_accuracies():.2f}")
         print(f"statistics per class: real, move, random, scanline: \
@@ -178,7 +179,8 @@ class ClassifierModel(BaseModel):
             \nPredicted per class: {self.confusion_matrix.sum(0)}\
             \nGT # instances per class: {self.confusion_matrix.sum(1)} ")
 
-        # save plot
-        util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, "test_latest", 'confusion_matrix.png'))
+        # save plot if necessary
+        if save_plot:
+            util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, "test_latest", 'confusion_matrix.png'))
 
 
