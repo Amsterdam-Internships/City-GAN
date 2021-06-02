@@ -131,9 +131,9 @@ class ClassifierModel(BaseModel):
 
     def run_batch(self, data, overall_batch):
         # after certain threshold, make the complete model trainable
-        if overall_batch > 8000:
+        if overall_batch == 8000 and self.opt.model_type =="Resnet18_pretrained":
             print("Complete model is trained (batch 8000)")
-            self.model.train_whole_model()
+            self.netClassifier.module.train_whole_model()
         self.reset_conf_matrix()
         self.set_input(data)
         self.optimize_parameters()
