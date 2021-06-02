@@ -139,8 +139,6 @@ class ClassifierModel(BaseModel):
             print("accuracy:", acc)
             print(self.confusion_matrix)
 
-        breakpoint()
-
     def run_validation(self, val_data):
         self.reset_conf_matrix()
         # prepare the data and run forward pass
