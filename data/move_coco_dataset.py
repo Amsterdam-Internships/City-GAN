@@ -1,5 +1,5 @@
 from data.base_dataset import BaseDataset, get_transform
-from data.image_folder import is_image_file
+from data.image_folder import is_image_file, make_dataset
 from collections import defaultdict
 from PIL import Image, ImageDraw
 import torch
@@ -72,7 +72,7 @@ class MoveCocoDataset(BaseDataset):
 
         for img_id, ann in anns_dict.items():
             # create polygon mask, check networks.py (gf generation)
-            w, h, _ = Image.open(self.id2path_src[img_id]).convert('RGB').size
+            w, h = Image.open(self.id2path_src[img_id]).convert('RGB').size
             for obj in ann:
                 img = Image.new('L', (w, h), 0)
                 seg = obj['segmentation']
