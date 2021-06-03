@@ -36,7 +36,7 @@ cp -r $HOME/City-GAN/datasets/COCO/annotations/* "$TMPDIR"/datasets/Cityscapes/s
 
 # execute training script
 python $HOME/City-GAN/train.py --model move \
-    --dataroot "$TMPDIR"/datasets/ROOM/images/\
+    --dataroot "$TMPDIR"/datasets/Cityscapes/ \
     --dataset_mode move_coco\
     --name Move\
     --max_dataset_size 10000\
