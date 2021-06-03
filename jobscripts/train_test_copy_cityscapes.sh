@@ -23,7 +23,8 @@ img_size=128
 echo "starting training and testing run $run"
 
 #Create output directory on scratch
-mkdir -p "$TMPDIR"/datasets/Cityscapes/src_imgs
+mkdir -p "$TMPDIR"/datasets/Cityscapes/src_imgs/images
+mkdir -p "$TMPDIR"/datasets/Cityscapes/src_imgs/annotations
 mkdir -p "$TMPDIR"/datasets/Cityscapes/gtFine
 mkdir "$TMPDIR"/CopyGAN
 
@@ -41,7 +42,8 @@ rm "$TMPDIR"/datasets/Cityscapes/gtFine.zip
 ls "$TMPDIR"/datasets/Cityscapes/
 
 # copy the source images to scratch
-cp -r $HOME/City-GAN/datasets/COCO/* "$TMPDIR"/datasets/Cityscapes/src_imgs/
+cp -r $HOME/City-GAN/datasets/COCO/images/* "$TMPDIR"/datasets/Cityscapes/src_imgs/images/
+cp -r $HOME/City-GAN/datasets/COCO/annotations/* "$TMPDIR"/datasets/Cityscapes/src_imgs/annotations
 
 for seed in 42
 do

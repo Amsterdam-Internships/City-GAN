@@ -42,6 +42,7 @@ class CityscapesDataset(BaseDataset):
 
         self.return_mask = opt.phase == "test"
 
+        # the masks are returned, but not used yet.
         if self.return_mask:
             # get the segmentation map directory
             segment_root = os.path.join(opt.dataroot, "gtFine")
