@@ -28,12 +28,6 @@ class MoveCocoDataset(BaseDataset):
         """
         BaseDataset.__init__(self, opt)
 
-        IMG_EXTENSIONS = [
-            '.jpg', '.JPG', '.jpeg', '.JPEG',
-            '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
-            '.tif', '.TIF', '.tiff', '.TIFF',
-        ]
-
         # images can be found directly in the phase folder
         self.src_dir = os.path.join(opt.dataroot, "src_imgs/images")
         self.src_paths = sorted(make_dataset(self.src_dir,
@@ -52,7 +46,7 @@ class MoveCocoDataset(BaseDataset):
             self.anns = self.COCO_anns['img_anns']
             self.categories = self.COCO_anns['cats']
             self.polygon_dict = self.create_polygon_masks(self.anns)
-            print(self.polygon_dict)
+            # print(self.polygon_dict)
 
         # get the image directory for Cityscapes (target)
         image_root = os.path.join(opt.dataroot, "leftImg8bit")
@@ -78,17 +72,16 @@ class MoveCocoDataset(BaseDataset):
             # create polygon mask, check networks.py (gf generation)
             w, h = Image.open(self.id2path_src[img_id]).convert('RGB').size
             for obj in ann:
-                print("Obj")
-                img = Image.new('L', (w, h), 0)
+                img = Image.new('1', (w, h), 0)
                 seg = obj['segmentation']
                 if type(seg) != list:
                     continue
                 polygon = np.array(seg[0]).reshape((int(len(seg[0])/2), 2))
+                polygon = [(x, y) for x, y in polygon]
                 ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-                mask = self.transform_mask(img.convert("1"))
+                mask = self.transform_mask(img)
                 mask_binary = (mask > 0).int()
                 surface = mask_binary.sum().item()
-                print("surface:", surface)
                 if surface > self.opt.min_obj_surface:
                     polygon_dict[img_id].append(mask)
 
