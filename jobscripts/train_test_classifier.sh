@@ -15,7 +15,7 @@ module load Python
 # declare run
 run=20
 seed=42
-# mode="Resnet18"
+#mode="Resnet18"
 mode="Resnet18_pretrained"
 # mode="Default"
 echo "starting training classifier (run ${run})"

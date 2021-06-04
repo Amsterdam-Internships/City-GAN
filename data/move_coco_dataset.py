@@ -6,6 +6,8 @@ import torch
 import os
 import glob
 import random
+import json
+import numpy as np
 
 
 class MoveCocoDataset(BaseDataset):
@@ -40,12 +42,17 @@ class MoveCocoDataset(BaseDataset):
         self.id2path_src = {id_ : path for id_, path in zip(self.src_ids, self.src_paths)}
         self.src_len = len(self.src_ids)
 
+        # get transforms for masks and images
+        self.transform_img = get_transform(opt, grayscale=False)
+        self.transform_mask = get_transform(opt, grayscale=True)
+        
         with open(os.path.join(opt.dataroot, "src_imgs/annotations",
             "COCO_anns.json")) as f:
             self.COCO_anns = json.load(f)
             self.anns = self.COCO_anns['img_anns']
-            self.categories = self.COCO_anns['categories']
+            self.categories = self.COCO_anns['cats']
             self.polygon_dict = self.create_polygon_masks(self.anns)
+            print(self.polygon_dict)
 
         # get the image directory for Cityscapes (target)
         image_root = os.path.join(opt.dataroot, "leftImg8bit")
@@ -57,10 +64,6 @@ class MoveCocoDataset(BaseDataset):
         self.tgt_paths = sorted(make_dataset(self.image_dir,
             opt.max_dataset_size))
 
-        # get transforms for masks and images
-        self.transform_img = get_transform(opt, grayscale=False)
-        self.transform_mask = get_transform(opt, grayscale=True)
-
         self.min_obj_surface = opt.min_obj_surface
 
         self.length = self.__len__()
@@ -71,19 +74,21 @@ class MoveCocoDataset(BaseDataset):
         polygon_dict = defaultdict(list)
 
         for img_id, ann in anns_dict.items():
+            print("img_id", img_id)
             # create polygon mask, check networks.py (gf generation)
             w, h = Image.open(self.id2path_src[img_id]).convert('RGB').size
             for obj in ann:
+                print("Obj")
                 img = Image.new('L', (w, h), 0)
                 seg = obj['segmentation']
                 if type(seg) != list:
                     continue
                 polygon = np.array(seg[0]).reshape((int(len(seg[0])/2), 2))
                 ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
-                mask = self.transform_mask(torch.from_numpy(np.array(img)))
+                mask = self.transform_mask(img.convert("1"))
                 mask_binary = (mask > 0).int()
                 surface = mask_binary.sum().item()
-                # print("surface:", surface)
+                print("surface:", surface)
                 if surface > self.opt.min_obj_surface:
                     polygon_dict[img_id].append(mask)
 
@@ -137,4 +142,4 @@ class MoveCocoDataset(BaseDataset):
 
     def __len__(self):
         """Return the total number of images in the dataset."""
-        return len(self.paths)
+        return len(self.tgt_paths)

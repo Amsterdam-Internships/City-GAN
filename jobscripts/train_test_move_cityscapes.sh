@@ -33,6 +33,7 @@ echo "Cityscapes data copied to scratch"
 cp -r $HOME/City-GAN/datasets/COCO/images/* "$TMPDIR"/datasets/Cityscapes/src_imgs/images/
 cp -r $HOME/City-GAN/datasets/COCO/annotations/* "$TMPDIR"/datasets/Cityscapes/src_imgs/annotations
 
+# Min obj surface was 60
 
 # execute training script
 python $HOME/City-GAN/train.py --model move \
@@ -46,7 +47,7 @@ python $HOME/City-GAN/train.py --model move \
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
-    --min_obj_surface 60\
+    --min_obj_surface 30\
     --print_freq 20\
     --display_freq 100\
     --update_html 100\
@@ -54,7 +55,10 @@ python $HOME/City-GAN/train.py --model move \
     --fake_target 0.1\
     --real_target 0.9\
     --verbose\
-    --seed "${seed}"
+    --seed "${seed}"\
+    --preprocess resize_and_crop \
+    --load_size 256 \
+    --crop_size 255
 
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/MoveCityscapes/run"${run}"
