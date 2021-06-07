@@ -300,7 +300,6 @@ class MoveModel(BaseModel):
 
         # get the prediction on the real image: Now done in forward pass
         # self.pred_real = self.netD(self.src)
-        breakpoint()
 
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
 
@@ -321,8 +320,6 @@ class MoveModel(BaseModel):
             - backward over the loss to update the ConvNet
 
         """
-        breakpoint()
-
         self.loss_G = self.criterionGAN(self.pred_fake, True)
         # for sanity checking
         # self.loss_G = self.MSE(self.GT, self.transf_obj_mask)
