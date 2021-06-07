@@ -216,7 +216,7 @@ def define_D(input_nc, ndf, netD, n_layers_D=3, norm='instance', init_type=
         net = NLayerDiscriminator(input_nc, ndf, n_layers_D,
             norm_layer=norm_layer)
     elif netD == "move":
-        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream)
+        net = MoveConvNET(input_nc, ndf, n_layers=n_layers_D, norm=norm, two_stream=two_stream, img_dim=img_dim)
     elif netD == "classifier":
         if "Resnet" in classifier_type:
             pretrained = "pretrained" in classifier_type
@@ -943,14 +943,18 @@ class DotLoss(nn.Module):
 class MoveConvNET(nn.Module):
     """
     """
-    def __init__(self, input_nc, ndf, n_layers, norm, two_stream=False):
+    def __init__(self, input_nc, ndf, n_layers, norm, two_stream=False, img_dim=64):
         super(MoveConvNET, self).__init__()
 
+        assert img_dim in [64, 128, 256]
 
         # define normalization layer
         norm_layer = get_norm_layer(norm_type=norm)
         use_bias = norm_layer.func == nn.InstanceNorm2d
         self.two_stream = two_stream
+
+
+        out_dim = int(img_dim / 2 ** n_layers)
 
         ########### TWO STREAM INPUT ##############
 
@@ -960,11 +964,7 @@ class MoveConvNET(nn.Module):
             self.tgt_layer = nn.Sequential(nn.Conv2d(input_nc, ndf, kernel_size=3, stride=1, padding=1), norm_layer(ndf), nn.LeakyReLU(0.2))
 
             ndf *= 2
-
             layers = []
-
-
-
             nf_mult_prev, nf_mult = 1, 1
 
             for n in range(1, n_layers+1):
@@ -976,7 +976,7 @@ class MoveConvNET(nn.Module):
                     nn.LeakyReLU(0.2)
                 ]
 
-            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*(out_dim**2), 100)]
             self.model = nn.Sequential(*layers)
 
         ##### SINGLE STREAM INPUT ########
@@ -995,7 +995,7 @@ class MoveConvNET(nn.Module):
                     nn.LeakyReLU(0.2, True)
                 ]
 
-            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*n**2, 100)]
+            layers += [nn.Flatten(), nn.Linear(ndf*nf_mult*(out_dim**2), 100)]
             self.model = nn.Sequential(*layers)
 
 

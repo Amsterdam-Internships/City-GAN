@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from torch.cuda.amp import GradScaler, autocast
 import random
 import torch.nn.functional as F
+from math import log
 
 
 class MoveModel(BaseModel):
@@ -70,6 +71,8 @@ class MoveModel(BaseModel):
         for v in self.visual_names:
             setattr(self, v, torch.ones(1, 1, 64, 64))
 
+        n_layers = -3 + int(log(opt.crop_size, 2))
+
 
         # for sanity checking
         # self.visual_names =  ["tgt", "src", "mask_binary", "obj", "transf_obj_mask", "GT"]
@@ -80,14 +83,14 @@ class MoveModel(BaseModel):
         # perhaps we should treat the object and target separately first
         conv_input_nc = 3 if opt.two_stream else 6
 
-        self.netConv = networks.define_D(conv_input_nc, opt.ngf, netD="move", n_layers_D=opt.n_layers_conv, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, two_stream=opt.two_stream)
+        self.netConv = networks.define_D(conv_input_nc, opt.ngf, netD="move", n_layers_D=n_layers, gpu_ids=self.gpu_ids, norm=opt.norm, init_type=opt.init_type, two_stream=opt.two_stream, img_dim=opt.crop_size)
 
 
         self.model_names = ["Conv"]
 
         if self.isTrain:
             # define Discriminator
-            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids)
+            self.netD = networks.define_D(opt.input_nc, opt.ndf, opt.netD, gpu_ids=self.gpu_ids, n_layers_D=n_layers)
             self.model_names.append("D")
 
             self.scaler = GradScaler(enabled=opt.use_amp)
@@ -272,10 +275,10 @@ class MoveModel(BaseModel):
 
         # get the prediction on the fake image, and blur the image
         if not baseline:
-            self.pred_fake = self.netD(self.blur(self.composite))
+            self.pred_fake = self.netD(self.blur(self.composite))[0]
 
         if valid or not generator:
-            self.pred_real = self.netD(self.blur(self.src))
+            self.pred_real = self.netD(self.blur(self.src))[0]
             self.compute_accs()
 
 
@@ -297,7 +300,7 @@ class MoveModel(BaseModel):
 
         # get the prediction on the real image: Now done in forward pass
         # self.pred_real = self.netD(self.src)
-
+        breakpoint()
 
         self.loss_D_real = self.criterionGAN(self.pred_real, True)
 
@@ -318,6 +321,7 @@ class MoveModel(BaseModel):
             - backward over the loss to update the ConvNet
 
         """
+        breakpoint()
 
         self.loss_G = self.criterionGAN(self.pred_fake, True)
         # for sanity checking
