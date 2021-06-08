@@ -12,8 +12,10 @@ module load 2020
 module load Python
 
 # declare run
-run=1
+run=3
 seed=42
+
+echo "Starting run $run"
 
 #Create output directory on scratch
 mkdir -p "$TMPDIR"/datasets/Cityscapes/src_imgs/images
@@ -47,7 +49,7 @@ python $HOME/City-GAN/train.py --model move \
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
-    --min_obj_surface 30\
+    --min_obj_surface 50\
     --print_freq 20\
     --display_freq 100\
     --update_html 100\
@@ -57,8 +59,8 @@ python $HOME/City-GAN/train.py --model move \
     --verbose\
     --seed "${seed}"\
     --preprocess resize_and_crop \
-    --load_size 256 \
-    --crop_size 255
+    --load_size 128 \
+    --crop_size 128
 
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/MoveCityscapes/run"${run}"

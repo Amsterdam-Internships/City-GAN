@@ -1,0 +1,1426 @@
+starting training and testing run 3
+replace /scratch/datasets/Cityscapes/README? [y]es, [n]o, [A]ll, [N]one, [r]ename:  NULL
+(EOF or read error, treating as "[N]one" ...)
+gtFine
+leftImg8bit
+license.txt
+README
+src_imgs
+Seed: 42
+----------------- Options ---------------
+              D_headstart: 0                             
+              D_threshold: 0.5                           
+       accumulation_steps: 1                             
+               batch_size: 32                            	[default: 64]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints/         	[default: ./checkpoints]
+        confidence_weight: 0.0                           
+           continue_train: False                         
+                crop_size: 128                           	[default: 64]
+                 dataroot: /scratch/datasets/Cityscapes  	[default: datasets]
+             dataset_mode: cityscapes                    	[default: double]
+                direction: None                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+              fake_target: 0.1                           
+            flip_vertical: False                         
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+               lambda_aux: 0.0                           	[default: 0.1]
+                load_iter: 0                             	[default: 0]
+                load_size: 128                           	[default: 70]
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: inf                           
+          min_obj_surface: 100                           
+                    model: copy                          
+    n_alternating_batches: 20                            	[default: 1]
+                 n_epochs: 20                            
+           n_epochs_decay: 20                            	[default: 10]
+               n_layers_D: 3                             
+                     name: CopyGAN                       
+                      ndf: 64                            
+                     netD: copy                          
+                     netG: copy                          
+                      ngf: 64                            
+        no_border_zeroing: False                         
+               no_dropout: False                         
+                  no_flip: False                         
+               no_grfakes: False                         
+                  no_html: False                         
+             noisy_labels: True                          	[default: False]
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+              pred_type_D: baseline                      	[default: pool]
+               preprocess: resize_and_crop               
+               print_freq: 100                           	[default: 20]
+              real_target: 0.9                           
+                      run: -1                            
+             save_by_iter: False                         
+          save_epoch_freq: 10                            
+         save_latest_freq: 5000                          
+                     seed: 42                            	[default: 0]
+           serial_batches: False                         
+               sigma_blur: 1.0                           
+                   suffix:                               
+              tracemalloc: False                         
+         update_html_freq: 100                           
+                  use_amp: True                          
+           val_batch_size: 64                            	[default: 512]
+                 val_freq: 20                            	[default: 100]
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+dataset [CityscapesDataset] and dataloder are created
+dataset [CityscapesDataset] and dataloder are created
+The number of validation images = 500
+Starting training of copy-model
+The number of training images = 2975
+The number of epochs to run = 40
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [CopyModel] was created
+---------- Networks initialized -------------
+DataParallel(
+  (module): CopyGenerator(
+    (downscale): Sequential(
+      (0): EncoderBlock(
+        (model): Sequential(
+          (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+          (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (2): LeakyReLU(negative_slope=0.2)
+        )
+      )
+    )
+    (upscale): Sequential(
+      (0): DecoderBlock(
+        (model): Sequential(
+          (0): Upsample(scale_factor=2.0, mode=bilinear)
+          (1): Conv2d(128, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+          (2): InstanceNorm2d(1, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (3): LeakyReLU(negative_slope=0.2)
+        )
+      )
+    )
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (dec4): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (dec3): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(512, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (dec2): DecoderBlock(
+      (model): Sequential(
+        (0): Upsample(scale_factor=2.0, mode=bilinear)
+        (1): Conv2d(256, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (2): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (3): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (dec1): DecoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+      )
+    )
+    (sigmoid): Sigmoid()
+  )
+)
+[Network G] Total number of parameters : 3.580 M
+DataParallel(
+  (module): CopyDiscriminator(
+    (blur_filter): GaussianSmoothing()
+    (downscale): Sequential(
+      (0): EncoderBlock(
+        (model): Sequential(
+          (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+          (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+          (2): LeakyReLU(negative_slope=0.2)
+        )
+      )
+    )
+    (upscale): Sequential()
+    (enc1): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(64, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (enc2): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (enc3): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (enc4): EncoderBlock(
+      (model): Sequential(
+        (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), padding_mode=replicate)
+        (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+        (2): LeakyReLU(negative_slope=0.2)
+      )
+    )
+    (sigmoid): Sigmoid()
+    (pred_layers): Sequential(
+      (0): AdaptiveAvgPool2d(output_size=1)
+      (1): Flatten(start_dim=1, end_dim=-1)
+      (2): Linear(in_features=512, out_features=1, bias=True)
+      (3): Sigmoid()
+    )
+  )
+)
+[Network D] Total number of parameters : 1.588 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/CopyGAN/web...
+validation accuracies:
+                gf: 0.00,0.52
+                real: 1.00, 0.52
+                fake: 0.00, 0.52
+
+ran validation set (B:1) in                         51.6 s.
+validation accuracies:
+                gf: 1.00,0.37
+                real: 0.00, 0.37
+                fake: 1.00, 0.35
+
+ran validation set (B:21) in                         58.2 s.
+validation accuracies:
+                gf: 0.44,0.50
+                real: 0.83, 0.54
+                fake: 0.91, 0.43
+
+ran validation set (B:41) in                         49.9 s.
+validation accuracies:
+                gf: 1.00,0.45
+                real: 0.00, 0.44
+                fake: 1.00, 0.46
+
+ran validation set (B:61) in                         51.1 s.
+validation accuracies:
+                gf: 0.97,0.48
+                real: 0.03, 0.48
+                fake: 1.00, 0.47
+
+ran validation set (B:81) in                         47.6 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 40 	 Time Taken: 467 sec
+validation accuracies:
+                gf: 0.75,0.49
+                real: 0.34, 0.50
+                fake: 0.41, 0.50
+
+ran validation set (B:101) in                         50.9 s.
+validation accuracies:
+                gf: 1.00,0.37
+                real: 0.00, 0.38
+                fake: 1.00, 0.37
+
+ran validation set (B:121) in                         54.8 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.42
+                fake: 1.00, 0.42
+
+ran validation set (B:141) in                         48.1 s.
+validation accuracies:
+                gf: 1.00,0.46
+                real: 0.00, 0.47
+                fake: 1.00, 0.46
+
+ran validation set (B:161) in                         50.7 s.
+validation accuracies:
+                gf: 0.92,0.48
+                real: 0.14, 0.49
+                fake: 0.81, 0.49
+
+ran validation set (B:181) in                         36.5 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 40 	 Time Taken: 471 sec
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.42
+                fake: 1.00, 0.42
+
+ran validation set (B:201) in                         62.6 s.
+validation accuracies:
+                gf: 1.00,0.44
+                real: 0.00, 0.44
+                fake: 1.00, 0.45
+
+ran validation set (B:221) in                         53.5 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.00, 0.48
+                fake: 0.97, 0.48
+
+ran validation set (B:241) in                         64.0 s.
+validation accuracies:
+                gf: 0.94,0.48
+                real: 0.11, 0.48
+                fake: 0.70, 0.49
+
+ran validation set (B:261) in                         64.0 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 40 	 Time Taken: 468 sec
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.42
+
+ran validation set (B:281) in                         58.1 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.44
+                fake: 1.00, 0.45
+
+ran validation set (B:301) in                         50.3 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.00, 0.48
+                fake: 0.94, 0.49
+
+ran validation set (B:321) in                         59.6 s.
+validation accuracies:
+                gf: 0.98,0.48
+                real: 0.11, 0.48
+                fake: 0.69, 0.49
+
+ran validation set (B:341) in                         52.3 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.42
+                fake: 1.00, 0.42
+
+ran validation set (B:361) in                         51.4 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 40 	 Time Taken: 481 sec
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.44
+                fake: 1.00, 0.46
+
+ran validation set (B:381) in                         52.3 s.
+validation accuracies:
+                gf: 0.94,0.48
+                real: 0.14, 0.49
+                fake: 0.80, 0.48
+
+ran validation set (B:401) in                         55.5 s.
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.12, 0.48
+                fake: 0.91, 0.49
+
+ran validation set (B:421) in                         55.1 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.41
+
+ran validation set (B:441) in                         46.0 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 5 / 40 	 Time Taken: 446 sec
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.45
+
+ran validation set (B:461) in                         60.1 s.
+validation accuracies:
+                gf: 0.98,0.48
+                real: 0.11, 0.49
+                fake: 0.80, 0.49
+
+ran validation set (B:481) in                         48.2 s.
+validation accuracies:
+                gf: 0.97,0.48
+                real: 0.06, 0.48
+                fake: 0.59, 0.50
+
+ran validation set (B:501) in                         58.6 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.42
+
+ran validation set (B:521) in                         59.7 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.43
+                fake: 1.00, 0.45
+
+ran validation set (B:541) in                         67.1 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 6 / 40 	 Time Taken: 500 sec
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.12, 0.49
+                fake: 0.84, 0.49
+
+ran validation set (B:561) in                         51.8 s.
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.11, 0.48
+                fake: 0.53, 0.50
+
+ran validation set (B:581) in                         60.2 s.
+validation accuracies:
+                gf: 1.00,0.39
+                real: 0.00, 0.41
+                fake: 1.00, 0.42
+
+ran validation set (B:601) in                         66.2 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.44
+                fake: 1.00, 0.46
+
+ran validation set (B:621) in                         50.8 s.
+validation accuracies:
+                gf: 0.92,0.47
+                real: 0.22, 0.49
+                fake: 0.67, 0.48
+
+ran validation set (B:641) in                         40.6 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 7 / 40 	 Time Taken: 501 sec
+validation accuracies:
+                gf: 0.88,0.46
+                real: 0.03, 0.44
+                fake: 0.64, 0.49
+
+ran validation set (B:661) in                         44.8 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.42
+                fake: 1.00, 0.38
+
+ran validation set (B:681) in                         64.3 s.
+validation accuracies:
+                gf: 0.98,0.44
+                real: 0.03, 0.45
+                fake: 0.94, 0.46
+
+ran validation set (B:701) in                         45.1 s.
+validation accuracies:
+                gf: 0.98,0.39
+                real: 0.02, 0.42
+                fake: 1.00, 0.41
+
+ran validation set (B:721) in                         52.4 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 8 / 40 	 Time Taken: 444 sec
+validation accuracies:
+                gf: 0.98,0.42
+                real: 0.02, 0.44
+                fake: 0.97, 0.44
+
+ran validation set (B:741) in                         57.1 s.
+validation accuracies:
+                gf: 1.00,0.39
+                real: 0.00, 0.41
+                fake: 1.00, 0.41
+
+ran validation set (B:761) in                         65.8 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.06, 0.44
+                fake: 0.98, 0.45
+
+ran validation set (B:781) in                         56.3 s.
+validation accuracies:
+                gf: 0.59,0.49
+                real: 0.64, 0.52
+                fake: 0.66, 0.49
+
+ran validation set (B:801) in                         65.4 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.06, 0.45
+                fake: 0.84, 0.47
+
+ran validation set (B:821) in                         52.9 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 9 / 40 	 Time Taken: 508 sec
+validation accuracies:
+                gf: 0.86,0.47
+                real: 0.27, 0.48
+                fake: 0.91, 0.46
+
+ran validation set (B:841) in                         57.8 s.
+validation accuracies:
+                gf: 0.94,0.47
+                real: 0.02, 0.47
+                fake: 0.77, 0.49
+
+ran validation set (B:861) in                         66.3 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.40
+
+ran validation set (B:881) in                         56.4 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.42
+                fake: 1.00, 0.45
+
+ran validation set (B:901) in                         57.5 s.
+saving the model at the end of epoch 10, iters 29440
+learning rate 0.0002000 -> 0.0002000
+End of epoch 10 / 40 	 Time Taken: 470 sec
+validation accuracies:
+                gf: 1.00,0.48
+                real: 0.03, 0.48
+                fake: 0.97, 0.48
+
+ran validation set (B:921) in                         60.3 s.
+validation accuracies:
+                gf: 0.94,0.49
+                real: 0.06, 0.49
+                fake: 0.53, 0.50
+
+ran validation set (B:941) in                         50.9 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.42
+                fake: 1.00, 0.43
+
+ran validation set (B:961) in                         66.0 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.44
+                fake: 1.00, 0.45
+
+ran validation set (B:981) in                         59.6 s.
+validation accuracies:
+                gf: 0.84,0.48
+                real: 0.34, 0.49
+                fake: 0.84, 0.49
+
+ran validation set (B:1001) in                         55.3 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 11 / 40 	 Time Taken: 502 sec
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.03, 0.48
+                fake: 0.94, 0.47
+
+ran validation set (B:1021) in                         61.9 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.39
+
+ran validation set (B:1041) in                         57.3 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.45
+
+ran validation set (B:1061) in                         65.9 s.
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.05, 0.48
+                fake: 0.83, 0.49
+
+ran validation set (B:1081) in                         57.0 s.
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.05, 0.49
+                fake: 0.52, 0.50
+
+ran validation set (B:1101) in                         50.2 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 12 / 40 	 Time Taken: 508 sec
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.42
+                fake: 1.00, 0.42
+
+ran validation set (B:1121) in                         63.3 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 0.98, 0.45
+
+ran validation set (B:1141) in                         65.0 s.
+validation accuracies:
+                gf: 0.73,0.48
+                real: 0.39, 0.49
+                fake: 0.77, 0.48
+
+ran validation set (B:1161) in                         53.6 s.
+validation accuracies:
+                gf: 0.92,0.48
+                real: 0.12, 0.48
+                fake: 0.38, 0.51
+
+ran validation set (B:1181) in                         48.8 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 13 / 40 	 Time Taken: 465 sec
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.40
+
+ran validation set (B:1201) in                         47.2 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.42
+                fake: 1.00, 0.44
+
+ran validation set (B:1221) in                         63.8 s.
+validation accuracies:
+                gf: 0.50,0.50
+                real: 0.62, 0.51
+                fake: 0.84, 0.47
+
+ran validation set (B:1241) in                         63.2 s.
+validation accuracies:
+                gf: 1.00,0.46
+                real: 0.00, 0.44
+                fake: 1.00, 0.45
+
+ran validation set (B:1261) in                         59.1 s.
+validation accuracies:
+                gf: 0.83,0.49
+                real: 0.16, 0.49
+                fake: 0.94, 0.48
+
+ran validation set (B:1281) in                         54.8 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 14 / 40 	 Time Taken: 500 sec
+validation accuracies:
+                gf: 0.81,0.48
+                real: 0.14, 0.48
+                fake: 0.17, 0.51
+
+ran validation set (B:1301) in                         63.4 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.42
+
+ran validation set (B:1321) in                         56.3 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.42
+                fake: 1.00, 0.45
+
+ran validation set (B:1341) in                         52.0 s.
+validation accuracies:
+                gf: 1.00,0.48
+                real: 0.00, 0.48
+                fake: 1.00, 0.48
+
+ran validation set (B:1361) in                         53.5 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 15 / 40 	 Time Taken: 451 sec
+validation accuracies:
+                gf: 0.83,0.49
+                real: 0.11, 0.49
+                fake: 0.41, 0.50
+
+ran validation set (B:1381) in                         48.4 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.42
+                fake: 1.00, 0.42
+
+ran validation set (B:1401) in                         59.1 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.45
+
+ran validation set (B:1421) in                         52.8 s.
+validation accuracies:
+                gf: 1.00,0.48
+                real: 0.02, 0.48
+                fake: 0.98, 0.49
+
+ran validation set (B:1441) in                         59.5 s.
+validation accuracies:
+                gf: 0.94,0.49
+                real: 0.08, 0.49
+                fake: 0.42, 0.50
+
+ran validation set (B:1461) in                         50.2 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 16 / 40 	 Time Taken: 471 sec
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.42
+                fake: 1.00, 0.43
+
+ran validation set (B:1481) in                         49.3 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.45
+
+ran validation set (B:1501) in                         63.1 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.00, 0.47
+                fake: 0.97, 0.49
+
+ran validation set (B:1521) in                         47.9 s.
+validation accuracies:
+                gf: 0.98,0.48
+                real: 0.03, 0.48
+                fake: 0.42, 0.50
+
+ran validation set (B:1541) in                         56.0 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:1561) in                         33.7 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 17 / 40 	 Time Taken: 474 sec
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:1581) in                         63.2 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.02, 0.48
+                fake: 0.86, 0.49
+
+ran validation set (B:1601) in                         49.2 s.
+validation accuracies:
+                gf: 0.95,0.48
+                real: 0.08, 0.48
+                fake: 0.38, 0.50
+
+ran validation set (B:1621) in                         51.8 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:1641) in                         48.3 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 18 / 40 	 Time Taken: 433 sec
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:1661) in                         49.2 s.
+validation accuracies:
+                gf: 1.00,0.48
+                real: 0.00, 0.48
+                fake: 0.84, 0.49
+
+ran validation set (B:1681) in                         49.0 s.
+validation accuracies:
+                gf: 0.97,0.48
+                real: 0.08, 0.48
+                fake: 0.38, 0.50
+
+ran validation set (B:1701) in                         56.0 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:1721) in                         55.5 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:1741) in                         51.5 s.
+learning rate 0.0002000 -> 0.0002000
+End of epoch 19 / 40 	 Time Taken: 466 sec
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.02, 0.48
+                fake: 0.73, 0.50
+
+ran validation set (B:1761) in                         59.3 s.
+validation accuracies:
+                gf: 0.94,0.48
+                real: 0.06, 0.48
+                fake: 0.36, 0.51
+
+ran validation set (B:1781) in                         65.5 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:1801) in                         59.8 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:1821) in                         60.8 s.
+saving the model at the end of epoch 20, iters 58880
+learning rate 0.0002000 -> 0.0001600
+End of epoch 20 / 40 	 Time Taken: 457 sec
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.02, 0.47
+                fake: 0.69, 0.49
+
+ran validation set (B:1841) in                         55.5 s.
+validation accuracies:
+                gf: 0.98,0.48
+                real: 0.02, 0.48
+                fake: 0.38, 0.50
+
+ran validation set (B:1861) in                         60.7 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.42
+                fake: 1.00, 0.44
+
+ran validation set (B:1881) in                         60.6 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:1901) in                         60.5 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.02, 0.47
+                fake: 0.80, 0.49
+
+ran validation set (B:1921) in                         60.7 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 21 / 40 	 Time Taken: 464 sec
+validation accuracies:
+                gf: 0.98,0.47
+                real: 0.03, 0.47
+                fake: 0.39, 0.50
+
+ran validation set (B:1941) in                         55.1 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.42
+                fake: 1.00, 0.44
+
+ran validation set (B:1961) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:1981) in                         61.0 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.00, 0.47
+                fake: 0.78, 0.49
+
+ran validation set (B:2001) in                         55.6 s.
+validation accuracies:
+                gf: 0.95,0.47
+                real: 0.03, 0.47
+                fake: 0.38, 0.50
+
+ran validation set (B:2021) in                         40.9 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 22 / 40 	 Time Taken: 450 sec
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.44
+
+ran validation set (B:2041) in                         45.3 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 1.00, 0.46
+
+ran validation set (B:2061) in                         60.7 s.
+validation accuracies:
+                gf: 0.98,0.47
+                real: 0.03, 0.47
+                fake: 0.62, 0.50
+
+ran validation set (B:2081) in                         50.2 s.
+validation accuracies:
+                gf: 0.97,0.47
+                real: 0.03, 0.48
+                fake: 0.44, 0.50
+
+ran validation set (B:2101) in                         54.3 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 23 / 40 	 Time Taken: 399 sec
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:2121) in                         55.5 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.43
+                fake: 0.98, 0.46
+
+ran validation set (B:2141) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.00, 0.47
+                fake: 0.67, 0.49
+
+ran validation set (B:2161) in                         60.7 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.05, 0.48
+                fake: 0.38, 0.50
+
+ran validation set (B:2181) in                         60.6 s.
+validation accuracies:
+                gf: 0.95,0.47
+                real: 0.11, 0.48
+                fake: 0.69, 0.49
+
+ran validation set (B:2201) in                         58.6 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 24 / 40 	 Time Taken: 462 sec
+validation accuracies:
+                gf: 0.94,0.48
+                real: 0.11, 0.48
+                fake: 0.34, 0.51
+
+ran validation set (B:2221) in                         45.9 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:2241) in                         50.6 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.43
+                fake: 1.00, 0.47
+
+ran validation set (B:2261) in                         50.0 s.
+validation accuracies:
+                gf: 0.81,0.48
+                real: 0.42, 0.49
+                fake: 0.83, 0.47
+
+ran validation set (B:2281) in                         55.0 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 25 / 40 	 Time Taken: 390 sec
+validation accuracies:
+                gf: 0.98,0.47
+                real: 0.02, 0.47
+                fake: 0.89, 0.48
+
+ran validation set (B:2301) in                         40.7 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.41
+                fake: 1.00, 0.41
+
+ran validation set (B:2321) in                         49.8 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.43
+                fake: 0.95, 0.47
+
+ran validation set (B:2341) in                         55.4 s.
+validation accuracies:
+                gf: 1.00,0.47
+                real: 0.05, 0.48
+                fake: 0.58, 0.50
+
+ran validation set (B:2361) in                         60.8 s.
+validation accuracies:
+                gf: 0.92,0.48
+                real: 0.08, 0.48
+                fake: 0.27, 0.51
+
+ran validation set (B:2381) in                         50.4 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 26 / 40 	 Time Taken: 422 sec
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.43
+
+ran validation set (B:2401) in                         55.9 s.
+validation accuracies:
+                gf: 1.00,0.43
+                real: 0.00, 0.44
+                fake: 0.94, 0.47
+
+ran validation set (B:2421) in                         55.4 s.
+validation accuracies:
+                gf: 0.92,0.47
+                real: 0.14, 0.48
+                fake: 0.88, 0.47
+
+ran validation set (B:2441) in                         60.7 s.
+validation accuracies:
+                gf: 0.97,0.47
+                real: 0.05, 0.48
+                fake: 0.61, 0.50
+
+ran validation set (B:2461) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.42
+                fake: 1.00, 0.43
+
+ran validation set (B:2481) in                         40.8 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 27 / 40 	 Time Taken: 452 sec
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.43
+                fake: 0.92, 0.47
+
+ran validation set (B:2501) in                         45.0 s.
+validation accuracies:
+                gf: 0.97,0.47
+                real: 0.02, 0.47
+                fake: 0.61, 0.49
+
+ran validation set (B:2521) in                         50.5 s.
+validation accuracies:
+                gf: 0.98,0.47
+                real: 0.09, 0.48
+                fake: 0.28, 0.51
+
+ran validation set (B:2541) in                         60.7 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.42
+
+ran validation set (B:2561) in                         61.1 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 28 / 40 	 Time Taken: 404 sec
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.44
+                fake: 0.94, 0.47
+
+ran validation set (B:2581) in                         45.5 s.
+validation accuracies:
+                gf: 0.92,0.47
+                real: 0.14, 0.48
+                fake: 0.36, 0.50
+
+ran validation set (B:2601) in                         55.5 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.00, 0.42
+                fake: 1.00, 0.42
+
+ran validation set (B:2621) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.44
+                real: 0.06, 0.46
+                fake: 1.00, 0.44
+
+ran validation set (B:2641) in                         60.7 s.
+validation accuracies:
+                gf: 1.00,0.45
+                real: 0.03, 0.47
+                fake: 0.84, 0.48
+
+ran validation set (B:2661) in                         46.1 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 29 / 40 	 Time Taken: 433 sec
+validation accuracies:
+                gf: 0.98,0.48
+                real: 0.08, 0.49
+                fake: 0.75, 0.49
+
+ran validation set (B:2681) in                         46.2 s.
+validation accuracies:
+                gf: 0.97,0.47
+                real: 0.09, 0.48
+                fake: 0.38, 0.50
+
+ran validation set (B:2701) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.42
+                fake: 1.00, 0.41
+
+ran validation set (B:2721) in                         50.4 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.44
+                fake: 0.98, 0.47
+
+ran validation set (B:2741) in                         55.3 s.
+saving the model at the end of epoch 30, iters 88320
+learning rate 0.0001600 -> 0.0001600
+End of epoch 30 / 40 	 Time Taken: 400 sec
+validation accuracies:
+                gf: 0.97,0.47
+                real: 0.12, 0.48
+                fake: 0.69, 0.49
+
+ran validation set (B:2761) in                         40.0 s.
+validation accuracies:
+                gf: 0.92,0.47
+                real: 0.20, 0.48
+                fake: 0.34, 0.51
+
+ran validation set (B:2781) in                         49.2 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.03, 0.44
+                fake: 1.00, 0.38
+
+ran validation set (B:2801) in                         60.5 s.
+validation accuracies:
+                gf: 0.97,0.45
+                real: 0.19, 0.47
+                fake: 0.86, 0.47
+
+ran validation set (B:2821) in                         59.8 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.03, 0.43
+                fake: 1.00, 0.41
+
+ran validation set (B:2841) in                         60.8 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 31 / 40 	 Time Taken: 439 sec
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.03, 0.44
+                fake: 0.97, 0.46
+
+ran validation set (B:2861) in                         55.3 s.
+validation accuracies:
+                gf: 0.91,0.46
+                real: 0.42, 0.49
+                fake: 0.84, 0.46
+
+ran validation set (B:2881) in                         55.3 s.
+validation accuracies:
+                gf: 1.00,0.45
+                real: 0.05, 0.46
+                fake: 0.92, 0.47
+
+ran validation set (B:2901) in                         55.0 s.
+validation accuracies:
+                gf: 0.89,0.48
+                real: 0.30, 0.49
+                fake: 0.80, 0.48
+
+ran validation set (B:2921) in                         60.9 s.
+validation accuracies:
+                gf: 0.89,0.47
+                real: 0.23, 0.48
+                fake: 0.55, 0.50
+
+ran validation set (B:2941) in                         46.3 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 32 / 40 	 Time Taken: 450 sec
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.05, 0.44
+                fake: 1.00, 0.43
+
+ran validation set (B:2961) in                         40.6 s.
+validation accuracies:
+                gf: 0.98,0.44
+                real: 0.11, 0.46
+                fake: 0.61, 0.50
+
+ran validation set (B:2981) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.03, 0.43
+                fake: 1.00, 0.41
+
+ran validation set (B:3001) in                         60.2 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.11, 0.44
+                fake: 0.91, 0.47
+
+ran validation set (B:3021) in                         55.4 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 33 / 40 	 Time Taken: 405 sec
+validation accuracies:
+                gf: 0.91,0.45
+                real: 0.31, 0.48
+                fake: 0.92, 0.45
+
+ran validation set (B:3041) in                         45.6 s.
+validation accuracies:
+                gf: 0.97,0.45
+                real: 0.02, 0.45
+                fake: 0.97, 0.45
+
+ran validation set (B:3061) in                         55.5 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.00, 0.41
+                fake: 1.00, 0.41
+
+ran validation set (B:3081) in                         60.8 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.00, 0.43
+                fake: 0.88, 0.47
+
+ran validation set (B:3101) in                         55.2 s.
+validation accuracies:
+                gf: 0.67,0.48
+                real: 0.56, 0.51
+                fake: 0.83, 0.46
+
+ran validation set (B:3121) in                         46.3 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 34 / 40 	 Time Taken: 430 sec
+validation accuracies:
+                gf: 0.89,0.46
+                real: 0.23, 0.48
+                fake: 0.42, 0.50
+
+ran validation set (B:3141) in                         56.3 s.
+validation accuracies:
+                gf: 1.00,0.39
+                real: 0.00, 0.42
+                fake: 1.00, 0.41
+
+ran validation set (B:3161) in                         55.9 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.03, 0.44
+                fake: 0.80, 0.47
+
+ran validation set (B:3181) in                         60.9 s.
+validation accuracies:
+                gf: 0.53,0.49
+                real: 0.66, 0.52
+                fake: 0.70, 0.47
+
+ran validation set (B:3201) in                         60.7 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 35 / 40 	 Time Taken: 421 sec
+validation accuracies:
+                gf: 0.94,0.44
+                real: 0.16, 0.47
+                fake: 0.61, 0.48
+
+ran validation set (B:3221) in                         44.9 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.02, 0.42
+                fake: 1.00, 0.43
+
+ran validation set (B:3241) in                         55.8 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.02, 0.43
+                fake: 0.81, 0.48
+
+ran validation set (B:3261) in                         50.3 s.
+validation accuracies:
+                gf: 0.78,0.48
+                real: 0.42, 0.49
+                fake: 0.70, 0.48
+
+ran validation set (B:3281) in                         60.6 s.
+validation accuracies:
+                gf: 0.97,0.44
+                real: 0.06, 0.46
+                fake: 0.55, 0.49
+
+ran validation set (B:3301) in                         60.7 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 36 / 40 	 Time Taken: 438 sec
+validation accuracies:
+                gf: 0.98,0.42
+                real: 0.23, 0.46
+                fake: 0.95, 0.43
+
+ran validation set (B:3321) in                         45.8 s.
+validation accuracies:
+                gf: 0.89,0.46
+                real: 0.41, 0.49
+                fake: 0.23, 0.52
+
+ran validation set (B:3341) in                         50.0 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.06, 0.44
+                fake: 1.00, 0.40
+
+ran validation set (B:3361) in                         50.4 s.
+validation accuracies:
+                gf: 0.98,0.40
+                real: 0.00, 0.43
+                fake: 1.00, 0.44
+
+ran validation set (B:3381) in                         54.9 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.14, 0.45
+                fake: 1.00, 0.42
+
+ran validation set (B:3401) in                         47.4 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 37 / 40 	 Time Taken: 426 sec
+validation accuracies:
+                gf: 0.89,0.45
+                real: 0.31, 0.48
+                fake: 0.55, 0.50
+
+ran validation set (B:3421) in                         55.9 s.
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.16, 0.46
+                fake: 1.00, 0.44
+
+ran validation set (B:3441) in                         60.7 s.
+validation accuracies:
+                gf: 1.00,0.42
+                real: 0.06, 0.44
+                fake: 0.61, 0.49
+
+ran validation set (B:3461) in                         50.2 s.
+validation accuracies:
+                gf: 0.86,0.46
+                real: 0.50, 0.50
+                fake: 0.75, 0.47
+
+ran validation set (B:3481) in                         60.8 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 38 / 40 	 Time Taken: 415 sec
+validation accuracies:
+                gf: 1.00,0.41
+                real: 0.05, 0.44
+                fake: 0.77, 0.47
+
+ran validation set (B:3501) in                         55.5 s.
+validation accuracies:
+                gf: 0.88,0.46
+                real: 0.42, 0.50
+                fake: 0.75, 0.47
+
+ran validation set (B:3521) in                         55.7 s.
+validation accuracies:
+                gf: 0.91,0.45
+                real: 0.30, 0.48
+                fake: 0.47, 0.50
+
+ran validation set (B:3541) in                         60.7 s.
+validation accuracies:
+                gf: 1.00,0.40
+                real: 0.03, 0.44
+                fake: 1.00, 0.40
+
+ran validation set (B:3561) in                         55.5 s.
+validation accuracies:
+                gf: 0.97,0.44
+                real: 0.34, 0.48
+                fake: 0.39, 0.51
+
+ran validation set (B:3581) in                         57.8 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 39 / 40 	 Time Taken: 451 sec
+validation accuracies:
+                gf: 1.00,0.38
+                real: 0.16, 0.44
+                fake: 0.95, 0.40
+
+ran validation set (B:3601) in                         40.7 s.
+validation accuracies:
+                gf: 1.00,0.38
+                real: 0.08, 0.43
+                fake: 0.94, 0.44
+
+ran validation set (B:3621) in                         60.9 s.
+validation accuracies:
+                gf: 0.55,0.49
+                real: 0.75, 0.53
+                fake: 0.86, 0.45
+
+ran validation set (B:3641) in                         60.3 s.
+validation accuracies:
+                gf: 0.98,0.41
+                real: 0.12, 0.45
+                fake: 0.73, 0.47
+
+ran validation set (B:3661) in                         50.3 s.
+saving the model at the end of epoch 40, iters 117760
+learning rate 0.0001600 -> 0.0001280
+End of epoch 40 / 40 	 Time Taken: 400 sec
+Finished training, model is saved (40 epochs in 18059.523852825165s)
+Batches trained - G: 1779, D: 1901 
