@@ -43,7 +43,6 @@ python $HOME/City-GAN/train.py --model move \
     --dataset_mode move_coco\
     --name Move\
     --max_dataset_size 10000\
-
     --batch_size 64\
     --n_epochs 10\
     --n_epochs_decay 5\

@@ -55,13 +55,13 @@ loading the model from /scratch/checkpoints/Classifier/latest_net_Classifier.pth
 -----------------------------------------------
 creating web directory /scratch/results/Classifier/test_latest
 Confusion matrix:
-tensor([[318.,   0.,   0., 682.],
-        [226.,   0.,  21., 753.],
-        [207.,   0., 107., 686.],
-        [276.,   0.,   0., 724.]])
-Overall accuracy: 0.29
+tensor([[  0., 997.,   3.,   0.],
+        [  0., 999.,   1.,   0.],
+        [  0., 963.,  24.,  13.],
+        [  0., 988.,   9.,   3.]])
+Overall accuracy: 0.26
 statistics per class: real, move, random, scanline:             
-Accuracy: tensor([0.3180, 0.0000, 0.1070, 0.7240])             
-Predicted per class: tensor([1027.,    0.,  128., 2845.])            
+Accuracy: tensor([0.0000, 0.9990, 0.0240, 0.0030])             
+Predicted per class: tensor([   0., 3947.,   37.,   16.])            
 GT # instances per class: tensor([1000., 1000., 1000., 1000.]) 
-Total run time testing script: 30.9 sec (999 iterations)
+Total run time testing script: 34.4 sec (999 iterations)
