@@ -28,12 +28,15 @@ class MoveEvalDataset(BaseDataset):
         dataroot = os.path.join(opt.dataroot, opt.phase)
         self.data_dirs = [os.path.join(dataroot, t) for t in self.folders]
 
+        # check if all the directories exist
         for i in self.data_dirs:
             assert os.path.isdir(i), f"{i} is not a valid dir"
 
         count = 0
+        # create a dictionary to save all the paths for different types
         self.paths = {k:[] for k in self.types}
 
+        # loop over de types and corresponding directory
         for i,(directory, t) in enumerate(zip(self.data_dirs, self.types)):
             for root, _, fnames in sorted(os.walk(directory)):
                 for fname in fnames:
@@ -49,8 +52,6 @@ class MoveEvalDataset(BaseDataset):
         # check if the transform is the same if used multiple times (the random components)
         self.transform_img = get_transform(opt, grayscale=False)
 
-        self.min_obj_surface = opt.min_obj_surface
-
         self.length = self.__len__()
 
 
@@ -62,11 +63,11 @@ class MoveEvalDataset(BaseDataset):
 
         Returns:
             4 different converted and transformed images (from each type 1)
-
         """
 
         out_dict = dict()
 
+        # transform the images from every type, and save in dictionary
         for t in self.types:
             out_dict[t] = self.transform_img(Image.open(self.paths[t][index]).convert('RGB'))
 
