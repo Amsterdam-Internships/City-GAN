@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=3
+run=4
 seed=42
 
 echo "Starting run $run"
@@ -43,13 +43,14 @@ python $HOME/City-GAN/train.py --model move \
     --dataset_mode move_coco\
     --name Move\
     --max_dataset_size 10000\
+
     --batch_size 64\
     --n_epochs 10\
     --n_epochs_decay 5\
     --checkpoints_dir "$TMPDIR"/checkpoints\
     --display_id 0\
     --num_threads 4\
-    --min_obj_surface 50\
+    --min_obj_surface 100\
     --print_freq 20\
     --display_freq 100\
     --update_html 100\
@@ -59,8 +60,8 @@ python $HOME/City-GAN/train.py --model move \
     --verbose\
     --seed "${seed}"\
     --preprocess resize_and_crop \
-    --load_size 128 \
-    --crop_size 128
+    --load_size 256 \
+    --crop_size 256
 
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/MoveCityscapes/run"${run}"
