@@ -1,16 +1,11 @@
 from data.base_dataset import BaseDataset, get_transform
 from data.image_folder import is_image_file
 from PIL import Image
-import torch
 import os
-import glob
-import random
 
 
 class MoveEvalDataset(BaseDataset):
-    """This dataset class can load a set of images specified by the path --dataroot /path/to/data.
-
-    It can be used for generating CycleGAN results only for one side with the model option '-model test'.
+    """This dataset class is used to train and evaluate the classifier, and produces images from four different classes: real, moveGAN, and the two baselines random and scanline.
     """
 
     def __init__(self, opt):

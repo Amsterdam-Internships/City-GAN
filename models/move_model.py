@@ -456,6 +456,7 @@ class MoveModel(BaseModel):
                 print("object is too large, to be implemented (returns None)")
                 return None, None
 
+            # TODO: should be 0?
             y_translation = int((self.cy - self.y_center).item())
 
         moved_obj = affine(obj, 0, [x_translation, y_translation], 1, 0)

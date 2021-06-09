@@ -84,12 +84,6 @@ class RoomDataset(BaseDataset):
 
         mask_idx = int(os.path.basename(img_path_src).split("_")[0])
 
-
-        # # extract source image based on index, and random target image
-        # img_path_src = os.path.join(self.data_dir, f"{index}_img.jpg")
-        # index_tgt =(index + random.randint(1, self.length-1)) % self.length
-        # img_path_tgt = os.path.join(self.data_dir, f"{index_tgt}_img.jpg")
-
         # open and convert images
         img_src = Image.open(img_path_src).convert('RGB')
         img_tgt = Image.open(img_path_tgt).convert('RGB')
@@ -99,12 +93,11 @@ class RoomDataset(BaseDataset):
         # extract all src masks, skip the floor, sky and walls
         mask_paths = sorted(glob.glob(os.path.join(self.data_dir, f"{mask_idx}_mask_*.jpg")))[4:]
 
+        # make sure that a new path is chosen every time
         random.shuffle(mask_paths)
 
-        # print("mask_paths:", mask_paths)
 
         # find suitable mask
-
         for p in mask_paths:
             mask = self.transform_mask(Image.open(p).convert("1"))
             mask_binary = (mask > 0).int()
@@ -115,21 +108,13 @@ class RoomDataset(BaseDataset):
                 return out_dict
 
 
-        # never return None
+        # never return None (just pick a new image)
         return self.__getitem__(random.randint(1, self.length-1))
 
         out_dict = None
 
-        # # concatenate version:
-        # out_dict["src_masks"] = torch.cat([self.transform_mask(Image.open(p).convert("1")) for p in mask_paths[4:]])
-
-        # we skip the first 4 paths (floor, sky, walls)
-        # for i, p in enumerate(mask_paths[4:]):
-        #     mask = Image.open(p).convert("1")
-        #     mask = self.transform_mask(mask)
-        #     out_dict[f"src_mask{i}"] = mask
-
         return out_dict
+
 
     def __len__(self):
         """Return the total number of images in the dataset."""

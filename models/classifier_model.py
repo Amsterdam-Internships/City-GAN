@@ -40,7 +40,7 @@ class ClassifierModel(BaseModel):
         """
         BaseModel.__init__(self, opt)  # call the initialization method of BaseModel
         # specify the training losses you want to print out. The program will call base_model.get_current_losses to plot the losses to the console and save them to the disk.
-        self.loss_names = ['loss_real', 'loss_move', 'loss_random', 'loss_scanline', 'loss', "acc_real", "acc_move", "acc_scanline", "acc_random"]
+        self.loss_names = ['loss_real', 'loss_move', 'loss_random', 'loss_scanline', 'loss', "loss_val", "acc_real", "acc_move", "acc_scanline", "acc_random"]
 
         for l in self.loss_names:
             setattr(self, l, 0)
@@ -61,7 +61,7 @@ class ClassifierModel(BaseModel):
             # define your loss functions. You can use losses provided by torch.nn such as torch.nn.L1Loss.
             self.CELoss = torch.nn.CrossEntropyLoss()
 
-            self.optimizer = torch.optim.Adam(self.netClassifier.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999))
+            self.optimizer = torch.optim.Adam(self.netClassifier.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999), weight_decay=1e-4)
             self.optimizers = [self.optimizer]
 
         # Our program will automatically call <model.setup> to define schedulers, load networks, and print networks
@@ -78,6 +78,8 @@ class ClassifierModel(BaseModel):
         self.move = input['move']
         self.random = input['random']
         self.scanline = input['scanline']
+
+        for b in
 
 
     def forward(self):
@@ -108,6 +110,15 @@ class ClassifierModel(BaseModel):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # caculate the intermediate results if necessary; here self.output has been computed during function <forward>
         # calculate loss given the input and intermediate results
+
+
+        # self.loss = self.loss_real + self.loss_move + self.loss_random + self.loss_scanline
+        self.compute_losses
+        self.loss.backward()
+
+
+    def compute_losses(self):
+
         B = self.pred_move.shape[0]
         y_base = torch.ones(B).long().to(self.device)
 
@@ -116,9 +127,11 @@ class ClassifierModel(BaseModel):
         self.loss_random = self.CELoss(self.pred_random, y_base * 2)
         self.loss_scanline = self.CELoss(self.pred_scanline, y_base * 3)
 
-        self.loss = self.loss_real + self.loss_move + self.loss_random + self.loss_scanline
+        all_preds = torch.cat((self.pred_real, self.pred_move, self.pred_random, self.pred_scanline), 0)
+        all_targets = torch.cat((y_base * 0, y_base * 1, y_base * 2, y_base * 3), 0)
 
-        self.loss.backward()
+        self.loss  = self.CELoss(all_preds, all_targets)
+
 
     def optimize_parameters(self):
         """Update network weights; it will be called in every training iteration."""
@@ -130,10 +143,7 @@ class ClassifierModel(BaseModel):
 
 
     def run_batch(self, data, overall_batch):
-        # after certain threshold, make the complete model trainable
-        if overall_batch == 8000 and self.opt.model_type =="Resnet18_pretrained":
-            print("Complete model is trained (batch 8000)")
-            self.netClassifier.module.train_whole_model()
+
         self.reset_conf_matrix()
         self.set_input(data)
         self.optimize_parameters()
@@ -145,12 +155,25 @@ class ClassifierModel(BaseModel):
             print(self.confusion_matrix)
 
     def run_validation(self, val_data):
+        print("\n### Validation performance ###")
+
         self.reset_conf_matrix()
+        val_losses = []
         # prepare the data and run forward pass
         with torch.no_grad():
-            data = next(iter(val_data))
-            self.set_input(data)
-            self.forward()
+            for batch in val_data:
+            # TODO iterate oer whole batch and save statistics
+            # data = next(iter(val_data))
+            # self.set_input(data)
+            # self.forward()
+                self.set_input(batch)
+                self.forward()
+                self.compute_losses()
+                val_losses.append(self.loss.item())
+
+        self.loss_val = np.mean(val_losses)
+        print(f"validation loss: {self.loss_val}")
+        # TODO: save the validation loss
 
         self.update_conf_matrix()
         self.print_results(None, save_plot=False)
@@ -185,5 +208,12 @@ class ClassifierModel(BaseModel):
         # save plot if necessary
         if save_plot:
             util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, "test_latest", 'confusion_matrix.png'))
+
+    def print_batch_statistics(self, batch):
+        mean = batch.mean()
+        var = batch.var()
+        min_ = batch.min()
+        max_ = batch.max()
+        print(f"Batch statistics (shape:{batch.shape}): Mean:{mean:.2f}, Var{variance:.2f}, Min & max{min_:.2f}{max_:.2f}")
 
 
