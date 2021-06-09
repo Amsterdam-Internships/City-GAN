@@ -1,0 +1,288 @@
+Starting run 4
+Cityscapes data copied to scratch
+----------------- Options ---------------
+               batch_size: 64                            	[default: 1]
+                    beta1: 0.5                           
+                    beta2: 0.999                         
+          checkpoints_dir: /scratch/checkpoints          	[default: ./checkpoints]
+           continue_train: False                         
+                crop_size: 256                           	[default: 64]
+                 dataroot: /scratch/datasets/Cityscapes/ 	[default: None]
+             dataset_mode: move_coco                     	[default: room]
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 100                           
+               display_id: 0                             	[default: 1]
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+              fake_target: 0.1                           
+                 gan_mode: vanilla                       
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 3                             
+                  isTrain: True                          	[default: None]
+          keep_last_batch: False                         
+                load_iter: 0                             	[default: 0]
+                load_size: 256                           	[default: 64]
+                       lr: 0.0002                        
+           lr_decay_iters: 50                            
+                lr_policy: step                          
+         max_dataset_size: 10000                         	[default: inf]
+          min_obj_surface: 100                           
+                    model: move                          	[default: copy]
+                 n_epochs: 10                            	[default: 100]
+           n_epochs_decay: 5                             	[default: 100]
+               n_layers_D: 3                             
+            n_layers_conv: 4                             
+                     name: Move                          	[default: MoveModel]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: False                         
+                  no_flip: True                          
+                  no_html: False                         
+             noisy_labels: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 3                             
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: resize_and_crop               	[default: resize]
+               print_freq: 20                            
+              real_target: 0.9                           
+                      run: -1                            
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+                     seed: 42                            	[default: 0]
+           serial_batches: False                         
+                   suffix:                               
+                theta_dim: 6                             	[default: 2]
+              tracemalloc: False                         
+               two_stream: False                         
+         update_html_freq: 100                           
+                  use_amp: False                         
+              use_eq_loss: False                         
+           val_batch_size: 128                           
+                 val_freq: 100                           
+                  verbose: True                          	[default: False]
+----------------- End -------------------
+img_id 255917
+img_id 30408
+img_id 395007
+img_id 18309
+img_id 243472
+img_id 518853
+img_id 10434
+img_id 476515
+img_id 146389
+img_id 78696
+dataset [MoveCocoDataset] and dataloder are created
+img_id 255917
+img_id 30408
+img_id 395007
+img_id 18309
+img_id 243472
+img_id 518853
+img_id 10434
+img_id 476515
+img_id 146389
+img_id 78696
+dataset [MoveCocoDataset] and dataloder are created
+The number of validation images = 500
+Starting training of move-model
+The number of training images = 2975
+The number of epochs to run = 15
+gpu_ids: [0]
+initialize network with normal
+gpu_ids: [0]
+initialize network with normal
+model [MoveModel] was created
+---------- Networks initialized -------------
+DataParallel(
+  (module): MoveConvNET(
+    (model): Sequential(
+      (0): Conv2d(6, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): LeakyReLU(negative_slope=0.2, inplace=True)
+      (2): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (3): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (4): LeakyReLU(negative_slope=0.2, inplace=True)
+      (5): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (6): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (7): LeakyReLU(negative_slope=0.2, inplace=True)
+      (8): Conv2d(256, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (9): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (10): LeakyReLU(negative_slope=0.2, inplace=True)
+      (11): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (12): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (13): LeakyReLU(negative_slope=0.2, inplace=True)
+      (14): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (15): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (16): LeakyReLU(negative_slope=0.2, inplace=True)
+      (17): Flatten(start_dim=1, end_dim=-1)
+      (18): Linear(in_features=32768, out_features=100, bias=True)
+    )
+    (zero_c): Sequential(
+      (0): Linear(in_features=100, out_features=2, bias=True)
+      (1): Tanh()
+    )
+    (one_c): Sequential(
+      (0): Linear(in_features=100, out_features=2, bias=True)
+      (1): Tanh()
+    )
+    (trans): Sequential(
+      (0): Linear(in_features=100, out_features=2, bias=True)
+      (1): Tanh()
+    )
+  )
+)
+[Network Conv] Total number of parameters : 9.550 M
+DataParallel(
+  (module): NLayerDiscriminator(
+    (model): Sequential(
+      (0): Conv2d(3, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): LeakyReLU(negative_slope=0.2)
+      (2): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (3): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (4): LeakyReLU(negative_slope=0.2)
+      (5): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (6): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (7): LeakyReLU(negative_slope=0.2)
+      (8): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (9): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (10): LeakyReLU(negative_slope=0.2)
+      (11): Conv2d(512, 512, kernel_size=(4, 4), stride=(1, 1), padding=(1, 1))
+      (12): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=False, track_running_stats=False)
+      (13): LeakyReLU(negative_slope=0.2)
+      (14): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), padding=(1, 1))
+      (15): Sigmoid()
+    )
+  )
+)
+[Network D] Total number of parameters : 6.960 M
+-----------------------------------------------
+create web directory /scratch/checkpoints/Move/web...
+validation accuracies:
+                real: 0.48, 0.4945475260416667
+                fake: 0.53, 0.5001627604166666
+
+ran validation set (B:1) in                         57.0 s.
+(epoch: 1, batches: 20, time: 0.014, data: 0.036) loss_D_real: 0.691 loss_D_fake: 0.698 loss_D: 0.694 loss_G: 1.002 loss_conv: 1.002 acc_real: 0.626 acc_fake: 0.653 
+(epoch: 1, batches: 40, time: 0.013, data: 5.734) loss_D_real: 0.439 loss_D_fake: 0.503 loss_D: 0.471 loss_G: 1.297 loss_conv: 1.297 acc_real: 0.974 acc_fake: 0.868 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 1 / 15 	 Time Taken: 240 sec
+(epoch: 2, batches: 20, time: 0.014, data: 0.036) loss_D_real: 0.370 loss_D_fake: 0.395 loss_D: 0.382 loss_G: 1.697 loss_conv: 1.697 acc_real: 0.999 acc_fake: 0.965 
+(epoch: 2, batches: 40, time: 0.013, data: 5.594) loss_D_real: 0.357 loss_D_fake: 0.374 loss_D: 0.365 loss_G: 1.929 loss_conv: 1.929 acc_real: 0.999 acc_fake: 0.981 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 2 / 15 	 Time Taken: 203 sec
+100 tensor([[ 0.6673,  0.0000,  0.8333],
+        [ 0.0000,  0.6667, -0.8333]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 1.00, 0.8556315104166666
+                fake: 0.98, 0.1427001953125
+
+ran validation set (B:101) in                         51.9 s.
+(epoch: 3, batches: 20, time: 0.015, data: 11.011) loss_D_real: 0.360 loss_D_fake: 0.366 loss_D: 0.363 loss_G: 2.140 loss_conv: 2.140 acc_real: 0.986 acc_fake: 0.993 
+(epoch: 3, batches: 40, time: 0.011, data: 3.107) loss_D_real: 0.330 loss_D_fake: 0.360 loss_D: 0.345 loss_G: 2.248 loss_conv: 2.248 acc_real: 1.000 acc_fake: 0.995 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 3 / 15 	 Time Taken: 233 sec
+(epoch: 4, batches: 20, time: 0.013, data: 0.022) loss_D_real: 0.329 loss_D_fake: 0.351 loss_D: 0.340 loss_G: 2.086 loss_conv: 2.086 acc_real: 1.000 acc_fake: 0.999 
+(epoch: 4, batches: 40, time: 0.012, data: 0.043) loss_D_real: 0.327 loss_D_fake: 0.356 loss_D: 0.341 loss_G: 2.221 loss_conv: 2.221 acc_real: 1.000 acc_fake: 0.992 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 4 / 15 	 Time Taken: 206 sec
+200 tensor([[ 0.6669,  0.0000,  0.8333],
+        [ 0.0000,  0.6667, -0.8329]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 1.00, 0.8914388020833334
+                fake: 1.00, 0.12386067708333333
+
+ran validation set (B:201) in                         41.5 s.
+(epoch: 5, batches: 20, time: 0.014, data: 12.849) loss_D_real: 0.330 loss_D_fake: 0.345 loss_D: 0.338 loss_G: 2.255 loss_conv: 2.255 acc_real: 1.000 acc_fake: 0.999 
+(epoch: 5, batches: 40, time: 0.013, data: 0.046) loss_D_real: 0.337 loss_D_fake: 0.355 loss_D: 0.346 loss_G: 2.259 loss_conv: 2.259 acc_real: 1.000 acc_fake: 0.996 
+saving the model at the end of epoch 5, iters 14720
+learning rate 0.0002000 -> 0.0002000
+End of epoch 5 / 15 	 Time Taken: 230 sec
+(epoch: 6, batches: 20, time: 0.015, data: 0.032) loss_D_real: 0.326 loss_D_fake: 0.343 loss_D: 0.334 loss_G: 2.202 loss_conv: 2.202 acc_real: 1.000 acc_fake: 0.998 
+(epoch: 6, batches: 40, time: 0.011, data: 0.038) loss_D_real: 0.326 loss_D_fake: 0.344 loss_D: 0.335 loss_G: 2.149 loss_conv: 2.149 acc_real: 1.000 acc_fake: 0.998 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 6 / 15 	 Time Taken: 200 sec
+(epoch: 7, batches: 20, time: 0.016, data: 0.036) loss_D_real: 0.327 loss_D_fake: 0.339 loss_D: 0.333 loss_G: 2.224 loss_conv: 2.224 acc_real: 1.000 acc_fake: 0.999 
+300 tensor([[ 0.6667,  0.0000,  0.8333],
+        [ 0.0000,  0.6667, -0.8333]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 1.00, 0.8976236979166666
+                fake: 1.00, 0.11669921875
+
+ran validation set (B:301) in                         46.6 s.
+(epoch: 7, batches: 40, time: 0.013, data: 1.291) loss_D_real: 0.326 loss_D_fake: 0.337 loss_D: 0.331 loss_G: 2.156 loss_conv: 2.156 acc_real: 1.000 acc_fake: 1.000 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 7 / 15 	 Time Taken: 231 sec
+(epoch: 8, batches: 20, time: 0.014, data: 3.003) loss_D_real: 0.326 loss_D_fake: 0.337 loss_D: 0.331 loss_G: 2.170 loss_conv: 2.170 acc_real: 1.000 acc_fake: 1.000 
+(epoch: 8, batches: 40, time: 0.014, data: 8.169) loss_D_real: 0.327 loss_D_fake: 0.338 loss_D: 0.332 loss_G: 2.187 loss_conv: 2.187 acc_real: 1.000 acc_fake: 1.000 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 8 / 15 	 Time Taken: 197 sec
+(epoch: 9, batches: 20, time: 0.015, data: 0.034) loss_D_real: 0.330 loss_D_fake: 0.336 loss_D: 0.333 loss_G: 2.071 loss_conv: 2.071 acc_real: 1.000 acc_fake: 1.000 
+400 tensor([[ 0.6667,  0.0000,  0.8333],
+        [ 0.0000,  0.6667, -0.8333]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 1.00, 0.8955078125
+                fake: 1.00, 0.11033121744791667
+
+ran validation set (B:401) in                         47.5 s.
+(epoch: 9, batches: 40, time: 0.014, data: 0.044) loss_D_real: 0.326 loss_D_fake: 0.335 loss_D: 0.330 loss_G: 2.095 loss_conv: 2.095 acc_real: 1.000 acc_fake: 1.000 
+learning rate 0.0002000 -> 0.0002000
+End of epoch 9 / 15 	 Time Taken: 232 sec
+(epoch: 10, batches: 20, time: 0.018, data: 3.919) loss_D_real: 0.327 loss_D_fake: 0.336 loss_D: 0.331 loss_G: 2.077 loss_conv: 2.077 acc_real: 1.000 acc_fake: 1.000 
+(epoch: 10, batches: 40, time: 0.015, data: 0.046) loss_D_real: 0.326 loss_D_fake: 0.334 loss_D: 0.330 loss_G: 2.131 loss_conv: 2.131 acc_real: 1.000 acc_fake: 1.000 
+saving the model at the end of epoch 10, iters 29440
+learning rate 0.0002000 -> 0.0001600
+End of epoch 10 / 15 	 Time Taken: 210 sec
+(epoch: 11, batches: 20, time: 0.011, data: 0.038) loss_D_real: 0.325 loss_D_fake: 0.332 loss_D: 0.329 loss_G: 2.117 loss_conv: 2.117 acc_real: 1.000 acc_fake: 1.000 
+500 tensor([[ 0.6668,  0.0000,  0.8333],
+        [ 0.0000,  1.3333, -0.8333]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+(epoch: 11, batches: 40, time: 0.025, data: 0.033) loss_D_real: 0.325 loss_D_fake: 0.332 loss_D: 0.328 loss_G: 2.108 loss_conv: 2.108 acc_real: 1.000 acc_fake: 1.000 
+validation accuracies:
+                real: 1.00, 0.8984375
+                fake: 1.00, 0.109130859375
+
+ran validation set (B:501) in                         40.0 s.
+learning rate 0.0001600 -> 0.0001600
+End of epoch 11 / 15 	 Time Taken: 226 sec
+(epoch: 12, batches: 20, time: 0.013, data: 0.022) loss_D_real: 0.325 loss_D_fake: 0.331 loss_D: 0.328 loss_G: 2.096 loss_conv: 2.096 acc_real: 1.000 acc_fake: 1.000 
+(epoch: 12, batches: 40, time: 0.014, data: 0.037) loss_D_real: 0.325 loss_D_fake: 0.331 loss_D: 0.328 loss_G: 2.105 loss_conv: 2.105 acc_real: 1.000 acc_fake: 1.000 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 12 / 15 	 Time Taken: 199 sec
+(epoch: 13, batches: 20, time: 0.016, data: 15.788) loss_D_real: 0.325 loss_D_fake: 0.330 loss_D: 0.328 loss_G: 2.108 loss_conv: 2.108 acc_real: 1.000 acc_fake: 1.000 
+(epoch: 13, batches: 40, time: 0.013, data: 14.442) loss_D_real: 0.325 loss_D_fake: 0.331 loss_D: 0.328 loss_G: 2.109 loss_conv: 2.109 acc_real: 1.000 acc_fake: 1.000 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 13 / 15 	 Time Taken: 200 sec
+600 tensor([[ 0.6667,  0.0000,  0.8333],
+        [ 0.0000,  0.6668, -0.7518]], device='cuda:0',
+       grad_fn=<SelectBackward>)
+validation accuracies:
+                real: 1.00, 0.8972981770833334
+                fake: 1.00, 0.10675048828125
+
+ran validation set (B:601) in                         51.5 s.
+(epoch: 14, batches: 20, time: 0.008, data: 0.036) loss_D_real: 0.325 loss_D_fake: 0.330 loss_D: 0.328 loss_G: 2.047 loss_conv: 2.047 acc_real: 1.000 acc_fake: 1.000 
+(epoch: 14, batches: 40, time: 0.013, data: 0.050) loss_D_real: 0.325 loss_D_fake: 0.330 loss_D: 0.328 loss_G: 2.122 loss_conv: 2.122 acc_real: 1.000 acc_fake: 1.000 
+learning rate 0.0001600 -> 0.0001600
+End of epoch 14 / 15 	 Time Taken: 237 sec
+(epoch: 15, batches: 20, time: 0.015, data: 0.047) loss_D_real: 0.326 loss_D_fake: 0.330 loss_D: 0.328 loss_G: 2.063 loss_conv: 2.063 acc_real: 1.000 acc_fake: 1.000 
+(epoch: 15, batches: 40, time: 0.014, data: 0.073) loss_D_real: 0.325 loss_D_fake: 0.329 loss_D: 0.327 loss_G: 2.069 loss_conv: 2.069 acc_real: 1.000 acc_fake: 1.000 
+saving the model at the end of epoch 15, iters 44160
+learning rate 0.0001600 -> 0.0001600
+End of epoch 15 / 15 	 Time Taken: 201 sec
+Finished training, model is saved (15 epochs in 3259.275727033615s)
+Batches trained - G: 460, D: 230 
