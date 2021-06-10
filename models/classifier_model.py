@@ -209,7 +209,7 @@ class ClassifierModel(BaseModel):
 
         # save plot if necessary
         if save_plot:
-            util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, "test_latest", 'confusion_matrix.png'))
+            util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, f"{self.opt.phase}_latest",  'confusion_matrix.png'))
 
     def print_batch_statistics(self, batch_dict):
         for k, batch in batch_dict.items():
