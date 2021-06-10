@@ -50,7 +50,8 @@ if __name__ == '__main__':
     print('creating web directory', web_dir)
     webpage = html.HTML(web_dir, 'Experiment = %s, Phase = %s, Epoch = %s' % (opt.name, opt.phase, opt.epoch))
 
-    # model.eval()
+    if opt.model != "classifier":
+        model.eval()
 
     for i, data in enumerate(dataset):
         if i >= opt.num_test:  # only apply our model to opt.num_test images.
