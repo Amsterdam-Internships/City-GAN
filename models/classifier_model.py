@@ -5,6 +5,7 @@ from torchvision.models import resnet18
 from util import util
 import os
 from util.visualizer import save_images
+import numpy as np
 
 
 class ClassifierModel(BaseModel):
@@ -79,7 +80,8 @@ class ClassifierModel(BaseModel):
         self.random = input['random']
         self.scanline = input['scanline']
 
-        for b in
+        # print statistics about the batch
+        self.print_batch_statistics(input)
 
 
     def forward(self):
@@ -113,7 +115,7 @@ class ClassifierModel(BaseModel):
 
 
         # self.loss = self.loss_real + self.loss_move + self.loss_random + self.loss_scanline
-        self.compute_losses
+        self.compute_losses()
         self.loss.backward()
 
 
@@ -170,12 +172,12 @@ class ClassifierModel(BaseModel):
                 self.forward()
                 self.compute_losses()
                 val_losses.append(self.loss.item())
-
+                self.update_conf_matrix()
         self.loss_val = np.mean(val_losses)
-        print(f"validation loss: {self.loss_val}")
+        print(f"Mean validation loss: {self.loss_val}")
         # TODO: save the validation loss
 
-        self.update_conf_matrix()
+        
         self.print_results(None, save_plot=False)
         # acc = self.get_accuracies()
         # print(f"Validation accuracy overall: {acc}")
@@ -209,11 +211,12 @@ class ClassifierModel(BaseModel):
         if save_plot:
             util.plot_confusion_matrix(self.confusion_matrix, self.visual_names, os.path.join(self.opt.results_dir, self.opt.name, "test_latest", 'confusion_matrix.png'))
 
-    def print_batch_statistics(self, batch):
-        mean = batch.mean()
-        var = batch.var()
-        min_ = batch.min()
-        max_ = batch.max()
-        print(f"Batch statistics (shape:{batch.shape}): Mean:{mean:.2f}, Var{variance:.2f}, Min & max{min_:.2f}{max_:.2f}")
+    def print_batch_statistics(self, batch_dict):
+        for k, batch in batch_dict.items():
+            mean = batch.mean()
+            var = batch.var()
+            min_ = batch.min()
+            max_ = batch.max()
+            print(f"Batch statistics: {k} (shape:{batch.shape}): Mean:{mean:.2f}, Var{var:.2f}, Min & max{min_:.2f}, {max_:.2f}")
 
 
