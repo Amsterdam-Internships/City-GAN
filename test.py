@@ -2,7 +2,7 @@
 # @Author: TomLotze
 # @Date:   2021-03-09 15:00
 # @Last Modified by:   TomLotze
-# @Last Modified time: 2021-06-09 12:25
+# @Last Modified time: 2021-06-10 13:26
 
 """
 This script is for testing any model. It is similar to train.py in setup, but evaluates on a test set without updating the model. Instead, the model is loaded from memory.
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     opt.serial_batches = True  # disable data shuffling; comment this line if results on randomly chosen images are needed.
     opt.no_flip = True    # no flip; comment this line if results on flipped images are needed.
     opt.display_id = -1   # no visdom display; the test code saves the results to a HTML file.
-    if opt.batch_size != 1:
+    if opt.batch_size != 1 and opt.model != "classifier":
         opt.batch_size = 1
         print("Batch size is set to 1 for testing")
 
