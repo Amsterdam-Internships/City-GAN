@@ -69,7 +69,7 @@ class MoveCocoDataset(BaseDataset):
 
         for img_id, ann in anns_dict.items():
             print("img_id", img_id)
-            # create polygon mask, check networks.py (gf generation)
+            surfaces, masks = [], []
             w, h = Image.open(self.id2path_src[img_id]).convert('RGB').size
             for obj in ann:
                 img = Image.new('1', (w, h), 0)
@@ -83,7 +83,13 @@ class MoveCocoDataset(BaseDataset):
                 mask_binary = (mask > 0).int()
                 surface = mask_binary.sum().item()
                 if surface > self.opt.min_obj_surface:
-                    polygon_dict[img_id].append(mask)
+                    surfaces.append(surface)
+                    masks.append(mask)
+
+            # we could sort the polygon_dict[img_id] here on surface size
+            sorted_masks = [x for _, x in sorted(zip(surfaces, masks))]
+            sorted_masks = sorted_masks[:5] if len(sorted_masks) > 5
+            polygon_dict[img_id] = sorted_masks
 
         return polygon_dict
 
