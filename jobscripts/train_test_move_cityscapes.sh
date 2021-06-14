@@ -12,8 +12,9 @@ module load 2020
 module load Python
 
 # declare run
-run=5
+run=6
 seed=42
+img_dim=256
 
 echo "Starting run $run"
 
@@ -59,8 +60,9 @@ python $HOME/City-GAN/train.py --model move \
     --verbose\
     --seed "${seed}"\
     --preprocess resize_and_crop \
-    --load_size 256 \
-    --crop_size 256
+    --load_size ${img_dim} \
+    --crop_size ${img_dim} \
+    --lr 2e-5
 
 # copy checkpoints to home directory
 mkdir -p $HOME/City-GAN/checkpoints/MoveCityscapes/run"${run}"

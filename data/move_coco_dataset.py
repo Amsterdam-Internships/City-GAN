@@ -88,7 +88,7 @@ class MoveCocoDataset(BaseDataset):
 
             # we could sort the polygon_dict[img_id] here on surface size
             sorted_masks = [x for _, x in sorted(zip(surfaces, masks), key = lambda x: x[0])]
-            sorted_masks = sorted_masks[:5] if len(sorted_masks) > 5 else sorted_masks
+            sorted_masks = sorted_masks[:2] if len(sorted_masks) > 2 else sorted_masks
             polygon_dict[img_id] = sorted_masks
 
         return polygon_dict
