@@ -1,7 +1,7 @@
 #!/bin/bash
 #Set job requirements
 #SBATCH -n 16
-#SBATCH -t 60:00:00
+#SBATCH -t 120:00:00
 #SBATCH -p gpu_shared
 #SBATCH --gpus-per-node=1
 
@@ -13,11 +13,11 @@ module load 2020
 module load Python
 
 # declare run
-run=3
+run=4
 pred_type="baseline"
 netD="copy"
 epoch="latest"
-img_size=128
+img_size=256
 # seed=42
 
 echo "starting training and testing run $run"
@@ -54,8 +54,8 @@ do
         --dataroot "$TMPDIR"/datasets/Cityscapes\
         --dataset_mode cityscapes\
         --batch_size 32\
-        --n_epochs 30\
-        --n_epochs_decay 40\
+        --n_epochs 100\
+        --n_epochs_decay 100\
         --save_epoch_freq 10\
         --checkpoints_dir "$TMPDIR"/checkpoints/ \
         --print_freq 100\

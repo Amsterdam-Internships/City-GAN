@@ -18,7 +18,7 @@ seed=42
 #mode="Resnet18"
 mode="Resnet18_pretrained"
 # mode="Default"
-test_phase="val"
+test_phase="test"
 echo "starting testing classifier (run ${run})"
 
 

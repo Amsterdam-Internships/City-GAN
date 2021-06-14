@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=4
+run=5
 seed=42
 
 echo "Starting run $run"
