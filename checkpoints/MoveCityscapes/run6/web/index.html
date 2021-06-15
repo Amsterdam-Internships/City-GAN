@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Experiment name = Move</title>
+  </head>
+  <body>
+    <h3>Overall batch: 600 (composite pred: [[0.24 0.13 0.16 0.06 0.22 0.1  0.14 0.15 0.25 0.21 0.14 0.18 0.27 0.31]
+ [0.12 0.2  0.24 0.22 0.06 0.14 0.19 0.14 0.08 0.06 0.05 0.29 0.13 0.09]
+ [0.24 0.16 0.07 0.16 0.02 0.07 0.06 0.05 0.12 0.13 0.05 0.21 0.09 0.22]
+ [0.23 0.2  0.09 0.13 0.25 0.08 0.11 0.04 0.11 0.11 0.21 0.3  0.17 0.1 ]
+ [0.19 0.07 0.15 0.39 0.14 0.11 0.1  0.15 0.15 0.11 0.05 0.1  0.06 0.1 ]
+ [0.26 0.37 0.06 0.52 0.11 0.2  0.25 0.55 0.25 0.56 0.25 0.12 0.08 0.21]
+ [0.22 0.37 0.38 0.27 0.07 0.38 0.29 0.11 0.21 0.33 0.11 0.39 0.1  0.09]
+ [0.13 0.26 0.2  0.21 0.35 0.06 0.37 0.43 0.37 0.19 0.12 0.17 0.14 0.2 ]
+ [0.21 0.25 0.34 0.13 0.23 0.47 0.54 0.24 0.15 0.16 0.16 0.27 0.15 0.24]
+ [0.21 0.21 0.22 0.21 0.11 0.19 0.19 0.15 0.12 0.22 0.23 0.13 0.16 0.28]
+ [0.38 0.45 0.2  0.22 0.24 0.08 0.3  0.22 0.14 0.19 0.38 0.27 0.2  0.31]
+ [0.13 0.08 0.19 0.19 0.26 0.15 0.28 0.35 0.21 0.17 0.33 0.3  0.13 0.08]
+ [0.65 0.38 0.42 0.15 0.45 0.12 0.21 0.23 0.14 0.2  0.2  0.13 0.18 0.16]
+ [0.1  0.05 0.17 0.24 0.25 0.23 0.16 0.16 0.15 0.14 0.19 0.17 0.15 0.19]])</h3>
+    <table border="1" style="table-layout: fixed;">
+      <tr>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_600_tgt.png">
+              <img src="images/batch_600_tgt.png" style="width:256px">
+            </a><br>
+            <p>tgt</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_600_src.png">
+              <img src="images/batch_600_src.png" style="width:256px">
+            </a><br>
+            <p>src</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_600_mask_binary.png">
+              <img src="images/batch_600_mask_binary.png" style="width:256px">
+            </a><br>
+            <p>mask_binary</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_600_obj.png">
+              <img src="images/batch_600_obj.png" style="width:256px">
+            </a><br>
+            <p>obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_600_transf_obj.png">
+              <img src="images/batch_600_transf_obj.png" style="width:256px">
+            </a><br>
+            <p>transf_obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_600_composite.png">
+              <img src="images/batch_600_composite.png" style="width:256px">
+            </a><br>
+            <p>composite</p>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <h3>Overall batch: 500 (composite pred: [[0.07 0.12 0.03 0.05 0.03 0.07 0.09 0.01 0.02 0.03 0.08 0.1  0.04 0.08]
+ [0.05 0.05 0.04 0.05 0.03 0.05 0.12 0.04 0.09 0.05 0.05 0.09 0.05 0.07]
+ [0.07 0.03 0.07 0.02 0.02 0.05 0.03 0.04 0.02 0.02 0.09 0.01 0.05 0.05]
+ [0.1  0.08 0.12 0.07 0.08 0.13 0.06 0.06 0.03 0.03 0.09 0.1  0.09 0.06]
+ [0.06 0.07 0.1  0.06 0.03 0.05 0.03 0.14 0.03 0.04 0.07 0.06 0.07 0.15]
+ [0.17 0.03 0.09 0.08 0.04 0.05 0.05 0.05 0.04 0.06 0.09 0.12 0.08 0.02]
+ [0.13 0.09 0.13 0.03 0.06 0.07 0.03 0.04 0.04 0.12 0.06 0.08 0.03 0.05]
+ [0.09 0.03 0.07 0.05 0.08 0.06 0.11 0.1  0.08 0.06 0.1  0.06 0.04 0.04]
+ [0.05 0.05 0.06 0.04 0.07 0.05 0.05 0.08 0.04 0.06 0.06 0.03 0.05 0.08]
+ [0.06 0.05 0.08 0.05 0.06 0.09 0.08 0.09 0.07 0.11 0.11 0.07 0.08 0.05]
+ [0.08 0.07 0.07 0.07 0.08 0.12 0.06 0.07 0.07 0.08 0.06 0.1  0.08 0.05]
+ [0.09 0.04 0.06 0.06 0.07 0.08 0.07 0.07 0.06 0.06 0.05 0.09 0.05 0.05]
+ [0.08 0.07 0.06 0.07 0.08 0.08 0.08 0.08 0.06 0.11 0.1  0.06 0.05 0.07]
+ [0.12 0.08 0.05 0.06 0.06 0.06 0.05 0.06 0.06 0.07 0.05 0.05 0.1  0.1 ]])</h3>
+    <table border="1" style="table-layout: fixed;">
+      <tr>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_500_tgt.png">
+              <img src="images/batch_500_tgt.png" style="width:256px">
+            </a><br>
+            <p>tgt</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_500_src.png">
+              <img src="images/batch_500_src.png" style="width:256px">
+            </a><br>
+            <p>src</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_500_mask_binary.png">
+              <img src="images/batch_500_mask_binary.png" style="width:256px">
+            </a><br>
+            <p>mask_binary</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_500_obj.png">
+              <img src="images/batch_500_obj.png" style="width:256px">
+            </a><br>
+            <p>obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_500_transf_obj.png">
+              <img src="images/batch_500_transf_obj.png" style="width:256px">
+            </a><br>
+            <p>transf_obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_500_composite.png">
+              <img src="images/batch_500_composite.png" style="width:256px">
+            </a><br>
+            <p>composite</p>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <h3>Overall batch: 400 (composite pred: [[0.28 0.39 0.29 0.1  0.08 0.12 0.25 0.29 0.13 0.32 0.34 0.17 0.15 0.3 ]
+ [0.3  0.29 0.52 0.1  0.26 0.13 0.27 0.26 0.18 0.19 0.17 0.2  0.11 0.2 ]
+ [0.2  0.22 0.35 0.24 0.2  0.12 0.17 0.24 0.13 0.29 0.29 0.28 0.12 0.19]
+ [0.27 0.37 0.17 0.19 0.47 0.39 0.23 0.14 0.18 0.29 0.47 0.16 0.13 0.2 ]
+ [0.21 0.39 0.29 0.11 0.14 0.19 0.29 0.17 0.5  0.43 0.36 0.35 0.25 0.3 ]
+ [0.1  0.32 0.23 0.23 0.18 0.42 0.31 0.27 0.26 0.13 0.52 0.24 0.38 0.28]
+ [0.36 0.25 0.11 0.12 0.08 0.13 0.31 0.28 0.23 0.51 0.3  0.24 0.25 0.22]
+ [0.27 0.29 0.19 0.27 0.19 0.21 0.32 0.16 0.42 0.25 0.36 0.24 0.42 0.47]
+ [0.28 0.1  0.07 0.22 0.07 0.18 0.34 0.23 0.24 0.07 0.22 0.15 0.26 0.33]
+ [0.11 0.15 0.19 0.1  0.08 0.15 0.09 0.24 0.13 0.18 0.28 0.22 0.41 0.31]
+ [0.21 0.16 0.23 0.17 0.26 0.28 0.13 0.14 0.37 0.3  0.38 0.11 0.2  0.15]
+ [0.23 0.28 0.39 0.23 0.09 0.15 0.16 0.15 0.23 0.21 0.24 0.13 0.31 0.19]
+ [0.32 0.23 0.1  0.1  0.22 0.23 0.25 0.37 0.15 0.26 0.13 0.34 0.13 0.32]
+ [0.34 0.24 0.25 0.17 0.17 0.13 0.19 0.29 0.24 0.41 0.2  0.35 0.31 0.28]])</h3>
+    <table border="1" style="table-layout: fixed;">
+      <tr>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_400_tgt.png">
+              <img src="images/batch_400_tgt.png" style="width:256px">
+            </a><br>
+            <p>tgt</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_400_src.png">
+              <img src="images/batch_400_src.png" style="width:256px">
+            </a><br>
+            <p>src</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_400_mask_binary.png">
+              <img src="images/batch_400_mask_binary.png" style="width:256px">
+            </a><br>
+            <p>mask_binary</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_400_obj.png">
+              <img src="images/batch_400_obj.png" style="width:256px">
+            </a><br>
+            <p>obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_400_transf_obj.png">
+              <img src="images/batch_400_transf_obj.png" style="width:256px">
+            </a><br>
+            <p>transf_obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_400_composite.png">
+              <img src="images/batch_400_composite.png" style="width:256px">
+            </a><br>
+            <p>composite</p>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <h3>Overall batch: 300 (composite pred: [[0.06 0.07 0.02 0.05 0.04 0.01 0.02 0.01 0.03 0.04 0.01 0.08 0.04 0.12]
+ [0.08 0.02 0.02 0.01 0.07 0.04 0.13 0.07 0.04 0.04 0.09 0.04 0.03 0.07]
+ [0.06 0.04 0.03 0.08 0.03 0.02 0.22 0.06 0.02 0.03 0.03 0.04 0.03 0.08]
+ [0.08 0.05 0.03 0.07 0.06 0.05 0.19 0.04 0.03 0.08 0.05 0.09 0.03 0.06]
+ [0.06 0.04 0.03 0.02 0.06 0.01 0.03 0.02 0.05 0.06 0.04 0.07 0.02 0.04]
+ [0.05 0.02 0.03 0.02 0.02 0.03 0.03 0.01 0.16 0.07 0.03 0.03 0.03 0.05]
+ [0.06 0.04 0.04 0.06 0.01 0.07 0.05 0.06 0.05 0.04 0.07 0.06 0.04 0.06]
+ [0.06 0.07 0.04 0.07 0.05 0.04 0.12 0.03 0.15 0.11 0.09 0.05 0.03 0.05]
+ [0.1  0.03 0.03 0.01 0.02 0.04 0.11 0.12 0.07 0.07 0.06 0.09 0.07 0.04]
+ [0.05 0.05 0.04 0.03 0.09 0.05 0.05 0.07 0.1  0.08 0.07 0.07 0.08 0.04]
+ [0.05 0.03 0.03 0.07 0.07 0.07 0.09 0.06 0.11 0.1  0.06 0.03 0.05 0.05]
+ [0.12 0.06 0.11 0.08 0.08 0.08 0.12 0.07 0.09 0.07 0.08 0.05 0.06 0.08]
+ [0.08 0.05 0.04 0.04 0.04 0.03 0.05 0.07 0.05 0.05 0.06 0.05 0.08 0.11]
+ [0.1  0.04 0.06 0.04 0.03 0.02 0.03 0.03 0.03 0.04 0.03 0.03 0.06 0.09]])</h3>
+    <table border="1" style="table-layout: fixed;">
+      <tr>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_300_tgt.png">
+              <img src="images/batch_300_tgt.png" style="width:256px">
+            </a><br>
+            <p>tgt</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_300_src.png">
+              <img src="images/batch_300_src.png" style="width:256px">
+            </a><br>
+            <p>src</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_300_mask_binary.png">
+              <img src="images/batch_300_mask_binary.png" style="width:256px">
+            </a><br>
+            <p>mask_binary</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_300_obj.png">
+              <img src="images/batch_300_obj.png" style="width:256px">
+            </a><br>
+            <p>obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_300_transf_obj.png">
+              <img src="images/batch_300_transf_obj.png" style="width:256px">
+            </a><br>
+            <p>transf_obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_300_composite.png">
+              <img src="images/batch_300_composite.png" style="width:256px">
+            </a><br>
+            <p>composite</p>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <h3>Overall batch: 200 (composite pred: [[0.1  0.06 0.28 0.1  0.1  0.11 0.2  0.13 0.2  0.18 0.18 0.11 0.04 0.28]
+ [0.14 0.11 0.15 0.15 0.17 0.22 0.44 0.04 0.1  0.38 0.05 0.44 0.15 0.36]
+ [0.1  0.03 0.03 0.03 0.05 0.16 0.02 0.07 0.42 0.24 0.14 0.31 0.1  0.04]
+ [0.18 0.09 0.1  0.15 0.16 0.1  0.17 0.04 0.36 0.28 0.25 0.15 0.34 0.35]
+ [0.33 0.21 0.06 0.07 0.06 0.22 0.11 0.03 0.33 0.14 0.25 0.21 0.03 0.14]
+ [0.24 0.17 0.2  0.2  0.24 0.13 0.14 0.14 0.06 0.22 0.33 0.06 0.14 0.13]
+ [0.15 0.11 0.2  0.19 0.15 0.21 0.21 0.04 0.04 0.15 0.16 0.09 0.15 0.08]
+ [0.46 0.24 0.09 0.37 0.23 0.32 0.38 0.19 0.08 0.24 0.08 0.09 0.2  0.09]
+ [0.2  0.16 0.08 0.18 0.32 0.13 0.12 0.1  0.08 0.23 0.19 0.09 0.22 0.19]
+ [0.26 0.12 0.09 0.15 0.17 0.15 0.27 0.18 0.08 0.2  0.14 0.15 0.41 0.23]
+ [0.23 0.43 0.21 0.12 0.23 0.24 0.24 0.26 0.22 0.13 0.3  0.17 0.12 0.11]
+ [0.15 0.22 0.23 0.17 0.15 0.18 0.15 0.09 0.18 0.17 0.1  0.14 0.14 0.11]
+ [0.26 0.18 0.27 0.1  0.11 0.07 0.1  0.11 0.1  0.13 0.08 0.1  0.21 0.17]
+ [0.25 0.09 0.14 0.03 0.11 0.08 0.06 0.03 0.05 0.07 0.08 0.07 0.21 0.3 ]])</h3>
+    <table border="1" style="table-layout: fixed;">
+      <tr>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_200_tgt.png">
+              <img src="images/batch_200_tgt.png" style="width:256px">
+            </a><br>
+            <p>tgt</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_200_src.png">
+              <img src="images/batch_200_src.png" style="width:256px">
+            </a><br>
+            <p>src</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_200_mask_binary.png">
+              <img src="images/batch_200_mask_binary.png" style="width:256px">
+            </a><br>
+            <p>mask_binary</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_200_obj.png">
+              <img src="images/batch_200_obj.png" style="width:256px">
+            </a><br>
+            <p>obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_200_transf_obj.png">
+              <img src="images/batch_200_transf_obj.png" style="width:256px">
+            </a><br>
+            <p>transf_obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_200_composite.png">
+              <img src="images/batch_200_composite.png" style="width:256px">
+            </a><br>
+            <p>composite</p>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <h3>Overall batch: 100 (composite pred: [[0.58 0.38 0.42 0.37 0.14 0.23 0.35 0.23 0.23 0.17 0.62 0.73 0.77 0.73]
+ [0.1  0.5  0.6  0.1  0.12 0.2  0.06 0.09 0.32 0.41 0.46 0.29 0.61 0.13]
+ [0.49 0.13 0.33 0.11 0.23 0.16 0.21 0.21 0.08 0.17 0.17 0.4  0.24 0.12]
+ [0.36 0.15 0.37 0.54 0.12 0.25 0.14 0.12 0.4  0.24 0.18 0.06 0.22 0.32]
+ [0.34 0.31 0.14 0.19 0.07 0.2  0.12 0.68 0.29 0.84 0.2  0.4  0.55 0.17]
+ [0.17 0.27 0.32 0.38 0.13 0.17 0.33 0.16 0.3  0.63 0.28 0.25 0.47 0.36]
+ [0.19 0.15 0.61 0.21 0.17 0.37 0.18 0.36 0.58 0.56 0.22 0.5  0.46 0.23]
+ [0.15 0.39 0.23 0.14 0.33 0.08 0.18 0.23 0.37 0.5  0.24 0.17 0.22 0.31]
+ [0.13 0.1  0.23 0.21 0.11 0.25 0.2  0.23 0.37 0.15 0.35 0.41 0.37 0.33]
+ [0.19 0.13 0.26 0.17 0.15 0.17 0.19 0.15 0.09 0.03 0.22 0.29 0.13 0.22]
+ [0.27 0.14 0.19 0.16 0.19 0.21 0.21 0.2  0.16 0.18 0.14 0.21 0.41 0.31]
+ [0.15 0.14 0.25 0.23 0.17 0.2  0.18 0.19 0.13 0.19 0.19 0.14 0.14 0.32]
+ [0.28 0.11 0.24 0.12 0.09 0.12 0.11 0.07 0.14 0.09 0.25 0.18 0.29 0.25]
+ [0.29 0.23 0.14 0.19 0.18 0.19 0.13 0.22 0.2  0.17 0.23 0.22 0.34 0.27]])</h3>
+    <table border="1" style="table-layout: fixed;">
+      <tr>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_100_tgt.png">
+              <img src="images/batch_100_tgt.png" style="width:256px">
+            </a><br>
+            <p>tgt</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_100_src.png">
+              <img src="images/batch_100_src.png" style="width:256px">
+            </a><br>
+            <p>src</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_100_mask_binary.png">
+              <img src="images/batch_100_mask_binary.png" style="width:256px">
+            </a><br>
+            <p>mask_binary</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_100_obj.png">
+              <img src="images/batch_100_obj.png" style="width:256px">
+            </a><br>
+            <p>obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_100_transf_obj.png">
+              <img src="images/batch_100_transf_obj.png" style="width:256px">
+            </a><br>
+            <p>transf_obj</p>
+          </p>
+        </td>
+        <td halign="center" style="word-wrap: break-word;" valign="top">
+          <p>
+            <a href="images/batch_100_composite.png">
+              <img src="images/batch_100_composite.png" style="width:256px">
+            </a><br>
+            <p>composite</p>
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
