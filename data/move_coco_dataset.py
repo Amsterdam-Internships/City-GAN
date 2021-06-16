@@ -87,18 +87,16 @@ class MoveCocoDataset(BaseDataset):
                     masks.append(mask)
 
             # we could sort the polygon_dict[img_id] here on surface size
-            sorted_masks = [x for _, x in sorted(zip(surfaces, masks), key = lambda x: x[0])]
-            sorted_masks = sorted_masks[:2] if len(sorted_masks) > 2 else sorted_masks
-            polygon_dict[img_id] = sorted_masks
+            sorted_masks = [x for _, x in sorted(zip(surfaces, masks), key = lambda x: x[0], reverse=True)]
+            breakpoint()
+            polygon_dict[img_id] = sorted_masks[:3]
 
         return polygon_dict
 
 
     def get_random_object_mask(self, src_index):
         src_id = self.src_ids[src_index]
-        all_obj_masks = self.polygon_dict[src_id]
-
-        return random.choice(all_obj_masks)
+        return random.choice(self.polygon_dict[src_id])
 
 
 
