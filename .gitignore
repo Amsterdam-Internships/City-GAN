@@ -14,3 +14,4 @@ checkpoints/test_run
 *.icloud
 slurms
 *.xlsx
+datasets/COCO/annotations/COCO_anns_complete.json

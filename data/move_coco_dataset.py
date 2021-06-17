@@ -41,7 +41,7 @@ class MoveCocoDataset(BaseDataset):
         self.transform_mask = get_transform(opt, grayscale=True)
         
         with open(os.path.join(opt.dataroot, "src_imgs/annotations",
-            "COCO_anns.json")) as f:
+            "COCO_anns_complete.json")) as f:
             self.COCO_anns = json.load(f)
             self.anns = self.COCO_anns['img_anns']
             self.categories = self.COCO_anns['cats']
@@ -81,15 +81,14 @@ class MoveCocoDataset(BaseDataset):
                 ImageDraw.Draw(img).polygon(polygon, outline=1, fill=1)
                 mask = self.transform_mask(img)
                 mask_binary = (mask > 0).int()
-                surface = mask_binary.sum().item()
-                if surface > self.opt.min_obj_surface:
-                    surfaces.append(surface)
-                    masks.append(mask)
+                # surface = mask_binary.sum().item()
+                # if surface > self.opt.min_obj_surface:
+                    # surfaces.append(surface)
+                masks.append(mask)
 
             # we could sort the polygon_dict[img_id] here on surface size
-            sorted_masks = [x for _, x in sorted(zip(surfaces, masks), key = lambda x: x[0], reverse=True)]
-            breakpoint()
-            polygon_dict[img_id] = sorted_masks[:3]
+            # sorted_masks = [x for _, x in sorted(zip(surfaces, masks), key = lambda x: x[0], reverse=True)]
+            polygon_dict[img_id] = masks
 
         return polygon_dict
 
