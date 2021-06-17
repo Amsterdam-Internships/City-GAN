@@ -29,7 +29,7 @@ class MoveCocoDataset(BaseDataset):
         BaseDataset.__init__(self, opt)
 
         # images can be found directly in the phase folder
-        self.src_dir = os.path.join(opt.dataroot, "src_imgs/images")
+        self.src_dir = os.path.join(opt.dataroot, "src_imgs/images/complete")
         self.src_paths = sorted(make_dataset(self.src_dir,
             opt.max_dataset_size))
         self.src_ids = [os.path.basename(fname)[:-4].split("_")[1] for fname in self.src_paths]
