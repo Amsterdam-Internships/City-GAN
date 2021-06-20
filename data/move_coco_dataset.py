@@ -49,6 +49,8 @@ class MoveCocoDataset(BaseDataset):
             self.polygon_dict = self.create_polygon_masks(self.anns)
             # print(self.polygon_dict)
 
+
+
         # get the image directory for Cityscapes (target)
         image_root = os.path.join(opt.dataroot, "leftImg8bit")
         self.image_dir = os.path.join(image_root, opt.phase)
@@ -70,8 +72,9 @@ class MoveCocoDataset(BaseDataset):
 
         for img_id, ann in anns_dict.items():
             img_id = int(img_id)
-            print("img_id", img_id)
             surfaces, masks = [], []
+            if img_id not in self.id2path_src:
+                continue
             w, h = Image.open(self.id2path_src[img_id]).convert('RGB').size
             for obj in ann:
                 img = Image.new('1', (w, h), 0)
