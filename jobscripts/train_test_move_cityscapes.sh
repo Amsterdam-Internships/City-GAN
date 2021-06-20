@@ -12,7 +12,7 @@ module load 2020
 module load Python
 
 # declare run
-run=6
+run=7
 seed=42
 img_dim=256
 
