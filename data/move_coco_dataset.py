@@ -69,6 +69,7 @@ class MoveCocoDataset(BaseDataset):
         polygon_dict = defaultdict(list)
 
         for img_id, ann in anns_dict.items():
+            img_id = int(img_id)
             print("img_id", img_id)
             surfaces, masks = [], []
             w, h = Image.open(self.id2path_src[img_id]).convert('RGB').size
