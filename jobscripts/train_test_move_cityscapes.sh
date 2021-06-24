@@ -52,8 +52,8 @@ python $HOME/City-GAN/train.py --model move \
     --num_threads 4\
     --min_obj_surface 100\
     --print_freq 20\
-    --display_freq 100\
-    --update_html 100\
+    --display_freq 10\
+    --update_html 10\
     --theta_dim 6\
     --fake_target 0.1\
     --real_target 0.9\
