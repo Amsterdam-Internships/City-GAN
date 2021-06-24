@@ -6,10 +6,10 @@ This repo contains the code for my MSc AI thesis project, exploring the use of G
 
 The *_How it works_* section below contains more technical information about the model and underlying reasoning.
 
-![](media/CopyGAN_example.png)
+![](media/CopyGAN_example_multi.png)
 An example of the CopyGAN model, generating a mask for the objects in the source image.
 
-![](media/MoveGAN_example.png)
+![](media/MoveGAN_example_multi.png)
 An example of the MoveGAN model, inserting an object in the target image
 
 ---
@@ -69,10 +69,15 @@ The classfier is trained on generated data (ROOM_composite), based on the output
         |       ├── val
         |       └── test
         └── Cityscapes
+        │   └── images
+        |       ├── train
+        |       ├── val
+        |       └── test
+        └── COCO
             └── images
-                ├── train
-                ├── val
-                └── test
+                ├── complete
+                └── small
+            └── annotations
 ```
 ---
 
@@ -87,7 +92,7 @@ $ python train.py --model copy --dataroot datasets/CLEVR/images
 ```
 To train the MoveGAN: 
 ```
-$ python train.py --model move --dataroot datasets/ROOM/images
+$ python train.py --model move --dataroot datasets/ROOM/images --dataset_mode 
 ```
 Models and generated images will be saved to the ./checkpoints folder by default, as well as image outputs and loss plots.
 
