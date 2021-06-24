@@ -6,10 +6,10 @@ This repo contains the code for my MSc AI thesis project, exploring the use of G
 
 The *_How it works_* section below contains more technical information about the model and underlying reasoning.
 
-![](media/CopyGAN_example_multi.png)
+![](media/CopyGAN_example_multi.png=100x)
 An example of the CopyGAN model, generating a mask for the objects in the source image.
 
-![](media/MoveGAN_example_multi.png)
+![](media/MoveGAN_example_multi.png100x)
 An example of the MoveGAN model, inserting an object in the target image
 
 ---
